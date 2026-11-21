@@ -1,16 +1,52 @@
 import { Command } from 'cmdk'
 import * as RD from '@radix-ui/react-dialog'
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import { PLACE_CATEGORIES, type PlaceCategory } from '../core/categories'
+import { formatMoney } from '../core/format'
+import { SEARCH_SCOPES, excerpt, searchAll, splitHighlight, tokenize, type SearchHit, type SearchKind, type SearchScope } from '../core/search'
 import { useAppStore } from '../store/useAppStore'
 
-/** ⌘K / Ctrl+K 全域搜尋：行程、待辦、記帳、地點 */
+const RECENT_KEY = 'acacia_recent_search'
+const RECENT_MAX = 8
+
+function loadRecent(): string[] {
+  try {
+    const v: unknown = JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]')
+    return Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string').slice(0, RECENT_MAX) : []
+  } catch {
+    return []
+  }
+}
+function saveRecent(list: string[]) {
+  try {
+    localStorage.setItem(RECENT_KEY, JSON.stringify(list))
+  } catch {
+    /* 無痕模式等情況存不了，不影響搜尋 */
+  }
+}
+
+/** 把命中的關鍵字標出來 */
+function Highlight({ text, tokens }: { text: string; tokens: string[] }) {
+  return (
+    <>
+      {splitHighlight(text, tokens).map(([s, hit], i) =>
+        hit ? (
+          <mark key={i} className="rounded-sm bg-[#fde68a] px-0.5 text-inherit">
+            {s}
+          </mark>
+        ) : (
+          <span key={i}>{s}</span>
+        ),
+      )}
+    </>
+  )
+}
+
+/** ⌘K / Ctrl+K 全域搜尋：行程、待辦、記帳（含已歸檔）、地點 */
 export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
   const { t } = useTranslation()
-  const navigate = useNavigate()
-  const { events, tasks, shopping, places } = useAppStore()
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -23,82 +59,167 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
     return () => window.removeEventListener('keydown', onKey)
   }, [open, onOpenChange])
 
-  const go = (path: string) => {
-    onOpenChange(false)
-    void navigate(path)
-  }
-
-  const item = 'flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] data-[selected=true]:bg-sage-light'
-  const badge = 'shrink-0 rounded-md bg-mint px-2 py-0.5 text-[10px] font-bold text-sage-dark'
-  const sub = 'ml-auto shrink-0 text-[11px] text-muted'
-  const group = '[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:tracking-widest [&_[cmdk-group-heading]]:text-muted'
-
   return (
     <RD.Root open={open} onOpenChange={onOpenChange}>
       <RD.Portal>
         <RD.Overlay className="fixed inset-0 z-40 bg-[#26363355] backdrop-blur-[2px]" />
-        <RD.Content aria-describedby={undefined} className="fixed top-[12vh] left-1/2 z-50 w-[min(560px,calc(100vw-32px))] -translate-x-1/2 overflow-hidden rounded-(--radius-card) bg-paper shadow-card">
+        <RD.Content
+          aria-describedby={undefined}
+          className="fixed top-[12vh] left-1/2 z-50 w-[min(600px,calc(100vw-32px))] -translate-x-1/2 overflow-hidden rounded-(--radius-card) bg-paper shadow-card"
+        >
           <RD.Title className="sr-only">{t('search.title')}</RD.Title>
-          <Command label={t('search.title')} loop>
-            <div className="flex items-center gap-2 border-b border-line px-4">
-              <span aria-hidden className="text-sage">
-                ⌕
-              </span>
-              <Command.Input autoFocus placeholder={t('search.placeholder')} className="h-12 min-w-0 flex-1 bg-transparent text-sm outline-none" />
-              <kbd className="rounded border border-line px-1.5 text-[10px] text-muted">Esc</kbd>
-            </div>
-            <Command.List className="max-h-[60vh] overflow-y-auto p-2">
-              <Command.Empty className="py-8 text-center text-[13px] text-muted">{t('search.empty')}</Command.Empty>
-              {events.length > 0 && (
-                <Command.Group heading={t('search.events')} className={group}>
-                  {events.map((e) => (
-                    <Command.Item key={e.id} value={`event-${e.id}`} keywords={[e.title, e.note, e.dateISO]} onSelect={() => go(`/calendar?open=${e.id}`)} className={item}>
-                      <span className={badge}>{t('search.event')}</span>
-                      <span className="truncate">{e.title}</span>
-                      <span className={sub}>
-                        {e.dateISO} {e.start}
-                      </span>
-                    </Command.Item>
-                  ))}
-                </Command.Group>
-              )}
-              {tasks.length > 0 && (
-                <Command.Group heading={t('search.tasks')} className={group}>
-                  {tasks.map((x) => (
-                    <Command.Item key={x.id} value={`task-${x.id}`} keywords={[x.title, x.loc]} onSelect={() => go(`/tasks?open=${x.id}`)} className={item}>
-                      <span className={badge}>{t('search.task')}</span>
-                      <span className={`truncate ${x.done ? 'line-through opacity-60' : ''}`}>{x.title}</span>
-                      <span className={sub}>{x.done ? t('tasks.completed') : t('tasks.pending')}</span>
-                    </Command.Item>
-                  ))}
-                </Command.Group>
-              )}
-              {shopping.length > 0 && (
-                <Command.Group heading={t('search.shopping')} className={group}>
-                  {shopping.map((s) => (
-                    <Command.Item key={s.id} value={`shop-${s.id}`} keywords={[s.title, s.store, s.customCat ?? '', t(`expenseCat.${s.cat}`)]} onSelect={() => go(`/shopping?open=${s.id}`)} className={item}>
-                      <span className={badge}>{t('search.expense')}</span>
-                      <span className="truncate">{s.title}</span>
-                      <span className={sub}>{s.store || s.date}</span>
-                    </Command.Item>
-                  ))}
-                </Command.Group>
-              )}
-              {places.length > 0 && (
-                <Command.Group heading={t('search.places')} className={group}>
-                  {places.map((p) => (
-                    <Command.Item key={p.id} value={`place-${p.id}`} keywords={[p.name, p.address, p.note, t(`placeCat.${p.cat}`)]} onSelect={() => go(`/places?open=${p.id}`)} className={item}>
-                      <span className={badge}>{PLACE_CATEGORIES[p.cat as PlaceCategory]?.icon ?? '📍'}</span>
-                      <span className="truncate">{p.name}</span>
-                      <span className={sub}>{t(`placeCat.${p.cat}`)}</span>
-                    </Command.Item>
-                  ))}
-                </Command.Group>
-              )}
-            </Command.List>
-          </Command>
+          {/* 內容只在開啟時才存在，所以每次開啟都是乾淨的搜尋框 */}
+          <PaletteBody onOpenChange={onOpenChange} />
         </RD.Content>
       </RD.Portal>
     </RD.Root>
+  )
+}
+
+function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
+  const { t, i18n } = useTranslation()
+  const navigate = useNavigate()
+  const { events, tasks, shopping, archives, places } = useAppStore()
+  const [query, setQuery] = useState('')
+  const [scope, setScope] = useState<SearchScope>('all')
+  const [recent, setRecent] = useState<string[]>(loadRecent)
+  const lng = i18n.resolvedLanguage ?? 'zh-TW'
+
+  const tokens = useMemo(() => tokenize(query), [query])
+  const hits = useMemo(
+    () =>
+      searchAll({ events, tasks, shopping, archives, places }, query, scope, {
+        money: (n) => formatMoney(n, lng),
+        expenseCat: (e) => (e.cat === 'other' && e.customCat ? e.customCat : t(`expenseCat.${e.cat}`)),
+        placeCat: (c) => t(`placeCat.${c}`),
+      }),
+    // eslint 無法追 t 的穩定性；語系變了就重算
+    [events, tasks, shopping, archives, places, query, scope, lng, t],
+  )
+
+  const counts = useMemo(() => {
+    const all = searchAll({ events, tasks, shopping, archives, places }, query, 'all', {
+      money: (n) => formatMoney(n, lng),
+      expenseCat: (e) => (e.cat === 'other' && e.customCat ? e.customCat : t(`expenseCat.${e.cat}`)),
+      placeCat: (c) => t(`placeCat.${c}`),
+    })
+    const c: Record<SearchScope, number> = {
+      all: all.length,
+      events: 0,
+      tasks: 0,
+      shopping: 0,
+      places: 0,
+    }
+    for (const h of all) c[h.kind]++
+    return c
+  }, [events, tasks, shopping, archives, places, query, lng, t])
+
+  const remember = () => {
+    const q = query.trim()
+    if (!q) return
+    const next = [q, ...recent.filter((r) => r !== q)].slice(0, RECENT_MAX)
+    setRecent(next)
+    saveRecent(next)
+  }
+  const go = (hit: SearchHit) => {
+    remember()
+    onOpenChange(false)
+    void navigate(hit.path)
+  }
+  const clearRecent = () => {
+    setRecent([])
+    saveRecent([])
+  }
+
+  const badgeLabel = (k: SearchKind) => t(`search.badge.${k}`)
+  const badge = 'shrink-0 rounded-md bg-mint px-2 py-0.5 text-[10px] font-bold text-sage-dark'
+  const item = 'flex cursor-pointer items-start gap-3 rounded-lg px-3 py-2.5 text-[13px] data-[selected=true]:bg-sage-light'
+
+  return (
+    <Command label={t('search.title')} shouldFilter={false} loop>
+      <div className="flex items-center gap-1 border-b border-line px-4">
+        <span aria-hidden className="text-sage">
+          ⌕
+        </span>
+        <Command.Input autoFocus value={query} onValueChange={setQuery} placeholder={t('search.placeholder')} className="h-12 min-w-0 flex-1 bg-transparent px-1 text-sm outline-none" />
+        {query && (
+          <button type="button" aria-label={t('search.clear')} onClick={() => setQuery('')} className="grid size-7 place-items-center rounded-full text-muted hover:bg-oat">
+            ✕
+          </button>
+        )}
+        <RD.Close className="rounded-md border border-line px-2 py-1 text-[11px] font-semibold text-muted hover:bg-oat">{t('search.close')}</RD.Close>
+      </div>
+
+      <div role="tablist" aria-label={t('search.scope')} className="flex gap-1.5 overflow-x-auto border-b border-line px-3 py-2">
+        {SEARCH_SCOPES.map((s) => (
+          <button
+            key={s}
+            type="button"
+            role="tab"
+            aria-selected={scope === s}
+            onClick={() => setScope(s)}
+            className={`shrink-0 rounded-full px-3 py-1 text-xs font-bold transition ${scope === s ? 'bg-sage text-white' : 'bg-oat text-muted hover:text-ink'}`}
+          >
+            {t(`search.scopes.${s}`)}
+            {tokens.length > 0 && <span className="ml-1 opacity-70">{counts[s]}</span>}
+          </button>
+        ))}
+      </div>
+
+      <Command.List className="max-h-[56vh] overflow-y-auto p-2">
+        {tokens.length === 0 ? (
+          <div className="px-3 py-4">
+            <p className="text-[13px] text-muted">{t('search.hint')}</p>
+            {recent.length > 0 && (
+              <div className="mt-4">
+                <div className="mb-2 flex items-center justify-between">
+                  <h3 className="text-[10px] font-bold tracking-widest text-muted">{t('search.recent')}</h3>
+                  <button type="button" onClick={clearRecent} className="text-[11px] text-muted hover:text-ink">
+                    {t('search.clearRecent')}
+                  </button>
+                </div>
+                <ul className="flex flex-wrap gap-2">
+                  {recent.map((r) => (
+                    <li key={r}>
+                      <button type="button" onClick={() => setQuery(r)} className="rounded-full border border-line px-3 py-1 text-xs hover:bg-sage-light">
+                        {r}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        ) : hits.length === 0 ? (
+          <Command.Empty className="py-8 text-center text-[13px] text-muted">{t('search.empty')}</Command.Empty>
+        ) : (
+          hits.map((h) => (
+            <Command.Item key={h.key} value={h.key} onSelect={() => go(h)} className={item}>
+              <span className={badge}>
+                {h.kind === 'places' ? `${PLACE_CATEGORIES[(places.find((p) => p.id === h.id)?.cat ?? 'other') as PlaceCategory]?.icon ?? '📍'} ` : ''}
+                {badgeLabel(h.kind)}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className={`block truncate ${h.done ? 'line-through opacity-60' : ''}`}>
+                  <Highlight text={h.title} tokens={tokens} />
+                </span>
+                {h.meta && (
+                  <small className="block truncate text-[11px] text-muted">
+                    <Highlight text={h.meta} tokens={tokens} />
+                  </small>
+                )}
+                {h.snippet && (
+                  <small className="mt-0.5 block truncate text-[11px] text-[#55645d]">
+                    <b className="mr-1 font-semibold">{t(`search.field.${h.snippet.field}`)}</b>
+                    <Highlight text={excerpt(h.snippet.text, tokens)} tokens={tokens} />
+                  </small>
+                )}
+              </span>
+              {h.archived && <span className="shrink-0 rounded-md border border-line px-1.5 py-0.5 text-[10px] text-muted">{t('search.archived')}</span>}
+            </Command.Item>
+          ))
+        )}
+      </Command.List>
+    </Command>
   )
 }

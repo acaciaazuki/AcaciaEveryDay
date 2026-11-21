@@ -276,15 +276,36 @@
   "search": {
     "title": "搜尋",
     "button": "搜尋你的 ACACIA",
-    "placeholder": "搜尋行程、待辦、記帳或地點…",
+    "placeholder": "搜尋任務、備註、行程或地點…",
     "empty": "找不到相符的內容",
-    "events": "行程",
-    "tasks": "待辦",
-    "shopping": "記帳",
-    "places": "地點",
-    "event": "行程",
-    "task": "待辦",
-    "expense": "記帳"
+    "hint": "依任務名稱、備註、行程或地點搜尋",
+    "recent": "最近搜尋",
+    "clearRecent": "清除紀錄",
+    "clear": "清除",
+    "close": "關閉",
+    "scope": "搜尋範圍",
+    "archived": "已歸檔",
+    "scopes": {
+      "all": "全部",
+      "events": "行事曆",
+      "tasks": "稍後辦",
+      "shopping": "購物記帳",
+      "places": "最愛地點"
+    },
+    "badge": {
+      "events": "行程",
+      "tasks": "待辦",
+      "shopping": "記帳",
+      "places": "地點"
+    },
+    "field": {
+      "title": "名稱",
+      "note": "備註",
+      "loc": "地點",
+      "store": "店家",
+      "cat": "分類",
+      "address": "地址"
+    }
   },
   "sync": {
     "title": "雲端同步",
