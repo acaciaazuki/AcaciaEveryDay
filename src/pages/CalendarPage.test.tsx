@@ -3,6 +3,7 @@ import { fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import { beforeEach, describe, expect, it } from 'vitest'
 import i18n from '../i18n'
+import { toLocalISO } from '../core/date'
 import { emptyAppData } from '../core/schema'
 import { useAppStore } from '../store/useAppStore'
 import { CalendarPage } from './CalendarPage'
@@ -35,5 +36,17 @@ describe('CalendarPage', () => {
     fireEvent.change(screen.getByLabelText('行程名稱'), { target: { value: '上班' } })
     fireEvent.click(screen.getByText('加入 0 天'))
     expect(screen.getByText('請至少選擇一天')).toBeInTheDocument()
+  })
+
+  it('單日最多顯示 6 筆，超過才折成「還有 X 個」', () => {
+    const d = toLocalISO()
+    useAppStore.setState({
+      events: Array.from({ length: 8 }, (_, i) => ({ id: `e${i}`, title: `事項${i + 1}`, dateISO: d, start: `0${i + 1}:00`, end: `0${i + 1}:30`, note: '' })),
+    })
+    render(<MemoryRouter><CalendarPage /></MemoryRouter>)
+    const cell = screen.getAllByRole('gridcell').find((c) => c.getAttribute('aria-selected') === 'true')!
+    expect(within(cell).getByRole('button', { name: /事項6/ })).toBeInTheDocument()
+    expect(within(cell).queryByRole('button', { name: /事項7/ })).not.toBeInTheDocument()
+    expect(within(cell).getByText('還有 2 個')).toBeInTheDocument()
   })
 })

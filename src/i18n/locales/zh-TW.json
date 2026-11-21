@@ -53,7 +53,27 @@
     "all": "全部 →",
     "quickEmpty": "目前沒有待辦事項 🎉",
     "quickPlaceholder": "輸入待辦事項按 Enter…",
-    "quickAdd": "＋ 新增待辦"
+    "quickAdd": "＋ 新增待辦",
+    "prev": "往前",
+    "next": "往後",
+    "backToToday": "回到今天",
+    "viewLabel": "檢視範圍",
+    "view": {
+      "day": "單日",
+      "week": "一週",
+      "two": "兩週"
+    },
+    "relative": {
+      "yesterday": "昨天",
+      "tomorrow": "明天",
+      "dayAfter": "後天",
+      "threeDays": "大後天"
+    },
+    "timelineOther": "時間軸",
+    "timelineEmptyOther": "這天還沒有安排，點擊新增 ＋",
+    "rhythmOn": "{{date}}的節奏",
+    "rangeEmpty": "沒有行程",
+    "todayBadge": "今天"
   },
   "calendar": {
     "eyebrow": "把重要的事，放進剛好的位置",

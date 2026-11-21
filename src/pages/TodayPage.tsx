@@ -4,11 +4,17 @@ import { Link } from 'react-router'
 import { Button } from '../components/Button'
 import { EventDialog } from '../components/EventDialog'
 import { PageHead } from '../components/PageHead'
-import { toLocalISO } from '../core/date'
+import { addDays, dateRange, toLocalISO } from '../core/date'
 import type { CalendarEvent } from '../core/schema'
 import { dayRhythm, eventsOn, greetingKey, hours } from '../core/today'
 import { useNow } from '../hooks/useNow'
 import { useAppStore } from '../store/useAppStore'
+
+type View = 'day' | 'week' | 'two'
+const VIEW_DAYS: Record<View, number> = { day: 1, week: 7, two: 14 }
+const VIEWS: View[] = ['day', 'week', 'two']
+// 相對今天的天數 → 翻譯 key（昨天、明天、後天、大後天）
+const RELATIVE: Record<number, string> = { [-1]: 'yesterday', 1: 'tomorrow', 2: 'dayAfter', 3: 'threeDays' }
 
 const WAKE = '07:00'
 const SLEEP = '23:00'
@@ -21,19 +27,51 @@ export function TodayPage() {
   const allEvents = useAppStore((s) => s.events)
   const tasks = useAppStore((s) => s.tasks)
   const [editing, setEditing] = useState<CalendarEvent | 'new' | null>(null)
+  const [offset, setOffset] = useState(0) // 目前看的日期，相對今天的天數
+  const [view, setView] = useState<View>('day')
 
   const now = useNow()
-  const iso = toLocalISO(now)
-  const events = eventsOn(allEvents, iso)
+  const todayISO = toLocalISO(now)
+  const viewISO = addDays(todayISO, offset)
+  const viewDate = new Date(`${viewISO}T00:00`)
+  const span = VIEW_DAYS[view]
+  const days = dateRange(viewISO, span)
+  const events = eventsOn(allEvents, viewISO)
+  const rangeCount = days.reduce((n, d) => n + eventsOn(allEvents, d).length, 0)
   const openTasks = tasks.filter((x) => !x.done)
   const rhythm = dayRhythm(events, WAKE, SLEEP)
-  const dateLabel = new Intl.DateTimeFormat(i18n.resolvedLanguage, { dateStyle: 'full' }).format(now)
+  const freeMinutes = days.reduce((sum, d) => sum + dayRhythm(eventsOn(allEvents, d), WAKE, SLEEP).freeMinutes, 0)
+  const lng = i18n.resolvedLanguage
+  const dateLabel = new Intl.DateTimeFormat(lng, { dateStyle: 'full' }).format(viewDate)
+  const shortDate = new Intl.DateTimeFormat(lng, { month: 'long', day: 'numeric' }).format(viewDate)
+  const title =
+    offset === 0
+      ? t(`today.greeting.${greetingKey(now.getHours())}`)
+      : RELATIVE[offset]
+        ? t(`today.relative.${RELATIVE[offset]}`)
+        : new Intl.DateTimeFormat(lng, { month: 'long', day: 'numeric', weekday: 'long' }).format(viewDate)
+  const stepBtn = 'grid size-6 place-items-center rounded-full border border-line bg-paper text-sm text-ink hover:bg-sage-light'
 
   return (
     <>
       <PageHead
-        eyebrow={dateLabel}
-        title={t(`today.greeting.${greetingKey(now.getHours())}`)}
+        eyebrow={
+          <span className="flex flex-wrap items-center gap-1.5">
+            <button type="button" aria-label={t('today.prev')} onClick={() => setOffset(offset - span)} className={stepBtn}>
+              ‹
+            </button>
+            <span>{dateLabel}</span>
+            <button type="button" aria-label={t('today.next')} onClick={() => setOffset(offset + span)} className={stepBtn}>
+              ›
+            </button>
+            {offset !== 0 && (
+              <button type="button" onClick={() => setOffset(0)} className="rounded-full bg-sage-light px-2.5 py-1 text-[11px] font-bold text-sage-dark hover:bg-mint">
+                {t('today.backToToday')}
+              </button>
+            )}
+          </span>
+        }
+        title={title}
         actions={
           <>
             <Link to="/calendar" className="rounded-(--radius-control) border border-line bg-paper px-4 py-2.5 text-xs font-bold hover:bg-sage-light">
@@ -50,9 +88,9 @@ export function TodayPage() {
           <p className="mb-4 text-[13px] text-[#55645d]">{t('today.bannerText')}</p>
           <div className="flex flex-wrap gap-2">
             {[
-              [events.length, t('today.statEvents')],
+              [rangeCount, t('today.statEvents')],
               [openTasks.length, t('today.statTasks')],
-              [`${hours(rhythm.freeMinutes)}h`, t('today.statFree')],
+              [`${hours(freeMinutes)}h`, t('today.statFree')],
             ].map(([n, label]) => (
               <span key={String(label)} className="rounded-full bg-paper/80 px-3 py-1.5 text-xs text-[#55645d]">
                 <b className="mr-1 text-ink">{n}</b>
@@ -68,15 +106,32 @@ export function TodayPage() {
 
       <div className="grid gap-5 min-[1001px]:grid-cols-[1fr_320px]">
         <section className={card}>
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-bold">{t('today.timeline')}</h2>
-            <Link to="/calendar" className={linkBtn}>
-              {t('today.fullSchedule')}
-            </Link>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+            <h2 className="font-bold">{offset === 0 && view === 'day' ? t('today.timeline') : t('today.timelineOther')}</h2>
+            <div className="flex items-center gap-3">
+              <div role="group" aria-label={t('today.viewLabel')} className="flex rounded-full bg-oat p-0.5">
+                {VIEWS.map((v) => (
+                  <button
+                    key={v}
+                    type="button"
+                    aria-pressed={view === v}
+                    onClick={() => setView(v)}
+                    className={`rounded-full px-3 py-1 text-xs font-bold transition ${view === v ? 'bg-paper text-sage-dark shadow-soft' : 'text-muted hover:text-ink'}`}
+                  >
+                    {t(`today.view.${v}`)}
+                  </button>
+                ))}
+              </div>
+              <Link to="/calendar" className={linkBtn}>
+                {t('today.fullSchedule')}
+              </Link>
+            </div>
           </div>
-          {events.length === 0 ? (
+          {view !== 'day' ? (
+            <RangeList days={days} events={allEvents} lng={lng} todayISO={todayISO} onEdit={setEditing} />
+          ) : events.length === 0 ? (
             <button type="button" onClick={() => setEditing('new')} className="w-full rounded-xl border border-dashed border-line py-8 text-center text-muted hover:bg-oat">
-              {t('today.timelineEmpty')}
+              {offset === 0 ? t('today.timelineEmpty') : t('today.timelineEmptyOther')}
             </button>
           ) : (
             <ol className="grid gap-2">
@@ -111,7 +166,7 @@ export function TodayPage() {
               })}
             </ol>
           )}
-          {events.length > 0 && (
+          {(view !== 'day' || events.length > 0) && (
             <button type="button" onClick={() => setEditing('new')} className={`${linkBtn} mt-4`}>
               {t('today.addOne')}
             </button>
@@ -120,7 +175,7 @@ export function TodayPage() {
 
         <div className="grid content-start gap-5">
           <section className={card}>
-            <h2 className="mb-3 font-bold">{t('today.rhythm')}</h2>
+            <h2 className="mb-3 font-bold">{offset === 0 ? t('today.rhythm') : t('today.rhythmOn', { date: shortDate })}</h2>
             <div className="mb-3 flex items-center justify-between">
               <div>
                 <strong>
@@ -145,8 +200,54 @@ export function TodayPage() {
         </div>
       </div>
 
-      {editing && <EventDialog key={editing === 'new' ? 'new' : editing.id} event={editing === 'new' ? null : editing} onClose={() => setEditing(null)} />}
+      {editing && <EventDialog key={editing === 'new' ? 'new' : editing.id} event={editing === 'new' ? null : editing} date={viewISO} onClose={() => setEditing(null)} />}
     </>
+  )
+}
+
+/** 一週／兩週檢視：依日期分組列出行程，沒有行程的日子只留一行 */
+function RangeList({ days, events, lng, todayISO, onEdit }: { days: string[]; events: CalendarEvent[]; lng: string | undefined; todayISO: string; onEdit: (e: CalendarEvent) => void }) {
+  const { t } = useTranslation()
+  const fmt = new Intl.DateTimeFormat(lng, { month: 'numeric', day: 'numeric', weekday: 'short' })
+  return (
+    <ol className="grid gap-1.5">
+      {days.map((d) => {
+        const evs = eventsOn(events, d)
+        const label = fmt.format(new Date(`${d}T00:00`))
+        const isToday = d === todayISO
+        return (
+          <li key={d} className="grid grid-cols-[96px_1fr] items-start gap-3">
+            <div className={`pt-2 text-xs font-bold ${isToday ? 'text-sage-dark' : 'text-muted'}`}>
+              {label}
+              {isToday && <span className="mt-1 block w-fit rounded-full bg-sage px-1.5 py-px text-[10px] text-white">{t('today.todayBadge')}</span>}
+            </div>
+            {evs.length === 0 ? (
+              <span className="py-2 text-[11px] text-[#a5b0aa]">{t('today.rangeEmpty')}</span>
+            ) : (
+              <ul className="grid gap-1.5">
+                {evs.map((e) => (
+                  <li key={e.id}>
+                    <button
+                      type="button"
+                      onClick={() => onEdit(e)}
+                      className="w-full rounded-xl border-l-4 px-3 py-2 text-left transition hover:-translate-y-px"
+                      style={{ background: e.bgColor || '#f2f8f4', borderLeftColor: e.titleColor || '#75b799' }}
+                    >
+                      <strong className="block text-[13px]" style={{ color: e.titleColor || 'var(--color-ink)' }}>
+                        {e.title}
+                      </strong>
+                      <small className="text-[11px] text-muted">
+                        {e.start}–{e.end} {e.note && `· ${e.note}`}
+                      </small>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        )
+      })}
+    </ol>
   )
 }
 

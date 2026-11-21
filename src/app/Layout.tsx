@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { NavLink, Outlet } from 'react-router'
+import { NavLink, Outlet, useLocation } from 'react-router'
 import { CommandPalette } from '../components/CommandPalette'
 import { SyncPanel } from '../components/SyncPanel'
 import { useAppStore } from '../store/useAppStore'
@@ -21,6 +21,8 @@ export function Layout() {
   const { t } = useTranslation()
   const openTasks = useAppStore((s) => s.tasks.filter((x) => !x.done).length)
   const [searchOpen, setSearchOpen] = useState(false)
+  // 行事曆需要更寬的版面，月曆才放得下較多行程
+  const wide = useLocation().pathname.startsWith('/calendar')
   const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform)
 
   return (
@@ -70,7 +72,7 @@ export function Layout() {
         </div>
       </aside>
 
-      <main className="mx-auto max-w-[1400px] px-3.5 pt-4 pb-[calc(88px+env(safe-area-inset-bottom))] min-[681px]:ml-60 min-[681px]:px-6 min-[681px]:pb-16 min-[1001px]:px-9">
+      <main className={`mx-auto ${wide ? 'max-w-[2000px]' : 'max-w-[1400px]'} px-3.5 pt-4 pb-[calc(88px+env(safe-area-inset-bottom))] min-[681px]:ml-60 min-[681px]:px-6 min-[681px]:pb-16 min-[1001px]:px-9`}>
         <button
           type="button"
           aria-label={t('search.button')}

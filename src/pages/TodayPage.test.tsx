@@ -1,9 +1,9 @@
 import 'fake-indexeddb/auto'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import { beforeEach, describe, expect, it } from 'vitest'
 import i18n from '../i18n'
-import { toLocalISO } from '../core/date'
+import { addDays, toLocalISO } from '../core/date'
 import { emptyAppData } from '../core/schema'
 import { useAppStore } from '../store/useAppStore'
 import { TodayPage } from './TodayPage'
@@ -45,5 +45,58 @@ describe('TodayPage', () => {
     fireEvent.change(screen.getByLabelText('輸入待辦事項按 Enter…'), { target: { value: '倒垃圾' } })
     fireEvent.submit(screen.getByLabelText('輸入待辦事項按 Enter…'))
     expect(screen.getByText('倒垃圾')).toBeInTheDocument()
+  })
+
+  it('用箭頭切換到明天、後天，並可回到今天', () => {
+    const d = toLocalISO()
+    useAppStore.setState({
+      events: [
+        { id: 'a', title: '今天的事', dateISO: d, start: '10:00', end: '11:00', note: '' },
+        { id: 'b', title: '明天的事', dateISO: addDays(d, 1), start: '09:00', end: '12:00', note: '' },
+      ],
+    })
+    renderPage()
+    expect(screen.getByText('今天的事')).toBeInTheDocument()
+    expect(screen.queryByText('回到今天')).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByLabelText('往後'))
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('明天')
+    expect(screen.getByText('明天的事')).toBeInTheDocument()
+    expect(screen.queryByText('今天的事')).not.toBeInTheDocument()
+    expect(screen.getByText('已安排 3 小時')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByLabelText('往後'))
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('後天')
+    fireEvent.click(screen.getByLabelText('往後'))
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('大後天')
+
+    fireEvent.click(screen.getByText('回到今天'))
+    expect(screen.getByText('今天的事')).toBeInTheDocument()
+  })
+
+  it('一週檢視依日期列出未來 7 天的行程', () => {
+    const d = toLocalISO()
+    useAppStore.setState({
+      events: [
+        { id: 'a', title: '第三天', dateISO: addDays(d, 2), start: '10:00', end: '11:00', note: '' },
+        { id: 'b', title: '第八天', dateISO: addDays(d, 7), start: '10:00', end: '11:00', note: '' },
+      ],
+    })
+    renderPage()
+    fireEvent.click(screen.getByRole('button', { name: '一週' }))
+    expect(screen.getByText('第三天')).toBeInTheDocument()
+    expect(screen.queryByText('第八天')).not.toBeInTheDocument()
+    expect(screen.getAllByText('沒有行程')).toHaveLength(6)
+
+    fireEvent.click(screen.getByRole('button', { name: '兩週' }))
+    expect(screen.getByText('第八天')).toBeInTheDocument()
+    expect(screen.getAllByText('沒有行程')).toHaveLength(12)
+
+    // 一週檢視用箭頭整段往後翻
+    fireEvent.click(screen.getByRole('button', { name: '一週' }))
+    fireEvent.click(screen.getByLabelText('往後'))
+    expect(screen.getByText('第八天')).toBeInTheDocument()
+    expect(screen.queryByText('第三天')).not.toBeInTheDocument()
+    expect(within(screen.getByRole('group', { name: '檢視範圍' })).getByRole('button', { name: '一週' })).toHaveAttribute('aria-pressed', 'true')
   })
 })

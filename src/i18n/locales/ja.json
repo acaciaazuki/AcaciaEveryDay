@@ -53,7 +53,27 @@
     "all": "すべて →",
     "quickEmpty": "タスクはありません 🎉",
     "quickPlaceholder": "タスクを入力して Enter…",
-    "quickAdd": "＋ タスクを追加"
+    "quickAdd": "＋ タスクを追加",
+    "prev": "前へ",
+    "next": "次へ",
+    "backToToday": "今日に戻る",
+    "viewLabel": "表示範囲",
+    "view": {
+      "day": "1日",
+      "week": "1週間",
+      "two": "2週間"
+    },
+    "relative": {
+      "yesterday": "昨日",
+      "tomorrow": "明日",
+      "dayAfter": "明後日",
+      "threeDays": "しあさって"
+    },
+    "timelineOther": "タイムライン",
+    "timelineEmptyOther": "この日の予定はまだありません。タップして追加 ＋",
+    "rhythmOn": "{{date}}のリズム",
+    "rangeEmpty": "予定なし",
+    "todayBadge": "今日"
   },
   "calendar": {
     "eyebrow": "大切なことを、ちょうどいい場所に",
