@@ -91,7 +91,7 @@ export function LedgerBook({ archives, lng, currentStart, onRestore, focusId }: 
                               <span className="min-w-0">
                                 <strong>{e.title}</strong>
                                 <small className="block text-[length:calc(11px*var(--fs))] opacity-80">
-                                  {e.date} · <Icon name={EXPENSE_STYLE[e.cat].icon} className="size-[1.1em]" /> {catLabel(e)}
+                                  {e.date} · <Icon name={EXPENSE_STYLE[e.cat].icon} className="size-[1.5em]" /> {catLabel(e)}
                                   {e.unitPrice != null && ` · ${e.quantity ?? 1} × ${formatMoney(e.unitPrice, lng)}`}
                                 </small>
                               </span>

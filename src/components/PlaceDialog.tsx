@@ -1,13 +1,14 @@
 import { useRef, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PlacesSearchError, searchPlaces } from '../adapters/placesSearch'
-import { PLACE_CATEGORY_KEYS, type PlaceCategory } from '../core/categories'
+import { PLACE_CATEGORIES, PLACE_CATEGORY_KEYS, type PlaceCategory } from '../core/categories'
 import { buildPlaceNote, detectPlaceCategory, formatOpeningHours, placeName, type PlaceNoteLabels, type PlaceResult } from '../core/places'
 import type { Place } from '../core/schema'
 import { useAppStore } from '../store/useAppStore'
 import { Button } from './Button'
 import { ColorSwatches } from './ColorSwatches'
 import { Dialog } from './Dialog'
+import { IconSelect } from './IconSelect'
 import { Field } from './Field'
 import { TextArea } from './TextArea'
 
@@ -129,20 +130,12 @@ export function PlaceDialog({ place, onClose }: { place: Place | null; onClose: 
         <Field label={t('places.form.name')} placeholder={t('places.form.namePlaceholder')} value={draft.name} onChange={(e) => set({ name: e.target.value })} />
         {error && <p className="-mt-2 text-xs text-[#c2583d]">{error}</p>}
         <Field label={t('places.form.address')} value={draft.address} onChange={(e) => set({ address: e.target.value })} />
-        <label className="grid gap-1.5 text-xs font-semibold text-muted">
-          {t('places.form.cat')}
-          <select
-            className="rounded-(--radius-control) border border-line bg-oat px-3 py-2.5 text-sm font-normal text-ink outline-none focus:border-sage"
-            value={draft.cat}
-            onChange={(e) => set({ cat: e.target.value as PlaceCategory })}
-          >
-            {PLACE_CATEGORY_KEYS.map((c) => (
-              <option key={c} value={c}>
-                {t(`placeCat.${c}`)}
-              </option>
-            ))}
-          </select>
-        </label>
+        <IconSelect
+          label={t('places.form.cat')}
+          value={draft.cat as PlaceCategory}
+          options={PLACE_CATEGORY_KEYS.map((c) => ({ value: c, label: t(`placeCat.${c}`), icon: PLACE_CATEGORIES[c].icon, bg: PLACE_CATEGORIES[c].bg }))}
+          onChange={(cat) => set({ cat })}
+        />
         <TextArea label={t('places.form.hours')} rows={4} placeholder={t('places.form.hoursPlaceholder')} value={draft.hours} onChange={(e) => set({ hours: e.target.value })} />
         <TextArea label={t('places.form.note')} rows={3} value={draft.note} onChange={(e) => set({ note: e.target.value })} />
         <div className="grid gap-1.5 text-xs font-semibold text-muted">

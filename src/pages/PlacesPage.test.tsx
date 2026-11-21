@@ -37,7 +37,7 @@ describe('PlacesPage', () => {
     fireEvent.change(screen.getByLabelText(/^搜尋地點（/), { target: { value: '小日子' } })
     fireEvent.click(screen.getByText('搜尋'))
     await waitFor(() => expect(screen.getByLabelText('地點名稱')).toHaveValue('小日子手沖咖啡'))
-    expect(within(screen.getByRole('dialog')).getByLabelText('分類')).toHaveValue('cafe')
+    expect(within(screen.getByRole('dialog')).getByLabelText('分類')).toHaveTextContent('咖啡')
     expect(screen.getByLabelText('營業時間與公休')).toHaveValue('公休時間：星期一\n星期一: 休息\n星期二: 10:00–18:00')
     fireEvent.click(screen.getByText('儲存'))
     expect(useAppStore.getState().places[0]).toMatchObject({ name: '小日子手沖咖啡', cat: 'cafe', note: 'Google 評價：4.6 顆星（120 則評論）' })

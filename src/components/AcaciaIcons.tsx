@@ -5,7 +5,7 @@ import { ICON_NAMES, type IconName } from '../core/icons'
  * ACACIA 圖示庫：日系療癒軟粉彩風格。
  * - 全部 viewBox 0 0 24 24，線條 1.75、圓頭圓角，線色用 currentColor（可用文字色改色）
  * - 內部用低飽和高明度的粉彩局部填色，不用純黑白生硬線條
- * - 尺寸預設 1.25em：跟著字體大小（設定裡的 小／標準／大／特大）等比縮放
+ * - 尺寸預設 1.6em：跟著字體大小（設定裡的 小／標準／大／特大）等比縮放
  */
 const SW = 1.75
 
@@ -308,7 +308,7 @@ export function Icon({ name, className = '', title, size }: { name: IconName; cl
       focusable="false"
       data-icon-name={name}
       style={size == null ? undefined : { width: size, height: size }}
-      className={`inline-block size-[1.25em] shrink-0 align-[-0.2em] ${className}`}
+      className={`inline-block size-[1.6em] shrink-0 align-[-0.2em] ${className}`}
     >
       {title && <title>{title}</title>}
       {ART[name]}
@@ -320,7 +320,7 @@ export function Icon({ name, className = '', title, size }: { name: IconName; cl
 export function IconBadge({ name, bg, className = '' }: { name: IconName; bg: string; className?: string }) {
   return (
     <span data-icon={name} className={`grid size-[calc(36px*var(--fs))] shrink-0 place-items-center rounded-full text-[#4f6b60] ${className}`} style={{ background: bg }}>
-      <Icon name={name} className="size-[66%]" />
+      <Icon name={name} className="size-[72%]" />
     </span>
   )
 }
