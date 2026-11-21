@@ -199,6 +199,22 @@
       "preview": "プレビュー",
       "qty": "数量",
       "unit": "単価"
+    },
+    "archive": {
+      "button": "📦 今期をアーカイブ",
+      "nothing": "アーカイブできる記録がありません",
+      "confirmTitle": "今期の記録をアーカイブ",
+      "confirmText": "今期（{{start}} – {{end}}）の{{count}}件を{{year}}年の記録帳に移し、記録リストを新しく始めます。あとで記録帳から元に戻せます。",
+      "confirm": "アーカイブ"
+    },
+    "ledger": {
+      "title": "📚 年間記録帳",
+      "year": "年",
+      "empty": "アーカイブされた期間はまだありません。各期の終了後（毎月10日以降）に自動で収められます。「今期をアーカイブ」で手動でも保存できます。",
+      "yearBook": "{{year}}年の記録帳",
+      "yearSummary": "全{{periods}}期 · {{total}}",
+      "range": "{{start}} – {{end}}",
+      "restore": "記録リストに戻す"
     }
   },
   "settings": {

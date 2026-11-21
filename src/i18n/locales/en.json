@@ -199,6 +199,22 @@
       "preview": "Preview",
       "qty": "Quantity",
       "unit": "Unit price"
+    },
+    "archive": {
+      "button": "📦 Archive this period",
+      "nothing": "Nothing to archive in this period yet",
+      "confirmTitle": "Archive this period",
+      "confirmText": "This moves {{count}} entries from this period ({{start}} – {{end}}) into the {{year}} ledger and starts the list fresh. You can restore them from the ledger later.",
+      "confirm": "Archive"
+    },
+    "ledger": {
+      "title": "📚 Yearly ledger",
+      "year": "Year",
+      "empty": "No archived periods yet. Each period is archived automatically after it ends (from the 10th of each month), or tap “Archive this period” to do it now.",
+      "yearBook": "{{year}} ledger",
+      "yearSummary": "{{periods}} periods · {{total}}",
+      "range": "{{start}} – {{end}}",
+      "restore": "Restore to the list"
     }
   },
   "settings": {
