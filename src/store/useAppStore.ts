@@ -2,12 +2,16 @@ import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { webStorage } from '../adapters/storage'
 import { migrate } from '../core/migrate'
-import { emptyAppData, newId, type AppData, type Expense, type Task } from '../core/schema'
+import { emptyAppData, newId, type AppData, type CalendarEvent, type Expense, type Task } from '../core/schema'
 
 type TaskInput = Omit<Task, 'id' | 'done'>
 type ExpenseInput = Omit<Expense, 'id' | 'done'>
+type EventInput = Omit<CalendarEvent, 'id'>
 
 interface Actions {
+  addEvent: (input: EventInput) => void
+  updateEvent: (id: string, patch: Partial<EventInput>) => void
+  removeEvent: (id: string) => void
   addTask: (input: TaskInput) => void
   updateTask: (id: string, patch: Partial<TaskInput>) => void
   toggleTask: (id: string) => void
@@ -29,6 +33,11 @@ export const useAppStore = create<AppState>()(
   persist(
     (setState, getState) => ({
       ...emptyAppData(),
+
+      addEvent: (input) => setState((s) => ({ events: [...s.events, { id: newId(), ...input }], ...touch() })),
+      updateEvent: (id, patch) =>
+        setState((s) => ({ events: s.events.map((x) => (x.id === id ? { ...x, ...patch } : x)), ...touch() })),
+      removeEvent: (id) => setState((s) => ({ events: s.events.filter((x) => x.id !== id), ...touch() })),
 
       addTask: (input) =>
         setState((s) => ({ tasks: [{ id: newId(), done: false, ...input }, ...s.tasks], ...touch() })),

@@ -27,7 +27,34 @@
   },
   "today": {
     "eyebrow": "今天也慢慢來",
-    "title": "今天"
+    "title": "今天",
+    "greeting": {
+      "morning": "早安 ☀️",
+      "afternoon": "午安 🌤️",
+      "evening": "晚安 🌙",
+      "night": "夜深了 ✨"
+    },
+    "seeCalendar": "▦ 查看月曆",
+    "addEvent": "＋ 新增安排",
+    "bannerTitle": "慢慢來，一切都會剛剛好。",
+    "bannerText": "你有幾件重要的事，還有足夠的空檔好好呼吸。",
+    "statEvents": "個行程",
+    "statTasks": "個待辦",
+    "statFree": "自由時間",
+    "timeline": "今天的時間軸",
+    "fullSchedule": "查看完整日程 →",
+    "timelineEmpty": "今天還沒有安排，點擊新增 ＋",
+    "addOne": "＋ 加一個行程",
+    "rhythm": "今天的節奏",
+    "rhythmRange": "起床到就寢",
+    "busy": "已安排 {{h}} 小時",
+    "free": "還有 {{h}} 小時空檔",
+    "gap": "☁️ 留給自己的空檔",
+    "quick": "順手完成",
+    "all": "全部 →",
+    "quickEmpty": "目前沒有待辦事項 🎉",
+    "quickPlaceholder": "輸入待辦事項按 Enter…",
+    "quickAdd": "＋ 新增待辦"
   },
   "calendar": {
     "eyebrow": "柔和的月曆，點日期看重點",
@@ -124,5 +151,20 @@
     "school": "學校",
     "market": "市場",
     "other": "其他"
+  },
+  "event": {
+    "newTitle": "新增行程安排",
+    "editTitle": "編輯行程",
+    "preview": "📌 行程名稱預覽",
+    "title": "要做什麼？",
+    "titlePlaceholder": "例如：和朋友吃午餐",
+    "date": "日期",
+    "start": "開始",
+    "end": "結束",
+    "color": "顏色",
+    "note": "備註（選填）",
+    "notePlaceholder": "地點、準備事項或任何小提醒",
+    "titleRequired": "請輸入行程名稱",
+    "endBeforeStart": "結束時間要晚於開始時間"
   }
 }

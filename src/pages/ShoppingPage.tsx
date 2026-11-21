@@ -10,6 +10,7 @@ import { toLocalISO } from '../core/date'
 import { billingPeriod, DEFAULT_BUDGET, EXPENSE_STYLE, summarize } from '../core/expenses'
 import { formatMoney } from '../core/format'
 import type { Expense } from '../core/schema'
+import { useNow } from '../hooks/useNow'
 import { useAppStore } from '../store/useAppStore'
 
 type Draft = Omit<Expense, 'id' | 'done'>
@@ -21,7 +22,7 @@ export function ShoppingPage() {
   const [editing, setEditing] = useState<Expense | 'new' | null>(null)
   const lng = i18n.resolvedLanguage ?? 'zh-TW'
 
-  const period = billingPeriod()
+  const period = billingPeriod(useNow())
   const { total, byCategory } = summarize(shopping, period)
   const percent = Math.min((total / DEFAULT_BUDGET) * 100, 100)
   const over = total > DEFAULT_BUDGET

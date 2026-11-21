@@ -27,7 +27,34 @@
   },
   "today": {
     "eyebrow": "今日もゆっくりと",
-    "title": "今日"
+    "title": "今日",
+    "greeting": {
+      "morning": "おはよう ☀️",
+      "afternoon": "こんにちは 🌤️",
+      "evening": "こんばんは 🌙",
+      "night": "夜更かしですね ✨"
+    },
+    "seeCalendar": "▦ カレンダーを見る",
+    "addEvent": "＋ 予定を追加",
+    "bannerTitle": "ゆっくりで大丈夫、きっとちょうどよくなる。",
+    "bannerText": "大切なことがいくつかと、ひと息つける余白が十分あります。",
+    "statEvents": "件の予定",
+    "statTasks": "件のタスク",
+    "statFree": "自由時間",
+    "timeline": "今日のタイムライン",
+    "fullSchedule": "すべての予定 →",
+    "timelineEmpty": "今日はまだ予定がありません。タップして追加 ＋",
+    "addOne": "＋ 予定を追加",
+    "rhythm": "今日のリズム",
+    "rhythmRange": "起床から就寝まで",
+    "busy": "予定 {{h}} 時間",
+    "free": "余白 {{h}} 時間",
+    "gap": "☁️ 自分のための余白",
+    "quick": "ついでにやる",
+    "all": "すべて →",
+    "quickEmpty": "タスクはありません 🎉",
+    "quickPlaceholder": "タスクを入力して Enter…",
+    "quickAdd": "＋ タスクを追加"
   },
   "calendar": {
     "eyebrow": "やさしい月表示、日付をタップして予定を確認",
@@ -124,5 +151,20 @@
     "school": "学校",
     "market": "市場",
     "other": "その他"
+  },
+  "event": {
+    "newTitle": "予定を追加",
+    "editTitle": "予定を編集",
+    "preview": "📌 予定名のプレビュー",
+    "title": "何をしますか？",
+    "titlePlaceholder": "例：友だちとランチ",
+    "date": "日付",
+    "start": "開始",
+    "end": "終了",
+    "color": "色",
+    "note": "メモ（任意）",
+    "notePlaceholder": "場所や準備、ちょっとしたメモ",
+    "titleRequired": "予定名を入力してください",
+    "endBeforeStart": "終了時刻は開始より後にしてください"
   }
 }

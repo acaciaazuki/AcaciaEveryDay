@@ -27,7 +27,34 @@
   },
   "today": {
     "eyebrow": "Take it slow today",
-    "title": "Today"
+    "title": "Today",
+    "greeting": {
+      "morning": "Good morning ☀️",
+      "afternoon": "Good afternoon 🌤️",
+      "evening": "Good evening 🌙",
+      "night": "It's late ✨"
+    },
+    "seeCalendar": "▦ Open calendar",
+    "addEvent": "+ Add plan",
+    "bannerTitle": "Take your time. It will all work out.",
+    "bannerText": "A few things that matter, and plenty of room to breathe.",
+    "statEvents": "plans",
+    "statTasks": "tasks",
+    "statFree": "free time",
+    "timeline": "Today's timeline",
+    "fullSchedule": "Full schedule →",
+    "timelineEmpty": "Nothing planned yet. Tap to add +",
+    "addOne": "+ Add a plan",
+    "rhythm": "Today's rhythm",
+    "rhythmRange": "Wake to bedtime",
+    "busy": "{{h}} h planned",
+    "free": "{{h}} h free",
+    "gap": "☁️ Time for yourself",
+    "quick": "Quick wins",
+    "all": "All →",
+    "quickEmpty": "Nothing to do 🎉",
+    "quickPlaceholder": "Type a task and press Enter…",
+    "quickAdd": "+ New task"
   },
   "calendar": {
     "eyebrow": "A soft monthly view. Tap a date to see what's on",
@@ -124,5 +151,20 @@
     "school": "School",
     "market": "Market",
     "other": "Other"
+  },
+  "event": {
+    "newTitle": "New plan",
+    "editTitle": "Edit plan",
+    "preview": "📌 Plan title preview",
+    "title": "What's the plan?",
+    "titlePlaceholder": "e.g. Lunch with friends",
+    "date": "Date",
+    "start": "Start",
+    "end": "End",
+    "color": "Color",
+    "note": "Note (optional)",
+    "notePlaceholder": "Place, things to bring, any reminder",
+    "titleRequired": "Please enter a title",
+    "endBeforeStart": "End time must be after start time"
   }
 }
