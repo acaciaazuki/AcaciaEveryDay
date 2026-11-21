@@ -4,12 +4,15 @@ import { Button } from '../components/Button'
 import { PageHead } from '../components/PageHead'
 import { SyncPanel } from '../components/SyncPanel'
 import { LANGUAGES } from '../i18n'
+import { FONT_SCALE, FONT_SIZES } from '../core/schema'
 import { useAppStore } from '../store/useAppStore'
 
 export function SettingsPage() {
   const { t, i18n } = useTranslation()
   const importData = useAppStore((s) => s.importData)
   const exportData = useAppStore((s) => s.exportData)
+  const fontSize = useAppStore((s) => s.settings.fontSize)
+  const setFontSize = useAppStore((s) => s.setFontSize)
   const fileRef = useRef<HTMLInputElement>(null)
   const [msg, setMsg] = useState('')
 
@@ -44,6 +47,35 @@ export function SettingsPage() {
                 {l.label}
               </Button>
             ))}
+          </div>
+        </section>
+        <section className="rounded-(--radius-card) bg-paper p-6 shadow-card">
+          <h2 className="mb-1 font-bold">{t('settings.fontSize.title')}</h2>
+          <p className="mb-3 text-xs text-muted">{t('settings.fontSize.help')}</p>
+          <div role="radiogroup" aria-label={t('settings.fontSize.title')} className="grid grid-cols-2 gap-2 min-[520px]:grid-cols-4">
+            {FONT_SIZES.map((size) => {
+              const on = fontSize === size
+              return (
+                <button
+                  key={size}
+                  type="button"
+                  role="radio"
+                  aria-checked={on}
+                  onClick={() => setFontSize(size)}
+                  className={`relative grid justify-items-center gap-1 rounded-(--radius-control) border px-2 py-3 transition ${on ? 'border-sage bg-sage-light text-sage-dark ring-2 ring-sage/25' : 'border-line bg-oat hover:bg-sage-light/60'}`}
+                >
+                  {on && (
+                    <span aria-hidden className="absolute top-1.5 right-1.5 grid size-4 place-items-center rounded-full bg-sage text-[10px] leading-none text-white">
+                      ✓
+                    </span>
+                  )}
+                  <span aria-hidden className="font-bold" style={{ fontSize: `${16 * FONT_SCALE[size]}px` }}>
+                    Aa
+                  </span>
+                  <span className="text-xs font-bold">{t(`settings.fontSize.${size}`)}</span>
+                </button>
+              )
+            })}
           </div>
         </section>
         <section className="rounded-(--radius-card) bg-paper p-6 shadow-card">

@@ -210,7 +210,15 @@
     "import": "Import JSON",
     "importOk": "Data imported 🌱",
     "importFail": "Import failed, nothing was changed: {{msg}}",
-    "importConfirm": "Importing replaces all your current data. Continue?"
+    "importConfirm": "Importing replaces all your current data. Continue?",
+    "fontSize": {
+      "title": "Text size",
+      "help": "Make text larger for easier reading. Applies instantly and is remembered.",
+      "sm": "Small",
+      "md": "Standard",
+      "lg": "Large",
+      "xl": "Extra large"
+    }
   },
   "expenseCat": {
     "food": "Food",

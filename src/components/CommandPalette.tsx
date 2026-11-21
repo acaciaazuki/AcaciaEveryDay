@@ -28,10 +28,10 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
     void navigate(path)
   }
 
-  const item = 'flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] data-[selected=true]:bg-sage-light'
-  const badge = 'shrink-0 rounded-md bg-mint px-2 py-0.5 text-[10px] font-bold text-sage-dark'
-  const sub = 'ml-auto shrink-0 text-[11px] text-muted'
-  const group = '[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:tracking-widest [&_[cmdk-group-heading]]:text-muted'
+  const item = 'flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-[length:calc(13px*var(--fs))] data-[selected=true]:bg-sage-light'
+  const badge = 'shrink-0 rounded-md bg-mint px-2 py-0.5 text-[length:calc(10px*var(--fs))] font-bold text-sage-dark'
+  const sub = 'ml-auto shrink-0 text-[length:calc(11px*var(--fs))] text-muted'
+  const group = '[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:text-[length:calc(10px*var(--fs))] [&_[cmdk-group-heading]]:font-bold [&_[cmdk-group-heading]]:tracking-widest [&_[cmdk-group-heading]]:text-muted'
 
   return (
     <RD.Root open={open} onOpenChange={onOpenChange}>
@@ -45,10 +45,10 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
                 ⌕
               </span>
               <Command.Input autoFocus placeholder={t('search.placeholder')} className="h-12 min-w-0 flex-1 bg-transparent text-sm outline-none" />
-              <kbd className="rounded border border-line px-1.5 text-[10px] text-muted">Esc</kbd>
+              <kbd className="rounded border border-line px-1.5 text-[length:calc(10px*var(--fs))] text-muted">Esc</kbd>
             </div>
             <Command.List className="max-h-[60vh] overflow-y-auto p-2">
-              <Command.Empty className="py-8 text-center text-[13px] text-muted">{t('search.empty')}</Command.Empty>
+              <Command.Empty className="py-8 text-center text-[length:calc(13px*var(--fs))] text-muted">{t('search.empty')}</Command.Empty>
               {events.length > 0 && (
                 <Command.Group heading={t('search.events')} className={group}>
                   {events.map((e) => (

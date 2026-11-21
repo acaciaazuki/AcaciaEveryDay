@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { webStorage } from '../adapters/storage'
 import { migrate } from '../core/migrate'
-import { emptyAppData, newId, type AppData, type CalendarEvent, type Expense, type Place, type Task } from '../core/schema'
+import { emptyAppData, newId, type AppData, type FontSize, type CalendarEvent, type Expense, type Place, type Task } from '../core/schema'
 
 type TaskInput = Omit<Task, 'id' | 'done'>
 type ExpenseInput = Omit<Expense, 'id' | 'done'>
@@ -25,6 +25,7 @@ interface Actions {
   updateExpense: (id: string, patch: Partial<ExpenseInput>) => void
   toggleExpense: (id: string) => void
   removeExpense: (id: string) => void
+  setFontSize: (size: FontSize) => void
   /** 匯入（舊版或新版 JSON），失敗時丟出錯誤、不覆蓋現有資料 */
   importData: (raw: unknown) => void
   exportData: () => AppData
@@ -68,10 +69,12 @@ export const useAppStore = create<AppState>()(
         setState((s) => ({ shopping: s.shopping.map((x) => (x.id === id ? { ...x, done: !x.done } : x)), ...touch() })),
       removeExpense: (id) => setState((s) => ({ shopping: s.shopping.filter((x) => x.id !== id), ...touch() })),
 
+      setFontSize: (fontSize) => setState((s) => ({ settings: { ...s.settings, fontSize }, ...touch() })),
+
       importData: (raw) => setState(migrate(raw)),
       exportData: () => {
-        const { schemaVersion, events, tasks, shopping, places, favorites, updatedAt } = getState()
-        return { schemaVersion, events, tasks, shopping, places, favorites, updatedAt }
+        const { schemaVersion, settings, events, tasks, shopping, places, favorites, updatedAt } = getState()
+        return { schemaVersion, settings, events, tasks, shopping, places, favorites, updatedAt }
       },
     }),
     {

@@ -14,7 +14,7 @@ export function MonthNav({ year, month, onShift, onToday }: { year: number; mont
           ‹
         </button>
         {onToday && (
-          <button type="button" className="h-8 rounded-full border border-line bg-paper px-3 text-[11px] font-bold hover:bg-sage-light" onClick={onToday}>
+          <button type="button" className="h-8 rounded-full border border-line bg-paper px-3 text-[length:calc(11px*var(--fs))] font-bold hover:bg-sage-light" onClick={onToday}>
             {t('calendar.today')}
           </button>
         )}

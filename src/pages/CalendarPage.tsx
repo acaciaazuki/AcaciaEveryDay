@@ -64,7 +64,7 @@ export function CalendarPage() {
           />
           <div role="grid" className="mt-4 grid grid-cols-7 gap-1">
             {weekdayNames(i18n.resolvedLanguage).map((w, i) => (
-              <div key={i} role="columnheader" className="pb-1 text-center text-[11px] font-bold text-muted">
+              <div key={i} role="columnheader" className="pb-1 text-center text-[length:calc(11px*var(--fs))] font-bold text-muted">
                 {w}
               </div>
             ))}
@@ -101,13 +101,13 @@ export function CalendarPage() {
                           ev.stopPropagation()
                           setEditing(e)
                         }}
-                        className="truncate rounded px-1.5 py-px text-left text-[10px] leading-4 font-semibold"
+                        className="truncate rounded px-1.5 py-px text-left text-[length:calc(10px*var(--fs))] leading-4 font-semibold"
                         style={{ background: e.bgColor || '#eaf6ef', color: e.titleColor || '#263633' }}
                       >
                         {e.start} {e.title}
                       </button>
                     ))}
-                    {evs.length > MAX_CHIPS && <span className="px-1.5 text-[10px] text-muted">{t('calendar.more', { count: evs.length - MAX_CHIPS })}</span>}
+                    {evs.length > MAX_CHIPS && <span className="px-1.5 text-[length:calc(10px*var(--fs))] text-muted">{t('calendar.more', { count: evs.length - MAX_CHIPS })}</span>}
                   </div>
                 </div>
               )
@@ -118,7 +118,7 @@ export function CalendarPage() {
         <section className="content-start rounded-(--radius-card) bg-paper p-5 shadow-card">
           <h2 className="mb-3 font-bold">{selectedLabel}</h2>
           {dayEvents.length === 0 ? (
-            <p className="py-2 text-[13px] text-muted">{t('calendar.dayEmpty')}</p>
+            <p className="py-2 text-[length:calc(13px*var(--fs))] text-muted">{t('calendar.dayEmpty')}</p>
           ) : (
             <ul className="grid gap-2">
               {dayEvents.map((e) => (
@@ -129,10 +129,10 @@ export function CalendarPage() {
                     className="w-full rounded-xl border-l-4 px-3 py-2.5 text-left"
                     style={{ background: e.bgColor || '#f2f8f4', borderLeftColor: e.titleColor || '#75b799' }}
                   >
-                    <strong className="block text-[13px]" style={{ color: e.titleColor || 'var(--color-ink)' }}>
+                    <strong className="block text-[length:calc(13px*var(--fs))]" style={{ color: e.titleColor || 'var(--color-ink)' }}>
                       {e.title}
                     </strong>
-                    <small className="text-[11px] text-muted">
+                    <small className="text-[length:calc(11px*var(--fs))] text-muted">
                       {e.start}–{e.end} {e.note && `· ${e.note}`}
                     </small>
                   </button>
