@@ -22,20 +22,107 @@
     "cancel": "取消",
     "delete": "刪除",
     "add": "新增",
-    "edit": "編輯",
-    "comingSoon": "這一頁正在搬到新版，敬請期待 🌱"
+    "edit": "編輯"
   },
   "today": {
     "eyebrow": "今天也慢慢來",
-    "title": "今天"
+    "title": "今天",
+    "greeting": {
+      "morning": "早安 ☀️",
+      "afternoon": "午安 🌤️",
+      "evening": "晚安 🌙",
+      "night": "夜深了 ✨"
+    },
+    "seeCalendar": "▦ 查看月曆",
+    "addEvent": "＋ 新增安排",
+    "bannerTitle": "慢慢來，一切都會剛剛好。",
+    "bannerText": "你有幾件重要的事，還有足夠的空檔好好呼吸。",
+    "statEvents": "個行程",
+    "statTasks": "個待辦",
+    "statFree": "自由時間",
+    "timeline": "今天的時間軸",
+    "fullSchedule": "查看完整日程 →",
+    "timelineEmpty": "今天還沒有安排，點擊新增 ＋",
+    "addOne": "＋ 加一個行程",
+    "rhythm": "今天的節奏",
+    "rhythmRange": "起床到就寢",
+    "busy": "已安排 {{h}} 小時",
+    "free": "還有 {{h}} 小時空檔",
+    "gap": "☁️ 留給自己的空檔",
+    "quick": "順手完成",
+    "all": "全部 →",
+    "quickEmpty": "目前沒有待辦事項 🎉",
+    "quickPlaceholder": "輸入待辦事項按 Enter…",
+    "quickAdd": "＋ 新增待辦"
   },
   "calendar": {
-    "eyebrow": "柔和的月曆，點日期看重點",
-    "title": "行事曆"
+    "eyebrow": "把重要的事，放進剛好的位置",
+    "title": "行事曆",
+    "batch": "🔁 批次新增",
+    "add": "＋ 新增事件",
+    "prev": "上個月",
+    "next": "下個月",
+    "today": "今天",
+    "addOnDay": "＋ 在這天新增事件",
+    "dayEmpty": "這天沒有安排",
+    "more": "還有 {{count}} 個",
+    "batchForm": {
+      "title": "批次新增行程",
+      "name": "行程名稱",
+      "namePlaceholder": "例如：上班",
+      "start": "開始",
+      "end": "結束",
+      "color": "顏色",
+      "pickDates": "選擇日期（可多選）",
+      "selected": "已選 {{count}} 天",
+      "submit": "加入 {{count}} 天",
+      "nameRequired": "請輸入行程名稱",
+      "datesRequired": "請至少選擇一天",
+      "note": "批次建立"
+    }
   },
   "places": {
     "eyebrow": "搜尋地點自動抓取資訊，並用可愛插圖分類",
-    "title": "最愛地點"
+    "title": "最愛地點 📍",
+    "add": "＋ 新增地點",
+    "filterPlaceholder": "搜尋地點名稱、地址或備註…",
+    "all": "全部",
+    "empty": "此分類尚未收藏地點",
+    "openMaps": "↗ Google Maps",
+    "edit": "編輯",
+    "form": {
+      "newTitle": "📍 收藏地點",
+      "editTitle": "編輯地點",
+      "search": "🔍 搜尋地點（選擇結果會自動帶入資訊）",
+      "searchPlaceholder": "例如：春水堂 創始店",
+      "searchBtn": "搜尋",
+      "searching": "正在搜尋「{{q}}」…",
+      "noResults": "找不到「{{q}}」，試著加上縣市或路名",
+      "searchFailed": "搜尋服務連線失敗，可以手動填寫",
+      "filled": "已自動帶入「{{cat}}」的營業時間與資訊",
+      "name": "地點名稱",
+      "namePlaceholder": "例如：春水堂 創始店",
+      "address": "地址",
+      "cat": "分類",
+      "hours": "營業時間與公休",
+      "hoursPlaceholder": "選擇搜尋結果後會自動帶入",
+      "note": "筆記（推薦美食、看診提醒、備註）",
+      "color": "卡片背景色",
+      "nameRequired": "請輸入地點名稱",
+      "deleteConfirm": "確定要刪除這個地點嗎？"
+    },
+    "note": {
+      "closedDays": "🚫 公休時間：{{days}}",
+      "noClosedDays": "✅ 公休時間：無固定公休（每日營業）",
+      "noHours": "查無營業時間資訊",
+      "rating": "⭐ Google 評價：{{rating}} 顆星",
+      "ratingCount": "⭐ Google 評價：{{rating}} 顆星（{{count}} 則評論）",
+      "phone": "📞 聯絡電話：{{phone}}",
+      "clinicTip": "🏥 看診提醒：請攜帶健保卡，建議先查看上方門診與休診時間。",
+      "intro": "ℹ️ 簡介：{{text}}",
+      "highlights": "🍽️ 特色與推薦：{{text}}",
+      "reviews": "😋 網友推薦："
+    }
   },
   "tasks": {
     "eyebrow": "不急，但記得要做",
@@ -59,8 +146,33 @@
     "markUndone": "標記為未完成"
   },
   "shopping": {
-    "eyebrow": "既是清單也是記帳本",
-    "title": "購物清單"
+    "eyebrow": "每月 10 日至次月 9 日結算",
+    "title": "購物清單 & 記帳本",
+    "list": "🛒 記帳清單",
+    "count": "{{count}} 筆",
+    "add": "＋ 新增記帳",
+    "empty": "尚無記帳紀錄",
+    "period": "📊 本期記帳（{{start}} – {{end}}）",
+    "budget": "預算進度 {{percent}}%",
+    "noStore": "未指定商店",
+    "markDone": "標記為已購",
+    "markUndone": "標記為待購",
+    "form": {
+      "newTitle": "新增購物記帳",
+      "editTitle": "編輯記帳",
+      "title": "購買項目",
+      "titlePlaceholder": "買了什麼？",
+      "amt": "金額",
+      "store": "商店",
+      "storePlaceholder": "在哪裡買的？",
+      "cat": "分類",
+      "customCat": "自訂分類名稱",
+      "customCatPlaceholder": "留空則顯示「其他」",
+      "date": "日期",
+      "time": "時間",
+      "color": "顏色",
+      "titleRequired": "請輸入購買項目"
+    }
   },
   "settings": {
     "eyebrow": "語言與資料",
@@ -99,5 +211,48 @@
     "school": "學校",
     "market": "市場",
     "other": "其他"
+  },
+  "event": {
+    "newTitle": "新增行程安排",
+    "editTitle": "編輯行程",
+    "preview": "📌 行程名稱預覽",
+    "title": "要做什麼？",
+    "titlePlaceholder": "例如：和朋友吃午餐",
+    "date": "日期",
+    "start": "開始",
+    "end": "結束",
+    "color": "顏色",
+    "note": "備註（選填）",
+    "notePlaceholder": "地點、準備事項或任何小提醒",
+    "titleRequired": "請輸入行程名稱",
+    "endBeforeStart": "結束時間要晚於開始時間"
+  },
+  "search": {
+    "title": "搜尋",
+    "button": "搜尋你的 ACACIA",
+    "placeholder": "搜尋行程、待辦、記帳或地點…",
+    "empty": "找不到相符的內容",
+    "events": "行程",
+    "tasks": "待辦",
+    "shopping": "記帳",
+    "places": "地點",
+    "event": "行程",
+    "task": "待辦",
+    "expense": "記帳"
+  },
+  "sync": {
+    "title": "雲端同步",
+    "guest": "Hi～ 訪客模式",
+    "localOnly": "僅儲存於此瀏覽器 🌱",
+    "signIn": "☁️ Google 登入同步",
+    "signOut": "登出雲端帳號",
+    "signOutConfirm": "確定要登出 Google 帳號嗎？資料仍會保留在這台裝置。",
+    "connecting": "正在連線 Google…",
+    "syncing": "🔄 正在同步至 Google Drive…",
+    "synced": "✅ 已同步（{{time}}）",
+    "error": "⚠️ 同步失敗，資料已存在本機",
+    "retry": "重試",
+    "help": "登入後資料會存在你 Google Drive 的應用程式專用空間，換裝置登入也能看到同一份資料。第一次登入會自動讀取舊版 ACACIA 的雲端備份。",
+    "user": "Google 使用者"
   }
 }

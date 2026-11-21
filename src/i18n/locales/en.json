@@ -22,20 +22,107 @@
     "cancel": "Cancel",
     "delete": "Delete",
     "add": "Add",
-    "edit": "Edit",
-    "comingSoon": "This page is moving to the new version. Coming soon 🌱"
+    "edit": "Edit"
   },
   "today": {
     "eyebrow": "Take it slow today",
-    "title": "Today"
+    "title": "Today",
+    "greeting": {
+      "morning": "Good morning ☀️",
+      "afternoon": "Good afternoon 🌤️",
+      "evening": "Good evening 🌙",
+      "night": "It's late ✨"
+    },
+    "seeCalendar": "▦ Open calendar",
+    "addEvent": "+ Add plan",
+    "bannerTitle": "Take your time. It will all work out.",
+    "bannerText": "A few things that matter, and plenty of room to breathe.",
+    "statEvents": "plans",
+    "statTasks": "tasks",
+    "statFree": "free time",
+    "timeline": "Today's timeline",
+    "fullSchedule": "Full schedule →",
+    "timelineEmpty": "Nothing planned yet. Tap to add +",
+    "addOne": "+ Add a plan",
+    "rhythm": "Today's rhythm",
+    "rhythmRange": "Wake to bedtime",
+    "busy": "{{h}} h planned",
+    "free": "{{h}} h free",
+    "gap": "☁️ Time for yourself",
+    "quick": "Quick wins",
+    "all": "All →",
+    "quickEmpty": "Nothing to do 🎉",
+    "quickPlaceholder": "Type a task and press Enter…",
+    "quickAdd": "+ New task"
   },
   "calendar": {
-    "eyebrow": "A soft monthly view. Tap a date to see what's on",
-    "title": "Calendar"
+    "eyebrow": "Put what matters in just the right place",
+    "title": "Calendar",
+    "batch": "🔁 Add in bulk",
+    "add": "+ New event",
+    "prev": "Previous month",
+    "next": "Next month",
+    "today": "Today",
+    "addOnDay": "+ Add an event on this day",
+    "dayEmpty": "Nothing planned this day",
+    "more": "+{{count}} more",
+    "batchForm": {
+      "title": "Add events in bulk",
+      "name": "Event name",
+      "namePlaceholder": "e.g. Work",
+      "start": "Start",
+      "end": "End",
+      "color": "Color",
+      "pickDates": "Pick dates (multiple)",
+      "selected": "{{count}} days selected",
+      "submit": "Add to {{count}} days",
+      "nameRequired": "Please enter a name",
+      "datesRequired": "Pick at least one day",
+      "note": "Added in bulk"
+    }
   },
   "places": {
     "eyebrow": "Search a place to fill in its details, sorted with cute icons",
-    "title": "Favorite places"
+    "title": "Favorite places 📍",
+    "add": "+ Add place",
+    "filterPlaceholder": "Search by name, address or note…",
+    "all": "All",
+    "empty": "No saved places in this category",
+    "openMaps": "↗ Google Maps",
+    "edit": "Edit",
+    "form": {
+      "newTitle": "📍 Save a place",
+      "editTitle": "Edit place",
+      "search": "🔍 Search for a place (pick a result to fill in details)",
+      "searchPlaceholder": "e.g. Chun Shui Tang",
+      "searchBtn": "Search",
+      "searching": "Searching “{{q}}”…",
+      "noResults": "Nothing found for “{{q}}”. Try adding a city or street",
+      "searchFailed": "Couldn't reach the search service. You can fill it in by hand",
+      "filled": "Filled in hours and details for “{{cat}}”",
+      "name": "Name",
+      "namePlaceholder": "e.g. Chun Shui Tang",
+      "address": "Address",
+      "cat": "Category",
+      "hours": "Opening hours",
+      "hoursPlaceholder": "Filled in when you pick a search result",
+      "note": "Notes (dishes to try, reminders)",
+      "color": "Card background",
+      "nameRequired": "Please enter a name",
+      "deleteConfirm": "Delete this place?"
+    },
+    "note": {
+      "closedDays": "🚫 Closed: {{days}}",
+      "noClosedDays": "✅ Open every day",
+      "noHours": "No opening hours available",
+      "rating": "⭐ Google rating: {{rating}}",
+      "ratingCount": "⭐ Google rating: {{rating}} ({{count}} reviews)",
+      "phone": "📞 Phone: {{phone}}",
+      "clinicTip": "🏥 Reminder: bring your health insurance card and check clinic hours first.",
+      "intro": "ℹ️ About: {{text}}",
+      "highlights": "🍽️ Highlights: {{text}}",
+      "reviews": "😋 From reviews:"
+    }
   },
   "tasks": {
     "eyebrow": "No rush, just don't forget",
@@ -59,8 +146,33 @@
     "markUndone": "Mark as not done"
   },
   "shopping": {
-    "eyebrow": "A list and a budget book in one",
-    "title": "Shopping"
+    "eyebrow": "Each period runs from the 10th to the 9th of next month",
+    "title": "Shopping & budget",
+    "list": "🛒 Entries",
+    "count": "{{count}} entries",
+    "add": "+ New entry",
+    "empty": "No entries yet",
+    "period": "📊 This period ({{start}} – {{end}})",
+    "budget": "{{percent}}% of budget",
+    "noStore": "No store",
+    "markDone": "Mark as bought",
+    "markUndone": "Mark as not bought",
+    "form": {
+      "newTitle": "New entry",
+      "editTitle": "Edit entry",
+      "title": "Item",
+      "titlePlaceholder": "What did you buy?",
+      "amt": "Amount",
+      "store": "Store",
+      "storePlaceholder": "Where did you buy it?",
+      "cat": "Category",
+      "customCat": "Custom category",
+      "customCatPlaceholder": "Leave empty to show “Other”",
+      "date": "Date",
+      "time": "Time",
+      "color": "Color",
+      "titleRequired": "Please enter an item"
+    }
   },
   "settings": {
     "eyebrow": "Language and data",
@@ -99,5 +211,48 @@
     "school": "School",
     "market": "Market",
     "other": "Other"
+  },
+  "event": {
+    "newTitle": "New plan",
+    "editTitle": "Edit plan",
+    "preview": "📌 Plan title preview",
+    "title": "What's the plan?",
+    "titlePlaceholder": "e.g. Lunch with friends",
+    "date": "Date",
+    "start": "Start",
+    "end": "End",
+    "color": "Color",
+    "note": "Note (optional)",
+    "notePlaceholder": "Place, things to bring, any reminder",
+    "titleRequired": "Please enter a title",
+    "endBeforeStart": "End time must be after start time"
+  },
+  "search": {
+    "title": "Search",
+    "button": "Search ACACIA",
+    "placeholder": "Search plans, tasks, expenses or places…",
+    "empty": "No matches",
+    "events": "Plans",
+    "tasks": "Tasks",
+    "shopping": "Expenses",
+    "places": "Places",
+    "event": "Plan",
+    "task": "Task",
+    "expense": "Expense"
+  },
+  "sync": {
+    "title": "Cloud sync",
+    "guest": "Guest mode",
+    "localOnly": "Saved in this browser only 🌱",
+    "signIn": "☁️ Sign in with Google to sync",
+    "signOut": "Sign out",
+    "signOutConfirm": "Sign out of Google? Your data stays on this device.",
+    "connecting": "Connecting to Google…",
+    "syncing": "🔄 Syncing to Google Drive…",
+    "synced": "✅ Synced ({{time}})",
+    "error": "⚠️ Sync failed. Your data is saved on this device",
+    "retry": "Retry",
+    "help": "After you sign in, your data is kept in your Google Drive's app-only space, so you see the same data on any device. The first sign-in also loads your backup from the old ACACIA.",
+    "user": "Google user"
   }
 }

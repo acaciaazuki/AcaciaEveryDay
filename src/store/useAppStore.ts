@@ -2,15 +2,29 @@ import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { webStorage } from '../adapters/storage'
 import { migrate } from '../core/migrate'
-import { emptyAppData, newId, type AppData, type Task } from '../core/schema'
+import { emptyAppData, newId, type AppData, type CalendarEvent, type Expense, type Place, type Task } from '../core/schema'
 
 type TaskInput = Omit<Task, 'id' | 'done'>
+type ExpenseInput = Omit<Expense, 'id' | 'done'>
+type EventInput = Omit<CalendarEvent, 'id'>
+type PlaceInput = Omit<Place, 'id'>
 
 interface Actions {
+  addEvent: (input: EventInput) => void
+  addEvents: (inputs: EventInput[]) => void
+  updateEvent: (id: string, patch: Partial<EventInput>) => void
+  removeEvent: (id: string) => void
+  addPlace: (input: PlaceInput) => void
+  updatePlace: (id: string, patch: Partial<PlaceInput>) => void
+  removePlace: (id: string) => void
   addTask: (input: TaskInput) => void
   updateTask: (id: string, patch: Partial<TaskInput>) => void
   toggleTask: (id: string) => void
   removeTask: (id: string) => void
+  addExpense: (input: ExpenseInput) => void
+  updateExpense: (id: string, patch: Partial<ExpenseInput>) => void
+  toggleExpense: (id: string) => void
+  removeExpense: (id: string) => void
   /** 匯入（舊版或新版 JSON），失敗時丟出錯誤、不覆蓋現有資料 */
   importData: (raw: unknown) => void
   exportData: () => AppData
@@ -25,6 +39,19 @@ export const useAppStore = create<AppState>()(
     (setState, getState) => ({
       ...emptyAppData(),
 
+      addEvent: (input) => setState((s) => ({ events: [...s.events, { id: newId(), ...input }], ...touch() })),
+      addEvents: (inputs) =>
+        setState((s) => ({ events: [...s.events, ...inputs.map((i) => ({ id: newId(), ...i }))], ...touch() })),
+      updateEvent: (id, patch) =>
+        setState((s) => ({ events: s.events.map((x) => (x.id === id ? { ...x, ...patch } : x)), ...touch() })),
+      removeEvent: (id) => setState((s) => ({ events: s.events.filter((x) => x.id !== id), ...touch() })),
+
+      addPlace: (input) => setState((s) => ({ places: [{ id: newId(), ...input }, ...s.places], ...touch() })),
+      updatePlace: (id, patch) =>
+        setState((s) => ({ places: s.places.map((x) => (x.id === id ? { ...x, ...patch } : x)), ...touch() })),
+      removePlace: (id) =>
+        setState((s) => ({ places: s.places.filter((x) => x.id !== id), favorites: s.favorites.filter((f) => f !== id), ...touch() })),
+
       addTask: (input) =>
         setState((s) => ({ tasks: [{ id: newId(), done: false, ...input }, ...s.tasks], ...touch() })),
       updateTask: (id, patch) =>
@@ -32,6 +59,14 @@ export const useAppStore = create<AppState>()(
       toggleTask: (id) =>
         setState((s) => ({ tasks: s.tasks.map((t) => (t.id === id ? { ...t, done: !t.done } : t)), ...touch() })),
       removeTask: (id) => setState((s) => ({ tasks: s.tasks.filter((t) => t.id !== id), ...touch() })),
+
+      addExpense: (input) =>
+        setState((s) => ({ shopping: [{ id: newId(), done: false, ...input }, ...s.shopping], ...touch() })),
+      updateExpense: (id, patch) =>
+        setState((s) => ({ shopping: s.shopping.map((x) => (x.id === id ? { ...x, ...patch } : x)), ...touch() })),
+      toggleExpense: (id) =>
+        setState((s) => ({ shopping: s.shopping.map((x) => (x.id === id ? { ...x, done: !x.done } : x)), ...touch() })),
+      removeExpense: (id) => setState((s) => ({ shopping: s.shopping.filter((x) => x.id !== id), ...touch() })),
 
       importData: (raw) => setState(migrate(raw)),
       exportData: () => {
