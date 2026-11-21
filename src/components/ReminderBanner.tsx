@@ -1,3 +1,4 @@
+import { Icon } from './AcaciaIcons'
 import { useTranslation } from 'react-i18next'
 import { useReminderRuntime } from '../store/useReminderRuntime'
 import { Button } from './Button'
@@ -17,12 +18,12 @@ export function ReminderBanner() {
         return (
           <section key={a.id} role="alert" className="pointer-events-auto w-full max-w-sm rounded-(--radius-card) border border-line bg-paper p-4 shadow-card">
             <div className="mb-2 flex items-start gap-2.5">
-              <span className="grid size-9 shrink-0 place-items-center rounded-full bg-weekend text-lg" aria-hidden>
-                🎒
+              <span className="grid size-9 shrink-0 place-items-center rounded-full bg-weekend text-[#5f7a70]" aria-hidden>
+                <Icon name="reminders" className="size-[60%]" />
               </span>
               <h2 className="flex-1 pt-1 text-sm font-bold">{t(`reminders.banner.${a.kind}`, { place: a.place })}</h2>
               <button type="button" aria-label={t('reminders.banner.close')} onClick={() => dismiss(a.id)} className="grid size-7 place-items-center rounded-full text-muted hover:bg-oat">
-                ✕
+                <Icon name="close" className="size-[1.1em]" />
               </button>
             </div>
             <ul className="mb-3 grid gap-1.5">

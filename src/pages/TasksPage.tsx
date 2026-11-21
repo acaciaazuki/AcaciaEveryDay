@@ -1,3 +1,4 @@
+import { Icon } from '../components/AcaciaIcons'
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../components/Button'
@@ -54,17 +55,21 @@ export function TasksPage() {
                           onClick={() => toggleTask(task.id)}
                           className={`mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border-2 text-[length:calc(10px*var(--fs))] text-white ${task.done ? 'border-sage bg-sage' : 'border-[#cfd8d3]'}`}
                         >
-                          {task.done && '✓'}
+                          {task.done && <Icon name="check" className="size-[1em]" />}
                         </button>
                         <button type="button" className="min-w-0 flex-1 text-left" onClick={() => setEditing(task)}>
                           <h3 className={`font-bold ${task.done ? 'line-through opacity-50' : ''}`} style={{ color: task.titleColor }}>
                             {task.title}
                           </h3>
                           <p className="mt-1 flex flex-wrap gap-x-3 text-[length:calc(11px*var(--fs))] text-muted">
-                            {task.loc && <span>📍 {task.loc}</span>}
+                            {task.loc && (
+                              <span className="inline-flex items-center gap-1">
+                                <Icon name="pin" className="size-[1.15em]" /> {task.loc}
+                              </span>
+                            )}
                             {(task.date || task.time) && (
-                              <span>
-                                🗓 {task.date} {task.time}
+                              <span className="inline-flex items-center gap-1">
+                                <Icon name="calendar" className="size-[1.15em]" /> {task.date} {task.time}
                               </span>
                             )}
                           </p>

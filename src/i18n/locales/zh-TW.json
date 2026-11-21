@@ -29,12 +29,12 @@
     "eyebrow": "今天也慢慢來",
     "title": "今天",
     "greeting": {
-      "morning": "早安 ☀️",
-      "afternoon": "午安 🌤️",
-      "evening": "晚安 🌙",
-      "night": "夜深了 ✨"
+      "morning": "早安",
+      "afternoon": "午安",
+      "evening": "晚安",
+      "night": "夜深了"
     },
-    "seeCalendar": "▦ 查看月曆",
+    "seeCalendar": "查看月曆",
     "addEvent": "＋ 新增安排",
     "bannerTitle": "慢慢來，一切都會剛剛好。",
     "bannerText": "你有幾件重要的事，還有足夠的空檔好好呼吸。",
@@ -49,10 +49,10 @@
     "rhythmRange": "起床到就寢",
     "busy": "已安排 {{h}} 小時",
     "free": "還有 {{h}} 小時空檔",
-    "gap": "☁️ 留給自己的空檔",
+    "gap": "留給自己的空檔",
     "quick": "順手完成",
     "all": "全部 →",
-    "quickEmpty": "目前沒有待辦事項 🎉",
+    "quickEmpty": "目前沒有待辦事項",
     "quickPlaceholder": "輸入待辦事項按 Enter…",
     "quickAdd": "＋ 新增待辦",
     "prev": "往前",
@@ -79,7 +79,7 @@
   "calendar": {
     "eyebrow": "把重要的事，放進剛好的位置",
     "title": "行事曆",
-    "batch": "🔁 批次新增",
+    "batch": "批次新增",
     "add": "＋ 新增事件",
     "prev": "上個月",
     "next": "下個月",
@@ -104,7 +104,7 @@
   },
   "places": {
     "eyebrow": "搜尋地點自動抓取資訊，並用可愛插圖分類",
-    "title": "最愛地點 📍",
+    "title": "最愛地點",
     "add": "＋ 新增地點",
     "filterPlaceholder": "搜尋地點名稱、地址或備註…",
     "all": "全部",
@@ -112,9 +112,9 @@
     "openMaps": "↗ Google Maps",
     "edit": "編輯",
     "form": {
-      "newTitle": "📍 收藏地點",
+      "newTitle": "收藏地點",
       "editTitle": "編輯地點",
-      "search": "🔍 搜尋地點（選擇結果會自動帶入資訊）",
+      "search": "搜尋地點（選擇結果會自動帶入資訊）",
       "searchPlaceholder": "例如：春水堂 創始店",
       "searchBtn": "搜尋",
       "searching": "正在搜尋「{{q}}」…",
@@ -133,23 +133,23 @@
       "deleteConfirm": "確定要刪除這個地點嗎？"
     },
     "note": {
-      "closedDays": "🚫 公休時間：{{days}}",
-      "noClosedDays": "✅ 公休時間：無固定公休（每日營業）",
+      "closedDays": "公休時間：{{days}}",
+      "noClosedDays": "公休時間：無固定公休（每日營業）",
       "noHours": "查無營業時間資訊",
-      "rating": "⭐ Google 評價：{{rating}} 顆星",
-      "ratingCount": "⭐ Google 評價：{{rating}} 顆星（{{count}} 則評論）",
-      "phone": "📞 聯絡電話：{{phone}}",
-      "clinicTip": "🏥 看診提醒：請攜帶健保卡，建議先查看上方門診與休診時間。",
-      "intro": "ℹ️ 簡介：{{text}}",
-      "highlights": "🍽️ 特色與推薦：{{text}}",
-      "reviews": "😋 網友推薦："
+      "rating": "Google 評價：{{rating}} 顆星",
+      "ratingCount": "Google 評價：{{rating}} 顆星（{{count}} 則評論）",
+      "phone": "聯絡電話：{{phone}}",
+      "clinicTip": "看診提醒：請攜帶健保卡，建議先查看上方門診與休診時間。",
+      "intro": "簡介：{{text}}",
+      "highlights": "特色與推薦：{{text}}",
+      "reviews": "網友推薦："
     }
   },
   "tasks": {
     "eyebrow": "不急，但記得要做",
     "title": "稍後辦",
     "add": "＋ 新增待辦",
-    "empty": "目前沒有待辦事項 🎉",
+    "empty": "目前沒有待辦事項",
     "pending": "待完成",
     "completed": "已完成",
     "form": {
@@ -171,11 +171,11 @@
   "shopping": {
     "eyebrow": "每月 10 日至次月 9 日結算",
     "title": "購物清單 & 記帳本",
-    "list": "🛒 記帳清單",
+    "list": "記帳清單",
     "count": "{{count}} 筆",
     "add": "＋ 新增記帳",
     "empty": "尚無記帳紀錄",
-    "period": "📊 本期記帳（{{start}} – {{end}}）",
+    "period": "本期記帳（{{start}} – {{end}}）",
     "budget": "預算進度 {{percent}}%",
     "noStore": "未指定商店",
     "markDone": "標記為已購",
@@ -201,14 +201,14 @@
       "unit": "單價"
     },
     "archive": {
-      "button": "📦 歸檔本期",
+      "button": "歸檔本期",
       "nothing": "本期還沒有記帳可以歸檔",
       "confirmTitle": "歸檔本期記帳",
       "confirmText": "會把本期（{{start}} – {{end}}）的 {{count}} 筆記帳收進 {{year}} 年記帳本，記帳清單會重新開始。之後可以在記帳本裡還原。",
       "confirm": "歸檔"
     },
     "ledger": {
-      "title": "📚 年度記帳本",
+      "title": "年度記帳本",
       "year": "年份",
       "empty": "還沒有歸檔的週期。每期結束（每月 10 日起）會自動收進來，也可以按「歸檔本期」手動封存。",
       "yearBook": "{{year}} 年記帳本",
@@ -225,7 +225,7 @@
     "dataHelp": "可以匯入舊版 ACACIA 匯出的 JSON，或把目前的資料匯出備份。匯入會取代目前的資料。",
     "export": "匯出 JSON",
     "import": "匯入 JSON",
-    "importOk": "已匯入資料 🌱",
+    "importOk": "已匯入資料",
     "importFail": "匯入失敗，資料沒有變動：{{msg}}",
     "importConfirm": "匯入會取代目前所有資料，確定嗎？",
     "fontSize": {
@@ -266,7 +266,7 @@
   "event": {
     "newTitle": "新增行程安排",
     "editTitle": "編輯行程",
-    "preview": "📌 行程名稱預覽",
+    "preview": "行程名稱預覽",
     "title": "要做什麼？",
     "titlePlaceholder": "例如：和朋友吃午餐",
     "date": "日期",
@@ -318,14 +318,14 @@
   "sync": {
     "title": "雲端同步",
     "guest": "Hi～ 訪客模式",
-    "localOnly": "僅儲存於此瀏覽器 🌱",
-    "signIn": "☁️ Google 登入同步",
+    "localOnly": "僅儲存於此瀏覽器",
+    "signIn": "Google 登入同步",
     "signOut": "登出雲端帳號",
     "signOutConfirm": "確定要登出 Google 帳號嗎？資料仍會保留在這台裝置。",
     "connecting": "正在連線 Google…",
-    "syncing": "🔄 正在同步至 Google Drive…",
-    "synced": "✅ 已同步（{{time}}）",
-    "error": "⚠️ 同步失敗，資料已存在本機",
+    "syncing": "正在同步至 Google Drive…",
+    "synced": "已同步（{{time}}）",
+    "error": "同步失敗，資料已存在本機",
     "retry": "重試",
     "help": "登入後資料會存在你 Google Drive 的應用程式專用空間，換裝置登入也能看到同一份資料。第一次登入會自動讀取舊版 ACACIA 的雲端備份。",
     "user": "Google 使用者"
@@ -389,7 +389,7 @@
       "place": "地點",
       "placePlaceholder": "例如：公司、家",
       "fromFavorites": "從最愛地點帶入",
-      "useCurrent": "📍 使用目前位置",
+      "useCurrent": "使用目前位置",
       "locating": "定位中…",
       "currentName": "目前位置",
       "coords": "座標（貼上地圖座標或連結）",

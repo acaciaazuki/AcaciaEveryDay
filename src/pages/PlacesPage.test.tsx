@@ -34,13 +34,13 @@ describe('PlacesPage', () => {
     )
     render(<MemoryRouter><PlacesPage /></MemoryRouter>)
     fireEvent.click(screen.getByText('＋ 新增地點'))
-    fireEvent.change(screen.getByLabelText(/🔍 搜尋地點/), { target: { value: '小日子' } })
+    fireEvent.change(screen.getByLabelText(/^搜尋地點（/), { target: { value: '小日子' } })
     fireEvent.click(screen.getByText('搜尋'))
     await waitFor(() => expect(screen.getByLabelText('地點名稱')).toHaveValue('小日子手沖咖啡'))
     expect(within(screen.getByRole('dialog')).getByLabelText('分類')).toHaveValue('cafe')
-    expect(screen.getByLabelText('營業時間與公休')).toHaveValue('🚫 公休時間：星期一\n星期一: 休息\n星期二: 10:00–18:00')
+    expect(screen.getByLabelText('營業時間與公休')).toHaveValue('公休時間：星期一\n星期一: 休息\n星期二: 10:00–18:00')
     fireEvent.click(screen.getByText('儲存'))
-    expect(useAppStore.getState().places[0]).toMatchObject({ name: '小日子手沖咖啡', cat: 'cafe', note: '⭐ Google 評價：4.6 顆星（120 則評論）' })
+    expect(useAppStore.getState().places[0]).toMatchObject({ name: '小日子手沖咖啡', cat: 'cafe', note: 'Google 評價：4.6 顆星（120 則評論）' })
   })
 
   it('分類篩選', () => {
@@ -51,7 +51,7 @@ describe('PlacesPage', () => {
       ],
     })
     render(<MemoryRouter><PlacesPage /></MemoryRouter>)
-    fireEvent.click(screen.getByRole('radio', { name: '🌳 公園' }))
+    fireEvent.click(screen.getByRole('radio', { name: '公園' }))
     expect(screen.queryByText('A 咖啡')).not.toBeInTheDocument()
     expect(screen.getByText('B 公園')).toBeInTheDocument()
   })

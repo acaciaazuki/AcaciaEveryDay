@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { Icon } from '../components/AcaciaIcons'
 import { Link } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../components/Button'
@@ -67,7 +68,7 @@ export function SettingsPage() {
                 >
                   {on && (
                     <span aria-hidden className="absolute top-1.5 right-1.5 grid size-4 place-items-center rounded-full bg-sage text-[10px] leading-none text-white">
-                      ✓
+                      <Icon name="check" className="size-[85%]" />
                     </span>
                   )}
                   <span aria-hidden className="font-bold" style={{ fontSize: `${16 * FONT_SCALE[size]}px` }}>
@@ -80,7 +81,9 @@ export function SettingsPage() {
           </div>
         </section>
         <section className="rounded-(--radius-card) bg-paper p-6 shadow-card">
-          <h2 className="mb-1 font-bold">🎒 {t('nav.reminders')}</h2>
+          <h2 className="mb-1 flex items-center gap-1.5 font-bold">
+            <Icon name="reminders" /> {t('nav.reminders')}
+          </h2>
           <p className="mb-3 text-xs text-muted">{t('reminders.settingsHelp')}</p>
           <Link to="/reminders" className="inline-block rounded-(--radius-control) border border-line bg-paper px-4 py-2.5 text-xs font-bold hover:bg-sage-light">
             {t('reminders.openPage')}

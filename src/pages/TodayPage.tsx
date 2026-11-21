@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { Button } from '../components/Button'
+import { Icon } from '../components/AcaciaIcons'
 import { EventIconBadge } from '../components/EventIcon'
 import { EventDialog } from '../components/EventDialog'
 import { PageHead } from '../components/PageHead'
@@ -76,7 +77,8 @@ export function TodayPage() {
         title={title}
         actions={
           <>
-            <Link to="/calendar" className="rounded-(--radius-control) border border-line bg-paper px-4 py-2.5 text-xs font-bold hover:bg-sage-light">
+            <Link to="/calendar" className="inline-flex items-center gap-1.5 rounded-(--radius-control) border border-line bg-paper px-4 py-2.5 text-xs font-bold hover:bg-sage-light">
+              <Icon name="calendar" className="size-[1.4em]" />
               {t('today.seeCalendar')}
             </Link>
             <Button onClick={() => setEditing('new')}>{t('today.addEvent')}</Button>
@@ -101,8 +103,8 @@ export function TodayPage() {
             ))}
           </div>
         </div>
-        <div className="hidden text-5xl sm:block" aria-hidden>
-          🌤️
+        <div className="hidden text-[calc(48px*var(--fs))] text-[#5f7a70] sm:block" aria-hidden>
+          <Icon name="cloudSun" className="size-[1.4em]" />
         </div>
       </section>
 
@@ -141,11 +143,11 @@ export function TodayPage() {
                 const next = events.at(i + 1)
                 const gap = next && e.end && next.start > e.end ? diffMin(e.end, next.start) : 0
                 return (
-                  <li key={e.id} className="relative grid grid-cols-[calc(48px*var(--fs))_40px_1fr] items-start gap-x-3">
+                  <li key={e.id} className="relative grid grid-cols-[calc(48px*var(--fs))_calc(36px*var(--fs))_1fr] items-start gap-x-3">
                     <time className="pt-2.5 text-xs font-bold text-muted">{e.start}</time>
                     <EventIconBadge icon={eventIconOf(e)} className="relative z-10 ring-4 ring-paper" />
                     {/* 垂直時間軸線：從這顆徽章連到下一顆 */}
-                    {next && <span aria-hidden className="absolute top-10 -bottom-2 left-[calc(48px*var(--fs)+0.75rem+19px)] w-0.5 bg-[#e1eae5]" />}
+                    {next && <span aria-hidden className="absolute top-[calc(36px*var(--fs)+0.25rem)] -bottom-2 left-[calc(48px*var(--fs)+0.75rem+18px*var(--fs)-1px)] w-0.5 bg-[#e1eae5]" />}
                     <button
                       type="button"
                       onClick={() => setEditing(e)}
@@ -160,7 +162,8 @@ export function TodayPage() {
                       </small>
                     </button>
                     {gap >= 30 && (
-                      <p className="col-start-3 py-1.5 pl-1 text-[length:calc(11px*var(--fs))] text-[#9aa6a0]">
+                      <p className="col-start-3 flex items-center gap-1.5 py-1.5 pl-1 text-[length:calc(11px*var(--fs))] text-[#9aa6a0]">
+                        <Icon name="cloud" className="size-[1.4em]" />
                         {t('today.gap')} · {hours(gap)}h
                       </p>
                     )}
@@ -186,8 +189,8 @@ export function TodayPage() {
                 </strong>
                 <small className="block text-[length:calc(11px*var(--fs))] text-muted">{t('today.rhythmRange')}</small>
               </div>
-              <span className="text-2xl" aria-hidden>
-                🌙
+              <span className="text-2xl text-[#5f7a70]" aria-hidden>
+                <Icon name="moon" className="size-[1.2em]" />
               </span>
             </div>
             <div className="mb-2 h-2 overflow-hidden rounded-full bg-[#f0f3f1]">

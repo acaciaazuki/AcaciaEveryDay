@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useFontScale } from '../hooks/useFontScale'
 import { useTranslation } from 'react-i18next'
 import { NavLink, Outlet, useLocation } from 'react-router'
+import { Icon } from '../components/AcaciaIcons'
+import type { IconName } from '../core/icons'
 import { BrandMark } from '../components/BrandMark'
 import { CommandPalette } from '../components/CommandPalette'
 import { ReminderBanner } from '../components/ReminderBanner'
@@ -10,11 +12,11 @@ import { useReminderMonitor } from '../hooks/useReminderMonitor'
 import { useAppStore } from '../store/useAppStore'
 
 const MAIN = [
-  { to: '/', ico: '◷', key: 'today', end: true },
-  { to: '/calendar', ico: '▦', key: 'calendar' },
-  { to: '/places', ico: '📍', key: 'places' },
-  { to: '/tasks', ico: '☑', key: 'tasks' },
-] as const
+  { to: '/', ico: 'today', key: 'today', end: true },
+  { to: '/calendar', ico: 'calendar', key: 'calendar' },
+  { to: '/places', ico: 'pin', key: 'places' },
+  { to: '/tasks', ico: 'tasks', key: 'tasks' },
+] as const satisfies readonly { to: string; ico: IconName; key: string; end?: boolean }[]
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
   `flex w-full items-center gap-3 rounded-(--radius-control) px-3 py-2.5 text-[length:calc(13px*var(--fs))] font-semibold transition-colors ${
@@ -43,14 +45,14 @@ export function Layout() {
           onClick={() => setSearchOpen(true)}
           className="mb-4 flex items-center gap-2 rounded-(--radius-control) border border-line bg-oat px-3 py-2 text-left text-xs text-muted hover:border-sage"
         >
-          <span aria-hidden>⌕</span>
+          <Icon name="search" className="text-sage" />
           <span className="flex-1">{t('search.button')}</span>
           <kbd className="rounded border border-line bg-paper px-1.5 text-[length:calc(10px*var(--fs))]">{isMac ? '⌘K' : 'Ctrl K'}</kbd>
         </button>
         <nav className="grid gap-1">
           {MAIN.map((n) => (
             <NavLink key={n.to} to={n.to} end={'end' in n} className={linkClass}>
-              <span className="w-5 text-center text-base">{n.ico}</span>
+              <Icon name={n.ico} className="size-[1.4em]" />
               {t(`nav.${n.key}`)}
               {n.key === 'tasks' && (
                 <span className="ml-auto rounded-full bg-[#f1f4f2] px-2 py-0.5 text-[length:calc(10px*var(--fs))] font-bold text-[#8c9993]">{openTasks}</span>
@@ -61,11 +63,11 @@ export function Layout() {
         <div className="px-3 pt-4 pb-2 text-[length:calc(10px*var(--fs))] font-bold tracking-[1.5px] text-[#a4afaa] uppercase">{t('nav.sectionCollect')}</div>
         <nav className="grid gap-1">
           <NavLink to="/shopping" className={linkClass}>
-            <span className="w-5 text-center text-base">🛒</span>
+            <Icon name="shopping" className="size-[1.4em]" />
             {t('nav.shopping')}
           </NavLink>
           <NavLink to="/reminders" className={linkClass}>
-            <span className="w-5 text-center text-base">🎒</span>
+            <Icon name="reminders" className="size-[1.4em]" />
             {t('nav.reminders')}
           </NavLink>
         </nav>
@@ -75,7 +77,7 @@ export function Layout() {
           </div>
         <nav className="grid gap-1">
           <NavLink to="/settings" className={linkClass}>
-            <span className="w-5 text-center text-base">⚙</span>
+            <Icon name="settings" className="size-[1.4em]" />
             {t('nav.settings')}
           </NavLink>
         </nav>
@@ -89,7 +91,7 @@ export function Layout() {
           onClick={() => setSearchOpen(true)}
           className="float-right mt-1 grid size-9 place-items-center rounded-full border border-line bg-paper text-sage shadow-soft min-[681px]:hidden"
         >
-          ⌕
+          <Icon name="search" className="size-[1.3em]" />
         </button>
         <Outlet />
       </main>
@@ -98,12 +100,12 @@ export function Layout() {
 
       <nav className="fixed inset-x-0 bottom-0 z-30 flex justify-around border-t border-line bg-paper px-3 pt-2 pb-[calc(8px+env(safe-area-inset-bottom))] shadow-[0_-4px_20px_#29483a08] min-[681px]:hidden">
         {[
-          { to: '/', ico: '◷', label: t('nav.today'), end: true },
-          { to: '/calendar', ico: '▦', label: t('nav.calendar') },
-          { to: '/places', ico: '📍', label: t('nav.mobile.places') },
-          { to: '/tasks', ico: '☑', label: t('nav.mobile.tasks') },
-          { to: '/shopping', ico: '🛒', label: t('nav.mobile.shopping') },
-          { to: '/settings', ico: '⚙', label: t('nav.settings') },
+          { to: '/', ico: 'today' as IconName, label: t('nav.today'), end: true },
+          { to: '/calendar', ico: 'calendar' as IconName, label: t('nav.calendar') },
+          { to: '/places', ico: 'pin' as IconName, label: t('nav.mobile.places') },
+          { to: '/tasks', ico: 'tasks' as IconName, label: t('nav.mobile.tasks') },
+          { to: '/shopping', ico: 'shopping' as IconName, label: t('nav.mobile.shopping') },
+          { to: '/settings', ico: 'settings' as IconName, label: t('nav.settings') },
         ].map((n) => (
           <NavLink
             key={n.to}
@@ -111,7 +113,7 @@ export function Layout() {
             end={n.end}
             className={({ isActive }) => `grid justify-items-center gap-0.5 px-1 text-[length:calc(10px*var(--fs))] font-semibold ${isActive ? 'text-sage-dark' : 'text-[#9aa6a0]'}`}
           >
-            <span className="text-lg leading-none">{n.ico}</span>
+            <Icon name={n.ico} className="size-[1.9em]" />
             {n.label}
           </NavLink>
         ))}

@@ -1,3 +1,4 @@
+import { Icon } from '../components/AcaciaIcons'
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../components/Button'
@@ -103,14 +104,14 @@ export function ShoppingPage() {
                       onClick={() => toggleExpense(s.id)}
                       className={`grid size-5 shrink-0 place-items-center rounded-full border-2 text-[length:calc(10px*var(--fs))] ${s.done ? 'border-[#888] bg-[#888] text-white' : 'border-current'}`}
                     >
-                      {s.done && '✓'}
+                      {s.done && <Icon name="check" className="size-[1em]" />}
                     </button>
                     <button type="button" className="min-w-0 text-left" onClick={() => setEditing(s)}>
                       <strong className={`text-sm ${s.done ? 'line-through' : ''}`}>
                         {s.title}
                       </strong>
                       <small className="mt-1 block text-[length:calc(11px*var(--fs))] opacity-80">
-                        {s.store || t('shopping.noStore')} · {st.icon} {catLabel(s)} · {s.date} {s.time}
+                        {s.store || t('shopping.noStore')} · <Icon name={st.icon} className="size-[1.1em]" /> {catLabel(s)} · {s.date} {s.time}
                         {s.unitPrice != null && ` · ${formatQty(s.quantity)} × ${formatMoney(s.unitPrice, lng)}`}
                       </small>
                     </button>
@@ -226,7 +227,7 @@ function ExpenseDialog({ expense, onClose }: { expense: Expense | null; onClose:
           >
             {EXPENSE_CATEGORIES.map((c) => (
               <option key={c} value={c}>
-                {EXPENSE_STYLE[c].icon} {t(`expenseCat.${c}`)}
+                {t(`expenseCat.${c}`)}
               </option>
             ))}
           </select>

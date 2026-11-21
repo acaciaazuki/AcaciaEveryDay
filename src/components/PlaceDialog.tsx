@@ -1,7 +1,7 @@
 import { useRef, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PlacesSearchError, searchPlaces } from '../adapters/placesSearch'
-import { PLACE_CATEGORIES, PLACE_CATEGORY_KEYS, type PlaceCategory } from '../core/categories'
+import { PLACE_CATEGORY_KEYS, type PlaceCategory } from '../core/categories'
 import { buildPlaceNote, detectPlaceCategory, formatOpeningHours, placeName, type PlaceNoteLabels, type PlaceResult } from '../core/places'
 import type { Place } from '../core/schema'
 import { useAppStore } from '../store/useAppStore'
@@ -138,7 +138,7 @@ export function PlaceDialog({ place, onClose }: { place: Place | null; onClose: 
           >
             {PLACE_CATEGORY_KEYS.map((c) => (
               <option key={c} value={c}>
-                {PLACE_CATEGORIES[c].icon} {t(`placeCat.${c}`)}
+                {t(`placeCat.${c}`)}
               </option>
             ))}
           </select>

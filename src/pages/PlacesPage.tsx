@@ -1,3 +1,4 @@
+import { Icon } from '../components/AcaciaIcons'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../components/Button'
@@ -27,9 +28,7 @@ export function PlacesPage() {
       <PageHead eyebrow={t('places.eyebrow')} title={t('places.title')} actions={<Button onClick={() => setEditing('new')}>{t('places.add')}</Button>} />
 
       <label className="mb-3 flex items-center gap-2 rounded-(--radius-control) border border-line bg-paper px-3 py-2.5 shadow-soft">
-        <span aria-hidden className="text-muted">
-          ⌕
-        </span>
+        <Icon name="search" className="text-muted" />
         <input aria-label={t('places.filterPlaceholder')} placeholder={t('places.filterPlaceholder')} value={q} onChange={(e) => setQ(e.target.value)} className="min-w-0 flex-1 bg-transparent text-sm outline-none" />
       </label>
 
@@ -43,7 +42,14 @@ export function PlacesPage() {
             onClick={() => setCat(c)}
             className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold ${cat === c ? 'border-sage bg-sage text-white' : 'border-line bg-paper text-[#55645d] hover:bg-sage-light'}`}
           >
-            {c === 'all' ? t('places.all') : `${PLACE_CATEGORIES[c].icon} ${t(`placeCat.${c}`)}`}
+            {c === 'all' ? (
+              t('places.all')
+            ) : (
+              <span className="inline-flex items-center gap-1.5">
+                <Icon name={PLACE_CATEGORIES[c].icon} />
+                {t(`placeCat.${c}`)}
+              </span>
+            )}
           </button>
         ))}
       </div>
@@ -57,8 +63,8 @@ export function PlacesPage() {
             return (
               <li key={p.id} className="flex flex-col rounded-(--radius-card) p-5 shadow-card" style={{ background: p.bgColor && p.bgColor !== '#ffffff' ? p.bgColor : '#fff' }}>
                 <div className="flex items-start gap-3.5">
-                  <div className="grid size-12 shrink-0 place-items-center rounded-(--radius-card) text-2xl shadow-soft" style={{ background: c.bg }} aria-hidden>
-                    {c.icon}
+                  <div className="grid size-[calc(48px*var(--fs))] shrink-0 place-items-center rounded-(--radius-card) text-[#4f6b60] shadow-soft" style={{ background: c.bg }} aria-hidden>
+                    <Icon name={c.icon} className="size-[62%]" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <strong className="block truncate text-[length:calc(15px*var(--fs))]">{p.name}</strong>
@@ -67,7 +73,7 @@ export function PlacesPage() {
                 </div>
                 {p.address && (
                   <p className="mt-3 flex gap-1.5 text-xs text-[#55645d]">
-                    <span className="opacity-60">📍</span>
+                    <Icon name="pin" className="mt-px text-[#8aa096]" />
                     {p.address}
                   </p>
                 )}

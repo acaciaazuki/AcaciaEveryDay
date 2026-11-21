@@ -1,3 +1,4 @@
+import { Icon } from './AcaciaIcons'
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { getLocationAdapter } from '../adapters/geofence'
@@ -125,7 +126,7 @@ export function ReminderDialog({ reminder, onClose }: { reminder: Reminder | nul
           </div>
           {hasCoords(draft) ? (
             <p className="flex flex-wrap items-center gap-2 text-xs text-sage-dark">
-              ✓ {t('reminders.form.coordsSet', { lat: draft.lat.toFixed(5), lng: draft.lng.toFixed(5) })}
+              <Icon name="check" /> {t('reminders.form.coordsSet', { lat: draft.lat.toFixed(5), lng: draft.lng.toFixed(5) })}
               <button type="button" className="font-semibold text-muted underline" onClick={() => set({ lat: undefined, lng: undefined })}>
                 {t('reminders.form.clearCoords')}
               </button>
@@ -208,7 +209,7 @@ export function ReminderDialog({ reminder, onClose }: { reminder: Reminder | nul
                     onClick={() => set({ items: draft.items.filter((x) => x !== item) })}
                     className="rounded-full bg-sage-light px-3 py-1.5 text-xs font-semibold text-sage-dark hover:bg-mint"
                   >
-                    {item} ✕
+                    {item} <Icon name="close" className="size-[1em]" />
                   </button>
                 </li>
               ))}

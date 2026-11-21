@@ -1,3 +1,4 @@
+import type { IconName } from './icons'
 /**
  * 分類改存代碼，畫面再依語系翻譯。
  * 舊資料存的是中文字，遷移時用下面的對照表轉換。
@@ -28,20 +29,20 @@ export const LEGACY_EXPENSE_CATEGORY: Record<string, ExpenseCategory> = {
 }
 
 export const PLACE_CATEGORIES = {
-  restaurant: { icon: '🍝', bg: '#fff8e7' },
-  dessert: { icon: '🍰', bg: '#fdf4ff' },
-  cafe: { icon: '☕', bg: '#f6e7d8' },
-  drinks: { icon: '🧋', bg: '#e0f2fe' },
-  clinic: { icon: '🏥', bg: '#ebf4ff' },
-  convenience: { icon: '🏪', bg: '#e8f7f0' },
-  bookstore: { icon: '📚', bg: '#fef3c7' },
-  clothing: { icon: '👗', bg: '#fff0f3' },
-  park: { icon: '🌳', bg: '#edf5eb' },
-  attraction: { icon: '🎡', bg: '#ffedd5' },
-  school: { icon: '🏫', bg: '#f3e8ff' },
-  market: { icon: '🧺', bg: '#ffedd5' },
-  other: { icon: '📍', bg: '#f3f4f6' },
-} as const
+  restaurant: { icon: 'meal', bg: '#fff8e7' },
+  dessert: { icon: 'dessert', bg: '#fdf4ff' },
+  cafe: { icon: 'cafe', bg: '#f6e7d8' },
+  drinks: { icon: 'drinks', bg: '#e0f2fe' },
+  clinic: { icon: 'clinic', bg: '#ebf4ff' },
+  convenience: { icon: 'convenience', bg: '#e8f7f0' },
+  bookstore: { icon: 'bookstore', bg: '#fef3c7' },
+  clothing: { icon: 'clothing', bg: '#fff0f3' },
+  park: { icon: 'park', bg: '#edf5eb' },
+  attraction: { icon: 'attraction', bg: '#ffedd5' },
+  school: { icon: 'school', bg: '#f3e8ff' },
+  market: { icon: 'market', bg: '#ffedd5' },
+  other: { icon: 'pin', bg: '#f3f4f6' },
+} as const satisfies Record<string, { icon: IconName; bg: string }>
 export type PlaceCategory = keyof typeof PLACE_CATEGORIES
 export const PLACE_CATEGORY_KEYS = Object.keys(PLACE_CATEGORIES) as PlaceCategory[]
 
