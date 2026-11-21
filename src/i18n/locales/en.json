@@ -57,8 +57,30 @@
     "quickAdd": "+ New task"
   },
   "calendar": {
-    "eyebrow": "A soft monthly view. Tap a date to see what's on",
-    "title": "Calendar"
+    "eyebrow": "Put what matters in just the right place",
+    "title": "Calendar",
+    "batch": "🔁 Add in bulk",
+    "add": "+ New event",
+    "prev": "Previous month",
+    "next": "Next month",
+    "today": "Today",
+    "addOnDay": "+ Add an event on this day",
+    "dayEmpty": "Nothing planned this day",
+    "more": "+{{count}} more",
+    "batchForm": {
+      "title": "Add events in bulk",
+      "name": "Event name",
+      "namePlaceholder": "e.g. Work",
+      "start": "Start",
+      "end": "End",
+      "color": "Color",
+      "pickDates": "Pick dates (multiple)",
+      "selected": "{{count}} days selected",
+      "submit": "Add to {{count}} days",
+      "nameRequired": "Please enter a name",
+      "datesRequired": "Pick at least one day",
+      "note": "Added in bulk"
+    }
   },
   "places": {
     "eyebrow": "Search a place to fill in its details, sorted with cute icons",

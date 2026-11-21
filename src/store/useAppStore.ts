@@ -10,6 +10,7 @@ type EventInput = Omit<CalendarEvent, 'id'>
 
 interface Actions {
   addEvent: (input: EventInput) => void
+  addEvents: (inputs: EventInput[]) => void
   updateEvent: (id: string, patch: Partial<EventInput>) => void
   removeEvent: (id: string) => void
   addTask: (input: TaskInput) => void
@@ -35,6 +36,8 @@ export const useAppStore = create<AppState>()(
       ...emptyAppData(),
 
       addEvent: (input) => setState((s) => ({ events: [...s.events, { id: newId(), ...input }], ...touch() })),
+      addEvents: (inputs) =>
+        setState((s) => ({ events: [...s.events, ...inputs.map((i) => ({ id: newId(), ...i }))], ...touch() })),
       updateEvent: (id, patch) =>
         setState((s) => ({ events: s.events.map((x) => (x.id === id ? { ...x, ...patch } : x)), ...touch() })),
       removeEvent: (id) => setState((s) => ({ events: s.events.filter((x) => x.id !== id), ...touch() })),
