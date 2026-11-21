@@ -10,6 +10,7 @@ import { toLocalISO } from '../core/date'
 import type { CalendarEvent } from '../core/schema'
 import { eventsOn } from '../core/today'
 import { useNow } from '../hooks/useNow'
+import { useOpenFromUrl } from '../hooks/useOpenFromUrl'
 import { useAppStore } from '../store/useAppStore'
 
 const MAX_CHIPS = 3
@@ -23,6 +24,12 @@ export function CalendarPage() {
   const [selected, setSelected] = useState(todayISO)
   const [editing, setEditing] = useState<CalendarEvent | 'new' | null>(null)
   const [batchOpen, setBatchOpen] = useState(false)
+  useOpenFromUrl(events, (e) => {
+    const [y, m] = e.dateISO.split('-').map(Number)
+    if (y && m) setYm({ year: y, month: m - 1 })
+    if (e.dateISO) setSelected(e.dateISO)
+    setEditing(e)
+  })
 
   const cells = monthCells(ym.year, ym.month)
   const dayEvents = eventsOn(events, selected)

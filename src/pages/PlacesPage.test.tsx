@@ -1,5 +1,6 @@
 import 'fake-indexeddb/auto'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { MemoryRouter } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import i18n from '../i18n'
 import { emptyAppData } from '../core/schema'
@@ -31,7 +32,7 @@ describe('PlacesPage', () => {
         }),
       ),
     )
-    render(<PlacesPage />)
+    render(<MemoryRouter><PlacesPage /></MemoryRouter>)
     fireEvent.click(screen.getByText('＋ 新增地點'))
     fireEvent.change(screen.getByLabelText(/🔍 搜尋地點/), { target: { value: '小日子' } })
     fireEvent.click(screen.getByText('搜尋'))
@@ -49,7 +50,7 @@ describe('PlacesPage', () => {
         { id: '2', name: 'B 公園', cat: 'park', address: '', hours: '', note: '', url: '' },
       ],
     })
-    render(<PlacesPage />)
+    render(<MemoryRouter><PlacesPage /></MemoryRouter>)
     fireEvent.click(screen.getByRole('radio', { name: '🌳 公園' }))
     expect(screen.queryByText('A 咖啡')).not.toBeInTheDocument()
     expect(screen.getByText('B 公園')).toBeInTheDocument()

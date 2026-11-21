@@ -226,5 +226,33 @@
     "notePlaceholder": "地點、準備事項或任何小提醒",
     "titleRequired": "請輸入行程名稱",
     "endBeforeStart": "結束時間要晚於開始時間"
+  },
+  "search": {
+    "title": "搜尋",
+    "button": "搜尋你的 ACACIA",
+    "placeholder": "搜尋行程、待辦、記帳或地點…",
+    "empty": "找不到相符的內容",
+    "events": "行程",
+    "tasks": "待辦",
+    "shopping": "記帳",
+    "places": "地點",
+    "event": "行程",
+    "task": "待辦",
+    "expense": "記帳"
+  },
+  "sync": {
+    "title": "雲端同步",
+    "guest": "Hi～ 訪客模式",
+    "localOnly": "僅儲存於此瀏覽器 🌱",
+    "signIn": "☁️ Google 登入同步",
+    "signOut": "登出雲端帳號",
+    "signOutConfirm": "確定要登出 Google 帳號嗎？資料仍會保留在這台裝置。",
+    "connecting": "正在連線 Google…",
+    "syncing": "🔄 正在同步至 Google Drive…",
+    "synced": "✅ 已同步（{{time}}）",
+    "error": "⚠️ 同步失敗，資料已存在本機",
+    "retry": "重試",
+    "help": "登入後資料會存在你 Google Drive 的應用程式專用空間，換裝置登入也能看到同一份資料。第一次登入會自動讀取舊版 ACACIA 的雲端備份。",
+    "user": "Google 使用者"
   }
 }
