@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NavLink, Outlet, useLocation } from 'react-router'
+import { BrandMark } from '../components/BrandMark'
 import { CommandPalette } from '../components/CommandPalette'
 import { ReminderBanner } from '../components/ReminderBanner'
 import { SyncPanel } from '../components/SyncPanel'
@@ -32,7 +33,7 @@ export function Layout() {
     <div className="min-h-dvh">
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-60 flex-col border-r border-line bg-paper px-4 py-6 min-[681px]:flex">
         <div className="flex items-center gap-3 px-2.5 pb-7 text-lg font-extrabold tracking-tight">
-          <span className="grid size-9 place-items-center rounded-xl bg-mint text-lg text-sage">✿</span>
+          <BrandMark />
           {t('app.name')}
         </div>
         <button
