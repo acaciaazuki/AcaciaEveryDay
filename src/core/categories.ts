@@ -88,6 +88,8 @@ export const TEXT_COLORS = [
   { color: '#8f3f3a', key: 'brick' },
   { color: '#2f4468', key: 'navy' },
   { color: '#6b3f66', key: 'plum' },
+  { color: '#4a5d73', key: 'slate' },
+  { color: '#5b5530', key: 'olive' },
 ] as const
 
 export const DEFAULT_TEXT_COLOR = TEXT_COLORS[0].color

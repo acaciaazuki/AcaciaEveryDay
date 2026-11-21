@@ -39,6 +39,9 @@ export const expenseSchema = z.object({
   cat: z.enum(EXPENSE_CATEGORIES).default('other'),
   /** cat 為 other 時，使用者自訂的類別名稱（不翻譯） */
   customCat: z.string().optional(),
+  /** 數量與單價（選填）。amt 永遠是總金額，舊資料沒有這兩個欄位 */
+  quantity: z.number().optional(),
+  unitPrice: z.number().optional(),
   date: isoDate.default(''),
   time: hhmm.default(''),
   done: z.boolean().default(false),

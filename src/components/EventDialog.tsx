@@ -4,7 +4,7 @@ import { toLocalISO } from '../core/date'
 import type { CalendarEvent } from '../core/schema'
 import { useAppStore } from '../store/useAppStore'
 import { Button } from './Button'
-import { ColorSwatches } from './ColorSwatches'
+import { ColorSwatches, TextColorSwatches } from './ColorSwatches'
 import { Dialog } from './Dialog'
 import { Field } from './Field'
 
@@ -48,7 +48,11 @@ export function EventDialog({ event, date, onClose }: { event: CalendarEvent | n
         {error && <p className="-mt-2 text-xs text-[#c2583d]">{error}</p>}
         <div className="grid gap-1.5 text-xs font-semibold text-muted">
           {t('event.color')}
-          <ColorSwatches label={t('event.color')} value={draft.bgColor} onChange={(c) => set({ bgColor: c.bg, titleColor: c.txt })} />
+          <ColorSwatches label={t('event.color')} value={draft.bgColor} onChange={(c) => set({ bgColor: c.bg })} />
+        </div>
+        <div className="grid gap-1.5 text-xs font-semibold text-muted">
+          {t('event.textColor')}
+          <TextColorSwatches label={t('event.textColor')} value={draft.titleColor} onChange={(c) => set({ titleColor: c })} />
         </div>
         <Field label={t('event.note')} placeholder={t('event.notePlaceholder')} value={draft.note} onChange={(e) => set({ note: e.target.value })} />
         <div className="mt-2 flex gap-2">

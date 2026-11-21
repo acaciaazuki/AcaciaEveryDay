@@ -48,3 +48,15 @@ export function summarize(expenses: Expense[], period: BillingPeriod) {
   }
   return { total, byCategory: [...byCategory.entries()].sort((a, b) => b[1] - a[1]) }
 }
+
+/** 數量 × 單價（取到小數第 2 位）；任一欄位空白或不是數字時回傳 null */
+export function lineTotal(qty: string, unit: string): number | null {
+  if (qty.trim() === '' || unit.trim() === '') return null
+  const q = Number(qty)
+  const u = Number(unit)
+  if (!Number.isFinite(q) || !Number.isFinite(u) || q < 0 || u < 0) return null
+  return Math.round(q * u * 100) / 100
+}
+
+/** 數量顯示：整數不帶小數點，沒有數量當作 1 */
+export const formatQty = (q: number | undefined) => String(q ?? 1)

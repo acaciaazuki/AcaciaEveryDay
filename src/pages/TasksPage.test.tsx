@@ -42,9 +42,11 @@ describe('TasksPage', () => {
     const dialog = screen.getByRole('dialog')
     fireEvent.click(within(dialog).getByRole('radio', { name: '#e4f0f7' }))
     fireEvent.click(within(dialog).getByRole('radio', { name: '梅紫' }))
+    expect(within(dialog).getAllByRole('radio', { name: /^(深灰黑|森林綠|暖棕咖|磚紅|海軍藍|梅紫|灰藍|橄欖棕)$/ })).toHaveLength(8)
+    fireEvent.click(within(dialog).getByRole('radio', { name: '灰藍' }))
     fireEvent.click(screen.getByText('儲存'))
-    expect(useAppStore.getState().tasks[0]).toMatchObject({ bgColor: '#e4f0f7', titleColor: '#6b3f66' })
-    expect(screen.getByText('寄信')).toHaveStyle({ color: '#6b3f66' })
+    expect(useAppStore.getState().tasks[0]).toMatchObject({ bgColor: '#e4f0f7', titleColor: '#4a5d73' })
+    expect(screen.getByText('寄信')).toHaveStyle({ color: '#4a5d73' })
   })
 
   it('舊資料沒有文字色時沿用預設，今天頁套用卡片顏色', () => {

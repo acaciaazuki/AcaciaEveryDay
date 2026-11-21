@@ -184,7 +184,7 @@
       "editTitle": "記録を編集",
       "title": "品目",
       "titlePlaceholder": "何を買いましたか？",
-      "amt": "金額",
+      "amt": "合計金額",
       "store": "店舗",
       "storePlaceholder": "どこで買いましたか？",
       "cat": "カテゴリ",
@@ -192,8 +192,12 @@
       "customCatPlaceholder": "空欄なら「その他」と表示",
       "date": "日付",
       "time": "時間",
-      "color": "色",
-      "titleRequired": "品目を入力してください"
+      "color": "カード背景色",
+      "titleRequired": "品目を入力してください",
+      "textColor": "文字色",
+      "preview": "プレビュー",
+      "qty": "数量",
+      "unit": "単価"
     }
   },
   "settings": {
@@ -243,11 +247,12 @@
     "date": "日付",
     "start": "開始",
     "end": "終了",
-    "color": "色",
+    "color": "カード背景色",
     "note": "メモ（任意）",
     "notePlaceholder": "場所や準備、ちょっとしたメモ",
     "titleRequired": "予定名を入力してください",
-    "endBeforeStart": "終了時刻は開始より後にしてください"
+    "endBeforeStart": "終了時刻は開始より後にしてください",
+    "textColor": "文字色"
   },
   "search": {
     "title": "検索",
@@ -284,7 +289,9 @@
       "brown": "ブラウン",
       "brick": "レンガ色",
       "navy": "ネイビー",
-      "plum": "梅紫"
+      "plum": "梅紫",
+      "slate": "グレーブルー",
+      "olive": "オリーブ"
     }
   }
 }
