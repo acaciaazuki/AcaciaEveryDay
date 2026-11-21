@@ -1,0 +1,103 @@
+{
+  "app": {
+    "name": "ACACIA",
+    "tagline": "讓今天留一點空白"
+  },
+  "nav": {
+    "today": "今天",
+    "calendar": "行事曆",
+    "places": "最愛地點",
+    "tasks": "稍後辦",
+    "shopping": "購物清單",
+    "settings": "設定",
+    "sectionCollect": "收集與整理",
+    "mobile": {
+      "places": "地點",
+      "tasks": "待辦",
+      "shopping": "記帳"
+    }
+  },
+  "common": {
+    "save": "儲存",
+    "cancel": "取消",
+    "delete": "刪除",
+    "add": "新增",
+    "edit": "編輯",
+    "comingSoon": "這一頁正在搬到新版，敬請期待 🌱"
+  },
+  "today": {
+    "eyebrow": "今天也慢慢來",
+    "title": "今天"
+  },
+  "calendar": {
+    "eyebrow": "柔和的月曆，點日期看重點",
+    "title": "行事曆"
+  },
+  "places": {
+    "eyebrow": "搜尋地點自動抓取資訊，並用可愛插圖分類",
+    "title": "最愛地點"
+  },
+  "tasks": {
+    "eyebrow": "不急，但記得要做",
+    "title": "稍後辦",
+    "add": "＋ 新增待辦",
+    "empty": "目前沒有待辦事項 🎉",
+    "pending": "待完成",
+    "completed": "已完成",
+    "form": {
+      "newTitle": "新增待辦",
+      "editTitle": "編輯待辦",
+      "title": "待辦事項",
+      "titlePlaceholder": "要做什麼呢？",
+      "loc": "地點",
+      "date": "日期",
+      "time": "時間",
+      "color": "顏色",
+      "titleRequired": "請輸入待辦事項"
+    },
+    "markDone": "標記為完成",
+    "markUndone": "標記為未完成"
+  },
+  "shopping": {
+    "eyebrow": "既是清單也是記帳本",
+    "title": "購物清單"
+  },
+  "settings": {
+    "eyebrow": "語言與資料",
+    "title": "設定",
+    "language": "語言",
+    "data": "資料備份與搬家",
+    "dataHelp": "可以匯入舊版 ACACIA 匯出的 JSON，或把目前的資料匯出備份。匯入會取代目前的資料。",
+    "export": "匯出 JSON",
+    "import": "匯入 JSON",
+    "importOk": "已匯入資料 🌱",
+    "importFail": "匯入失敗，資料沒有變動：{{msg}}",
+    "importConfirm": "匯入會取代目前所有資料，確定嗎？"
+  },
+  "expenseCat": {
+    "food": "食",
+    "clothing": "衣",
+    "housing": "住",
+    "transport": "行",
+    "education": "育",
+    "leisure": "樂",
+    "stocks": "股票",
+    "loan": "貸款",
+    "other": "其他"
+  },
+  "placeCat": {
+    "restaurant": "餐廳",
+    "dessert": "甜點",
+    "cafe": "咖啡",
+    "drinks": "飲料店",
+    "clinic": "診所",
+    "convenience": "便利商店",
+    "bookstore": "書局",
+    "clothing": "服飾",
+    "park": "公園",
+    "attraction": "景點",
+    "school": "學校",
+    "market": "市場",
+    "other": "其他"
+  }
+}

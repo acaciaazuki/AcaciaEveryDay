@@ -1,0 +1,103 @@
+{
+  "app": {
+    "name": "ACACIA",
+    "tagline": "Leave a little space in your day"
+  },
+  "nav": {
+    "today": "Today",
+    "calendar": "Calendar",
+    "places": "Favorite places",
+    "tasks": "Later",
+    "shopping": "Shopping",
+    "settings": "Settings",
+    "sectionCollect": "Collect & organize",
+    "mobile": {
+      "places": "Places",
+      "tasks": "Tasks",
+      "shopping": "Budget"
+    }
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "add": "Add",
+    "edit": "Edit",
+    "comingSoon": "This page is moving to the new version. Coming soon 🌱"
+  },
+  "today": {
+    "eyebrow": "Take it slow today",
+    "title": "Today"
+  },
+  "calendar": {
+    "eyebrow": "A soft monthly view. Tap a date to see what's on",
+    "title": "Calendar"
+  },
+  "places": {
+    "eyebrow": "Search a place to fill in its details, sorted with cute icons",
+    "title": "Favorite places"
+  },
+  "tasks": {
+    "eyebrow": "No rush, just don't forget",
+    "title": "Later",
+    "add": "+ New task",
+    "empty": "Nothing to do 🎉",
+    "pending": "To do",
+    "completed": "Done",
+    "form": {
+      "newTitle": "New task",
+      "editTitle": "Edit task",
+      "title": "Task",
+      "titlePlaceholder": "What needs doing?",
+      "loc": "Place",
+      "date": "Date",
+      "time": "Time",
+      "color": "Color",
+      "titleRequired": "Please enter a task"
+    },
+    "markDone": "Mark as done",
+    "markUndone": "Mark as not done"
+  },
+  "shopping": {
+    "eyebrow": "A list and a budget book in one",
+    "title": "Shopping"
+  },
+  "settings": {
+    "eyebrow": "Language and data",
+    "title": "Settings",
+    "language": "Language",
+    "data": "Backup and moving data",
+    "dataHelp": "Import a JSON file exported from the old ACACIA, or export your current data as a backup. Importing replaces your current data.",
+    "export": "Export JSON",
+    "import": "Import JSON",
+    "importOk": "Data imported 🌱",
+    "importFail": "Import failed, nothing was changed: {{msg}}",
+    "importConfirm": "Importing replaces all your current data. Continue?"
+  },
+  "expenseCat": {
+    "food": "Food",
+    "clothing": "Clothing",
+    "housing": "Housing",
+    "transport": "Transport",
+    "education": "Education",
+    "leisure": "Leisure",
+    "stocks": "Stocks",
+    "loan": "Loans",
+    "other": "Other"
+  },
+  "placeCat": {
+    "restaurant": "Restaurant",
+    "dessert": "Dessert",
+    "cafe": "Café",
+    "drinks": "Drinks",
+    "clinic": "Clinic",
+    "convenience": "Convenience store",
+    "bookstore": "Bookstore",
+    "clothing": "Clothing",
+    "park": "Park",
+    "attraction": "Attraction",
+    "school": "School",
+    "market": "Market",
+    "other": "Other"
+  }
+}

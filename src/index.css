@@ -1,0 +1,31 @@
+@import 'tailwindcss';
+
+/* 沿用舊版 ACACIA 色票 */
+@theme {
+  --font-sans: 'DM Sans', 'Noto Sans TC', 'Noto Sans JP', sans-serif;
+  --color-ink: #263633;
+  --color-muted: #8a9893;
+  --color-sage: #4a987b;
+  --color-sage-light: #eaf6ef;
+  --color-sage-dark: #3d876c;
+  --color-mint: #dff2e9;
+  --color-line: #edf1ee;
+  --color-paper: #ffffff;
+  --color-oat: #f7faf8;
+  --radius-card: 14px;
+  --radius-control: 10px;
+  --shadow-card: 0 12px 36px #29483a0b;
+  --shadow-soft: 0 2px 8px #29483a08;
+}
+
+@layer base {
+  html,
+  body {
+    background: var(--color-oat);
+    color: var(--color-ink);
+    font-size: 14px;
+  }
+  button {
+    cursor: pointer;
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "app": {
+    "name": "ACACIA",
+    "tagline": "今日に少しの余白を"
+  },
+  "nav": {
+    "today": "今日",
+    "calendar": "カレンダー",
+    "places": "お気に入りの場所",
+    "tasks": "あとでやる",
+    "shopping": "買い物リスト",
+    "settings": "設定",
+    "sectionCollect": "集めて整える",
+    "mobile": {
+      "places": "場所",
+      "tasks": "タスク",
+      "shopping": "家計簿"
+    }
+  },
+  "common": {
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "add": "追加",
+    "edit": "編集",
+    "comingSoon": "このページは新バージョンへ移行中です 🌱"
+  },
+  "today": {
+    "eyebrow": "今日もゆっくりと",
+    "title": "今日"
+  },
+  "calendar": {
+    "eyebrow": "やさしい月表示、日付をタップして予定を確認",
+    "title": "カレンダー"
+  },
+  "places": {
+    "eyebrow": "場所を検索すると情報を自動取得し、イラストで分類します",
+    "title": "お気に入りの場所"
+  },
+  "tasks": {
+    "eyebrow": "急がないけれど、忘れずに",
+    "title": "あとでやる",
+    "add": "＋ タスクを追加",
+    "empty": "タスクはありません 🎉",
+    "pending": "未完了",
+    "completed": "完了",
+    "form": {
+      "newTitle": "タスクを追加",
+      "editTitle": "タスクを編集",
+      "title": "タスク",
+      "titlePlaceholder": "何をしますか？",
+      "loc": "場所",
+      "date": "日付",
+      "time": "時間",
+      "color": "色",
+      "titleRequired": "タスク名を入力してください"
+    },
+    "markDone": "完了にする",
+    "markUndone": "未完了に戻す"
+  },
+  "shopping": {
+    "eyebrow": "リストであり、家計簿でもある",
+    "title": "買い物リスト"
+  },
+  "settings": {
+    "eyebrow": "言語とデータ",
+    "title": "設定",
+    "language": "言語",
+    "data": "データのバックアップと移行",
+    "dataHelp": "旧バージョンの ACACIA から書き出した JSON を読み込んだり、現在のデータを書き出してバックアップできます。読み込むと現在のデータは置き換えられます。",
+    "export": "JSON を書き出す",
+    "import": "JSON を読み込む",
+    "importOk": "データを読み込みました 🌱",
+    "importFail": "読み込みに失敗しました。データは変更されていません：{{msg}}",
+    "importConfirm": "読み込むと現在のデータがすべて置き換えられます。よろしいですか？"
+  },
+  "expenseCat": {
+    "food": "食費",
+    "clothing": "衣類",
+    "housing": "住まい",
+    "transport": "交通",
+    "education": "教育",
+    "leisure": "娯楽",
+    "stocks": "株",
+    "loan": "ローン",
+    "other": "その他"
+  },
+  "placeCat": {
+    "restaurant": "レストラン",
+    "dessert": "スイーツ",
+    "cafe": "カフェ",
+    "drinks": "ドリンク",
+    "clinic": "クリニック",
+    "convenience": "コンビニ",
+    "bookstore": "書店",
+    "clothing": "服",
+    "park": "公園",
+    "attraction": "観光地",
+    "school": "学校",
+    "market": "市場",
+    "other": "その他"
+  }
+}
