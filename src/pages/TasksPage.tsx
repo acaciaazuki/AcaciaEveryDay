@@ -6,6 +6,7 @@ import { Dialog } from '../components/Dialog'
 import { Field } from '../components/Field'
 import { PageHead } from '../components/PageHead'
 import type { Task } from '../core/schema'
+import { useOpenFromUrl } from '../hooks/useOpenFromUrl'
 import { useAppStore } from '../store/useAppStore'
 
 type Draft = Omit<Task, 'id' | 'done'>
@@ -16,6 +17,7 @@ export function TasksPage() {
   const tasks = useAppStore((s) => s.tasks)
   const toggleTask = useAppStore((s) => s.toggleTask)
   const [editing, setEditing] = useState<Task | 'new' | null>(null)
+  useOpenFromUrl(tasks, setEditing)
 
   const pending = tasks.filter((x) => !x.done)
   const done = tasks.filter((x) => x.done)

@@ -22,8 +22,7 @@
     "cancel": "キャンセル",
     "delete": "削除",
     "add": "追加",
-    "edit": "編集",
-    "comingSoon": "このページは新バージョンへ移行中です 🌱"
+    "edit": "編集"
   },
   "today": {
     "eyebrow": "今日もゆっくりと",
@@ -57,12 +56,73 @@
     "quickAdd": "＋ タスクを追加"
   },
   "calendar": {
-    "eyebrow": "やさしい月表示、日付をタップして予定を確認",
-    "title": "カレンダー"
+    "eyebrow": "大切なことを、ちょうどいい場所に",
+    "title": "カレンダー",
+    "batch": "🔁 まとめて追加",
+    "add": "＋ 予定を追加",
+    "prev": "前の月",
+    "next": "次の月",
+    "today": "今日",
+    "addOnDay": "＋ この日に予定を追加",
+    "dayEmpty": "この日の予定はありません",
+    "more": "ほか {{count}} 件",
+    "batchForm": {
+      "title": "予定をまとめて追加",
+      "name": "予定名",
+      "namePlaceholder": "例：仕事",
+      "start": "開始",
+      "end": "終了",
+      "color": "色",
+      "pickDates": "日付を選択（複数可）",
+      "selected": "{{count}} 日選択中",
+      "submit": "{{count}} 日に追加",
+      "nameRequired": "予定名を入力してください",
+      "datesRequired": "日付を 1 日以上選んでください",
+      "note": "まとめて作成"
+    }
   },
   "places": {
     "eyebrow": "場所を検索すると情報を自動取得し、イラストで分類します",
-    "title": "お気に入りの場所"
+    "title": "お気に入りの場所 📍",
+    "add": "＋ 場所を追加",
+    "filterPlaceholder": "名前・住所・メモで検索…",
+    "all": "すべて",
+    "empty": "このカテゴリにはまだ場所がありません",
+    "openMaps": "↗ Google マップ",
+    "edit": "編集",
+    "form": {
+      "newTitle": "📍 場所を保存",
+      "editTitle": "場所を編集",
+      "search": "🔍 場所を検索（結果を選ぶと情報を自動入力）",
+      "searchPlaceholder": "例：春水堂 創始店",
+      "searchBtn": "検索",
+      "searching": "「{{q}}」を検索中…",
+      "noResults": "「{{q}}」は見つかりませんでした。市区町村や通り名を加えてみてください",
+      "searchFailed": "検索サービスに接続できませんでした。手動で入力できます",
+      "filled": "「{{cat}}」の営業時間と情報を自動入力しました",
+      "name": "場所名",
+      "namePlaceholder": "例：春水堂 創始店",
+      "address": "住所",
+      "cat": "カテゴリ",
+      "hours": "営業時間と定休日",
+      "hoursPlaceholder": "検索結果を選ぶと自動入力されます",
+      "note": "メモ（おすすめ、受診メモなど）",
+      "color": "カードの背景色",
+      "nameRequired": "場所名を入力してください",
+      "deleteConfirm": "この場所を削除しますか？"
+    },
+    "note": {
+      "closedDays": "🚫 定休日：{{days}}",
+      "noClosedDays": "✅ 定休日：なし（毎日営業）",
+      "noHours": "営業時間の情報がありません",
+      "rating": "⭐ Google の評価：{{rating}}",
+      "ratingCount": "⭐ Google の評価：{{rating}}（{{count}} 件のレビュー）",
+      "phone": "📞 電話：{{phone}}",
+      "clinicTip": "🏥 受診メモ：保険証を忘れずに。診療時間と休診日を事前に確認しましょう。",
+      "intro": "ℹ️ 紹介：{{text}}",
+      "highlights": "🍽️ 特徴とおすすめ：{{text}}",
+      "reviews": "😋 口コミより："
+    }
   },
   "tasks": {
     "eyebrow": "急がないけれど、忘れずに",
@@ -166,5 +226,33 @@
     "notePlaceholder": "場所や準備、ちょっとしたメモ",
     "titleRequired": "予定名を入力してください",
     "endBeforeStart": "終了時刻は開始より後にしてください"
+  },
+  "search": {
+    "title": "検索",
+    "button": "ACACIA を検索",
+    "placeholder": "予定・タスク・家計簿・場所を検索…",
+    "empty": "一致するものがありません",
+    "events": "予定",
+    "tasks": "タスク",
+    "shopping": "家計簿",
+    "places": "場所",
+    "event": "予定",
+    "task": "タスク",
+    "expense": "支出"
+  },
+  "sync": {
+    "title": "クラウド同期",
+    "guest": "ゲストモード",
+    "localOnly": "このブラウザにのみ保存 🌱",
+    "signIn": "☁️ Google でログインして同期",
+    "signOut": "ログアウト",
+    "signOutConfirm": "Google アカウントからログアウトしますか？データはこの端末に残ります。",
+    "connecting": "Google に接続中…",
+    "syncing": "🔄 Google ドライブに同期中…",
+    "synced": "✅ 同期済み（{{time}}）",
+    "error": "⚠️ 同期に失敗しました。データは端末に保存されています",
+    "retry": "再試行",
+    "help": "ログインすると、データは Google ドライブのアプリ専用領域に保存され、別の端末でも同じデータを使えます。初回ログイン時は旧バージョンの ACACIA のバックアップを自動で読み込みます。",
+    "user": "Google ユーザー"
   }
 }
