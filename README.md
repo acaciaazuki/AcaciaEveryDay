@@ -53,4 +53,4 @@ src/
 - [x] 行事曆（含批次建立）
 - [x] 最愛地點（含地點搜尋）
 - [x] ⌘K 搜尋
-- [ ] Google Drive 同步
+- [x] Google Drive 同步
