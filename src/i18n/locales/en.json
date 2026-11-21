@@ -184,7 +184,7 @@
       "editTitle": "Edit entry",
       "title": "Item",
       "titlePlaceholder": "What did you buy?",
-      "amt": "Amount",
+      "amt": "Total",
       "store": "Store",
       "storePlaceholder": "Where did you buy it?",
       "cat": "Category",
@@ -192,8 +192,12 @@
       "customCatPlaceholder": "Leave empty to show “Other”",
       "date": "Date",
       "time": "Time",
-      "color": "Color",
-      "titleRequired": "Please enter an item"
+      "color": "Card color",
+      "titleRequired": "Please enter an item",
+      "textColor": "Text color",
+      "preview": "Preview",
+      "qty": "Quantity",
+      "unit": "Unit price"
     }
   },
   "settings": {
@@ -243,11 +247,12 @@
     "date": "Date",
     "start": "Start",
     "end": "End",
-    "color": "Color",
+    "color": "Card color",
     "note": "Note (optional)",
     "notePlaceholder": "Place, things to bring, any reminder",
     "titleRequired": "Please enter a title",
-    "endBeforeStart": "End time must be after start time"
+    "endBeforeStart": "End time must be after start time",
+    "textColor": "Text color"
   },
   "search": {
     "title": "Search",
@@ -284,7 +289,9 @@
       "brown": "Warm brown",
       "brick": "Brick red",
       "navy": "Navy",
-      "plum": "Plum"
+      "plum": "Plum",
+      "slate": "Slate blue",
+      "olive": "Olive brown"
     }
   }
 }

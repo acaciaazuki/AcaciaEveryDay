@@ -184,7 +184,7 @@
       "editTitle": "編輯記帳",
       "title": "購買項目",
       "titlePlaceholder": "買了什麼？",
-      "amt": "金額",
+      "amt": "總金額",
       "store": "商店",
       "storePlaceholder": "在哪裡買的？",
       "cat": "分類",
@@ -192,8 +192,12 @@
       "customCatPlaceholder": "留空則顯示「其他」",
       "date": "日期",
       "time": "時間",
-      "color": "顏色",
-      "titleRequired": "請輸入購買項目"
+      "color": "卡片背景色",
+      "titleRequired": "請輸入購買項目",
+      "textColor": "文字顏色",
+      "preview": "預覽",
+      "qty": "數量",
+      "unit": "單價"
     }
   },
   "settings": {
@@ -243,11 +247,12 @@
     "date": "日期",
     "start": "開始",
     "end": "結束",
-    "color": "顏色",
+    "color": "卡片背景色",
     "note": "備註（選填）",
     "notePlaceholder": "地點、準備事項或任何小提醒",
     "titleRequired": "請輸入行程名稱",
-    "endBeforeStart": "結束時間要晚於開始時間"
+    "endBeforeStart": "結束時間要晚於開始時間",
+    "textColor": "文字顏色"
   },
   "search": {
     "title": "搜尋",
@@ -284,7 +289,9 @@
       "brown": "暖棕咖",
       "brick": "磚紅",
       "navy": "海軍藍",
-      "plum": "梅紫"
+      "plum": "梅紫",
+      "slate": "灰藍",
+      "olive": "橄欖棕"
     }
   }
 }

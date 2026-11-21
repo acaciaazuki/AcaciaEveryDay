@@ -49,4 +49,17 @@ describe('CalendarPage', () => {
     expect(within(cell).queryByRole('button', { name: /事項7/ })).not.toBeInTheDocument()
     expect(within(cell).getByText('還有 2 個')).toBeInTheDocument()
   })
+
+  it('行程的背景色與文字色分開選，預覽跟著變色並存檔', () => {
+    render(<MemoryRouter><CalendarPage /></MemoryRouter>)
+    fireEvent.click(screen.getByText('＋ 新增事件'))
+    const dialog = screen.getByRole('dialog')
+    fireEvent.change(within(dialog).getByLabelText(/要做什麼/), { target: { value: '看展' } })
+    expect(within(dialog).getAllByRole('radio', { name: /^(深灰黑|森林綠|暖棕咖|磚紅|海軍藍|梅紫|灰藍|橄欖棕)$/ })).toHaveLength(8)
+    fireEvent.click(within(dialog).getByRole('radio', { name: '#ebe6f6' }))
+    fireEvent.click(within(dialog).getByRole('radio', { name: '磚紅' }))
+    expect(within(dialog).getByText('看展', { selector: 'div' })).toHaveStyle({ background: '#ebe6f6', color: '#8f3f3a' })
+    fireEvent.click(within(dialog).getByText('儲存'))
+    expect(useAppStore.getState().events[0]).toMatchObject({ bgColor: '#ebe6f6', titleColor: '#8f3f3a' })
+  })
 })
