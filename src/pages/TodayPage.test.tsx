@@ -99,4 +99,37 @@ describe('TodayPage', () => {
     expect(screen.queryByText('第三天')).not.toBeInTheDocument()
     expect(within(screen.getByRole('group', { name: '檢視範圍' })).getByRole('button', { name: '一週' })).toHaveAttribute('aria-pressed', 'true')
   })
+
+  it('時間軸依標題自動帶出小圖示，手動選的圖示優先', () => {
+    const d = toLocalISO()
+    useAppStore.setState({
+      events: [
+        { id: 'a', title: '早餐', dateISO: d, start: '08:00', end: '08:30', note: '' },
+        { id: 'b', title: '開會', dateISO: d, start: '10:00', end: '11:00', note: '' },
+        { id: 'c', title: '隨便', dateISO: d, start: '13:00', end: '14:00', note: '', icon: 'exercise' },
+        { id: 'd', title: '繳費', dateISO: d, start: '15:00', end: '15:30', note: '' },
+      ],
+    })
+    const { container } = renderPage()
+    expect([...container.querySelectorAll('[data-icon]')].map((n) => n.getAttribute('data-icon'))).toEqual(['meal', 'work', 'exercise', 'default'])
+  })
+
+  it('在行程表單手動選圖示會存進資料，選回自動就清掉', () => {
+    const d = toLocalISO()
+    useAppStore.setState({ events: [{ id: 'a', title: '早餐', dateISO: d, start: '08:00', end: '08:30', note: '' }] })
+    const { container } = renderPage()
+    fireEvent.click(screen.getByText('早餐'))
+    const dialog = screen.getByRole('dialog')
+    expect(within(dialog).getByRole('radio', { name: '自動' })).toHaveAttribute('aria-checked', 'true')
+    fireEvent.click(within(dialog).getByRole('radio', { name: '運動' }))
+    fireEvent.click(within(dialog).getByText('儲存'))
+    expect(useAppStore.getState().events[0].icon).toBe('exercise')
+    expect(container.querySelector('[data-icon]')).toHaveAttribute('data-icon', 'exercise')
+
+    fireEvent.click(screen.getByText('早餐'))
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('radio', { name: '自動' }))
+    fireEvent.click(within(screen.getByRole('dialog')).getByText('儲存'))
+    expect(useAppStore.getState().events[0].icon).toBeUndefined()
+    expect(container.querySelector('[data-icon]')).toHaveAttribute('data-icon', 'meal')
+  })
 })

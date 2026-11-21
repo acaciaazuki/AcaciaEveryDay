@@ -1,11 +1,13 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toLocalISO } from '../core/date'
+import { EVENT_ICON_KEYS, eventIconOf, ICON_BG } from '../core/eventIcons'
 import type { CalendarEvent } from '../core/schema'
 import { useAppStore } from '../store/useAppStore'
 import { Button } from './Button'
 import { ColorSwatches, TextColorSwatches } from './ColorSwatches'
 import { Dialog } from './Dialog'
+import { EventIconArt } from './EventIcon'
 import { Field } from './Field'
 
 type Draft = Omit<CalendarEvent, 'id'>
@@ -36,7 +38,10 @@ export function EventDialog({ event, date, onClose }: { event: CalendarEvent | n
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()} title={event ? t('event.editTitle') : t('event.newTitle')}>
       <form onSubmit={submit} className="grid gap-4">
-        <div className="rounded-(--radius-control) border-l-4 px-4 py-3 text-sm font-bold" style={{ background: draft.bgColor, color: draft.titleColor, borderLeftColor: draft.titleColor }}>
+        <div className="flex items-center gap-2.5 rounded-(--radius-control) border-l-4 px-4 py-3 text-sm font-bold" style={{ background: draft.bgColor, color: draft.titleColor, borderLeftColor: draft.titleColor }}>
+          <span className="grid size-8 shrink-0 place-items-center rounded-full" style={{ background: ICON_BG[eventIconOf(draft)] }}>
+            <EventIconArt icon={eventIconOf(draft)} size={20} />
+          </span>
           {draft.title.trim() || t('event.preview')}
         </div>
         <Field label={t('event.title')} placeholder={t('event.titlePlaceholder')} value={draft.title} onChange={(e) => set({ title: e.target.value })} autoFocus />
@@ -53,6 +58,35 @@ export function EventDialog({ event, date, onClose }: { event: CalendarEvent | n
         <div className="grid gap-1.5 text-xs font-semibold text-muted">
           {t('event.textColor')}
           <TextColorSwatches label={t('event.textColor')} value={draft.titleColor} onChange={(c) => set({ titleColor: c })} />
+        </div>
+        <div className="grid gap-1.5 text-xs font-semibold text-muted">
+          {t('event.icon')}
+          <div role="radiogroup" aria-label={t('event.icon')} className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              role="radio"
+              aria-checked={!draft.icon}
+              onClick={() => set({ icon: undefined })}
+              className={`h-9 rounded-full border px-3 text-xs font-bold ${!draft.icon ? 'border-sage bg-sage-light text-sage-dark ring-2 ring-sage/30' : 'border-line bg-oat text-muted'}`}
+            >
+              {t('event.iconAuto')}
+            </button>
+            {EVENT_ICON_KEYS.map((k) => (
+              <button
+                key={k}
+                type="button"
+                role="radio"
+                aria-checked={draft.icon === k}
+                aria-label={t(`icons.${k}`)}
+                title={t(`icons.${k}`)}
+                onClick={() => set({ icon: k })}
+                className={`grid size-9 place-items-center rounded-full border ${draft.icon === k ? 'border-sage ring-2 ring-sage/30' : 'border-line'}`}
+                style={{ background: ICON_BG[k] }}
+              >
+                <EventIconArt icon={k} size={22} />
+              </button>
+            ))}
+          </div>
         </div>
         <Field label={t('event.note')} placeholder={t('event.notePlaceholder')} value={draft.note} onChange={(e) => set({ note: e.target.value })} />
         <div className="mt-2 flex gap-2">
