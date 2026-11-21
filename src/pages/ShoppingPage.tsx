@@ -1,9 +1,10 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../components/Button'
 import { ColorSwatches, TextColorSwatches } from '../components/ColorSwatches'
 import { Dialog } from '../components/Dialog'
 import { Field } from '../components/Field'
+import { LedgerBook } from '../components/LedgerBook'
 import { PageHead } from '../components/PageHead'
 import { EXPENSE_CATEGORIES, type ExpenseCategory } from '../core/categories'
 import { toLocalISO } from '../core/date'
@@ -20,11 +21,22 @@ export function ShoppingPage() {
   const { t, i18n } = useTranslation()
   const shopping = useAppStore((s) => s.shopping)
   const toggleExpense = useAppStore((s) => s.toggleExpense)
+  const archives = useAppStore((s) => s.archives)
+  const archiveShopping = useAppStore((s) => s.archiveShopping)
+  const restoreArchive = useAppStore((s) => s.restoreArchive)
   const [editing, setEditing] = useState<Expense | 'new' | null>(null)
+  const [confirmArchive, setConfirmArchive] = useState(false)
   useOpenFromUrl(shopping, setEditing)
   const lng = i18n.resolvedLanguage ?? 'zh-TW'
 
-  const period = billingPeriod(useNow())
+  const now = useNow()
+  const period = billingPeriod(now)
+  const todayISO = toLocalISO(now)
+  // 週期結束後，上一期的記帳自動收進年度記帳本（沒有要歸檔的就什麼都不做）
+  useEffect(() => {
+    archiveShopping('ended', todayISO)
+  }, [shopping, todayISO, archiveShopping])
+  const inPeriod = shopping.filter((e) => e.date >= period.start && e.date <= period.end).length
   const { total, byCategory } = summarize(shopping, period)
   const percent = Math.min((total / DEFAULT_BUDGET) * 100, 100)
   const over = total > DEFAULT_BUDGET
@@ -41,7 +53,12 @@ export function ShoppingPage() {
             <h2 className="mb-1 text-[13px] font-bold text-[#78867f]">{t('shopping.period', { start: period.start.slice(5).replace('-', '/'), end: period.end.slice(5).replace('-', '/') })}</h2>
             <p className={`text-[32px] leading-none font-extrabold tracking-tight ${over ? 'text-[#ef4444]' : ''}`}>{formatMoney(total, lng)}</p>
           </div>
-          <p className="text-right text-[11px] text-[#9aa59f]">{t('shopping.budget', { percent: percent.toFixed(1) })}</p>
+          <div className="grid justify-items-end gap-2">
+            <p className="text-right text-[11px] text-[#9aa59f]">{t('shopping.budget', { percent: percent.toFixed(1) })}</p>
+            <Button variant="ghost" disabled={inPeriod === 0} title={inPeriod === 0 ? t('shopping.archive.nothing') : undefined} onClick={() => setConfirmArchive(true)}>
+              {t('shopping.archive.button')}
+            </Button>
+          </div>
         </div>
         <div className="mb-4 h-2 overflow-hidden rounded-full bg-[#f0f3f1]" role="progressbar" aria-valuenow={Math.round(percent)} aria-valuemin={0} aria-valuemax={100}>
           <div className={`h-full transition-[width] duration-500 ${over ? 'bg-[#ef4444]' : 'bg-sage'}`} style={{ width: `${percent}%` }} />
@@ -101,6 +118,25 @@ export function ShoppingPage() {
           </ul>
         )}
       </section>
+
+      <LedgerBook archives={archives} lng={lng} currentStart={period.start} onRestore={restoreArchive} />
+
+      <Dialog open={confirmArchive} onOpenChange={setConfirmArchive} title={t('shopping.archive.confirmTitle')}>
+        <p className="mb-5 text-sm text-muted">{t('shopping.archive.confirmText', { start: period.start, end: period.end, count: inPeriod, year: period.start.slice(0, 4) })}</p>
+        <div className="flex gap-2">
+          <Button variant="ghost" className="ml-auto" onClick={() => setConfirmArchive(false)}>
+            {t('common.cancel')}
+          </Button>
+          <Button
+            onClick={() => {
+              archiveShopping('current', todayISO)
+              setConfirmArchive(false)
+            }}
+          >
+            {t('shopping.archive.confirm')}
+          </Button>
+        </div>
+      </Dialog>
 
       {editing && <ExpenseDialog key={editing === 'new' ? 'new' : editing.id} expense={editing === 'new' ? null : editing} onClose={() => setEditing(null)} />}
     </>

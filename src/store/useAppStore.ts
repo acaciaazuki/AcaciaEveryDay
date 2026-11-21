@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { webStorage } from '../adapters/storage'
+import { archiveCurrent, archiveEnded, restoreArchive as restoreArchiveData } from '../core/archive'
 import { migrate } from '../core/migrate'
 import { emptyAppData, newId, type AppData, type CalendarEvent, type Expense, type Place, type Task } from '../core/schema'
 
@@ -25,6 +26,10 @@ interface Actions {
   updateExpense: (id: string, patch: Partial<ExpenseInput>) => void
   toggleExpense: (id: string) => void
   removeExpense: (id: string) => void
+  /** 歸檔記帳：'ended' 把已結束週期的記帳收進年度記帳本，'current' 立即封存本期。回傳歸檔的筆數 */
+  archiveShopping: (mode: 'ended' | 'current', todayISO: string) => number
+  /** 把某個歸檔還原回記帳清單 */
+  restoreArchive: (start: string) => void
   /** 匯入（舊版或新版 JSON），失敗時丟出錯誤、不覆蓋現有資料 */
   importData: (raw: unknown) => void
   exportData: () => AppData
@@ -68,10 +73,23 @@ export const useAppStore = create<AppState>()(
         setState((s) => ({ shopping: s.shopping.map((x) => (x.id === id ? { ...x, done: !x.done } : x)), ...touch() })),
       removeExpense: (id) => setState((s) => ({ shopping: s.shopping.filter((x) => x.id !== id), ...touch() })),
 
+      archiveShopping: (mode, todayISO) => {
+        const { shopping, archives } = getState()
+        const r = (mode === 'ended' ? archiveEnded : archiveCurrent)(shopping, archives, todayISO, Date.now())
+        if (r.count === 0) return 0
+        setState({ shopping: r.shopping, archives: r.archives, ...touch() })
+        return r.count
+      },
+      restoreArchive: (start) => {
+        const { shopping, archives } = getState()
+        const r = restoreArchiveData(shopping, archives, start)
+        setState({ shopping: r.shopping, archives: r.archives, ...touch() })
+      },
+
       importData: (raw) => setState(migrate(raw)),
       exportData: () => {
-        const { schemaVersion, events, tasks, shopping, places, favorites, updatedAt } = getState()
-        return { schemaVersion, events, tasks, shopping, places, favorites, updatedAt }
+        const { schemaVersion, events, tasks, shopping, places, favorites, archives, updatedAt } = getState()
+        return { schemaVersion, events, tasks, shopping, places, favorites, archives, updatedAt }
       },
     }),
     {
