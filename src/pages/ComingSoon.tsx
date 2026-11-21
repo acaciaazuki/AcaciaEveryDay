@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { PageHead } from '../components/PageHead'
 
-export function ComingSoon({ page }: { page: 'today' | 'calendar' | 'places' | 'shopping' }) {
+export function ComingSoon({ page }: { page: 'today' | 'calendar' | 'places' }) {
   const { t } = useTranslation()
   return (
     <>

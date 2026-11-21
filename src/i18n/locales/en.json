@@ -59,8 +59,33 @@
     "markUndone": "Mark as not done"
   },
   "shopping": {
-    "eyebrow": "A list and a budget book in one",
-    "title": "Shopping"
+    "eyebrow": "Each period runs from the 10th to the 9th of next month",
+    "title": "Shopping & budget",
+    "list": "🛒 Entries",
+    "count": "{{count}} entries",
+    "add": "+ New entry",
+    "empty": "No entries yet",
+    "period": "📊 This period ({{start}} – {{end}})",
+    "budget": "{{percent}}% of budget",
+    "noStore": "No store",
+    "markDone": "Mark as bought",
+    "markUndone": "Mark as not bought",
+    "form": {
+      "newTitle": "New entry",
+      "editTitle": "Edit entry",
+      "title": "Item",
+      "titlePlaceholder": "What did you buy?",
+      "amt": "Amount",
+      "store": "Store",
+      "storePlaceholder": "Where did you buy it?",
+      "cat": "Category",
+      "customCat": "Custom category",
+      "customCatPlaceholder": "Leave empty to show “Other”",
+      "date": "Date",
+      "time": "Time",
+      "color": "Color",
+      "titleRequired": "Please enter an item"
+    }
   },
   "settings": {
     "eyebrow": "Language and data",

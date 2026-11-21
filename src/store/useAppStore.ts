@@ -2,15 +2,20 @@ import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { webStorage } from '../adapters/storage'
 import { migrate } from '../core/migrate'
-import { emptyAppData, newId, type AppData, type Task } from '../core/schema'
+import { emptyAppData, newId, type AppData, type Expense, type Task } from '../core/schema'
 
 type TaskInput = Omit<Task, 'id' | 'done'>
+type ExpenseInput = Omit<Expense, 'id' | 'done'>
 
 interface Actions {
   addTask: (input: TaskInput) => void
   updateTask: (id: string, patch: Partial<TaskInput>) => void
   toggleTask: (id: string) => void
   removeTask: (id: string) => void
+  addExpense: (input: ExpenseInput) => void
+  updateExpense: (id: string, patch: Partial<ExpenseInput>) => void
+  toggleExpense: (id: string) => void
+  removeExpense: (id: string) => void
   /** 匯入（舊版或新版 JSON），失敗時丟出錯誤、不覆蓋現有資料 */
   importData: (raw: unknown) => void
   exportData: () => AppData
@@ -32,6 +37,14 @@ export const useAppStore = create<AppState>()(
       toggleTask: (id) =>
         setState((s) => ({ tasks: s.tasks.map((t) => (t.id === id ? { ...t, done: !t.done } : t)), ...touch() })),
       removeTask: (id) => setState((s) => ({ tasks: s.tasks.filter((t) => t.id !== id), ...touch() })),
+
+      addExpense: (input) =>
+        setState((s) => ({ shopping: [{ id: newId(), done: false, ...input }, ...s.shopping], ...touch() })),
+      updateExpense: (id, patch) =>
+        setState((s) => ({ shopping: s.shopping.map((x) => (x.id === id ? { ...x, ...patch } : x)), ...touch() })),
+      toggleExpense: (id) =>
+        setState((s) => ({ shopping: s.shopping.map((x) => (x.id === id ? { ...x, done: !x.done } : x)), ...touch() })),
+      removeExpense: (id) => setState((s) => ({ shopping: s.shopping.filter((x) => x.id !== id), ...touch() })),
 
       importData: (raw) => setState(migrate(raw)),
       exportData: () => {

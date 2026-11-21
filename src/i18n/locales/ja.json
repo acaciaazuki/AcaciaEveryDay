@@ -59,8 +59,33 @@
     "markUndone": "未完了に戻す"
   },
   "shopping": {
-    "eyebrow": "リストであり、家計簿でもある",
-    "title": "買い物リスト"
+    "eyebrow": "毎月 10 日から翌月 9 日で締め",
+    "title": "買い物リスト & 家計簿",
+    "list": "🛒 記録一覧",
+    "count": "{{count}} 件",
+    "add": "＋ 記録を追加",
+    "empty": "記録はまだありません",
+    "period": "📊 今期の支出（{{start}} – {{end}}）",
+    "budget": "予算の {{percent}}%",
+    "noStore": "店舗未指定",
+    "markDone": "購入済みにする",
+    "markUndone": "未購入に戻す",
+    "form": {
+      "newTitle": "記録を追加",
+      "editTitle": "記録を編集",
+      "title": "品目",
+      "titlePlaceholder": "何を買いましたか？",
+      "amt": "金額",
+      "store": "店舗",
+      "storePlaceholder": "どこで買いましたか？",
+      "cat": "カテゴリ",
+      "customCat": "カスタムカテゴリ名",
+      "customCatPlaceholder": "空欄なら「その他」と表示",
+      "date": "日付",
+      "time": "時間",
+      "color": "色",
+      "titleRequired": "品目を入力してください"
+    }
   },
   "settings": {
     "eyebrow": "言語とデータ",

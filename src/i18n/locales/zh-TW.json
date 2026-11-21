@@ -59,8 +59,33 @@
     "markUndone": "標記為未完成"
   },
   "shopping": {
-    "eyebrow": "既是清單也是記帳本",
-    "title": "購物清單"
+    "eyebrow": "每月 10 日至次月 9 日結算",
+    "title": "購物清單 & 記帳本",
+    "list": "🛒 記帳清單",
+    "count": "{{count}} 筆",
+    "add": "＋ 新增記帳",
+    "empty": "尚無記帳紀錄",
+    "period": "📊 本期記帳（{{start}} – {{end}}）",
+    "budget": "預算進度 {{percent}}%",
+    "noStore": "未指定商店",
+    "markDone": "標記為已購",
+    "markUndone": "標記為待購",
+    "form": {
+      "newTitle": "新增購物記帳",
+      "editTitle": "編輯記帳",
+      "title": "購買項目",
+      "titlePlaceholder": "買了什麼？",
+      "amt": "金額",
+      "store": "商店",
+      "storePlaceholder": "在哪裡買的？",
+      "cat": "分類",
+      "customCat": "自訂分類名稱",
+      "customCatPlaceholder": "留空則顯示「其他」",
+      "date": "日期",
+      "time": "時間",
+      "color": "顏色",
+      "titleRequired": "請輸入購買項目"
+    }
   },
   "settings": {
     "eyebrow": "語言與資料",
