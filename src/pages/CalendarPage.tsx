@@ -70,6 +70,8 @@ export function CalendarPage() {
             ))}
             {cells.map((iso, i) => {
               if (!iso) return <div key={`pad-${i}`} />
+              // 每週從星期日開始，第 0 欄是日、第 6 欄是六
+              const weekend = i % 7 === 0 || i % 7 === 6
               const evs = eventsOn(events, iso)
               const isSel = iso === selected
               const isToday = iso === todayISO
@@ -82,7 +84,7 @@ export function CalendarPage() {
                   onClick={() => setSelected(iso)}
                   onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setSelected(iso)}
                   className={`min-h-20 cursor-pointer overflow-hidden rounded-lg border p-1 text-left transition sm:min-h-36 sm:p-1.5 min-[1001px]:min-h-40 ${
-                    isSel ? 'border-sage bg-sage-light/60' : 'border-transparent hover:bg-oat'
+                    isSel ? `border-sage ${weekend ? 'bg-weekend' : 'bg-sage-light/60'}` : `border-transparent ${weekend ? 'bg-weekend hover:bg-weekend-hover' : 'hover:bg-oat'}`
                   }`}
                 >
                   <div className={`mb-1 grid size-6 place-items-center rounded-full text-xs font-bold ${isToday ? 'bg-sage text-white' : ''}`}>{Number(iso.slice(8))}</div>

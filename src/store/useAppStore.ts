@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { webStorage } from '../adapters/storage'
+import { archiveCurrent, archiveEnded, restoreArchive as restoreArchiveData } from '../core/archive'
 import { migrate } from '../core/migrate'
 import { emptyAppData, newId, type AppData, type FontSize, type CalendarEvent, type Expense, type Place, type Task } from '../core/schema'
 
@@ -26,6 +27,10 @@ interface Actions {
   toggleExpense: (id: string) => void
   removeExpense: (id: string) => void
   setFontSize: (size: FontSize) => void
+  /** 歸檔記帳：'ended' 把已結束週期的記帳收進年度記帳本，'current' 立即封存本期。回傳歸檔的筆數 */
+  archiveShopping: (mode: 'ended' | 'current', todayISO: string) => number
+  /** 把某個歸檔還原回記帳清單 */
+  restoreArchive: (start: string) => void
   /** 匯入（舊版或新版 JSON），失敗時丟出錯誤、不覆蓋現有資料 */
   importData: (raw: unknown) => void
   exportData: () => AppData
@@ -71,10 +76,23 @@ export const useAppStore = create<AppState>()(
 
       setFontSize: (fontSize) => setState((s) => ({ settings: { ...s.settings, fontSize }, ...touch() })),
 
+      archiveShopping: (mode, todayISO) => {
+        const { shopping, archives } = getState()
+        const r = (mode === 'ended' ? archiveEnded : archiveCurrent)(shopping, archives, todayISO, Date.now())
+        if (r.count === 0) return 0
+        setState({ shopping: r.shopping, archives: r.archives, ...touch() })
+        return r.count
+      },
+      restoreArchive: (start) => {
+        const { shopping, archives } = getState()
+        const r = restoreArchiveData(shopping, archives, start)
+        setState({ shopping: r.shopping, archives: r.archives, ...touch() })
+      },
+
       importData: (raw) => setState(migrate(raw)),
       exportData: () => {
-        const { schemaVersion, settings, events, tasks, shopping, places, favorites, updatedAt } = getState()
-        return { schemaVersion, settings, events, tasks, shopping, places, favorites, updatedAt }
+        const { schemaVersion, settings, events, tasks, shopping, places, favorites, archives, updatedAt } = getState()
+        return { schemaVersion, settings, events, tasks, shopping, places, favorites, archives, updatedAt }
       },
     }),
     {
