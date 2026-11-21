@@ -16,7 +16,7 @@ describe('CalendarPage', () => {
 
   it('批次新增多天的行程', () => {
     render(<MemoryRouter><CalendarPage /></MemoryRouter>)
-    fireEvent.click(screen.getByText('🔁 批次新增'))
+    fireEvent.click(screen.getByText('批次新增'))
     const dialog = screen.getByRole('dialog')
     fireEvent.change(within(dialog).getByLabelText('行程名稱'), { target: { value: '上班' } })
     const days = within(dialog).getAllByRole('button', { pressed: false })
@@ -32,7 +32,7 @@ describe('CalendarPage', () => {
 
   it('沒選日期時提示', () => {
     render(<MemoryRouter><CalendarPage /></MemoryRouter>)
-    fireEvent.click(screen.getByText('🔁 批次新增'))
+    fireEvent.click(screen.getByText('批次新增'))
     fireEvent.change(screen.getByLabelText('行程名稱'), { target: { value: '上班' } })
     fireEvent.click(screen.getByText('加入 0 天'))
     expect(screen.getByText('請至少選擇一天')).toBeInTheDocument()

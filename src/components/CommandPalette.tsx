@@ -1,3 +1,4 @@
+import { Icon } from './AcaciaIcons'
 import { Command } from 'cmdk'
 import * as RD from '@radix-ui/react-dialog'
 import { useEffect, useMemo, useState } from 'react'
@@ -138,13 +139,11 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
   return (
     <Command label={t('search.title')} shouldFilter={false} loop>
       <div className="flex items-center gap-1 border-b border-line px-4">
-        <span aria-hidden className="text-sage">
-          ⌕
-        </span>
+        <Icon name="search" className="text-sage" />
         <Command.Input autoFocus value={query} onValueChange={setQuery} placeholder={t('search.placeholder')} className="h-12 min-w-0 flex-1 bg-transparent px-1 text-sm outline-none" />
         {query && (
           <button type="button" aria-label={t('search.clear')} onClick={() => setQuery('')} className="grid size-7 place-items-center rounded-full text-muted hover:bg-oat">
-            ✕
+            <Icon name="close" className="size-[1.1em]" />
           </button>
         )}
         <RD.Close className="rounded-md border border-line px-2 py-1 text-[length:calc(11px*var(--fs))] font-semibold text-muted hover:bg-oat">{t('search.close')}</RD.Close>
@@ -195,8 +194,8 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
         ) : (
           hits.map((h) => (
             <Command.Item key={h.key} value={h.key} onSelect={() => go(h)} className={item}>
-              <span className={badge}>
-                {h.kind === 'places' ? `${PLACE_CATEGORIES[(places.find((p) => p.id === h.id)?.cat ?? 'other') as PlaceCategory]?.icon ?? '📍'} ` : ''}
+              <span className={`${badge} inline-flex items-center gap-1`}>
+                {h.kind === 'places' && <Icon name={PLACE_CATEGORIES[(places.find((p) => p.id === h.id)?.cat ?? 'other') as PlaceCategory]?.icon ?? 'pin'} className="size-[1.3em]" />}
                 {badgeLabel(h.kind)}
               </span>
               <span className="min-w-0 flex-1">

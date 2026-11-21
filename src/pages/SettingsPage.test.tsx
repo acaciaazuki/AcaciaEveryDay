@@ -25,7 +25,7 @@ describe('字體大小', () => {
   it('預設標準，點選後即時生效並存進資料', () => {
     render(<MemoryRouter><Harness /></MemoryRouter>)
     const group = screen.getByRole('radiogroup', { name: '字體大小' })
-    expect(within(group).getAllByRole('radio').map((r) => r.textContent?.replace('✓', '').replace('Aa', ''))).toEqual(['小', '標準', '大', '特大'])
+    expect(within(group).getAllByRole('radio').map((r) => r.textContent?.replace('', '').replace('Aa', ''))).toEqual(['小', '標準', '大', '特大'])
     expect(within(group).getByRole('radio', { name: /標準/ })).toHaveAttribute('aria-checked', 'true')
     expect(document.documentElement.style.getPropertyValue('--fs')).toBe('1')
 

@@ -1,3 +1,4 @@
+import { Icon } from '../components/AcaciaIcons'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { notifyState, requestNotify, type NotifyState } from '../adapters/notify'
@@ -49,7 +50,10 @@ export function RemindersPage() {
             <li key={r.id} className={`grid content-start gap-3 rounded-(--radius-card) bg-paper p-5 shadow-card ${r.enabled ? '' : 'opacity-60'}`}>
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <h2 className="truncate text-base font-bold">📍 {r.place}</h2>
+                  <h2 className="flex min-w-0 items-center gap-1.5 text-base font-bold">
+                    <Icon name="pin" className="text-[#5f7a70]" />
+                    <span className="truncate">{r.place}</span>
+                  </h2>
                   <p className="mt-1 text-xs text-muted">
                     {t(`reminders.card.${r.trigger}`)} · {t('reminders.card.radius', { m: r.radius })}
                   </p>

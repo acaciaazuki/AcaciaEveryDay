@@ -1,3 +1,4 @@
+import { Icon } from './AcaciaIcons'
 import { useTranslation } from 'react-i18next'
 import { useSyncStore } from '../store/useSyncStore'
 
@@ -19,7 +20,7 @@ export function SyncPanel({ showHelp = false }: { showHelp?: boolean }) {
     <div className="grid gap-3">
       <div className="flex items-center gap-3">
         <div className="grid size-9 shrink-0 place-items-center overflow-hidden rounded-full bg-mint text-lg">
-          {profile?.picture ? <img src={profile.picture} alt="" referrerPolicy="no-referrer" className="size-full object-cover" /> : '🐻'}
+          {profile?.picture ? <img src={profile.picture} alt="" referrerPolicy="no-referrer" className="size-full object-cover" /> : <Icon name="user" className="size-[70%] text-[#5f7a70]" />}
         </div>
         <div className="min-w-0">
           <strong className="block truncate text-[length:calc(13px*var(--fs))]">{signedIn ? profile?.name || t('sync.user') : t('sync.guest')}</strong>

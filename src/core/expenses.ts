@@ -1,4 +1,5 @@
 import type { ExpenseCategory } from './categories'
+import type { IconName } from './icons'
 import { toLocalISO } from './date'
 import type { Expense } from './schema'
 
@@ -6,16 +7,16 @@ import type { Expense } from './schema'
 export const DEFAULT_BUDGET = 20000
 
 /** 舊版 .cat-* 的配色 */
-export const EXPENSE_STYLE: Record<ExpenseCategory, { bg: string; fg: string; icon: string }> = {
-  food: { bg: '#ffebee', fg: '#c62828', icon: '🍔' },
-  clothing: { bg: '#fff3e0', fg: '#ef6c00', icon: '👕' },
-  housing: { bg: '#e8f5e9', fg: '#2e7d32', icon: '🏠' },
-  transport: { bg: '#e3f2fd', fg: '#1565c0', icon: '🚗' },
-  education: { bg: '#f3e5f5', fg: '#6a1b9a', icon: '📚' },
-  leisure: { bg: '#fce4ec', fg: '#ad1457', icon: '🎮' },
-  stocks: { bg: '#e8f5e9', fg: '#2e7d32', icon: '📈' },
-  loan: { bg: '#fff3e0', fg: '#ef6c00', icon: '🏦' },
-  other: { bg: '#eceff1', fg: '#455a64', icon: '📦' },
+export const EXPENSE_STYLE: Record<ExpenseCategory, { bg: string; fg: string; icon: IconName }> = {
+  food: { bg: '#ffebee', fg: '#c62828', icon: 'food' },
+  clothing: { bg: '#fff3e0', fg: '#ef6c00', icon: 'clothing' },
+  housing: { bg: '#e8f5e9', fg: '#2e7d32', icon: 'housing' },
+  transport: { bg: '#e3f2fd', fg: '#1565c0', icon: 'transport' },
+  education: { bg: '#f3e5f5', fg: '#6a1b9a', icon: 'education' },
+  leisure: { bg: '#fce4ec', fg: '#ad1457', icon: 'leisure' },
+  stocks: { bg: '#e8f5e9', fg: '#2e7d32', icon: 'stocks' },
+  loan: { bg: '#fff3e0', fg: '#ef6c00', icon: 'loan' },
+  other: { bg: '#eceff1', fg: '#455a64', icon: 'box' },
 }
 
 export interface BillingPeriod {

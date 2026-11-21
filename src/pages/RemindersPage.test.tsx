@@ -110,7 +110,7 @@ describe('防遺漏提醒頁', () => {
     expect(within(dialog).getByText(/已設定座標 25.03300, 121.56540/)).toBeInTheDocument()
     fireEvent.click(within(dialog).getByText('清除座標'))
     await act(async () => {
-      fireEvent.click(within(dialog).getByText('📍 使用目前位置'))
+      fireEvent.click(within(dialog).getByText('使用目前位置'))
     })
     expect(within(dialog).getByText(/已設定座標 25.04000, 121.55000/)).toBeInTheDocument()
     expect((within(dialog).getByLabelText('地點') as HTMLInputElement).value).toBe('目前位置')

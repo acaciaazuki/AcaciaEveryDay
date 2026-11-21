@@ -29,12 +29,12 @@
     "eyebrow": "Take it slow today",
     "title": "Today",
     "greeting": {
-      "morning": "Good morning ☀️",
-      "afternoon": "Good afternoon 🌤️",
-      "evening": "Good evening 🌙",
-      "night": "It's late ✨"
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening",
+      "night": "It's late"
     },
-    "seeCalendar": "▦ Open calendar",
+    "seeCalendar": "Open calendar",
     "addEvent": "+ Add plan",
     "bannerTitle": "Take your time. It will all work out.",
     "bannerText": "A few things that matter, and plenty of room to breathe.",
@@ -49,10 +49,10 @@
     "rhythmRange": "Wake to bedtime",
     "busy": "{{h}} h planned",
     "free": "{{h}} h free",
-    "gap": "☁️ Time for yourself",
+    "gap": "Time for yourself",
     "quick": "Quick wins",
     "all": "All →",
-    "quickEmpty": "Nothing to do 🎉",
+    "quickEmpty": "Nothing to do",
     "quickPlaceholder": "Type a task and press Enter…",
     "quickAdd": "+ New task",
     "prev": "Previous",
@@ -79,7 +79,7 @@
   "calendar": {
     "eyebrow": "Put what matters in just the right place",
     "title": "Calendar",
-    "batch": "🔁 Add in bulk",
+    "batch": "Add in bulk",
     "add": "+ New event",
     "prev": "Previous month",
     "next": "Next month",
@@ -104,7 +104,7 @@
   },
   "places": {
     "eyebrow": "Search a place to fill in its details, sorted with cute icons",
-    "title": "Favorite places 📍",
+    "title": "Favorite places",
     "add": "+ Add place",
     "filterPlaceholder": "Search by name, address or note…",
     "all": "All",
@@ -112,9 +112,9 @@
     "openMaps": "↗ Google Maps",
     "edit": "Edit",
     "form": {
-      "newTitle": "📍 Save a place",
+      "newTitle": "Save a place",
       "editTitle": "Edit place",
-      "search": "🔍 Search for a place (pick a result to fill in details)",
+      "search": "Search for a place (pick a result to fill in details)",
       "searchPlaceholder": "e.g. Chun Shui Tang",
       "searchBtn": "Search",
       "searching": "Searching “{{q}}”…",
@@ -133,23 +133,23 @@
       "deleteConfirm": "Delete this place?"
     },
     "note": {
-      "closedDays": "🚫 Closed: {{days}}",
-      "noClosedDays": "✅ Open every day",
+      "closedDays": "Closed: {{days}}",
+      "noClosedDays": "Open every day",
       "noHours": "No opening hours available",
-      "rating": "⭐ Google rating: {{rating}}",
-      "ratingCount": "⭐ Google rating: {{rating}} ({{count}} reviews)",
-      "phone": "📞 Phone: {{phone}}",
-      "clinicTip": "🏥 Reminder: bring your health insurance card and check clinic hours first.",
-      "intro": "ℹ️ About: {{text}}",
-      "highlights": "🍽️ Highlights: {{text}}",
-      "reviews": "😋 From reviews:"
+      "rating": "Google rating: {{rating}}",
+      "ratingCount": "Google rating: {{rating}} ({{count}} reviews)",
+      "phone": "Phone: {{phone}}",
+      "clinicTip": "Reminder: bring your health insurance card and check clinic hours first.",
+      "intro": "About: {{text}}",
+      "highlights": "Highlights: {{text}}",
+      "reviews": "From reviews:"
     }
   },
   "tasks": {
     "eyebrow": "No rush, just don't forget",
     "title": "Later",
     "add": "+ New task",
-    "empty": "Nothing to do 🎉",
+    "empty": "Nothing to do",
     "pending": "To do",
     "completed": "Done",
     "form": {
@@ -171,11 +171,11 @@
   "shopping": {
     "eyebrow": "Each period runs from the 10th to the 9th of next month",
     "title": "Shopping & budget",
-    "list": "🛒 Entries",
+    "list": "Entries",
     "count": "{{count}} entries",
     "add": "+ New entry",
     "empty": "No entries yet",
-    "period": "📊 This period ({{start}} – {{end}})",
+    "period": "This period ({{start}} – {{end}})",
     "budget": "{{percent}}% of budget",
     "noStore": "No store",
     "markDone": "Mark as bought",
@@ -201,14 +201,14 @@
       "unit": "Unit price"
     },
     "archive": {
-      "button": "📦 Archive this period",
+      "button": "Archive this period",
       "nothing": "Nothing to archive in this period yet",
       "confirmTitle": "Archive this period",
       "confirmText": "This moves {{count}} entries from this period ({{start}} – {{end}}) into the {{year}} ledger and starts the list fresh. You can restore them from the ledger later.",
       "confirm": "Archive"
     },
     "ledger": {
-      "title": "📚 Yearly ledger",
+      "title": "Yearly ledger",
       "year": "Year",
       "empty": "No archived periods yet. Each period is archived automatically after it ends (from the 10th of each month), or tap “Archive this period” to do it now.",
       "yearBook": "{{year}} ledger",
@@ -225,7 +225,7 @@
     "dataHelp": "Import a JSON file exported from the old ACACIA, or export your current data as a backup. Importing replaces your current data.",
     "export": "Export JSON",
     "import": "Import JSON",
-    "importOk": "Data imported 🌱",
+    "importOk": "Data imported",
     "importFail": "Import failed, nothing was changed: {{msg}}",
     "importConfirm": "Importing replaces all your current data. Continue?",
     "fontSize": {
@@ -266,7 +266,7 @@
   "event": {
     "newTitle": "New plan",
     "editTitle": "Edit plan",
-    "preview": "📌 Plan title preview",
+    "preview": "Plan title preview",
     "title": "What's the plan?",
     "titlePlaceholder": "e.g. Lunch with friends",
     "date": "Date",
@@ -318,14 +318,14 @@
   "sync": {
     "title": "Cloud sync",
     "guest": "Guest mode",
-    "localOnly": "Saved in this browser only 🌱",
-    "signIn": "☁️ Sign in with Google to sync",
+    "localOnly": "Saved in this browser only",
+    "signIn": "Sign in with Google to sync",
     "signOut": "Sign out",
     "signOutConfirm": "Sign out of Google? Your data stays on this device.",
     "connecting": "Connecting to Google…",
-    "syncing": "🔄 Syncing to Google Drive…",
-    "synced": "✅ Synced ({{time}})",
-    "error": "⚠️ Sync failed. Your data is saved on this device",
+    "syncing": "Syncing to Google Drive…",
+    "synced": "Synced ({{time}})",
+    "error": "Sync failed. Your data is saved on this device",
     "retry": "Retry",
     "help": "After you sign in, your data is kept in your Google Drive's app-only space, so you see the same data on any device. The first sign-in also loads your backup from the old ACACIA.",
     "user": "Google user"
@@ -349,7 +349,7 @@
     "empty": "No reminders yet. Create one to be reminded of your essentials when you leave work or arrive home.",
     "settingsHelp": "Get reminded to check your wallet, keys and other essentials when you arrive at or leave a place.",
     "openPage": "Open reminders",
-    "itemSep": ", ",
+    "itemSep": ",",
     "status": {
       "idle": "Location isn’t being watched (needs at least one enabled reminder with coordinates)",
       "watching": "Watching your location. You’ll be reminded when you cross a set area",
@@ -389,7 +389,7 @@
       "place": "Place",
       "placePlaceholder": "e.g. Work, Home",
       "fromFavorites": "Pick from favorites",
-      "useCurrent": "📍 Use current location",
+      "useCurrent": "Use current location",
       "locating": "Locating…",
       "currentName": "Current location",
       "coords": "Coordinates (paste from a map or a map link)",

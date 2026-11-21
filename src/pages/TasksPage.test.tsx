@@ -17,7 +17,7 @@ describe('TasksPage', () => {
 
   it('新增、完成一筆待辦', () => {
     render(<MemoryRouter><TasksPage /></MemoryRouter>)
-    expect(screen.getByText('目前沒有待辦事項 🎉')).toBeInTheDocument()
+    expect(screen.getByText('目前沒有待辦事項')).toBeInTheDocument()
     fireEvent.click(screen.getByText('＋ 新增待辦'))
     fireEvent.change(screen.getByLabelText('待辦事項'), { target: { value: '買牛奶' } })
     fireEvent.click(screen.getByText('儲存'))

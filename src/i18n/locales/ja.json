@@ -29,12 +29,12 @@
     "eyebrow": "今日もゆっくりと",
     "title": "今日",
     "greeting": {
-      "morning": "おはよう ☀️",
-      "afternoon": "こんにちは 🌤️",
-      "evening": "こんばんは 🌙",
-      "night": "夜更かしですね ✨"
+      "morning": "おはよう",
+      "afternoon": "こんにちは",
+      "evening": "こんばんは",
+      "night": "夜更かしですね"
     },
-    "seeCalendar": "▦ カレンダーを見る",
+    "seeCalendar": "カレンダーを見る",
     "addEvent": "＋ 予定を追加",
     "bannerTitle": "ゆっくりで大丈夫、きっとちょうどよくなる。",
     "bannerText": "大切なことがいくつかと、ひと息つける余白が十分あります。",
@@ -49,10 +49,10 @@
     "rhythmRange": "起床から就寝まで",
     "busy": "予定 {{h}} 時間",
     "free": "余白 {{h}} 時間",
-    "gap": "☁️ 自分のための余白",
+    "gap": "自分のための余白",
     "quick": "ついでにやる",
     "all": "すべて →",
-    "quickEmpty": "タスクはありません 🎉",
+    "quickEmpty": "タスクはありません",
     "quickPlaceholder": "タスクを入力して Enter…",
     "quickAdd": "＋ タスクを追加",
     "prev": "前へ",
@@ -79,7 +79,7 @@
   "calendar": {
     "eyebrow": "大切なことを、ちょうどいい場所に",
     "title": "カレンダー",
-    "batch": "🔁 まとめて追加",
+    "batch": "まとめて追加",
     "add": "＋ 予定を追加",
     "prev": "前の月",
     "next": "次の月",
@@ -104,7 +104,7 @@
   },
   "places": {
     "eyebrow": "場所を検索すると情報を自動取得し、イラストで分類します",
-    "title": "お気に入りの場所 📍",
+    "title": "お気に入りの場所",
     "add": "＋ 場所を追加",
     "filterPlaceholder": "名前・住所・メモで検索…",
     "all": "すべて",
@@ -112,9 +112,9 @@
     "openMaps": "↗ Google マップ",
     "edit": "編集",
     "form": {
-      "newTitle": "📍 場所を保存",
+      "newTitle": "場所を保存",
       "editTitle": "場所を編集",
-      "search": "🔍 場所を検索（結果を選ぶと情報を自動入力）",
+      "search": "場所を検索（結果を選ぶと情報を自動入力）",
       "searchPlaceholder": "例：春水堂 創始店",
       "searchBtn": "検索",
       "searching": "「{{q}}」を検索中…",
@@ -133,23 +133,23 @@
       "deleteConfirm": "この場所を削除しますか？"
     },
     "note": {
-      "closedDays": "🚫 定休日：{{days}}",
-      "noClosedDays": "✅ 定休日：なし（毎日営業）",
+      "closedDays": "定休日：{{days}}",
+      "noClosedDays": "定休日：なし（毎日営業）",
       "noHours": "営業時間の情報がありません",
-      "rating": "⭐ Google の評価：{{rating}}",
-      "ratingCount": "⭐ Google の評価：{{rating}}（{{count}} 件のレビュー）",
-      "phone": "📞 電話：{{phone}}",
-      "clinicTip": "🏥 受診メモ：保険証を忘れずに。診療時間と休診日を事前に確認しましょう。",
-      "intro": "ℹ️ 紹介：{{text}}",
-      "highlights": "🍽️ 特徴とおすすめ：{{text}}",
-      "reviews": "😋 口コミより："
+      "rating": "Google の評価：{{rating}}",
+      "ratingCount": "Google の評価：{{rating}}（{{count}} 件のレビュー）",
+      "phone": "電話：{{phone}}",
+      "clinicTip": "受診メモ：保険証を忘れずに。診療時間と休診日を事前に確認しましょう。",
+      "intro": "紹介：{{text}}",
+      "highlights": "特徴とおすすめ：{{text}}",
+      "reviews": "口コミより："
     }
   },
   "tasks": {
     "eyebrow": "急がないけれど、忘れずに",
     "title": "あとでやる",
     "add": "＋ タスクを追加",
-    "empty": "タスクはありません 🎉",
+    "empty": "タスクはありません",
     "pending": "未完了",
     "completed": "完了",
     "form": {
@@ -171,11 +171,11 @@
   "shopping": {
     "eyebrow": "毎月 10 日から翌月 9 日で締め",
     "title": "買い物リスト & 家計簿",
-    "list": "🛒 記録一覧",
+    "list": "記録一覧",
     "count": "{{count}} 件",
     "add": "＋ 記録を追加",
     "empty": "記録はまだありません",
-    "period": "📊 今期の支出（{{start}} – {{end}}）",
+    "period": "今期の支出（{{start}} – {{end}}）",
     "budget": "予算の {{percent}}%",
     "noStore": "店舗未指定",
     "markDone": "購入済みにする",
@@ -201,14 +201,14 @@
       "unit": "単価"
     },
     "archive": {
-      "button": "📦 今期をアーカイブ",
+      "button": "今期をアーカイブ",
       "nothing": "アーカイブできる記録がありません",
       "confirmTitle": "今期の記録をアーカイブ",
       "confirmText": "今期（{{start}} – {{end}}）の{{count}}件を{{year}}年の記録帳に移し、記録リストを新しく始めます。あとで記録帳から元に戻せます。",
       "confirm": "アーカイブ"
     },
     "ledger": {
-      "title": "📚 年間記録帳",
+      "title": "年間記録帳",
       "year": "年",
       "empty": "アーカイブされた期間はまだありません。各期の終了後（毎月10日以降）に自動で収められます。「今期をアーカイブ」で手動でも保存できます。",
       "yearBook": "{{year}}年の記録帳",
@@ -225,7 +225,7 @@
     "dataHelp": "旧バージョンの ACACIA から書き出した JSON を読み込んだり、現在のデータを書き出してバックアップできます。読み込むと現在のデータは置き換えられます。",
     "export": "JSON を書き出す",
     "import": "JSON を読み込む",
-    "importOk": "データを読み込みました 🌱",
+    "importOk": "データを読み込みました",
     "importFail": "読み込みに失敗しました。データは変更されていません：{{msg}}",
     "importConfirm": "読み込むと現在のデータがすべて置き換えられます。よろしいですか？",
     "fontSize": {
@@ -266,7 +266,7 @@
   "event": {
     "newTitle": "予定を追加",
     "editTitle": "予定を編集",
-    "preview": "📌 予定名のプレビュー",
+    "preview": "予定名のプレビュー",
     "title": "何をしますか？",
     "titlePlaceholder": "例：友だちとランチ",
     "date": "日付",
@@ -318,14 +318,14 @@
   "sync": {
     "title": "クラウド同期",
     "guest": "ゲストモード",
-    "localOnly": "このブラウザにのみ保存 🌱",
-    "signIn": "☁️ Google でログインして同期",
+    "localOnly": "このブラウザにのみ保存",
+    "signIn": "Google でログインして同期",
     "signOut": "ログアウト",
     "signOutConfirm": "Google アカウントからログアウトしますか？データはこの端末に残ります。",
     "connecting": "Google に接続中…",
-    "syncing": "🔄 Google ドライブに同期中…",
-    "synced": "✅ 同期済み（{{time}}）",
-    "error": "⚠️ 同期に失敗しました。データは端末に保存されています",
+    "syncing": "Google ドライブに同期中…",
+    "synced": "同期済み（{{time}}）",
+    "error": "同期に失敗しました。データは端末に保存されています",
     "retry": "再試行",
     "help": "ログインすると、データは Google ドライブのアプリ専用領域に保存され、別の端末でも同じデータを使えます。初回ログイン時は旧バージョンの ACACIA のバックアップを自動で読み込みます。",
     "user": "Google ユーザー"
@@ -389,7 +389,7 @@
       "place": "場所",
       "placePlaceholder": "例：職場、自宅",
       "fromFavorites": "お気に入りから選ぶ",
-      "useCurrent": "📍 現在地を使う",
+      "useCurrent": "現在地を使う",
       "locating": "取得中…",
       "currentName": "現在地",
       "coords": "座標（地図の座標やリンクを貼り付け）",
