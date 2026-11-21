@@ -63,6 +63,15 @@ export const placeSchema = z.object({
   bgColor: color,
 })
 
+export const FONT_SIZES = ['sm', 'md', 'lg', 'xl'] as const
+export type FontSize = (typeof FONT_SIZES)[number]
+/** 文字縮放倍率，對應 CSS 變數 --fs */
+export const FONT_SCALE: Record<FontSize, number> = { sm: 0.9, md: 1, lg: 1.15, xl: 1.3 }
+
+export const settingsSchema = z.object({
+  fontSize: z.enum(FONT_SIZES).default('md'),
+})
+
 export const REMINDER_RADII = [100, 300, 500] as const
 export const REMINDER_DAYS = ['every', 'weekdays', 'weekends', 'custom'] as const
 
@@ -96,6 +105,8 @@ export const archiveSchema = z.object({
 
 export const appDataSchema = z.object({
   schemaVersion: z.literal(SCHEMA_VERSION),
+  /** 使用者設定（字體大小…），舊資料沒有時補預設值 */
+  settings: settingsSchema.default({ fontSize: 'md' }),
   events: z.array(eventSchema),
   tasks: z.array(taskSchema),
   shopping: z.array(expenseSchema),
@@ -110,6 +121,7 @@ export const appDataSchema = z.object({
 export type CalendarEvent = z.infer<typeof eventSchema>
 export type Task = z.infer<typeof taskSchema>
 export type Expense = z.infer<typeof expenseSchema>
+export type Settings = z.infer<typeof settingsSchema>
 export type Reminder = z.infer<typeof reminderSchema>
 export type Archive = z.infer<typeof archiveSchema>
 export type Place = z.infer<typeof placeSchema>
@@ -117,6 +129,7 @@ export type AppData = z.infer<typeof appDataSchema>
 
 export const emptyAppData = (): AppData => ({
   schemaVersion: SCHEMA_VERSION,
+  settings: { fontSize: 'md' },
   events: [],
   tasks: [],
   shopping: [],

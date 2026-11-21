@@ -175,7 +175,7 @@ export function ReminderDialog({ reminder, onClose }: { reminder: Reminder | nul
             <Field label={t('reminders.form.start')} type="time" value={draft.start} onChange={(e) => set({ start: e.target.value })} />
             <Field label={t('reminders.form.end')} type="time" value={draft.end} onChange={(e) => set({ end: e.target.value })} />
           </div>
-          <p className="text-[11px] text-muted">{t('reminders.form.timeHint')}</p>
+          <p className="text-[length:calc(11px*var(--fs))] text-muted">{t('reminders.form.timeHint')}</p>
         </div>
 
         <div className="grid gap-1.5 text-xs font-semibold text-muted">
@@ -217,8 +217,8 @@ export function ReminderDialog({ reminder, onClose }: { reminder: Reminder | nul
         </div>
 
         <div className="grid gap-1 rounded-(--radius-control) bg-weekend px-4 py-3">
-          <span className="text-[11px] font-bold text-muted">{t('reminders.form.preview')}</span>
-          <p data-testid="reminder-preview" className="text-[13px] leading-relaxed font-semibold">
+          <span className="text-[length:calc(11px*var(--fs))] font-bold text-muted">{t('reminders.form.preview')}</span>
+          <p data-testid="reminder-preview" className="text-[length:calc(13px*var(--fs))] leading-relaxed font-semibold">
             {reminderPreview(t, i18n.resolvedLanguage, { ...draft, items: [...draft.items, ...splitItems(itemText, draft.items)] })}
           </p>
         </div>

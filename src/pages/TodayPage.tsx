@@ -67,7 +67,7 @@ export function TodayPage() {
               ›
             </button>
             {offset !== 0 && (
-              <button type="button" onClick={() => setOffset(0)} className="rounded-full bg-sage-light px-2.5 py-1 text-[11px] font-bold text-sage-dark hover:bg-mint">
+              <button type="button" onClick={() => setOffset(0)} className="rounded-full bg-sage-light px-2.5 py-1 text-[length:calc(11px*var(--fs))] font-bold text-sage-dark hover:bg-mint">
                 {t('today.backToToday')}
               </button>
             )}
@@ -87,7 +87,7 @@ export function TodayPage() {
       <section className="mb-5 flex items-center justify-between gap-4 rounded-(--radius-card) bg-linear-to-br from-mint to-sage-light p-6">
         <div>
           <h2 className="mb-1.5 text-lg font-extrabold">{t('today.bannerTitle')}</h2>
-          <p className="mb-4 text-[13px] text-[#55645d]">{t('today.bannerText')}</p>
+          <p className="mb-4 text-[length:calc(13px*var(--fs))] text-[#55645d]">{t('today.bannerText')}</p>
           <div className="flex flex-wrap gap-2">
             {[
               [rangeCount, t('today.statEvents')],
@@ -110,7 +110,7 @@ export function TodayPage() {
         <section className={card}>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
             <h2 className="font-bold">{offset === 0 && view === 'day' ? t('today.timeline') : t('today.timelineOther')}</h2>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
               <div role="group" aria-label={t('today.viewLabel')} className="flex rounded-full bg-oat p-0.5">
                 {VIEWS.map((v) => (
                   <button
@@ -118,7 +118,7 @@ export function TodayPage() {
                     type="button"
                     aria-pressed={view === v}
                     onClick={() => setView(v)}
-                    className={`rounded-full px-3 py-1 text-xs font-bold transition ${view === v ? 'bg-paper text-sage-dark shadow-soft' : 'text-muted hover:text-ink'}`}
+                    className={`rounded-full px-3 py-1 text-xs font-bold whitespace-nowrap transition ${view === v ? 'bg-paper text-sage-dark shadow-soft' : 'text-muted hover:text-ink'}`}
                   >
                     {t(`today.view.${v}`)}
                   </button>
@@ -141,11 +141,11 @@ export function TodayPage() {
                 const next = events.at(i + 1)
                 const gap = next && e.end && next.start > e.end ? diffMin(e.end, next.start) : 0
                 return (
-                  <li key={e.id} className="relative grid grid-cols-[48px_40px_1fr] items-start gap-x-3">
+                  <li key={e.id} className="relative grid grid-cols-[calc(48px*var(--fs))_40px_1fr] items-start gap-x-3">
                     <time className="pt-2.5 text-xs font-bold text-muted">{e.start}</time>
                     <EventIconBadge icon={eventIconOf(e)} className="relative z-10 ring-4 ring-paper" />
                     {/* 垂直時間軸線：從這顆徽章連到下一顆 */}
-                    {next && <span aria-hidden className="absolute top-10 -bottom-2 left-[calc(48px+0.75rem+19px)] w-0.5 bg-[#e1eae5]" />}
+                    {next && <span aria-hidden className="absolute top-10 -bottom-2 left-[calc(48px*var(--fs)+0.75rem+19px)] w-0.5 bg-[#e1eae5]" />}
                     <button
                       type="button"
                       onClick={() => setEditing(e)}
@@ -155,12 +155,12 @@ export function TodayPage() {
                       <h3 className="font-bold" style={{ color: e.titleColor || 'var(--color-ink)' }}>
                         {e.title}
                       </h3>
-                      <small className="text-[11px] text-muted">
+                      <small className="text-[length:calc(11px*var(--fs))] text-muted">
                         {e.start}–{e.end} {e.note && `· ${e.note}`}
                       </small>
                     </button>
                     {gap >= 30 && (
-                      <p className="col-start-3 py-1.5 pl-1 text-[11px] text-[#9aa6a0]">
+                      <p className="col-start-3 py-1.5 pl-1 text-[length:calc(11px*var(--fs))] text-[#9aa6a0]">
                         {t('today.gap')} · {hours(gap)}h
                       </p>
                     )}
@@ -184,7 +184,7 @@ export function TodayPage() {
                 <strong>
                   {WAKE} <span className="text-xs text-[#a8b1ac]">—</span> {SLEEP}
                 </strong>
-                <small className="block text-[11px] text-muted">{t('today.rhythmRange')}</small>
+                <small className="block text-[length:calc(11px*var(--fs))] text-muted">{t('today.rhythmRange')}</small>
               </div>
               <span className="text-2xl" aria-hidden>
                 🌙
@@ -193,7 +193,7 @@ export function TodayPage() {
             <div className="mb-2 h-2 overflow-hidden rounded-full bg-[#f0f3f1]">
               <div className="h-full bg-sage transition-[width] duration-500" style={{ width: `${(rhythm.busyMinutes / rhythm.totalMinutes) * 100}%` }} />
             </div>
-            <div className="flex justify-between text-[11px] text-muted">
+            <div className="flex justify-between text-[length:calc(11px*var(--fs))] text-muted">
               <span>{t('today.busy', { h: hours(rhythm.busyMinutes) })}</span>
               <b className="text-sage-dark">{t('today.free', { h: hours(rhythm.freeMinutes) })}</b>
             </div>
@@ -219,13 +219,13 @@ function RangeList({ days, events, lng, todayISO, onEdit }: { days: string[]; ev
         const label = fmt.format(new Date(`${d}T00:00`))
         const isToday = d === todayISO
         return (
-          <li key={d} className="grid grid-cols-[96px_1fr] items-start gap-3">
+          <li key={d} className="grid grid-cols-[calc(96px*var(--fs))_1fr] items-start gap-3">
             <div className={`pt-2 text-xs font-bold ${isToday ? 'text-sage-dark' : 'text-muted'}`}>
               {label}
-              {isToday && <span className="mt-1 block w-fit rounded-full bg-sage px-1.5 py-px text-[10px] text-white">{t('today.todayBadge')}</span>}
+              {isToday && <span className="mt-1 block w-fit rounded-full bg-sage px-1.5 py-px text-[length:calc(10px*var(--fs))] text-white">{t('today.todayBadge')}</span>}
             </div>
             {evs.length === 0 ? (
-              <span className="py-2 text-[11px] text-[#a5b0aa]">{t('today.rangeEmpty')}</span>
+              <span className="py-2 text-[length:calc(11px*var(--fs))] text-[#a5b0aa]">{t('today.rangeEmpty')}</span>
             ) : (
               <ul className="grid gap-1.5">
                 {evs.map((e) => (
@@ -236,10 +236,10 @@ function RangeList({ days, events, lng, todayISO, onEdit }: { days: string[]; ev
                       className="w-full rounded-xl border-l-4 px-3 py-2 text-left transition hover:-translate-y-px"
                       style={{ background: e.bgColor || '#f2f8f4', borderLeftColor: e.titleColor || '#75b799' }}
                     >
-                      <strong className="block text-[13px]" style={{ color: e.titleColor || 'var(--color-ink)' }}>
+                      <strong className="block text-[length:calc(13px*var(--fs))]" style={{ color: e.titleColor || 'var(--color-ink)' }}>
                         {e.title}
                       </strong>
-                      <small className="text-[11px] text-muted">
+                      <small className="text-[length:calc(11px*var(--fs))] text-muted">
                         {e.start}–{e.end} {e.note && `· ${e.note}`}
                       </small>
                     </button>
@@ -285,7 +285,7 @@ function QuickTasks() {
         </Link>
       </div>
       {top.length === 0 ? (
-        <p className="py-2.5 text-[11px] text-[#a5b0aa]">{t('today.quickEmpty')}</p>
+        <p className="py-2.5 text-[length:calc(11px*var(--fs))] text-[#a5b0aa]">{t('today.quickEmpty')}</p>
       ) : (
         <ul>
           {top.map((task) => (
@@ -295,7 +295,7 @@ function QuickTasks() {
               style={{ background: task.bgColor && task.bgColor !== '#ffffff' ? task.bgColor : '#f7f9f7', color: task.titleColor || undefined }}
             >
               <button type="button" aria-label={t('tasks.markDone')} onClick={() => toggleTask(task.id)} className="size-4.5 shrink-0 rounded-full border-2 border-[#cfd8d3] bg-paper/60 hover:border-sage" />
-              <span className="text-[13px] font-semibold">{task.title}</span>
+              <span className="text-[length:calc(13px*var(--fs))] font-semibold">{task.title}</span>
             </li>
           ))}
         </ul>
@@ -309,7 +309,7 @@ function QuickTasks() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             onKeyDown={(e) => e.key === 'Escape' && setOpen(false)}
-            className="min-w-0 flex-1 rounded-(--radius-control) border border-line bg-oat px-3 py-2 text-[13px] outline-none focus:border-sage"
+            className="min-w-0 flex-1 rounded-(--radius-control) border border-line bg-oat px-3 py-2 text-[length:calc(13px*var(--fs))] outline-none focus:border-sage"
           />
           <Button type="submit">{t('common.add')}</Button>
         </form>

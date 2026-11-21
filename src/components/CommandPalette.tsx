@@ -132,8 +132,8 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
   }
 
   const badgeLabel = (k: SearchKind) => t(`search.badge.${k}`)
-  const badge = 'shrink-0 rounded-md bg-mint px-2 py-0.5 text-[10px] font-bold text-sage-dark'
-  const item = 'flex cursor-pointer items-start gap-3 rounded-lg px-3 py-2.5 text-[13px] data-[selected=true]:bg-sage-light'
+  const badge = 'shrink-0 rounded-md bg-mint px-2 py-0.5 text-[length:calc(10px*var(--fs))] font-bold text-sage-dark'
+  const item = 'flex cursor-pointer items-start gap-3 rounded-lg px-3 py-2.5 text-[length:calc(13px*var(--fs))] data-[selected=true]:bg-sage-light'
 
   return (
     <Command label={t('search.title')} shouldFilter={false} loop>
@@ -147,7 +147,7 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
             ✕
           </button>
         )}
-        <RD.Close className="rounded-md border border-line px-2 py-1 text-[11px] font-semibold text-muted hover:bg-oat">{t('search.close')}</RD.Close>
+        <RD.Close className="rounded-md border border-line px-2 py-1 text-[length:calc(11px*var(--fs))] font-semibold text-muted hover:bg-oat">{t('search.close')}</RD.Close>
       </div>
 
       <div role="tablist" aria-label={t('search.scope')} className="flex gap-1.5 overflow-x-auto border-b border-line px-3 py-2">
@@ -169,12 +169,12 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
       <Command.List className="max-h-[56vh] overflow-y-auto p-2">
         {tokens.length === 0 ? (
           <div className="px-3 py-4">
-            <p className="text-[13px] text-muted">{t('search.hint')}</p>
+            <p className="text-[length:calc(13px*var(--fs))] text-muted">{t('search.hint')}</p>
             {recent.length > 0 && (
               <div className="mt-4">
                 <div className="mb-2 flex items-center justify-between">
-                  <h3 className="text-[10px] font-bold tracking-widest text-muted">{t('search.recent')}</h3>
-                  <button type="button" onClick={clearRecent} className="text-[11px] text-muted hover:text-ink">
+                  <h3 className="text-[length:calc(10px*var(--fs))] font-bold tracking-widest text-muted">{t('search.recent')}</h3>
+                  <button type="button" onClick={clearRecent} className="text-[length:calc(11px*var(--fs))] text-muted hover:text-ink">
                     {t('search.clearRecent')}
                   </button>
                 </div>
@@ -191,7 +191,7 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
             )}
           </div>
         ) : hits.length === 0 ? (
-          <Command.Empty className="py-8 text-center text-[13px] text-muted">{t('search.empty')}</Command.Empty>
+          <Command.Empty className="py-8 text-center text-[length:calc(13px*var(--fs))] text-muted">{t('search.empty')}</Command.Empty>
         ) : (
           hits.map((h) => (
             <Command.Item key={h.key} value={h.key} onSelect={() => go(h)} className={item}>
@@ -204,18 +204,18 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
                   <Highlight text={h.title} tokens={tokens} />
                 </span>
                 {h.meta && (
-                  <small className="block truncate text-[11px] text-muted">
+                  <small className="block truncate text-[length:calc(11px*var(--fs))] text-muted">
                     <Highlight text={h.meta} tokens={tokens} />
                   </small>
                 )}
                 {h.snippet && (
-                  <small className="mt-0.5 block truncate text-[11px] text-[#55645d]">
+                  <small className="mt-0.5 block truncate text-[length:calc(11px*var(--fs))] text-[#55645d]">
                     <b className="mr-1 font-semibold">{t(`search.field.${h.snippet.field}`)}</b>
                     <Highlight text={excerpt(h.snippet.text, tokens)} tokens={tokens} />
                   </small>
                 )}
               </span>
-              {h.archived && <span className="shrink-0 rounded-md border border-line px-1.5 py-0.5 text-[10px] text-muted">{t('search.archived')}</span>}
+              {h.archived && <span className="shrink-0 rounded-md border border-line px-1.5 py-0.5 text-[length:calc(10px*var(--fs))] text-muted">{t('search.archived')}</span>}
             </Command.Item>
           ))
         )}

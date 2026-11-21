@@ -54,11 +54,11 @@ export function ShoppingPage() {
       <section className="mb-4 rounded-2xl border border-line bg-paper p-5 shadow-soft">
         <div className="mb-3 flex items-end justify-between gap-3">
           <div>
-            <h2 className="mb-1 text-[13px] font-bold text-[#78867f]">{t('shopping.period', { start: period.start.slice(5).replace('-', '/'), end: period.end.slice(5).replace('-', '/') })}</h2>
-            <p className={`text-[32px] leading-none font-extrabold tracking-tight ${over ? 'text-[#ef4444]' : ''}`}>{formatMoney(total, lng)}</p>
+            <h2 className="mb-1 text-[length:calc(13px*var(--fs))] font-bold text-[#78867f]">{t('shopping.period', { start: period.start.slice(5).replace('-', '/'), end: period.end.slice(5).replace('-', '/') })}</h2>
+            <p className={`text-[length:calc(32px*var(--fs))] leading-none font-extrabold tracking-tight ${over ? 'text-[#ef4444]' : ''}`}>{formatMoney(total, lng)}</p>
           </div>
           <div className="grid justify-items-end gap-2">
-            <p className="text-right text-[11px] text-[#9aa59f]">{t('shopping.budget', { percent: percent.toFixed(1) })}</p>
+            <p className="text-right text-[length:calc(11px*var(--fs))] text-[#9aa59f]">{t('shopping.budget', { percent: percent.toFixed(1) })}</p>
             <Button variant="ghost" disabled={inPeriod === 0} title={inPeriod === 0 ? t('shopping.archive.nothing') : undefined} onClick={() => setConfirmArchive(true)}>
               {t('shopping.archive.button')}
             </Button>
@@ -69,7 +69,7 @@ export function ShoppingPage() {
         </div>
         <div className="flex flex-wrap gap-2">
           {byCategory.map(([k, v]) => (
-            <span key={k} className="rounded-full border border-line bg-[#f9fbf9] px-3 py-1.5 text-[11px] font-semibold text-[#55645d]">
+            <span key={k} className="rounded-full border border-line bg-[#f9fbf9] px-3 py-1.5 text-[length:calc(11px*var(--fs))] font-semibold text-[#55645d]">
               {keyLabel(k)}: {formatMoney(v, lng)}
             </span>
           ))}
@@ -101,7 +101,7 @@ export function ShoppingPage() {
                       type="button"
                       aria-label={s.done ? t('shopping.markUndone') : t('shopping.markDone')}
                       onClick={() => toggleExpense(s.id)}
-                      className={`grid size-5 shrink-0 place-items-center rounded-full border-2 text-[10px] ${s.done ? 'border-[#888] bg-[#888] text-white' : 'border-current'}`}
+                      className={`grid size-5 shrink-0 place-items-center rounded-full border-2 text-[length:calc(10px*var(--fs))] ${s.done ? 'border-[#888] bg-[#888] text-white' : 'border-current'}`}
                     >
                       {s.done && '✓'}
                     </button>
@@ -109,7 +109,7 @@ export function ShoppingPage() {
                       <strong className={`text-sm ${s.done ? 'line-through' : ''}`}>
                         {s.title}
                       </strong>
-                      <small className="mt-1 block text-[11px] opacity-80">
+                      <small className="mt-1 block text-[length:calc(11px*var(--fs))] opacity-80">
                         {s.store || t('shopping.noStore')} · {st.icon} {catLabel(s)} · {s.date} {s.time}
                         {s.unitPrice != null && ` · ${formatQty(s.quantity)} × ${formatMoney(s.unitPrice, lng)}`}
                       </small>

@@ -30,7 +30,7 @@ export function ReminderBanner() {
                 const on = a.checked.includes(item)
                 return (
                   <li key={item}>
-                    <label className={`flex cursor-pointer items-center gap-2.5 rounded-lg bg-oat px-3 py-2 text-[13px] ${on ? 'text-muted line-through' : 'font-semibold'}`}>
+                    <label className={`flex cursor-pointer items-center gap-2.5 rounded-lg bg-oat px-3 py-2 text-[length:calc(13px*var(--fs))] ${on ? 'text-muted line-through' : 'font-semibold'}`}>
                       <input type="checkbox" checked={on} onChange={() => toggleItem(a.id, item)} className="size-4 accent-[#4a987b]" />
                       {item}
                     </label>

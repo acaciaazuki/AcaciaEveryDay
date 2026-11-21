@@ -109,15 +109,15 @@ export function PlaceDialog({ place, onClose }: { place: Place | null; onClose: 
               </Button>
             </div>
             <div aria-live="polite">
-              {search.kind === 'loading' && <p className="text-[11px] text-muted">{t('places.form.searching', { q: q.trim() })}</p>}
-              {search.kind === 'message' && <p className="text-[11px] text-sage-dark">{search.text}</p>}
+              {search.kind === 'loading' && <p className="text-[length:calc(11px*var(--fs))] text-muted">{t('places.form.searching', { q: q.trim() })}</p>}
+              {search.kind === 'message' && <p className="text-[length:calc(11px*var(--fs))] text-sage-dark">{search.text}</p>}
               {search.kind === 'results' && (
                 <ul className="mt-1 grid max-h-48 overflow-y-auto rounded-xl border border-line">
                   {search.items.map((p, i) => (
                     <li key={i}>
                       <button type="button" onClick={() => fill(p)} className="w-full border-b border-line px-3 py-2 text-left last:border-0 hover:bg-sage-light">
-                        <strong className="block text-[13px]">{placeName(p)}</strong>
-                        <small className="text-[11px] text-muted">{p.formattedAddress}</small>
+                        <strong className="block text-[length:calc(13px*var(--fs))]">{placeName(p)}</strong>
+                        <small className="text-[length:calc(11px*var(--fs))] text-muted">{p.formattedAddress}</small>
                       </button>
                     </li>
                   ))}

@@ -22,8 +22,8 @@ export function SyncPanel({ showHelp = false }: { showHelp?: boolean }) {
           {profile?.picture ? <img src={profile.picture} alt="" referrerPolicy="no-referrer" className="size-full object-cover" /> : '🐻'}
         </div>
         <div className="min-w-0">
-          <strong className="block truncate text-[13px]">{signedIn ? profile?.name || t('sync.user') : t('sync.guest')}</strong>
-          <small role="status" className="block text-[11px] text-muted">
+          <strong className="block truncate text-[length:calc(13px*var(--fs))]">{signedIn ? profile?.name || t('sync.user') : t('sync.guest')}</strong>
+          <small role="status" className="block text-[length:calc(11px*var(--fs))] text-muted">
             {statusText}
           </small>
         </div>

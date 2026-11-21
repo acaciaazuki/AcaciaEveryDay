@@ -52,7 +52,7 @@ export function TasksPage() {
                           type="button"
                           aria-label={task.done ? t('tasks.markUndone') : t('tasks.markDone')}
                           onClick={() => toggleTask(task.id)}
-                          className={`mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border-2 text-[10px] text-white ${task.done ? 'border-sage bg-sage' : 'border-[#cfd8d3]'}`}
+                          className={`mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border-2 text-[length:calc(10px*var(--fs))] text-white ${task.done ? 'border-sage bg-sage' : 'border-[#cfd8d3]'}`}
                         >
                           {task.done && '✓'}
                         </button>
@@ -60,7 +60,7 @@ export function TasksPage() {
                           <h3 className={`font-bold ${task.done ? 'line-through opacity-50' : ''}`} style={{ color: task.titleColor }}>
                             {task.title}
                           </h3>
-                          <p className="mt-1 flex flex-wrap gap-x-3 text-[11px] text-muted">
+                          <p className="mt-1 flex flex-wrap gap-x-3 text-[length:calc(11px*var(--fs))] text-muted">
                             {task.loc && <span>📍 {task.loc}</span>}
                             {(task.date || task.time) && (
                               <span>

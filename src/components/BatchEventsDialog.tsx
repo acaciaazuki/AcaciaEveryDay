@@ -56,7 +56,7 @@ export function BatchEventsDialog({ initialYear, initialMonth, onClose }: { init
           <MonthNav year={ym.year} month={ym.month} onShift={(d) => setYm(shiftMonth(ym.year, ym.month, d))} />
           <div className="grid grid-cols-7 gap-1 text-center">
             {weekdayNames(i18n.resolvedLanguage).map((w, i) => (
-              <span key={i} className="text-[10px] font-bold text-muted">
+              <span key={i} className="text-[length:calc(10px*var(--fs))] font-bold text-muted">
                 {w}
               </span>
             ))}
@@ -77,7 +77,7 @@ export function BatchEventsDialog({ initialYear, initialMonth, onClose }: { init
               ),
             )}
           </div>
-          <p className="text-[11px] text-muted">{t('calendar.batchForm.selected', { count: dates.size })}</p>
+          <p className="text-[length:calc(11px*var(--fs))] text-muted">{t('calendar.batchForm.selected', { count: dates.size })}</p>
         </fieldset>
         {error && <p className="-mt-2 text-xs text-[#c2583d]">{error}</p>}
         <div className="flex gap-2">

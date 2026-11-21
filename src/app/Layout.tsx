@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useFontScale } from '../hooks/useFontScale'
 import { useTranslation } from 'react-i18next'
 import { NavLink, Outlet, useLocation } from 'react-router'
 import { BrandMark } from '../components/BrandMark'
@@ -16,7 +17,7 @@ const MAIN = [
 ] as const
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
-  `flex w-full items-center gap-3 rounded-(--radius-control) px-3 py-2.5 text-[13px] font-semibold transition-colors ${
+  `flex w-full items-center gap-3 rounded-(--radius-control) px-3 py-2.5 text-[length:calc(13px*var(--fs))] font-semibold transition-colors ${
     isActive ? 'bg-sage-light text-sage-dark' : 'text-[#7e8b85] hover:bg-[#f6f9f7] hover:text-[#5a6d63]'
   }`
 
@@ -24,6 +25,7 @@ export function Layout() {
   const { t } = useTranslation()
   const openTasks = useAppStore((s) => s.tasks.filter((x) => !x.done).length)
   const [searchOpen, setSearchOpen] = useState(false)
+  useFontScale()
   useReminderMonitor()
   // 行事曆需要更寬的版面，月曆才放得下較多行程
   const wide = useLocation().pathname.startsWith('/calendar')
@@ -43,7 +45,7 @@ export function Layout() {
         >
           <span aria-hidden>⌕</span>
           <span className="flex-1">{t('search.button')}</span>
-          <kbd className="rounded border border-line bg-paper px-1.5 text-[10px]">{isMac ? '⌘K' : 'Ctrl K'}</kbd>
+          <kbd className="rounded border border-line bg-paper px-1.5 text-[length:calc(10px*var(--fs))]">{isMac ? '⌘K' : 'Ctrl K'}</kbd>
         </button>
         <nav className="grid gap-1">
           {MAIN.map((n) => (
@@ -51,12 +53,12 @@ export function Layout() {
               <span className="w-5 text-center text-base">{n.ico}</span>
               {t(`nav.${n.key}`)}
               {n.key === 'tasks' && (
-                <span className="ml-auto rounded-full bg-[#f1f4f2] px-2 py-0.5 text-[10px] font-bold text-[#8c9993]">{openTasks}</span>
+                <span className="ml-auto rounded-full bg-[#f1f4f2] px-2 py-0.5 text-[length:calc(10px*var(--fs))] font-bold text-[#8c9993]">{openTasks}</span>
               )}
             </NavLink>
           ))}
         </nav>
-        <div className="px-3 pt-4 pb-2 text-[10px] font-bold tracking-[1.5px] text-[#a4afaa] uppercase">{t('nav.sectionCollect')}</div>
+        <div className="px-3 pt-4 pb-2 text-[length:calc(10px*var(--fs))] font-bold tracking-[1.5px] text-[#a4afaa] uppercase">{t('nav.sectionCollect')}</div>
         <nav className="grid gap-1">
           <NavLink to="/shopping" className={linkClass}>
             <span className="w-5 text-center text-base">🛒</span>
@@ -107,7 +109,7 @@ export function Layout() {
             key={n.to}
             to={n.to}
             end={n.end}
-            className={({ isActive }) => `grid justify-items-center gap-0.5 px-1 text-[10px] font-semibold ${isActive ? 'text-sage-dark' : 'text-[#9aa6a0]'}`}
+            className={({ isActive }) => `grid justify-items-center gap-0.5 px-1 text-[length:calc(10px*var(--fs))] font-semibold ${isActive ? 'text-sage-dark' : 'text-[#9aa6a0]'}`}
           >
             <span className="text-lg leading-none">{n.ico}</span>
             {n.label}

@@ -18,6 +18,13 @@
     <title>ACACIA Everyday</title>
   </head>
   <body>
+    <script>
+      // 先套用上次選的字體大小，避免載入時畫面先閃一下標準大小
+      try {
+        var s = { sm: 0.9, md: 1, lg: 1.15, xl: 1.3 }[localStorage.getItem('acacia_font_size')]
+        if (s) document.documentElement.style.setProperty('--fs', String(s))
+      } catch (e) {}
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

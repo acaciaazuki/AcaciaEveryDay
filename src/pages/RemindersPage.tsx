@@ -73,7 +73,7 @@ export function RemindersPage() {
                   </li>
                 ))}
               </ul>
-              {!hasCoords(r) && <p className="rounded-lg bg-weekend px-3 py-2 text-[11px] text-[#7a6232]">{t('reminders.card.noCoords')}</p>}
+              {!hasCoords(r) && <p className="rounded-lg bg-weekend px-3 py-2 text-[length:calc(11px*var(--fs))] text-[#7a6232]">{t('reminders.card.noCoords')}</p>}
               <div className="flex gap-2">
                 <Button variant="ghost" onClick={() => fireReminder({ reminder: r, kind: r.trigger })}>
                   {t('reminders.card.test')}

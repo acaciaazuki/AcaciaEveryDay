@@ -68,7 +68,7 @@ export function LedgerBook({ archives, lng, currentStart, onRestore, focusId }: 
                 <li key={p.start} className="rounded-xl border border-line">
                   <details>
                     <summary className="flex cursor-pointer flex-wrap items-center justify-between gap-2 p-3">
-                      <span className="text-[13px] font-bold">{t('shopping.ledger.range', { start: p.start, end: p.end })}</span>
+                      <span className="text-[length:calc(13px*var(--fs))] font-bold">{t('shopping.ledger.range', { start: p.start, end: p.end })}</span>
                       <span className="flex items-center gap-3 text-xs text-muted">
                         {t('shopping.count', { count: p.expenses.length })}
                         <b className="text-sm text-ink">{formatMoney(total, lng)}</b>
@@ -77,7 +77,7 @@ export function LedgerBook({ archives, lng, currentStart, onRestore, focusId }: 
                     <div className="border-t border-line p-3">
                       <div className="mb-3 flex flex-wrap gap-2">
                         {byCategory.map(([k, v]) => (
-                          <span key={k} className="rounded-full border border-line bg-[#f9fbf9] px-3 py-1.5 text-[11px] font-semibold text-[#55645d]">
+                          <span key={k} className="rounded-full border border-line bg-[#f9fbf9] px-3 py-1.5 text-[length:calc(11px*var(--fs))] font-semibold text-[#55645d]">
                             {keyLabel(k)}: {formatMoney(v, lng)}
                           </span>
                         ))}
@@ -86,10 +86,10 @@ export function LedgerBook({ archives, lng, currentStart, onRestore, focusId }: 
                         {[...p.expenses]
                           .sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time))
                           .map((e) => (
-                            <li key={e.id} data-expense={e.id} className={`flex items-center justify-between gap-3 rounded-lg px-2 py-1.5 text-[13px] ${e.id === focusId ? 'ring-2 ring-sage' : ''}`} style={{ background: e.bgColor && e.bgColor !== '#ffffff' ? e.bgColor : EXPENSE_STYLE[e.cat].bg, color: e.titleColor && e.titleColor !== '#263633' ? e.titleColor : EXPENSE_STYLE[e.cat].fg }}>
+                            <li key={e.id} data-expense={e.id} className={`flex items-center justify-between gap-3 rounded-lg px-2 py-1.5 text-[length:calc(13px*var(--fs))] ${e.id === focusId ? 'ring-2 ring-sage' : ''}`} style={{ background: e.bgColor && e.bgColor !== '#ffffff' ? e.bgColor : EXPENSE_STYLE[e.cat].bg, color: e.titleColor && e.titleColor !== '#263633' ? e.titleColor : EXPENSE_STYLE[e.cat].fg }}>
                               <span className="min-w-0">
                                 <strong>{e.title}</strong>
-                                <small className="block text-[11px] opacity-80">
+                                <small className="block text-[length:calc(11px*var(--fs))] opacity-80">
                                   {e.date} · {EXPENSE_STYLE[e.cat].icon} {catLabel(e)}
                                   {e.unitPrice != null && ` · ${e.quantity ?? 1} × ${formatMoney(e.unitPrice, lng)}`}
                                 </small>

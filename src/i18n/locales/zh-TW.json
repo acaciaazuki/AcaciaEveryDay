@@ -227,7 +227,15 @@
     "import": "匯入 JSON",
     "importOk": "已匯入資料 🌱",
     "importFail": "匯入失敗，資料沒有變動：{{msg}}",
-    "importConfirm": "匯入會取代目前所有資料，確定嗎？"
+    "importConfirm": "匯入會取代目前所有資料，確定嗎？",
+    "fontSize": {
+      "title": "字體大小",
+      "help": "放大文字，閱讀更輕鬆。選擇後馬上生效，會記住你的選擇。",
+      "sm": "小",
+      "md": "標準",
+      "lg": "大",
+      "xl": "特大"
+    }
   },
   "expenseCat": {
     "food": "食",
