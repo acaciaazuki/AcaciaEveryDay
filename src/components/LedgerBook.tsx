@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ledgerYears } from '../core/archive'
 import { EXPENSE_STYLE, summarize } from '../core/expenses'
@@ -7,17 +7,29 @@ import type { Archive, Expense } from '../core/schema'
 import { Button } from './Button'
 
 /** 年度記帳本：依年份切換，底下列出每個已結算週期的總額、分類與明細 */
-export function LedgerBook({ archives, lng, currentStart, onRestore }: { archives: Archive[]; lng: string; currentStart: string; onRestore: (start: string) => void }) {
+export function LedgerBook({ archives, lng, currentStart, onRestore, focusId }: { archives: Archive[]; lng: string; currentStart: string; onRestore: (start: string) => void; focusId?: string | null }) {
   const { t } = useTranslation()
   const years = ledgerYears(archives)
   const [picked, setPicked] = useState<string | null>(null)
-  const active = years.find((y) => y.year === picked) ?? years[0]
+  const target = focusId ? archives.find((a) => a.expenses.some((e) => e.id === focusId)) : undefined
+  const targetYear = target?.start.slice(0, 4)
+  const active = years.find((y) => y.year === (targetYear ?? picked)) ?? years[0]
+  const root = useRef<HTMLElement>(null)
+
+  // 從搜尋結果跳進來：展開那一期、捲到那一筆
+  useEffect(() => {
+    if (!focusId) return
+    const row = root.current?.querySelector<HTMLElement>(`[data-expense="${CSS.escape(focusId)}"]`)
+    const details = row?.closest('details')
+    if (details) details.open = true
+    row?.scrollIntoView?.({ block: 'center', behavior: 'smooth' })
+  }, [focusId, active?.year])
 
   const catLabel = (e: Pick<Expense, 'cat' | 'customCat'>) => (e.cat === 'other' && e.customCat ? e.customCat : t(`expenseCat.${e.cat}`))
   const keyLabel = (k: string) => (k.startsWith('custom:') ? k.slice(7) : t(`expenseCat.${k}`))
 
   return (
-    <section className="mt-4 rounded-(--radius-card) bg-paper p-5 shadow-card" aria-labelledby="ledger-title">
+    <section ref={root} className="mt-4 rounded-(--radius-card) bg-paper p-5 shadow-card" aria-labelledby="ledger-title">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <h2 id="ledger-title" className="font-bold">
           {t('shopping.ledger.title')}
@@ -74,7 +86,7 @@ export function LedgerBook({ archives, lng, currentStart, onRestore }: { archive
                         {[...p.expenses]
                           .sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time))
                           .map((e) => (
-                            <li key={e.id} className="flex items-center justify-between gap-3 rounded-lg px-2 py-1.5 text-[length:calc(13px*var(--fs))]" style={{ background: e.bgColor && e.bgColor !== '#ffffff' ? e.bgColor : EXPENSE_STYLE[e.cat].bg, color: e.titleColor && e.titleColor !== '#263633' ? e.titleColor : EXPENSE_STYLE[e.cat].fg }}>
+                            <li key={e.id} data-expense={e.id} className={`flex items-center justify-between gap-3 rounded-lg px-2 py-1.5 text-[length:calc(13px*var(--fs))] ${e.id === focusId ? 'ring-2 ring-sage' : ''}`} style={{ background: e.bgColor && e.bgColor !== '#ffffff' ? e.bgColor : EXPENSE_STYLE[e.cat].bg, color: e.titleColor && e.titleColor !== '#263633' ? e.titleColor : EXPENSE_STYLE[e.cat].fg }}>
                               <span className="min-w-0">
                                 <strong>{e.title}</strong>
                                 <small className="block text-[length:calc(11px*var(--fs))] opacity-80">

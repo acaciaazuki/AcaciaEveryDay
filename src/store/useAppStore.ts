@@ -3,12 +3,13 @@ import { createJSONStorage, persist } from 'zustand/middleware'
 import { webStorage } from '../adapters/storage'
 import { archiveCurrent, archiveEnded, restoreArchive as restoreArchiveData } from '../core/archive'
 import { migrate } from '../core/migrate'
-import { emptyAppData, newId, type AppData, type FontSize, type CalendarEvent, type Expense, type Place, type Task } from '../core/schema'
+import { emptyAppData, newId, type AppData, type FontSize, type CalendarEvent, type Expense, type Place, type Reminder, type Task } from '../core/schema'
 
 type TaskInput = Omit<Task, 'id' | 'done'>
 type ExpenseInput = Omit<Expense, 'id' | 'done'>
 type EventInput = Omit<CalendarEvent, 'id'>
 type PlaceInput = Omit<Place, 'id'>
+type ReminderInput = Omit<Reminder, 'id'>
 
 interface Actions {
   addEvent: (input: EventInput) => void
@@ -18,6 +19,9 @@ interface Actions {
   addPlace: (input: PlaceInput) => void
   updatePlace: (id: string, patch: Partial<PlaceInput>) => void
   removePlace: (id: string) => void
+  addReminder: (input: ReminderInput) => void
+  updateReminder: (id: string, patch: Partial<ReminderInput>) => void
+  removeReminder: (id: string) => void
   addTask: (input: TaskInput) => void
   updateTask: (id: string, patch: Partial<TaskInput>) => void
   toggleTask: (id: string) => void
@@ -58,6 +62,11 @@ export const useAppStore = create<AppState>()(
       removePlace: (id) =>
         setState((s) => ({ places: s.places.filter((x) => x.id !== id), favorites: s.favorites.filter((f) => f !== id), ...touch() })),
 
+      addReminder: (input) => setState((s) => ({ reminders: [{ id: newId(), ...input }, ...s.reminders], ...touch() })),
+      updateReminder: (id, patch) =>
+        setState((s) => ({ reminders: s.reminders.map((x) => (x.id === id ? { ...x, ...patch } : x)), ...touch() })),
+      removeReminder: (id) => setState((s) => ({ reminders: s.reminders.filter((x) => x.id !== id), ...touch() })),
+
       addTask: (input) =>
         setState((s) => ({ tasks: [{ id: newId(), done: false, ...input }, ...s.tasks], ...touch() })),
       updateTask: (id, patch) =>
@@ -91,8 +100,8 @@ export const useAppStore = create<AppState>()(
 
       importData: (raw) => setState(migrate(raw)),
       exportData: () => {
-        const { schemaVersion, settings, events, tasks, shopping, places, favorites, archives, updatedAt } = getState()
-        return { schemaVersion, settings, events, tasks, shopping, places, favorites, archives, updatedAt }
+        const { schemaVersion, settings, events, tasks, shopping, places, favorites, reminders, archives, updatedAt } = getState()
+        return { schemaVersion, settings, events, tasks, shopping, places, favorites, reminders, archives, updatedAt }
       },
     }),
     {
