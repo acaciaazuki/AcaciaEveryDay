@@ -275,15 +275,36 @@
   "search": {
     "title": "Search",
     "button": "Search ACACIA",
-    "placeholder": "Search plans, tasks, expenses or places…",
+    "placeholder": "Search tasks, notes, events or places…",
     "empty": "No matches",
-    "events": "Plans",
-    "tasks": "Tasks",
-    "shopping": "Expenses",
-    "places": "Places",
-    "event": "Plan",
-    "task": "Task",
-    "expense": "Expense"
+    "hint": "Search by task name, note, event or place",
+    "recent": "Recent searches",
+    "clearRecent": "Clear history",
+    "clear": "Clear",
+    "close": "Close",
+    "scope": "Search scope",
+    "archived": "Archived",
+    "scopes": {
+      "all": "All",
+      "events": "Calendar",
+      "tasks": "Later",
+      "shopping": "Shopping",
+      "places": "Places"
+    },
+    "badge": {
+      "events": "Event",
+      "tasks": "Task",
+      "shopping": "Expense",
+      "places": "Place"
+    },
+    "field": {
+      "title": "Name",
+      "note": "Note",
+      "loc": "Location",
+      "store": "Store",
+      "cat": "Category",
+      "address": "Address"
+    }
   },
   "sync": {
     "title": "Cloud sync",

@@ -275,15 +275,36 @@
   "search": {
     "title": "検索",
     "button": "ACACIA を検索",
-    "placeholder": "予定・タスク・家計簿・場所を検索…",
+    "placeholder": "タスク・メモ・予定・場所を検索…",
     "empty": "一致するものがありません",
-    "events": "予定",
-    "tasks": "タスク",
-    "shopping": "家計簿",
-    "places": "場所",
-    "event": "予定",
-    "task": "タスク",
-    "expense": "支出"
+    "hint": "タスク名、メモ、予定、場所で検索",
+    "recent": "最近の検索",
+    "clearRecent": "履歴を消去",
+    "clear": "クリア",
+    "close": "閉じる",
+    "scope": "検索範囲",
+    "archived": "アーカイブ済み",
+    "scopes": {
+      "all": "すべて",
+      "events": "カレンダー",
+      "tasks": "あとで",
+      "shopping": "買い物・家計",
+      "places": "お気に入りの場所"
+    },
+    "badge": {
+      "events": "予定",
+      "tasks": "タスク",
+      "shopping": "家計",
+      "places": "場所"
+    },
+    "field": {
+      "title": "名前",
+      "note": "メモ",
+      "loc": "場所",
+      "store": "お店",
+      "cat": "カテゴリ",
+      "address": "住所"
+    }
   },
   "sync": {
     "title": "クラウド同期",

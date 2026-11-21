@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../components/Button'
 import { ColorSwatches, TextColorSwatches } from '../components/ColorSwatches'
@@ -26,7 +26,11 @@ export function ShoppingPage() {
   const restoreArchive = useAppStore((s) => s.restoreArchive)
   const [editing, setEditing] = useState<Expense | 'new' | null>(null)
   const [confirmArchive, setConfirmArchive] = useState(false)
+  const [focusId, setFocusId] = useState<string | null>(null)
   useOpenFromUrl(shopping, setEditing)
+  // 搜尋結果若是已歸檔的記帳，不開編輯框，改成在年度記帳本裡展開並標出那一筆
+  const archived = useMemo(() => archives.flatMap((a) => a.expenses), [archives])
+  useOpenFromUrl(archived, (e) => setFocusId(e.id))
   const lng = i18n.resolvedLanguage ?? 'zh-TW'
 
   const now = useNow()
@@ -119,7 +123,7 @@ export function ShoppingPage() {
         )}
       </section>
 
-      <LedgerBook archives={archives} lng={lng} currentStart={period.start} onRestore={restoreArchive} />
+      <LedgerBook archives={archives} lng={lng} currentStart={period.start} onRestore={restoreArchive} focusId={focusId} />
 
       <Dialog open={confirmArchive} onOpenChange={setConfirmArchive} title={t('shopping.archive.confirmTitle')}>
         <p className="mb-5 text-sm text-muted">{t('shopping.archive.confirmText', { start: period.start, end: period.end, count: inPeriod, year: period.start.slice(0, 4) })}</p>
