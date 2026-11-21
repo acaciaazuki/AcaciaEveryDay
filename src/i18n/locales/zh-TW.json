@@ -198,6 +198,22 @@
       "preview": "預覽",
       "qty": "數量",
       "unit": "單價"
+    },
+    "archive": {
+      "button": "📦 歸檔本期",
+      "nothing": "本期還沒有記帳可以歸檔",
+      "confirmTitle": "歸檔本期記帳",
+      "confirmText": "會把本期（{{start}} – {{end}}）的 {{count}} 筆記帳收進 {{year}} 年記帳本，記帳清單會重新開始。之後可以在記帳本裡還原。",
+      "confirm": "歸檔"
+    },
+    "ledger": {
+      "title": "📚 年度記帳本",
+      "year": "年份",
+      "empty": "還沒有歸檔的週期。每期結束（每月 10 日起）會自動收進來，也可以按「歸檔本期」手動封存。",
+      "yearBook": "{{year}} 年記帳本",
+      "yearSummary": "共 {{periods}} 期 · {{total}}",
+      "range": "{{start}} – {{end}}",
+      "restore": "還原到記帳清單"
     }
   },
   "settings": {
