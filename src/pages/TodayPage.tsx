@@ -185,9 +185,13 @@ function QuickTasks() {
       ) : (
         <ul>
           {top.map((task) => (
-            <li key={task.id} className="flex items-center gap-2.5 border-b border-[#f3f5f3] py-2.5 last:border-0">
-              <button type="button" aria-label={t('tasks.markDone')} onClick={() => toggleTask(task.id)} className="size-4.5 shrink-0 rounded-full border-2 border-[#cfd8d3] hover:border-sage" />
-              <span className="text-[13px]">{task.title}</span>
+            <li
+              key={task.id}
+              className="mb-1.5 flex items-center gap-2.5 rounded-xl px-3 py-2.5 last:mb-0"
+              style={{ background: task.bgColor && task.bgColor !== '#ffffff' ? task.bgColor : '#f7f9f7', color: task.titleColor || undefined }}
+            >
+              <button type="button" aria-label={t('tasks.markDone')} onClick={() => toggleTask(task.id)} className="size-4.5 shrink-0 rounded-full border-2 border-[#cfd8d3] bg-paper/60 hover:border-sage" />
+              <span className="text-[13px] font-semibold">{task.title}</span>
             </li>
           ))}
         </ul>

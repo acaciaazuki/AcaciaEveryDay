@@ -139,8 +139,10 @@
       "loc": "場所",
       "date": "日付",
       "time": "時間",
-      "color": "色",
-      "titleRequired": "タスク名を入力してください"
+      "color": "カード背景色",
+      "titleRequired": "タスク名を入力してください",
+      "textColor": "文字色",
+      "preview": "プレビュー"
     },
     "markDone": "完了にする",
     "markUndone": "未完了に戻す"
@@ -254,5 +256,15 @@
     "retry": "再試行",
     "help": "ログインすると、データは Google ドライブのアプリ専用領域に保存され、別の端末でも同じデータを使えます。初回ログイン時は旧バージョンの ACACIA のバックアップを自動で読み込みます。",
     "user": "Google ユーザー"
+  },
+  "colors": {
+    "text": {
+      "ink": "墨色",
+      "forest": "深緑",
+      "brown": "ブラウン",
+      "brick": "レンガ色",
+      "navy": "ネイビー",
+      "plum": "梅紫"
+    }
   }
 }

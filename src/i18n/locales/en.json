@@ -139,8 +139,10 @@
       "loc": "Place",
       "date": "Date",
       "time": "Time",
-      "color": "Color",
-      "titleRequired": "Please enter a task"
+      "color": "Card color",
+      "titleRequired": "Please enter a task",
+      "textColor": "Text color",
+      "preview": "Preview"
     },
     "markDone": "Mark as done",
     "markUndone": "Mark as not done"
@@ -254,5 +256,15 @@
     "retry": "Retry",
     "help": "After you sign in, your data is kept in your Google Drive's app-only space, so you see the same data on any device. The first sign-in also loads your backup from the old ACACIA.",
     "user": "Google user"
+  },
+  "colors": {
+    "text": {
+      "ink": "Charcoal",
+      "forest": "Forest green",
+      "brown": "Warm brown",
+      "brick": "Brick red",
+      "navy": "Navy",
+      "plum": "Plum"
+    }
   }
 }
