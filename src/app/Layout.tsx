@@ -2,7 +2,9 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NavLink, Outlet, useLocation } from 'react-router'
 import { CommandPalette } from '../components/CommandPalette'
+import { ReminderBanner } from '../components/ReminderBanner'
 import { SyncPanel } from '../components/SyncPanel'
+import { useReminderMonitor } from '../hooks/useReminderMonitor'
 import { useAppStore } from '../store/useAppStore'
 
 const MAIN = [
@@ -21,6 +23,7 @@ export function Layout() {
   const { t } = useTranslation()
   const openTasks = useAppStore((s) => s.tasks.filter((x) => !x.done).length)
   const [searchOpen, setSearchOpen] = useState(false)
+  useReminderMonitor()
   // 行事曆需要更寬的版面，月曆才放得下較多行程
   const wide = useLocation().pathname.startsWith('/calendar')
   const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform)
@@ -58,6 +61,10 @@ export function Layout() {
             <span className="w-5 text-center text-base">🛒</span>
             {t('nav.shopping')}
           </NavLink>
+          <NavLink to="/reminders" className={linkClass}>
+            <span className="w-5 text-center text-base">🎒</span>
+            {t('nav.reminders')}
+          </NavLink>
         </nav>
         <div className="mt-auto grid gap-3">
           <div className="rounded-(--radius-card) border border-line p-3">
@@ -84,6 +91,7 @@ export function Layout() {
         <Outlet />
       </main>
       <CommandPalette open={searchOpen} onOpenChange={setSearchOpen} />
+      <ReminderBanner />
 
       <nav className="fixed inset-x-0 bottom-0 z-30 flex justify-around border-t border-line bg-paper px-3 pt-2 pb-[calc(8px+env(safe-area-inset-bottom))] shadow-[0_-4px_20px_#29483a08] min-[681px]:hidden">
         {[

@@ -15,7 +15,8 @@
       "places": "Places",
       "tasks": "Tasks",
       "shopping": "Budget"
-    }
+    },
+    "reminders": "Don’t forget"
   },
   "common": {
     "save": "Save",
@@ -310,6 +311,99 @@
       "plum": "Plum",
       "slate": "Slate blue",
       "olive": "Olive brown"
+    }
+  },
+  "reminders": {
+    "eyebrow": "One last check before you go",
+    "title": "Don’t-forget reminders",
+    "add": "+ New",
+    "empty": "No reminders yet. Create one to be reminded of your essentials when you leave work or arrive home.",
+    "settingsHelp": "Get reminded to check your wallet, keys and other essentials when you arrive at or leave a place.",
+    "openPage": "Open reminders",
+    "itemSep": ", ",
+    "status": {
+      "idle": "Location isn’t being watched (needs at least one enabled reminder with coordinates)",
+      "watching": "Watching your location. You’ll be reminded when you cross a set area",
+      "denied": "Location permission was denied. Allow it from your browser’s address bar",
+      "unsupported": "This browser can’t get your location",
+      "error": "Can’t get your location right now. Still trying",
+      "enableNotify": "Turn on notifications",
+      "webNote": "The web version needs this page to stay open to detect your location. The upcoming iOS app will use background geofencing.",
+      "notify": {
+        "granted": "System notifications are on",
+        "default": "System notifications are off, so reminders only show on the page",
+        "denied": "System notifications are blocked by the browser, so reminders only show on the page",
+        "unsupported": "This browser doesn’t support system notifications, so reminders only show on the page"
+      }
+    },
+    "card": {
+      "arrive": "On arrival",
+      "leave": "On leaving",
+      "radius": "within {{m}} m",
+      "noCoords": "No coordinates yet, so this can’t be detected. Edit it and use your current location or paste coordinates.",
+      "allDay": "All day",
+      "enable": "Enable reminder",
+      "edit": "Edit",
+      "delete": "Delete",
+      "test": "Test",
+      "deleteConfirm": "Delete this reminder?"
+    },
+    "days": {
+      "every": "Every day",
+      "weekdays": "Weekdays",
+      "weekends": "Weekends",
+      "custom": "Custom"
+    },
+    "form": {
+      "newTitle": "New reminder",
+      "editTitle": "Edit reminder",
+      "place": "Place",
+      "placePlaceholder": "e.g. Work, Home",
+      "fromFavorites": "Pick from favorites",
+      "useCurrent": "📍 Use current location",
+      "locating": "Locating…",
+      "currentName": "Current location",
+      "coords": "Coordinates (paste from a map or a map link)",
+      "coordsSet": "Coordinates set: {{lat}}, {{lng}}",
+      "coordsMissing": "No coordinates yet. Use your current location, or paste “latitude, longitude” or a map link, so it can be detected.",
+      "coordsInvalid": "Can’t read those coordinates. Paste “latitude, longitude” or a map link that contains them.",
+      "clearCoords": "Clear coordinates",
+      "geoDenied": "Can’t get your location: permission was denied.",
+      "geoFail": "Can’t get your location. Please try again.",
+      "radius": "Alert radius",
+      "trigger": "Trigger",
+      "days": "Days",
+      "start": "Start time",
+      "end": "End time",
+      "timeHint": "Time window is optional. If left empty, it applies all day",
+      "items": "Things to bring",
+      "itemPlaceholder": "e.g. Wallet, keys",
+      "addItem": "Add",
+      "removeItem": "Remove {{item}}",
+      "preview": "Rule preview",
+      "placeRequired": "Please enter a place",
+      "itemsRequired": "Add at least one item",
+      "customRequired": "Pick at least one day"
+    },
+    "preview": {
+      "arrive": "{{when}}, when you arrive at ({{place}}), check: {{items}}.",
+      "leave": "{{when}}, when you leave ({{place}}), check: {{items}}.",
+      "placeholderPlace": "place",
+      "placeholderItems": "items",
+      "range": "{{days}} {{start}}–{{end}}",
+      "fromOnly": "{{days}} after {{start}}",
+      "untilOnly": "{{days}} before {{end}}"
+    },
+    "banner": {
+      "arrive": "Arrived at {{place}}: check your things",
+      "leave": "Leaving {{place}}: check your things",
+      "done": "Got everything",
+      "close": "Close"
+    },
+    "notify": {
+      "title": "Don’t forget",
+      "arrive": "Arrived at {{place}}: check {{items}}",
+      "leave": "Leaving {{place}}: check {{items}}"
     }
   },
   "icons": {
