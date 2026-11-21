@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NavLink, Outlet } from 'react-router'
 import { CommandPalette } from '../components/CommandPalette'
+import { SyncPanel } from '../components/SyncPanel'
 import { useAppStore } from '../store/useAppStore'
 
 const MAIN = [
@@ -56,12 +57,17 @@ export function Layout() {
             {t('nav.shopping')}
           </NavLink>
         </nav>
-        <nav className="mt-auto grid gap-1">
+        <div className="mt-auto grid gap-3">
+          <div className="rounded-(--radius-card) border border-line p-3">
+            <SyncPanel />
+          </div>
+        <nav className="grid gap-1">
           <NavLink to="/settings" className={linkClass}>
             <span className="w-5 text-center text-base">⚙</span>
             {t('nav.settings')}
           </NavLink>
         </nav>
+        </div>
       </aside>
 
       <main className="mx-auto max-w-[1400px] px-3.5 pt-4 pb-[calc(88px+env(safe-area-inset-bottom))] min-[681px]:ml-60 min-[681px]:px-6 min-[681px]:pb-16 min-[1001px]:px-9">

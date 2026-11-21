@@ -239,5 +239,20 @@
     "event": "予定",
     "task": "タスク",
     "expense": "支出"
+  },
+  "sync": {
+    "title": "クラウド同期",
+    "guest": "ゲストモード",
+    "localOnly": "このブラウザにのみ保存 🌱",
+    "signIn": "☁️ Google でログインして同期",
+    "signOut": "ログアウト",
+    "signOutConfirm": "Google アカウントからログアウトしますか？データはこの端末に残ります。",
+    "connecting": "Google に接続中…",
+    "syncing": "🔄 Google ドライブに同期中…",
+    "synced": "✅ 同期済み（{{time}}）",
+    "error": "⚠️ 同期に失敗しました。データは端末に保存されています",
+    "retry": "再試行",
+    "help": "ログインすると、データは Google ドライブのアプリ専用領域に保存され、別の端末でも同じデータを使えます。初回ログイン時は旧バージョンの ACACIA のバックアップを自動で読み込みます。",
+    "user": "Google ユーザー"
   }
 }

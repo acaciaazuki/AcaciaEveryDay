@@ -38,6 +38,26 @@ src/
   i18n/       多語系設定與翻譯檔
 ```
 
+## 部署（Cloudflare Pages）
+
+在 Cloudflare 後台 Workers & Pages → Create → Pages → Connect to Git，選這個 repo，設定：
+
+| 項目 | 值 |
+| --- | --- |
+| Production branch | `main` |
+| Build command | `npm run build` |
+| Build output directory | `dist` |
+| 環境變數 | `NODE_VERSION` = `22` |
+
+`public/_redirects` 已設定 SPA 路由，直接開 `/tasks` 等網址也能正常載入。每個 PR 會自動產生預覽網址。
+
+部署後記得：
+
+1. 在 Google Cloud Console 的 OAuth 用戶端「已授權的 JavaScript 來源」加入新網址（例如 `https://acaciaeveryday.pages.dev`），Google 登入同步才能用。預覽網址每次不同，Google 不支援萬用字元，所以預覽站無法登入，屬正常現象。
+2. 如果地點搜尋的 Cloudflare Worker 有限制來源網域，也把新網址加進去。
+
+可選的環境變數：`VITE_GOOGLE_CLIENT_ID`、`VITE_PLACES_PROXY_URL`。
+
 ## 從舊版搬資料
 
 在新版「設定」頁匯入舊版匯出的 JSON。舊版分類（例如「食」「咖啡」）會自動轉成代碼，自訂的記帳類別會保留原文字。
@@ -53,4 +73,4 @@ src/
 - [x] 行事曆（含批次建立）
 - [x] 最愛地點（含地點搜尋）
 - [x] ⌘K 搜尋
-- [ ] Google Drive 同步
+- [x] Google Drive 同步

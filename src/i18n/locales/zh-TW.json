@@ -239,5 +239,20 @@
     "event": "行程",
     "task": "待辦",
     "expense": "記帳"
+  },
+  "sync": {
+    "title": "雲端同步",
+    "guest": "Hi～ 訪客模式",
+    "localOnly": "僅儲存於此瀏覽器 🌱",
+    "signIn": "☁️ Google 登入同步",
+    "signOut": "登出雲端帳號",
+    "signOutConfirm": "確定要登出 Google 帳號嗎？資料仍會保留在這台裝置。",
+    "connecting": "正在連線 Google…",
+    "syncing": "🔄 正在同步至 Google Drive…",
+    "synced": "✅ 已同步（{{time}}）",
+    "error": "⚠️ 同步失敗，資料已存在本機",
+    "retry": "重試",
+    "help": "登入後資料會存在你 Google Drive 的應用程式專用空間，換裝置登入也能看到同一份資料。第一次登入會自動讀取舊版 ACACIA 的雲端備份。",
+    "user": "Google 使用者"
   }
 }
