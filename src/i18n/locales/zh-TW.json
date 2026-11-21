@@ -22,8 +22,7 @@
     "cancel": "取消",
     "delete": "刪除",
     "add": "新增",
-    "edit": "編輯",
-    "comingSoon": "這一頁正在搬到新版，敬請期待 🌱"
+    "edit": "編輯"
   },
   "today": {
     "eyebrow": "今天也慢慢來",
@@ -84,7 +83,46 @@
   },
   "places": {
     "eyebrow": "搜尋地點自動抓取資訊，並用可愛插圖分類",
-    "title": "最愛地點"
+    "title": "最愛地點 📍",
+    "add": "＋ 新增地點",
+    "filterPlaceholder": "搜尋地點名稱、地址或備註…",
+    "all": "全部",
+    "empty": "此分類尚未收藏地點",
+    "openMaps": "↗ Google Maps",
+    "edit": "編輯",
+    "form": {
+      "newTitle": "📍 收藏地點",
+      "editTitle": "編輯地點",
+      "search": "🔍 搜尋地點（選擇結果會自動帶入資訊）",
+      "searchPlaceholder": "例如：春水堂 創始店",
+      "searchBtn": "搜尋",
+      "searching": "正在搜尋「{{q}}」…",
+      "noResults": "找不到「{{q}}」，試著加上縣市或路名",
+      "searchFailed": "搜尋服務連線失敗，可以手動填寫",
+      "filled": "已自動帶入「{{cat}}」的營業時間與資訊",
+      "name": "地點名稱",
+      "namePlaceholder": "例如：春水堂 創始店",
+      "address": "地址",
+      "cat": "分類",
+      "hours": "營業時間與公休",
+      "hoursPlaceholder": "選擇搜尋結果後會自動帶入",
+      "note": "筆記（推薦美食、看診提醒、備註）",
+      "color": "卡片背景色",
+      "nameRequired": "請輸入地點名稱",
+      "deleteConfirm": "確定要刪除這個地點嗎？"
+    },
+    "note": {
+      "closedDays": "🚫 公休時間：{{days}}",
+      "noClosedDays": "✅ 公休時間：無固定公休（每日營業）",
+      "noHours": "查無營業時間資訊",
+      "rating": "⭐ Google 評價：{{rating}} 顆星",
+      "ratingCount": "⭐ Google 評價：{{rating}} 顆星（{{count}} 則評論）",
+      "phone": "📞 聯絡電話：{{phone}}",
+      "clinicTip": "🏥 看診提醒：請攜帶健保卡，建議先查看上方門診與休診時間。",
+      "intro": "ℹ️ 簡介：{{text}}",
+      "highlights": "🍽️ 特色與推薦：{{text}}",
+      "reviews": "😋 網友推薦："
+    }
   },
   "tasks": {
     "eyebrow": "不急，但記得要做",

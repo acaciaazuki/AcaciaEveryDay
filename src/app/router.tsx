@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router'
 import { CalendarPage } from '../pages/CalendarPage'
-import { ComingSoon } from '../pages/ComingSoon'
+import { PlacesPage } from '../pages/PlacesPage'
 import { SettingsPage } from '../pages/SettingsPage'
 import { ShoppingPage } from '../pages/ShoppingPage'
 import { TasksPage } from '../pages/TasksPage'
@@ -14,7 +14,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, Component: TodayPage },
       { path: 'calendar', Component: CalendarPage },
-      { path: 'places', element: <ComingSoon page="places" /> },
+      { path: 'places', Component: PlacesPage },
       { path: 'tasks', Component: TasksPage },
       { path: 'shopping', Component: ShoppingPage },
       { path: 'settings', Component: SettingsPage },

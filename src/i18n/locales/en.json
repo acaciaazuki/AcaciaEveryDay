@@ -22,8 +22,7 @@
     "cancel": "Cancel",
     "delete": "Delete",
     "add": "Add",
-    "edit": "Edit",
-    "comingSoon": "This page is moving to the new version. Coming soon 🌱"
+    "edit": "Edit"
   },
   "today": {
     "eyebrow": "Take it slow today",
@@ -84,7 +83,46 @@
   },
   "places": {
     "eyebrow": "Search a place to fill in its details, sorted with cute icons",
-    "title": "Favorite places"
+    "title": "Favorite places 📍",
+    "add": "+ Add place",
+    "filterPlaceholder": "Search by name, address or note…",
+    "all": "All",
+    "empty": "No saved places in this category",
+    "openMaps": "↗ Google Maps",
+    "edit": "Edit",
+    "form": {
+      "newTitle": "📍 Save a place",
+      "editTitle": "Edit place",
+      "search": "🔍 Search for a place (pick a result to fill in details)",
+      "searchPlaceholder": "e.g. Chun Shui Tang",
+      "searchBtn": "Search",
+      "searching": "Searching “{{q}}”…",
+      "noResults": "Nothing found for “{{q}}”. Try adding a city or street",
+      "searchFailed": "Couldn't reach the search service. You can fill it in by hand",
+      "filled": "Filled in hours and details for “{{cat}}”",
+      "name": "Name",
+      "namePlaceholder": "e.g. Chun Shui Tang",
+      "address": "Address",
+      "cat": "Category",
+      "hours": "Opening hours",
+      "hoursPlaceholder": "Filled in when you pick a search result",
+      "note": "Notes (dishes to try, reminders)",
+      "color": "Card background",
+      "nameRequired": "Please enter a name",
+      "deleteConfirm": "Delete this place?"
+    },
+    "note": {
+      "closedDays": "🚫 Closed: {{days}}",
+      "noClosedDays": "✅ Open every day",
+      "noHours": "No opening hours available",
+      "rating": "⭐ Google rating: {{rating}}",
+      "ratingCount": "⭐ Google rating: {{rating}} ({{count}} reviews)",
+      "phone": "📞 Phone: {{phone}}",
+      "clinicTip": "🏥 Reminder: bring your health insurance card and check clinic hours first.",
+      "intro": "ℹ️ About: {{text}}",
+      "highlights": "🍽️ Highlights: {{text}}",
+      "reviews": "😋 From reviews:"
+    }
   },
   "tasks": {
     "eyebrow": "No rush, just don't forget",

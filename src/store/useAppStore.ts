@@ -2,17 +2,21 @@ import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { webStorage } from '../adapters/storage'
 import { migrate } from '../core/migrate'
-import { emptyAppData, newId, type AppData, type CalendarEvent, type Expense, type Task } from '../core/schema'
+import { emptyAppData, newId, type AppData, type CalendarEvent, type Expense, type Place, type Task } from '../core/schema'
 
 type TaskInput = Omit<Task, 'id' | 'done'>
 type ExpenseInput = Omit<Expense, 'id' | 'done'>
 type EventInput = Omit<CalendarEvent, 'id'>
+type PlaceInput = Omit<Place, 'id'>
 
 interface Actions {
   addEvent: (input: EventInput) => void
   addEvents: (inputs: EventInput[]) => void
   updateEvent: (id: string, patch: Partial<EventInput>) => void
   removeEvent: (id: string) => void
+  addPlace: (input: PlaceInput) => void
+  updatePlace: (id: string, patch: Partial<PlaceInput>) => void
+  removePlace: (id: string) => void
   addTask: (input: TaskInput) => void
   updateTask: (id: string, patch: Partial<TaskInput>) => void
   toggleTask: (id: string) => void
@@ -41,6 +45,12 @@ export const useAppStore = create<AppState>()(
       updateEvent: (id, patch) =>
         setState((s) => ({ events: s.events.map((x) => (x.id === id ? { ...x, ...patch } : x)), ...touch() })),
       removeEvent: (id) => setState((s) => ({ events: s.events.filter((x) => x.id !== id), ...touch() })),
+
+      addPlace: (input) => setState((s) => ({ places: [{ id: newId(), ...input }, ...s.places], ...touch() })),
+      updatePlace: (id, patch) =>
+        setState((s) => ({ places: s.places.map((x) => (x.id === id ? { ...x, ...patch } : x)), ...touch() })),
+      removePlace: (id) =>
+        setState((s) => ({ places: s.places.filter((x) => x.id !== id), favorites: s.favorites.filter((f) => f !== id), ...touch() })),
 
       addTask: (input) =>
         setState((s) => ({ tasks: [{ id: newId(), done: false, ...input }, ...s.tasks], ...touch() })),
