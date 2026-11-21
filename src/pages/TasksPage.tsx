@@ -1,16 +1,17 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../components/Button'
-import { ColorSwatches } from '../components/ColorSwatches'
+import { ColorSwatches, TextColorSwatches } from '../components/ColorSwatches'
 import { Dialog } from '../components/Dialog'
 import { Field } from '../components/Field'
 import { PageHead } from '../components/PageHead'
+import { DEFAULT_TEXT_COLOR } from '../core/categories'
 import type { Task } from '../core/schema'
 import { useOpenFromUrl } from '../hooks/useOpenFromUrl'
 import { useAppStore } from '../store/useAppStore'
 
 type Draft = Omit<Task, 'id' | 'done'>
-const blank: Draft = { title: '', loc: '', date: '', time: '', titleColor: '#263633', bgColor: '#ffffff' }
+const blank: Draft = { title: '', loc: '', date: '', time: '', titleColor: DEFAULT_TEXT_COLOR, bgColor: '#ffffff' }
 
 export function TasksPage() {
   const { t } = useTranslation()
@@ -113,7 +114,14 @@ function TaskDialog({ task, onClose }: { task: Task | null; onClose: () => void 
         </div>
         <div className="grid gap-1.5 text-xs font-semibold text-muted">
           {t('tasks.form.color')}
-          <ColorSwatches label={t('tasks.form.color')} value={draft.bgColor} onChange={(c) => set({ bgColor: c.bg, titleColor: c.txt })} />
+          <ColorSwatches label={t('tasks.form.color')} value={draft.bgColor} onChange={(c) => set({ bgColor: c.bg })} />
+        </div>
+        <div className="grid gap-1.5 text-xs font-semibold text-muted">
+          {t('tasks.form.textColor')}
+          <TextColorSwatches label={t('tasks.form.textColor')} value={draft.titleColor ?? DEFAULT_TEXT_COLOR} onChange={(c) => set({ titleColor: c })} />
+        </div>
+        <div className="rounded-(--radius-control) border border-line px-4 py-3 text-sm font-bold" style={{ background: draft.bgColor || '#fff', color: draft.titleColor || DEFAULT_TEXT_COLOR }}>
+          {draft.title || t('tasks.form.preview')}
         </div>
         <div className="mt-2 flex gap-2">
           {task && (

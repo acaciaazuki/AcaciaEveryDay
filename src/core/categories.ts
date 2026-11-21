@@ -61,7 +61,10 @@ export const LEGACY_PLACE_CATEGORY: Record<string, PlaceCategory> = {
   其他: 'other',
 }
 
-/** 舊版的六組卡片配色 */
+/**
+ * 卡片配色：前 6 組是舊版的色票（順序不變，已儲存的顏色照常顯示），
+ * 後 6 組是新增的低彩度粉彩色，文字色都與背景維持 4.5 以上的對比。
+ */
 export const THEME_COLORS = [
   { bg: '#ffffff', txt: '#263633' },
   { bg: '#eaf6ef', txt: '#3d876c' },
@@ -69,4 +72,22 @@ export const THEME_COLORS = [
   { bg: '#fff4f1', txt: '#c2583d' },
   { bg: '#f0f4fb', txt: '#3f67b5' },
   { bg: '#f3edfa', txt: '#764eba' },
+  { bg: '#f7f1e1', txt: '#7a6232' }, // 奶油米
+  { bg: '#ffe9dc', txt: '#9a4f30' }, // 蜜桃
+  { bg: '#e4f0f7', txt: '#3a6a8a' }, // 天空藍
+  { bg: '#ebe6f6', txt: '#66509a' }, // 薰衣草
+  { bg: '#e6eedc', txt: '#46703a' }, // 抹茶綠
+  { bg: '#f0e6d8', txt: '#7a5a38' }, // 暖沙
 ] as const
+
+/** 文字顏色：中等偏深、低飽和的莫蘭迪色，疊在上面任何一個卡片背景都清楚 */
+export const TEXT_COLORS = [
+  { color: '#263633', key: 'ink' },
+  { color: '#2f5d4a', key: 'forest' },
+  { color: '#6b4a3a', key: 'brown' },
+  { color: '#8f3f3a', key: 'brick' },
+  { color: '#2f4468', key: 'navy' },
+  { color: '#6b3f66', key: 'plum' },
+] as const
+
+export const DEFAULT_TEXT_COLOR = TEXT_COLORS[0].color

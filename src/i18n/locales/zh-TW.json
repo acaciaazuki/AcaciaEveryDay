@@ -159,8 +159,10 @@
       "loc": "地點",
       "date": "日期",
       "time": "時間",
-      "color": "顏色",
-      "titleRequired": "請輸入待辦事項"
+      "color": "卡片背景色",
+      "titleRequired": "請輸入待辦事項",
+      "textColor": "文字顏色",
+      "preview": "預覽"
     },
     "markDone": "標記為完成",
     "markUndone": "標記為未完成"
@@ -274,5 +276,15 @@
     "retry": "重試",
     "help": "登入後資料會存在你 Google Drive 的應用程式專用空間，換裝置登入也能看到同一份資料。第一次登入會自動讀取舊版 ACACIA 的雲端備份。",
     "user": "Google 使用者"
+  },
+  "colors": {
+    "text": {
+      "ink": "深灰黑",
+      "forest": "森林綠",
+      "brown": "暖棕咖",
+      "brick": "磚紅",
+      "navy": "海軍藍",
+      "plum": "梅紫"
+    }
   }
 }
