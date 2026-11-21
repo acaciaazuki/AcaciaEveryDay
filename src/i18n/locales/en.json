@@ -53,7 +53,27 @@
     "all": "All →",
     "quickEmpty": "Nothing to do 🎉",
     "quickPlaceholder": "Type a task and press Enter…",
-    "quickAdd": "+ New task"
+    "quickAdd": "+ New task",
+    "prev": "Previous",
+    "next": "Next",
+    "backToToday": "Back to today",
+    "viewLabel": "View range",
+    "view": {
+      "day": "Day",
+      "week": "Week",
+      "two": "2 weeks"
+    },
+    "relative": {
+      "yesterday": "Yesterday",
+      "tomorrow": "Tomorrow",
+      "dayAfter": "In 2 days",
+      "threeDays": "In 3 days"
+    },
+    "timelineOther": "Timeline",
+    "timelineEmptyOther": "Nothing planned for this day. Tap to add +",
+    "rhythmOn": "{{date}}'s rhythm",
+    "rangeEmpty": "No plans",
+    "todayBadge": "Today"
   },
   "calendar": {
     "eyebrow": "Put what matters in just the right place",

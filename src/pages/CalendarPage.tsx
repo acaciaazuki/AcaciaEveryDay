@@ -13,7 +13,8 @@ import { useNow } from '../hooks/useNow'
 import { useOpenFromUrl } from '../hooks/useOpenFromUrl'
 import { useAppStore } from '../store/useAppStore'
 
-const MAX_CHIPS = 3
+// 桌面版每天最多顯示的行程標籤數，超過的折成「還有 X 個」
+const MAX_CHIPS = 6
 
 export function CalendarPage() {
   const { t, i18n } = useTranslation()
@@ -50,7 +51,7 @@ export function CalendarPage() {
         }
       />
 
-      <div className="grid gap-5 min-[1001px]:grid-cols-[1fr_300px]">
+      <div className="grid gap-5 min-[1001px]:grid-cols-[1fr_320px]">
         <section className="rounded-(--radius-card) bg-paper p-4 shadow-card sm:p-5">
           <MonthNav
             year={ym.year}
@@ -80,7 +81,7 @@ export function CalendarPage() {
                   tabIndex={0}
                   onClick={() => setSelected(iso)}
                   onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setSelected(iso)}
-                  className={`min-h-16 cursor-pointer overflow-hidden rounded-lg border p-1 text-left transition sm:min-h-24 sm:p-1.5 ${
+                  className={`min-h-20 cursor-pointer overflow-hidden rounded-lg border p-1 text-left transition sm:min-h-36 sm:p-1.5 min-[1001px]:min-h-40 ${
                     isSel ? 'border-sage bg-sage-light/60' : 'border-transparent hover:bg-oat'
                   }`}
                 >
@@ -91,7 +92,7 @@ export function CalendarPage() {
                       <span key={e.id} className="size-1.5 rounded-full" style={{ background: e.titleColor || '#4a987b' }} />
                     ))}
                   </div>
-                  <div className="hidden gap-0.5 sm:grid">
+                  <div className="hidden gap-px sm:grid">
                     {evs.slice(0, MAX_CHIPS).map((e) => (
                       <button
                         key={e.id}
@@ -100,7 +101,7 @@ export function CalendarPage() {
                           ev.stopPropagation()
                           setEditing(e)
                         }}
-                        className="truncate rounded px-1.5 py-0.5 text-left text-[10px] font-semibold"
+                        className="truncate rounded px-1.5 py-px text-left text-[10px] leading-4 font-semibold"
                         style={{ background: e.bgColor || '#eaf6ef', color: e.titleColor || '#263633' }}
                       >
                         {e.start} {e.title}
