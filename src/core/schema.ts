@@ -63,6 +63,14 @@ export const placeSchema = z.object({
   bgColor: color,
 })
 
+/** 一個已結算的記帳週期。start 是週期開始日，同時也是這筆歸檔的識別，年度記帳本依 start 的年份歸屬 */
+export const archiveSchema = z.object({
+  start: isoDate,
+  end: isoDate,
+  archivedAt: z.number().default(0),
+  expenses: z.array(expenseSchema),
+})
+
 export const appDataSchema = z.object({
   schemaVersion: z.literal(SCHEMA_VERSION),
   events: z.array(eventSchema),
@@ -70,12 +78,15 @@ export const appDataSchema = z.object({
   shopping: z.array(expenseSchema),
   places: z.array(placeSchema),
   favorites: z.array(id),
+  /** 已歸檔的記帳週期；舊版資料沒有這個欄位，讀進來時補空陣列 */
+  archives: z.array(archiveSchema).default([]),
   updatedAt: z.number(),
 })
 
 export type CalendarEvent = z.infer<typeof eventSchema>
 export type Task = z.infer<typeof taskSchema>
 export type Expense = z.infer<typeof expenseSchema>
+export type Archive = z.infer<typeof archiveSchema>
 export type Place = z.infer<typeof placeSchema>
 export type AppData = z.infer<typeof appDataSchema>
 
@@ -86,6 +97,7 @@ export const emptyAppData = (): AppData => ({
   shopping: [],
   places: [],
   favorites: [],
+  archives: [],
   updatedAt: 0,
 })
 

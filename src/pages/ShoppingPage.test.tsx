@@ -3,9 +3,13 @@ import { fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import { beforeEach, describe, expect, it } from 'vitest'
 import i18n from '../i18n'
-import { emptyAppData } from '../core/schema'
+import { toLocalISO } from '../core/date'
+import { billingPeriod } from '../core/expenses'
+import { emptyAppData, type Expense } from '../core/schema'
 import { useAppStore } from '../store/useAppStore'
 import { ShoppingPage } from './ShoppingPage'
+
+const ex = (id: string, date: string, amt = 100): Expense => ({ id, title: id, amt, store: '', cat: 'food', date, time: '12:00', done: false })
 
 describe('ShoppingPage', () => {
   beforeEach(async () => {
@@ -73,5 +77,38 @@ describe('ShoppingPage', () => {
     render(<MemoryRouter><ShoppingPage /></MemoryRouter>)
     expect(screen.getByText('舊午餐').closest('li')).toHaveStyle({ color: '#c62828' })
     expect(screen.queryByText(/ × /)).not.toBeInTheDocument()
+  })
+
+  it('已結束週期的記帳自動收進年度記帳本，並可切換年份查看', () => {
+    useAppStore.setState({
+      shopping: [ex('今年舊帳', '2026-08-20', 300), ex('去年帳', '2025-12-15', 500), ex('跨年帳', '2026-01-05', 200), ex('這期午餐', toLocalISO(), 80)],
+    })
+    render(<MemoryRouter><ShoppingPage /></MemoryRouter>)
+    const s = useAppStore.getState()
+    expect(s.shopping.map((e) => e.id)).toEqual(['這期午餐'])
+    expect(s.archives.map((a) => a.start)).toEqual(['2026-08-10', '2025-12-10'])
+    // 2026-01-05 屬於 2025-12-10 開始的那一期，歸 2025 年
+    expect(screen.getByText('2026 年記帳本')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: '2025' }))
+    expect(screen.getByText('2025 年記帳本')).toBeInTheDocument()
+    expect(screen.getByText('共 1 期 · $700')).toBeInTheDocument()
+    expect(screen.getByText('2025-12-10 – 2026-01-09')).toBeInTheDocument()
+  })
+
+  it('立即歸檔本期：確認後清空本期，記帳本出現新的一期，可還原', () => {
+    const today = toLocalISO()
+    const p = billingPeriod()
+    useAppStore.setState({ shopping: [ex('午餐', today, 120), ex('晚餐', today, 180)] })
+    render(<MemoryRouter><ShoppingPage /></MemoryRouter>)
+    fireEvent.click(screen.getByText('📦 歸檔本期'))
+    fireEvent.click(within(screen.getByRole('dialog')).getByText('歸檔'))
+    expect(useAppStore.getState().shopping).toHaveLength(0)
+    expect(useAppStore.getState().archives[0]).toMatchObject({ start: p.start, end: p.end })
+    expect(screen.getByText(`${p.start.slice(0, 4)} 年記帳本`)).toBeInTheDocument()
+    expect(screen.getByText('📦 歸檔本期').closest('button')).toBeDisabled()
+
+    fireEvent.click(screen.getByText('還原到記帳清單'))
+    expect(useAppStore.getState().shopping).toHaveLength(2)
+    expect(useAppStore.getState().archives).toHaveLength(0)
   })
 })
