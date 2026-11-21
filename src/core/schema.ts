@@ -60,6 +60,29 @@ export const placeSchema = z.object({
   bgColor: color,
 })
 
+export const REMINDER_RADII = [100, 300, 500] as const
+export const REMINDER_DAYS = ['every', 'weekdays', 'weekends', 'custom'] as const
+
+/** 防遺漏提醒：到（或離開）某個地點、符合星期與時段時，提醒要帶的隨身物品 */
+export const reminderSchema = z.object({
+  id,
+  place: z.string().default(''),
+  /** 地點座標；沒有座標的規則會保留但不會被偵測 */
+  lat: z.number().optional(),
+  lng: z.number().optional(),
+  /** 從最愛地點帶入時記下來源，純參考用 */
+  placeId: z.string().optional(),
+  radius: z.union([z.literal(100), z.literal(300), z.literal(500)]).default(300),
+  trigger: z.enum(['arrive', 'leave']).default('leave'),
+  days: z.enum(REMINDER_DAYS).default('every'),
+  /** days 為 custom 時使用，0 是星期日、6 是星期六 */
+  customDays: z.array(z.number().int().min(0).max(6)).default([]),
+  start: hhmm.default(''),
+  end: hhmm.default(''),
+  items: z.array(z.string()).default([]),
+  enabled: z.boolean().default(true),
+})
+
 export const appDataSchema = z.object({
   schemaVersion: z.literal(SCHEMA_VERSION),
   events: z.array(eventSchema),
@@ -67,12 +90,14 @@ export const appDataSchema = z.object({
   shopping: z.array(expenseSchema),
   places: z.array(placeSchema),
   favorites: z.array(id),
+  reminders: z.array(reminderSchema).default([]),
   updatedAt: z.number(),
 })
 
 export type CalendarEvent = z.infer<typeof eventSchema>
 export type Task = z.infer<typeof taskSchema>
 export type Expense = z.infer<typeof expenseSchema>
+export type Reminder = z.infer<typeof reminderSchema>
 export type Place = z.infer<typeof placeSchema>
 export type AppData = z.infer<typeof appDataSchema>
 
@@ -83,6 +108,7 @@ export const emptyAppData = (): AppData => ({
   shopping: [],
   places: [],
   favorites: [],
+  reminders: [],
   updatedAt: 0,
 })
 

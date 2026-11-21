@@ -15,7 +15,8 @@
       "places": "地點",
       "tasks": "待辦",
       "shopping": "記帳"
-    }
+    },
+    "reminders": "防遺漏提醒"
   },
   "common": {
     "save": "儲存",
@@ -292,6 +293,99 @@
       "plum": "梅紫",
       "slate": "灰藍",
       "olive": "橄欖棕"
+    }
+  },
+  "reminders": {
+    "eyebrow": "出門前，再確認一次",
+    "title": "防遺漏提醒",
+    "add": "＋ 新增",
+    "empty": "還沒有提醒。建立一個，離開公司或抵達家裡時，提醒你帶齊隨身物品。",
+    "settingsHelp": "到達或離開某個地點時，提醒你確認錢包、鑰匙等隨身物品。",
+    "openPage": "前往防遺漏提醒",
+    "itemSep": "、",
+    "status": {
+      "idle": "還沒開始定位（需要至少一個已啟用、已設定座標的提醒）",
+      "watching": "定位監測中，進出設定的範圍就會提醒",
+      "denied": "定位權限被拒絕，請在瀏覽器網址列旁允許位置存取",
+      "unsupported": "這個瀏覽器無法取得位置",
+      "error": "暫時無法取得位置，會繼續嘗試",
+      "enableNotify": "開啟通知",
+      "webNote": "網頁版需要保持這個頁面開著才能偵測位置；之後的 iOS App 版會改用背景地理圍欄。",
+      "notify": {
+        "granted": "系統通知已開啟",
+        "default": "系統通知還沒開啟，只會在頁面內顯示提醒",
+        "denied": "系統通知被瀏覽器封鎖，只會在頁面內顯示提醒",
+        "unsupported": "這個瀏覽器不支援系統通知，只會在頁面內顯示提醒"
+      }
+    },
+    "card": {
+      "arrive": "抵達時",
+      "leave": "離開時",
+      "radius": "{{m}} 公尺內",
+      "noCoords": "還沒有座標，無法偵測。編輯後用目前位置或貼上座標。",
+      "allDay": "全天",
+      "enable": "啟用提醒",
+      "edit": "編輯",
+      "delete": "刪除",
+      "test": "測試提醒",
+      "deleteConfirm": "確定要刪除這個提醒嗎？"
+    },
+    "days": {
+      "every": "每天",
+      "weekdays": "平日",
+      "weekends": "假日",
+      "custom": "自訂"
+    },
+    "form": {
+      "newTitle": "新增防遺漏提醒",
+      "editTitle": "編輯防遺漏提醒",
+      "place": "地點",
+      "placePlaceholder": "例如：公司、家",
+      "fromFavorites": "從最愛地點帶入",
+      "useCurrent": "📍 使用目前位置",
+      "locating": "定位中…",
+      "currentName": "目前位置",
+      "coords": "座標（貼上地圖座標或連結）",
+      "coordsSet": "已設定座標 {{lat}}, {{lng}}",
+      "coordsMissing": "還沒有座標：請用目前位置，或貼上「緯度, 經度」／地圖連結，提醒才偵測得到。",
+      "coordsInvalid": "看不懂這個座標，請貼上「緯度, 經度」或含座標的地圖連結。",
+      "clearCoords": "清除座標",
+      "geoDenied": "無法取得目前位置：定位權限被拒絕。",
+      "geoFail": "無法取得目前位置，請稍後再試。",
+      "radius": "通知範圍",
+      "trigger": "觸發條件",
+      "days": "星期",
+      "start": "開始時間",
+      "end": "結束時間",
+      "timeHint": "時段選填，未指定時將視為整天適用",
+      "items": "隨身物品",
+      "itemPlaceholder": "例如：錢包、鑰匙",
+      "addItem": "新增",
+      "removeItem": "移除 {{item}}",
+      "preview": "規則預覽",
+      "placeRequired": "請輸入地點名稱",
+      "itemsRequired": "請至少加入一項隨身物品",
+      "customRequired": "請至少選一天"
+    },
+    "preview": {
+      "arrive": "{{when}}，抵達（{{place}}）時，請確認（{{items}}）。",
+      "leave": "{{when}}，離開（{{place}}）時，請確認（{{items}}）。",
+      "placeholderPlace": "地點",
+      "placeholderItems": "隨身物品",
+      "range": "{{days}} {{start}}–{{end}}",
+      "fromOnly": "{{days}} {{start}} 之後",
+      "untilOnly": "{{days}} {{end}} 之前"
+    },
+    "banner": {
+      "arrive": "抵達{{place}}，請確認帶齊",
+      "leave": "離開{{place}}，請確認帶齊",
+      "done": "都帶齊了",
+      "close": "關閉"
+    },
+    "notify": {
+      "title": "防遺漏提醒",
+      "arrive": "抵達{{place}}：請確認 {{items}}",
+      "leave": "離開{{place}}：請確認 {{items}}"
     }
   }
 }

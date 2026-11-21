@@ -15,7 +15,8 @@
       "places": "場所",
       "tasks": "タスク",
       "shopping": "家計簿"
-    }
+    },
+    "reminders": "忘れ物防止"
   },
   "common": {
     "save": "保存",
@@ -292,6 +293,99 @@
       "plum": "梅紫",
       "slate": "グレーブルー",
       "olive": "オリーブ"
+    }
+  },
+  "reminders": {
+    "eyebrow": "出かける前に、もう一度確認",
+    "title": "忘れ物防止",
+    "add": "＋ 追加",
+    "empty": "まだリマインダーがありません。職場を出るとき・自宅に着いたときに持ち物を確認できるよう作成しましょう。",
+    "settingsHelp": "場所に着いたとき・出るときに、財布や鍵などの持ち物を確認します。",
+    "openPage": "忘れ物防止を開く",
+    "itemSep": "、",
+    "status": {
+      "idle": "位置の確認は未開始です（有効で座標のあるリマインダーが必要です）",
+      "watching": "位置を確認中。設定した範囲に出入りするとお知らせします",
+      "denied": "位置情報が拒否されています。ブラウザのアドレスバー付近で許可してください",
+      "unsupported": "このブラウザでは位置情報を取得できません",
+      "error": "位置を取得できません。再試行します",
+      "enableNotify": "通知をオンにする",
+      "webNote": "Web版はこのページを開いたままにする必要があります。今後のiOSアプリ版ではバックグラウンドのジオフェンスを使う予定です。",
+      "notify": {
+        "granted": "システム通知はオンです",
+        "default": "システム通知はまだオフです（ページ内の表示のみ）",
+        "denied": "システム通知がブラウザでブロックされています（ページ内の表示のみ）",
+        "unsupported": "このブラウザはシステム通知に未対応です（ページ内の表示のみ）"
+      }
+    },
+    "card": {
+      "arrive": "到着したとき",
+      "leave": "出るとき",
+      "radius": "{{m}} m以内",
+      "noCoords": "座標が未設定のため検知できません。編集して現在地か座標を設定してください。",
+      "allDay": "終日",
+      "enable": "リマインダーを有効にする",
+      "edit": "編集",
+      "delete": "削除",
+      "test": "テスト",
+      "deleteConfirm": "このリマインダーを削除しますか？"
+    },
+    "days": {
+      "every": "毎日",
+      "weekdays": "平日",
+      "weekends": "休日",
+      "custom": "カスタム"
+    },
+    "form": {
+      "newTitle": "忘れ物防止を追加",
+      "editTitle": "忘れ物防止を編集",
+      "place": "場所",
+      "placePlaceholder": "例：職場、自宅",
+      "fromFavorites": "お気に入りから選ぶ",
+      "useCurrent": "📍 現在地を使う",
+      "locating": "取得中…",
+      "currentName": "現在地",
+      "coords": "座標（地図の座標やリンクを貼り付け）",
+      "coordsSet": "座標を設定しました {{lat}}, {{lng}}",
+      "coordsMissing": "座標が未設定です。現在地を使うか、「緯度, 経度」や地図リンクを貼り付けてください。",
+      "coordsInvalid": "座標を読み取れません。「緯度, 経度」または座標を含む地図リンクを貼り付けてください。",
+      "clearCoords": "座標をクリア",
+      "geoDenied": "現在地を取得できません（位置情報が許可されていません）。",
+      "geoFail": "現在地を取得できません。しばらくしてからお試しください。",
+      "radius": "通知する範囲",
+      "trigger": "条件",
+      "days": "曜日",
+      "start": "開始時刻",
+      "end": "終了時刻",
+      "timeHint": "時間帯は任意です。未指定の場合は終日が対象です",
+      "items": "持ち物",
+      "itemPlaceholder": "例：財布、鍵",
+      "addItem": "追加",
+      "removeItem": "{{item}} を削除",
+      "preview": "ルールのプレビュー",
+      "placeRequired": "場所を入力してください",
+      "itemsRequired": "持ち物を1つ以上追加してください",
+      "customRequired": "曜日を1つ以上選んでください"
+    },
+    "preview": {
+      "arrive": "{{when}}、{{place}}に到着したとき、持ち物を確認：{{items}}。",
+      "leave": "{{when}}、{{place}}を出るとき、持ち物を確認：{{items}}。",
+      "placeholderPlace": "場所",
+      "placeholderItems": "持ち物",
+      "range": "{{days}} {{start}}–{{end}}",
+      "fromOnly": "{{days}} {{start}}以降",
+      "untilOnly": "{{days}} {{end}}まで"
+    },
+    "banner": {
+      "arrive": "{{place}}に到着。持ち物を確認",
+      "leave": "{{place}}を出ます。持ち物を確認",
+      "done": "全部そろった",
+      "close": "閉じる"
+    },
+    "notify": {
+      "title": "忘れ物防止",
+      "arrive": "{{place}}に到着：{{items}}を確認",
+      "leave": "{{place}}を出るとき：{{items}}を確認"
     }
   }
 }
