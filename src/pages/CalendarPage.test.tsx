@@ -1,5 +1,6 @@
 import 'fake-indexeddb/auto'
 import { fireEvent, render, screen, within } from '@testing-library/react'
+import { MemoryRouter } from 'react-router'
 import { beforeEach, describe, expect, it } from 'vitest'
 import i18n from '../i18n'
 import { emptyAppData } from '../core/schema'
@@ -13,7 +14,7 @@ describe('CalendarPage', () => {
   })
 
   it('批次新增多天的行程', () => {
-    render(<CalendarPage />)
+    render(<MemoryRouter><CalendarPage /></MemoryRouter>)
     fireEvent.click(screen.getByText('🔁 批次新增'))
     const dialog = screen.getByRole('dialog')
     fireEvent.change(within(dialog).getByLabelText('行程名稱'), { target: { value: '上班' } })
@@ -29,7 +30,7 @@ describe('CalendarPage', () => {
   })
 
   it('沒選日期時提示', () => {
-    render(<CalendarPage />)
+    render(<MemoryRouter><CalendarPage /></MemoryRouter>)
     fireEvent.click(screen.getByText('🔁 批次新增'))
     fireEvent.change(screen.getByLabelText('行程名稱'), { target: { value: '上班' } })
     fireEvent.click(screen.getByText('加入 0 天'))

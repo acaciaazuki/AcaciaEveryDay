@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../components/Button'
 import { PageHead } from '../components/PageHead'
+import { SyncPanel } from '../components/SyncPanel'
 import { LANGUAGES } from '../i18n'
 import { useAppStore } from '../store/useAppStore'
 
@@ -44,6 +45,10 @@ export function SettingsPage() {
               </Button>
             ))}
           </div>
+        </section>
+        <section className="rounded-(--radius-card) bg-paper p-6 shadow-card">
+          <h2 className="mb-3 font-bold">{t('sync.title')}</h2>
+          <SyncPanel showHelp />
         </section>
         <section className="rounded-(--radius-card) bg-paper p-6 shadow-card">
           <h2 className="mb-2 font-bold">{t('settings.data')}</h2>
