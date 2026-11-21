@@ -1,3 +1,4 @@
+import { EVENT_ICON_KEYS } from './eventIcons'
 import { z } from 'zod'
 import { EXPENSE_CATEGORIES, PLACE_CATEGORY_KEYS } from './categories'
 
@@ -17,6 +18,8 @@ export const eventSchema = z.object({
   note: z.string().default(''),
   titleColor: color,
   bgColor: color,
+  /** 手動選的生活小圖示；沒選就依標題關鍵字自動判斷 */
+  icon: z.enum(EVENT_ICON_KEYS).optional(),
 })
 
 export const taskSchema = z.object({

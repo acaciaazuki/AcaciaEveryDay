@@ -253,7 +253,9 @@
     "notePlaceholder": "地點、準備事項或任何小提醒",
     "titleRequired": "請輸入行程名稱",
     "endBeforeStart": "結束時間要晚於開始時間",
-    "textColor": "文字顏色"
+    "textColor": "文字顏色",
+    "icon": "圖示",
+    "iconAuto": "自動"
   },
   "search": {
     "title": "搜尋",
@@ -387,5 +389,17 @@
       "arrive": "抵達{{place}}：請確認 {{items}}",
       "leave": "離開{{place}}：請確認 {{items}}"
     }
+  },
+  "icons": {
+    "wake": "起床",
+    "sleep": "就寢",
+    "study": "讀書上課",
+    "work": "上班工作",
+    "rest": "休息",
+    "meal": "用餐",
+    "shopping": "購物",
+    "exercise": "運動",
+    "health": "看診美容",
+    "default": "一般"
   }
 }

@@ -253,7 +253,9 @@
     "notePlaceholder": "Place, things to bring, any reminder",
     "titleRequired": "Please enter a title",
     "endBeforeStart": "End time must be after start time",
-    "textColor": "Text color"
+    "textColor": "Text color",
+    "icon": "Icon",
+    "iconAuto": "Auto"
   },
   "search": {
     "title": "Search",
@@ -387,5 +389,17 @@
       "arrive": "Arrived at {{place}}: check {{items}}",
       "leave": "Leaving {{place}}: check {{items}}"
     }
+  },
+  "icons": {
+    "wake": "Wake up",
+    "sleep": "Bedtime",
+    "study": "Study",
+    "work": "Work",
+    "rest": "Break",
+    "meal": "Meal",
+    "shopping": "Shopping",
+    "exercise": "Exercise",
+    "health": "Health & beauty",
+    "default": "General"
   }
 }

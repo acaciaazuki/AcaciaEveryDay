@@ -1,10 +1,12 @@
-import { Fragment, useState, type FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { Button } from '../components/Button'
+import { EventIconBadge } from '../components/EventIcon'
 import { EventDialog } from '../components/EventDialog'
 import { PageHead } from '../components/PageHead'
 import { addDays, dateRange, toLocalISO } from '../core/date'
+import { eventIconOf } from '../core/eventIcons'
 import type { CalendarEvent } from '../core/schema'
 import { dayRhythm, eventsOn, greetingKey, hours } from '../core/today'
 import { useNow } from '../hooks/useNow'
@@ -139,29 +141,30 @@ export function TodayPage() {
                 const next = events.at(i + 1)
                 const gap = next && e.end && next.start > e.end ? diffMin(e.end, next.start) : 0
                 return (
-                  <Fragment key={e.id}>
-                    <li className="grid grid-cols-[48px_1fr] items-start gap-3">
-                      <time className="pt-3 text-xs font-bold text-muted">{e.start}</time>
-                      <button
-                        type="button"
-                        onClick={() => setEditing(e)}
-                        className="rounded-xl border-l-4 px-4 py-3 text-left transition hover:-translate-y-px"
-                        style={{ background: e.bgColor || '#f2f8f4', borderLeftColor: e.titleColor || '#75b799' }}
-                      >
-                        <h3 className="font-bold" style={{ color: e.titleColor || 'var(--color-ink)' }}>
-                          {e.title}
-                        </h3>
-                        <small className="text-[11px] text-muted">
-                          {e.start}–{e.end} {e.note && `· ${e.note}`}
-                        </small>
-                      </button>
-                    </li>
+                  <li key={e.id} className="relative grid grid-cols-[48px_40px_1fr] items-start gap-x-3">
+                    <time className="pt-2.5 text-xs font-bold text-muted">{e.start}</time>
+                    <EventIconBadge icon={eventIconOf(e)} className="relative z-10 ring-4 ring-paper" />
+                    {/* 垂直時間軸線：從這顆徽章連到下一顆 */}
+                    {next && <span aria-hidden className="absolute top-10 -bottom-2 left-[calc(48px+0.75rem+19px)] w-0.5 bg-[#e1eae5]" />}
+                    <button
+                      type="button"
+                      onClick={() => setEditing(e)}
+                      className="rounded-xl border-l-4 px-4 py-3 text-left transition hover:-translate-y-px"
+                      style={{ background: e.bgColor || '#f2f8f4', borderLeftColor: e.titleColor || '#75b799' }}
+                    >
+                      <h3 className="font-bold" style={{ color: e.titleColor || 'var(--color-ink)' }}>
+                        {e.title}
+                      </h3>
+                      <small className="text-[11px] text-muted">
+                        {e.start}–{e.end} {e.note && `· ${e.note}`}
+                      </small>
+                    </button>
                     {gap >= 30 && (
-                      <li className="ml-[60px] py-1 text-[11px] text-[#9aa6a0]">
+                      <p className="col-start-3 py-1.5 pl-1 text-[11px] text-[#9aa6a0]">
                         {t('today.gap')} · {hours(gap)}h
-                      </li>
+                      </p>
                     )}
-                  </Fragment>
+                  </li>
                 )
               })}
             </ol>

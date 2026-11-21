@@ -253,7 +253,9 @@
     "notePlaceholder": "場所や準備、ちょっとしたメモ",
     "titleRequired": "予定名を入力してください",
     "endBeforeStart": "終了時刻は開始より後にしてください",
-    "textColor": "文字色"
+    "textColor": "文字色",
+    "icon": "アイコン",
+    "iconAuto": "自動"
   },
   "search": {
     "title": "検索",
@@ -387,5 +389,17 @@
       "arrive": "{{place}}に到着：{{items}}を確認",
       "leave": "{{place}}を出るとき：{{items}}を確認"
     }
+  },
+  "icons": {
+    "wake": "起床",
+    "sleep": "就寝",
+    "study": "勉強・授業",
+    "work": "仕事",
+    "rest": "休憩",
+    "meal": "食事",
+    "shopping": "買い物",
+    "exercise": "運動",
+    "health": "通院・美容",
+    "default": "その他"
   }
 }
