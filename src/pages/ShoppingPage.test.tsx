@@ -1,5 +1,6 @@
 import 'fake-indexeddb/auto'
 import { fireEvent, render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router'
 import { beforeEach, describe, expect, it } from 'vitest'
 import i18n from '../i18n'
 import { emptyAppData } from '../core/schema'
@@ -13,7 +14,7 @@ describe('ShoppingPage', () => {
   })
 
   it('新增自訂分類的記帳', () => {
-    render(<ShoppingPage />)
+    render(<MemoryRouter><ShoppingPage /></MemoryRouter>)
     fireEvent.click(screen.getByText('＋ 新增記帳'))
     fireEvent.change(screen.getByLabelText('購買項目'), { target: { value: '貓砂' } })
     fireEvent.change(screen.getByLabelText('金額'), { target: { value: '300' } })

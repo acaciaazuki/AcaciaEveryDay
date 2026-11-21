@@ -11,6 +11,7 @@ import { billingPeriod, DEFAULT_BUDGET, EXPENSE_STYLE, summarize } from '../core
 import { formatMoney } from '../core/format'
 import type { Expense } from '../core/schema'
 import { useNow } from '../hooks/useNow'
+import { useOpenFromUrl } from '../hooks/useOpenFromUrl'
 import { useAppStore } from '../store/useAppStore'
 
 type Draft = Omit<Expense, 'id' | 'done'>
@@ -20,6 +21,7 @@ export function ShoppingPage() {
   const shopping = useAppStore((s) => s.shopping)
   const toggleExpense = useAppStore((s) => s.toggleExpense)
   const [editing, setEditing] = useState<Expense | 'new' | null>(null)
+  useOpenFromUrl(shopping, setEditing)
   const lng = i18n.resolvedLanguage ?? 'zh-TW'
 
   const period = billingPeriod(useNow())

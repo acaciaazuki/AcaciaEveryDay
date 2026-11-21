@@ -1,5 +1,6 @@
 import 'fake-indexeddb/auto'
 import { fireEvent, render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router'
 import { beforeEach, describe, expect, it } from 'vitest'
 import '../i18n'
 import i18n from '../i18n'
@@ -14,7 +15,7 @@ describe('TasksPage', () => {
   })
 
   it('新增、完成一筆待辦', () => {
-    render(<TasksPage />)
+    render(<MemoryRouter><TasksPage /></MemoryRouter>)
     expect(screen.getByText('目前沒有待辦事項 🎉')).toBeInTheDocument()
     fireEvent.click(screen.getByText('＋ 新增待辦'))
     fireEvent.change(screen.getByLabelText('待辦事項'), { target: { value: '買牛奶' } })
@@ -26,7 +27,7 @@ describe('TasksPage', () => {
   })
 
   it('沒有標題時不能儲存', () => {
-    render(<TasksPage />)
+    render(<MemoryRouter><TasksPage /></MemoryRouter>)
     fireEvent.click(screen.getByText('＋ 新增待辦'))
     fireEvent.click(screen.getByText('儲存'))
     expect(screen.getByText('請輸入待辦事項')).toBeInTheDocument()

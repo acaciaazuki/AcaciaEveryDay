@@ -226,5 +226,18 @@
     "notePlaceholder": "地點、準備事項或任何小提醒",
     "titleRequired": "請輸入行程名稱",
     "endBeforeStart": "結束時間要晚於開始時間"
+  },
+  "search": {
+    "title": "搜尋",
+    "button": "搜尋你的 ACACIA",
+    "placeholder": "搜尋行程、待辦、記帳或地點…",
+    "empty": "找不到相符的內容",
+    "events": "行程",
+    "tasks": "待辦",
+    "shopping": "記帳",
+    "places": "地點",
+    "event": "行程",
+    "task": "待辦",
+    "expense": "記帳"
   }
 }

@@ -226,5 +226,18 @@
     "notePlaceholder": "場所や準備、ちょっとしたメモ",
     "titleRequired": "予定名を入力してください",
     "endBeforeStart": "終了時刻は開始より後にしてください"
+  },
+  "search": {
+    "title": "検索",
+    "button": "ACACIA を検索",
+    "placeholder": "予定・タスク・家計簿・場所を検索…",
+    "empty": "一致するものがありません",
+    "events": "予定",
+    "tasks": "タスク",
+    "shopping": "家計簿",
+    "places": "場所",
+    "event": "予定",
+    "task": "タスク",
+    "expense": "支出"
   }
 }

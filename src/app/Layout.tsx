@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NavLink, Outlet } from 'react-router'
+import { CommandPalette } from '../components/CommandPalette'
 import { useAppStore } from '../store/useAppStore'
 
 const MAIN = [
@@ -17,6 +19,8 @@ const linkClass = ({ isActive }: { isActive: boolean }) =>
 export function Layout() {
   const { t } = useTranslation()
   const openTasks = useAppStore((s) => s.tasks.filter((x) => !x.done).length)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform)
 
   return (
     <div className="min-h-dvh">
@@ -25,6 +29,15 @@ export function Layout() {
           <span className="grid size-9 place-items-center rounded-xl bg-mint text-lg text-sage">✿</span>
           {t('app.name')}
         </div>
+        <button
+          type="button"
+          onClick={() => setSearchOpen(true)}
+          className="mb-4 flex items-center gap-2 rounded-(--radius-control) border border-line bg-oat px-3 py-2 text-left text-xs text-muted hover:border-sage"
+        >
+          <span aria-hidden>⌕</span>
+          <span className="flex-1">{t('search.button')}</span>
+          <kbd className="rounded border border-line bg-paper px-1.5 text-[10px]">{isMac ? '⌘K' : 'Ctrl K'}</kbd>
+        </button>
         <nav className="grid gap-1">
           {MAIN.map((n) => (
             <NavLink key={n.to} to={n.to} end={'end' in n} className={linkClass}>
@@ -52,8 +65,17 @@ export function Layout() {
       </aside>
 
       <main className="mx-auto max-w-[1400px] px-3.5 pt-4 pb-[calc(88px+env(safe-area-inset-bottom))] min-[681px]:ml-60 min-[681px]:px-6 min-[681px]:pb-16 min-[1001px]:px-9">
+        <button
+          type="button"
+          aria-label={t('search.button')}
+          onClick={() => setSearchOpen(true)}
+          className="float-right mt-1 grid size-9 place-items-center rounded-full border border-line bg-paper text-sage shadow-soft min-[681px]:hidden"
+        >
+          ⌕
+        </button>
         <Outlet />
       </main>
+      <CommandPalette open={searchOpen} onOpenChange={setSearchOpen} />
 
       <nav className="fixed inset-x-0 bottom-0 z-30 flex justify-around border-t border-line bg-paper px-3 pt-2 pb-[calc(8px+env(safe-area-inset-bottom))] shadow-[0_-4px_20px_#29483a08] min-[681px]:hidden">
         {[

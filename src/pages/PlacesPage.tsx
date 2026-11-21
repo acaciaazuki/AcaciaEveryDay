@@ -6,6 +6,7 @@ import { PlaceDialog } from '../components/PlaceDialog'
 import { PLACE_CATEGORIES, PLACE_CATEGORY_KEYS, type PlaceCategory } from '../core/categories'
 import { mapsUrl } from '../core/places'
 import type { Place } from '../core/schema'
+import { useOpenFromUrl } from '../hooks/useOpenFromUrl'
 import { useAppStore } from '../store/useAppStore'
 
 export function PlacesPage() {
@@ -14,6 +15,7 @@ export function PlacesPage() {
   const [cat, setCat] = useState<PlaceCategory | 'all'>('all')
   const [q, setQ] = useState('')
   const [editing, setEditing] = useState<Place | 'new' | null>(null)
+  useOpenFromUrl(places, setEditing)
 
   const needle = q.trim().toLowerCase()
   const shown = places.filter(
