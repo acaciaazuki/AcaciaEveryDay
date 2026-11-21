@@ -209,7 +209,7 @@ export function ReminderDialog({ reminder, onClose }: { reminder: Reminder | nul
                     onClick={() => set({ items: draft.items.filter((x) => x !== item) })}
                     className="rounded-full bg-sage-light px-3 py-1.5 text-xs font-semibold text-sage-dark hover:bg-mint"
                   >
-                    {item} <Icon name="close" className="size-[1em]" />
+                    {item} <Icon name="close" className="size-[1.3em]" />
                   </button>
                 </li>
               ))}

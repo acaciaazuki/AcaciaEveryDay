@@ -78,7 +78,7 @@ export function TodayPage() {
         actions={
           <>
             <Link to="/calendar" className="inline-flex items-center gap-1.5 rounded-(--radius-control) border border-line bg-paper px-4 py-2.5 text-xs font-bold hover:bg-sage-light">
-              <Icon name="calendar" className="size-[1.4em]" />
+              <Icon name="calendar" className="size-[1.8em]" />
               {t('today.seeCalendar')}
             </Link>
             <Button onClick={() => setEditing('new')}>{t('today.addEvent')}</Button>
@@ -104,7 +104,7 @@ export function TodayPage() {
           </div>
         </div>
         <div className="hidden text-[calc(48px*var(--fs))] text-[#5f7a70] sm:block" aria-hidden>
-          <Icon name="cloudSun" className="size-[1.4em]" />
+          <Icon name="cloudSun" className="size-[1.8em]" />
         </div>
       </section>
 
@@ -163,7 +163,7 @@ export function TodayPage() {
                     </button>
                     {gap >= 30 && (
                       <p className="col-start-3 flex items-center gap-1.5 py-1.5 pl-1 text-[length:calc(11px*var(--fs))] text-[#9aa6a0]">
-                        <Icon name="cloud" className="size-[1.4em]" />
+                        <Icon name="cloud" className="size-[1.8em]" />
                         {t('today.gap')} · {hours(gap)}h
                       </p>
                     )}
@@ -190,7 +190,7 @@ export function TodayPage() {
                 <small className="block text-[length:calc(11px*var(--fs))] text-muted">{t('today.rhythmRange')}</small>
               </div>
               <span className="text-2xl text-[#5f7a70]" aria-hidden>
-                <Icon name="moon" className="size-[1.2em]" />
+                <Icon name="moon" className="size-[1.5em]" />
               </span>
             </div>
             <div className="mb-2 h-2 overflow-hidden rounded-full bg-[#f0f3f1]">

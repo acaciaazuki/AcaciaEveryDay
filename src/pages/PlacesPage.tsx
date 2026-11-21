@@ -64,7 +64,7 @@ export function PlacesPage() {
               <li key={p.id} className="flex flex-col rounded-(--radius-card) p-5 shadow-card" style={{ background: p.bgColor && p.bgColor !== '#ffffff' ? p.bgColor : '#fff' }}>
                 <div className="flex items-start gap-3.5">
                   <div className="grid size-[calc(48px*var(--fs))] shrink-0 place-items-center rounded-(--radius-card) text-[#4f6b60] shadow-soft" style={{ background: c.bg }} aria-hidden>
-                    <Icon name={c.icon} className="size-[62%]" />
+                    <Icon name={c.icon} className="size-[68%]" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <strong className="block truncate text-[length:calc(15px*var(--fs))]">{p.name}</strong>

@@ -5,9 +5,10 @@ import { Button } from '../components/Button'
 import { ColorSwatches, TextColorSwatches } from '../components/ColorSwatches'
 import { Dialog } from '../components/Dialog'
 import { Field } from '../components/Field'
+import { IconSelect } from '../components/IconSelect'
 import { LedgerBook } from '../components/LedgerBook'
 import { PageHead } from '../components/PageHead'
-import { EXPENSE_CATEGORIES, type ExpenseCategory } from '../core/categories'
+import { EXPENSE_CATEGORIES } from '../core/categories'
 import { toLocalISO } from '../core/date'
 import { billingPeriod, formatQty, lineTotal, DEFAULT_BUDGET, EXPENSE_STYLE, summarize } from '../core/expenses'
 import { formatMoney } from '../core/format'
@@ -104,14 +105,14 @@ export function ShoppingPage() {
                       onClick={() => toggleExpense(s.id)}
                       className={`grid size-5 shrink-0 place-items-center rounded-full border-2 text-[length:calc(10px*var(--fs))] ${s.done ? 'border-[#888] bg-[#888] text-white' : 'border-current'}`}
                     >
-                      {s.done && <Icon name="check" className="size-[1em]" />}
+                      {s.done && <Icon name="check" className="size-[1.3em]" />}
                     </button>
                     <button type="button" className="min-w-0 text-left" onClick={() => setEditing(s)}>
                       <strong className={`text-sm ${s.done ? 'line-through' : ''}`}>
                         {s.title}
                       </strong>
                       <small className="mt-1 block text-[length:calc(11px*var(--fs))] opacity-80">
-                        {s.store || t('shopping.noStore')} · <Icon name={st.icon} className="size-[1.1em]" /> {catLabel(s)} · {s.date} {s.time}
+                        {s.store || t('shopping.noStore')} · <Icon name={st.icon} className="size-[1.5em]" /> {catLabel(s)} · {s.date} {s.time}
                         {s.unitPrice != null && ` · ${formatQty(s.quantity)} × ${formatMoney(s.unitPrice, lng)}`}
                       </small>
                     </button>
@@ -218,20 +219,12 @@ function ExpenseDialog({ expense, onClose }: { expense: Expense | null; onClose:
           />
           <Field label={t('shopping.form.store')} placeholder={t('shopping.form.storePlaceholder')} value={draft.store} onChange={(e) => set({ store: e.target.value })} />
         </div>
-        <label className="grid gap-1.5 text-xs font-semibold text-muted">
-          {t('shopping.form.cat')}
-          <select
-            className="rounded-(--radius-control) border border-line bg-oat px-3 py-2.5 text-sm font-normal text-ink outline-none focus:border-sage"
-            value={draft.cat}
-            onChange={(e) => set({ cat: e.target.value as ExpenseCategory })}
-          >
-            {EXPENSE_CATEGORIES.map((c) => (
-              <option key={c} value={c}>
-                {t(`expenseCat.${c}`)}
-              </option>
-            ))}
-          </select>
-        </label>
+        <IconSelect
+          label={t('shopping.form.cat')}
+          value={draft.cat}
+          options={EXPENSE_CATEGORIES.map((c) => ({ value: c, label: t(`expenseCat.${c}`), icon: EXPENSE_STYLE[c].icon, bg: EXPENSE_STYLE[c].bg }))}
+          onChange={(cat) => set({ cat })}
+        />
         {draft.cat === 'other' && (
           <Field label={t('shopping.form.customCat')} placeholder={t('shopping.form.customCatPlaceholder')} value={draft.customCat ?? ''} onChange={(e) => set({ customCat: e.target.value })} />
         )}

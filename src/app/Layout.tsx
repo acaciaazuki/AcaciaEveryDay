@@ -52,7 +52,7 @@ export function Layout() {
         <nav className="grid gap-1">
           {MAIN.map((n) => (
             <NavLink key={n.to} to={n.to} end={'end' in n} className={linkClass}>
-              <Icon name={n.ico} className="size-[1.4em]" />
+              <Icon name={n.ico} className="size-[1.9em]" />
               {t(`nav.${n.key}`)}
               {n.key === 'tasks' && (
                 <span className="ml-auto rounded-full bg-[#f1f4f2] px-2 py-0.5 text-[length:calc(10px*var(--fs))] font-bold text-[#8c9993]">{openTasks}</span>
@@ -63,11 +63,11 @@ export function Layout() {
         <div className="px-3 pt-4 pb-2 text-[length:calc(10px*var(--fs))] font-bold tracking-[1.5px] text-[#a4afaa] uppercase">{t('nav.sectionCollect')}</div>
         <nav className="grid gap-1">
           <NavLink to="/shopping" className={linkClass}>
-            <Icon name="shopping" className="size-[1.4em]" />
+            <Icon name="shopping" className="size-[1.9em]" />
             {t('nav.shopping')}
           </NavLink>
           <NavLink to="/reminders" className={linkClass}>
-            <Icon name="reminders" className="size-[1.4em]" />
+            <Icon name="reminders" className="size-[1.9em]" />
             {t('nav.reminders')}
           </NavLink>
         </nav>
@@ -77,7 +77,7 @@ export function Layout() {
           </div>
         <nav className="grid gap-1">
           <NavLink to="/settings" className={linkClass}>
-            <Icon name="settings" className="size-[1.4em]" />
+            <Icon name="settings" className="size-[1.9em]" />
             {t('nav.settings')}
           </NavLink>
         </nav>
@@ -91,7 +91,7 @@ export function Layout() {
           onClick={() => setSearchOpen(true)}
           className="float-right mt-1 grid size-9 place-items-center rounded-full border border-line bg-paper text-sage shadow-soft min-[681px]:hidden"
         >
-          <Icon name="search" className="size-[1.3em]" />
+          <Icon name="search" className="size-[1.7em]" />
         </button>
         <Outlet />
       </main>
@@ -113,7 +113,7 @@ export function Layout() {
             end={n.end}
             className={({ isActive }) => `grid justify-items-center gap-0.5 px-1 text-[length:calc(10px*var(--fs))] font-semibold ${isActive ? 'text-sage-dark' : 'text-[#9aa6a0]'}`}
           >
-            <Icon name={n.ico} className="size-[1.9em]" />
+            <Icon name={n.ico} className="size-[2.4em]" />
             {n.label}
           </NavLink>
         ))}
