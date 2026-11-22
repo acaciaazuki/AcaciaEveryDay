@@ -51,16 +51,36 @@ describe('庫存與提醒頁', () => {
     expect(useAppStore.getState().addInventoryToShopping(inventory.find((x) => x.name === '抽取式衛生紙')!.id, '2026-11-22', '12:00')).toBe(0)
   })
 
-  it('購物清單打勾後可以一鍵補進庫存', () => {
+  it('購物清單打勾後自動補進庫存，用品卡回到可再加入購物清單', () => {
     renderPage()
     fireEvent.click(within(cardOf('抽取式衛生紙')).getByRole('button', { name: /加入購物清單/ }))
     act(() => {
       useAppStore.getState().toggleExpense(useAppStore.getState().shopping[0]!.id)
     })
-    fireEvent.click(within(cardOf('抽取式衛生紙')).getByRole('button', { name: /已買到，補進庫存 \+2/ }))
     const x = useAppStore.getState().inventory.find((i) => i.name === '抽取式衛生紙')!
     expect(x.stock).toBe(4)
     expect(x.shoppingId).toBeUndefined()
+    expect(within(cardOf('抽取式衛生紙')).getByText('庫存充足')).toBeInTheDocument()
+    expect(within(cardOf('抽取式衛生紙')).queryByRole('button', { name: /已買到/ })).toBeNull()
+  })
+
+  it('舊資料（自動入庫前就打勾的）仍可一鍵補進庫存，且只補一次', () => {
+    renderPage()
+    fireEvent.click(within(cardOf('抽取式衛生紙')).getByRole('button', { name: /加入購物清單/ }))
+    act(() => {
+      useAppStore.setState((st) => ({ shopping: st.shopping.map((e) => ({ ...e, done: true })) }))
+    })
+    fireEvent.click(within(cardOf('抽取式衛生紙')).getByRole('button', { name: /已買到，補進庫存 \+2/ }))
+    const { inventory, shopping } = useAppStore.getState()
+    const x = inventory.find((i) => i.name === '抽取式衛生紙')!
+    expect(x.stock).toBe(4)
+    expect(x.shoppingId).toBeUndefined()
+    expect(shopping[0]).toMatchObject({ stockedItemId: x.id, stockedQty: 2 })
+    // 之後取消打勾會扣回
+    act(() => {
+      useAppStore.getState().toggleExpense(shopping[0]!.id)
+    })
+    expect(useAppStore.getState().inventory.find((i) => i.name === '抽取式衛生紙')!.stock).toBe(2)
   })
 
   it('使用 -1／補充 +1 會更新庫存，今天已更換會重設倒數', () => {
