@@ -24,6 +24,8 @@ export const router = createBrowserRouter([
       { path: 'subscriptions', Component: SubscriptionsPage },
       { path: 'inventory', Component: InventoryPage },
       { path: 'settings', Component: SettingsPage },
+      // 隱私權政策全文較長，點開才下載
+      { path: 'privacy', lazy: async () => ({ Component: (await import('../pages/PrivacyPage')).PrivacyPage }) },
     ],
   },
 ])

@@ -784,5 +784,55 @@
       "installmentHint": "Each time it's added the count goes up by one; after the last payment it's marked done.",
       "done": "Done (hidden from adding)"
     }
+  },
+  "privacy": {
+    "link": "Privacy policy",
+    "backToSettings": "← Back to Settings"
+  },
+  "backup": {
+    "title": "Automatic backup",
+    "toggle": "Turn on automatic backup",
+    "help": "When you open the app or change data, and the last backup is over 12 hours old, a backup runs in the background. The latest {{count}} snapshots are kept. While signed in to Google, it is also saved to the backup slot in your Drive.",
+    "lastAt": "Last automatic backup",
+    "never": "No backup yet",
+    "cloud": {
+      "label": "Google Drive backup slot",
+      "signedOut": "Not signed in — saved on this device only",
+      "waiting": "Uploads with the next backup",
+      "uploading": "Uploading…",
+      "ok": "Uploaded ({{time}})",
+      "error": "Upload failed — snapshots on this device are safe"
+    },
+    "now": "Back up now",
+    "offNote": "Automatic backup is off. You can still back up manually.",
+    "done": "Backup created",
+    "unchanged": "Your data matches the latest backup, so no new backup is needed",
+    "fail": "Something went wrong. Your data was not changed",
+    "history": "Backup history ({{count}}/{{max}})",
+    "historyLabel": "Backup history",
+    "empty": "No backups yet.",
+    "reason": {
+      "auto": "Auto",
+      "manual": "Manual",
+      "beforeRestore": "Before restore"
+    },
+    "counts": "Events {{events}} · Tasks {{tasks}} · Expenses {{shopping}} · Inventory {{inventory}} · Subscriptions {{subscriptions}}",
+    "restore": "Restore",
+    "restoreLabel": "Restore the backup from {{time}}",
+    "restoreConfirm": "Restore your data to the backup from {{time}}?\nYour current data will first be saved as a “Before restore” snapshot, so you can go back.",
+    "restored": "Restored the backup from {{time}}"
+  },
+  "deleteData": {
+    "title": "Delete all data",
+    "button": "Delete all data",
+    "deleting": "Deleting…",
+    "help": "Erases all data, automatic backups and preferences on this device. This cannot be undone, so consider using “Export JSON” first.",
+    "cloudOn": "You are signed in to Google: ACACIA’s sync and backup files in your Google Drive app folder (including the old website’s sync file) will also be deleted, and you will be signed out.",
+    "cloudOff": "You are not signed in, so only data on this device will be deleted. To delete cloud data too, sign in with Google above first.",
+    "confirmLocal": "Delete all ACACIA data and automatic backups on this device? This cannot be undone.",
+    "confirmCloud": "Delete all ACACIA data?\nThis deletes data and automatic backups on this device, plus ACACIA’s sync and backup files in your Google Drive, and signs you out. This cannot be undone.",
+    "done": "All data on this device has been deleted",
+    "doneCloud": "All ACACIA data on this device and in Google Drive has been deleted, and you have been signed out",
+    "fail": "Delete failed and your data was not changed. Check your connection and try again."
   }
 }

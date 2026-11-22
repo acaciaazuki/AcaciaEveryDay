@@ -70,3 +70,10 @@ export function parseMinuteInput(text: string): number | null {
   const n = Number(text)
   return n <= 59 ? n : null
 }
+
+/** 時間戳記顯示成「11月22日 週日 09:30 PM」，時間沿用全站的 AM／PM 格式（備份清單等用） */
+export function formatStamp(ts: number, lng?: string): string {
+  const d = new Date(ts)
+  const date = new Intl.DateTimeFormat(lng, { month: 'short', day: 'numeric', weekday: 'short' }).format(d)
+  return `${date} ${formatTime(`${pad(d.getHours())}:${pad(d.getMinutes())}`, lng)}`
+}

@@ -784,5 +784,55 @@
       "installmentHint": "帶入一次期數就加 1，最後一期帶入後自動標記完成。",
       "done": "已完成（不會出現在批次加入）"
     }
+  },
+  "privacy": {
+    "link": "隱私權政策",
+    "backToSettings": "← 回到設定"
+  },
+  "backup": {
+    "title": "自動備份",
+    "toggle": "啟用自動備份",
+    "help": "開啟網站時與資料變動後，距上次備份超過 12 小時就會在背景自動備份，保留最近 {{count}} 份快照。已登入 Google 時也會備份到你 Drive 的備份槽。",
+    "lastAt": "上次自動備份",
+    "never": "尚未備份",
+    "cloud": {
+      "label": "Google Drive 備份槽",
+      "signedOut": "未登入，只備份在這台裝置",
+      "waiting": "下次備份時上傳",
+      "uploading": "上傳中…",
+      "ok": "已上傳（{{time}}）",
+      "error": "上傳失敗，本機快照不受影響"
+    },
+    "now": "立即備份",
+    "offNote": "自動備份已關閉，仍可手動備份。",
+    "done": "已建立備份",
+    "unchanged": "資料跟最新一份備份相同，不需要再備份",
+    "fail": "操作失敗，資料沒有變動",
+    "history": "歷史備份（{{count}}／{{max}}）",
+    "historyLabel": "歷史備份",
+    "empty": "還沒有備份。",
+    "reason": {
+      "auto": "自動",
+      "manual": "手動",
+      "beforeRestore": "還原前"
+    },
+    "counts": "行程 {{events}}・待辦 {{tasks}}・記帳 {{shopping}}・庫存 {{inventory}}・訂閱 {{subscriptions}}",
+    "restore": "還原",
+    "restoreLabel": "還原 {{time}} 的備份",
+    "restoreConfirm": "要把資料還原到 {{time}} 的備份嗎？\n目前的資料會先自動存成一份「還原前」快照，之後仍可以還原回來。",
+    "restored": "已還原到 {{time}} 的備份"
+  },
+  "deleteData": {
+    "title": "刪除所有資料",
+    "button": "刪除所有資料",
+    "deleting": "刪除中…",
+    "help": "清除這台裝置上的所有資料、自動備份快照與偏好設定。刪除後無法復原，建議先「匯出 JSON」留一份。",
+    "cloudOn": "目前已登入 Google：會一併刪除你 Google Drive 應用程式專用資料夾中的 ACACIA 同步檔與備份檔（含舊版網站的同步檔），並登出。",
+    "cloudOff": "目前未登入，只會刪除這台裝置上的資料。若要一併刪除雲端資料，請先在上方用 Google 登入同步。",
+    "confirmLocal": "確定要刪除這台裝置上的所有 ACACIA 資料與自動備份嗎？此動作無法復原。",
+    "confirmCloud": "確定要刪除所有 ACACIA 資料嗎？\n將刪除這台裝置上的資料與自動備份，以及你 Google Drive 中的 ACACIA 同步檔與備份檔，並登出。此動作無法復原。",
+    "done": "已刪除這台裝置上的所有資料",
+    "doneCloud": "已刪除這台裝置與 Google Drive 上的所有 ACACIA 資料，並已登出",
+    "fail": "刪除失敗，資料沒有變動。請確認網路連線後再試一次。"
   }
 }
