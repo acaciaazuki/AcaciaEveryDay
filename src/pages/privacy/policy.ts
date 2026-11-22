@@ -4,8 +4,8 @@
  * 段落中的網址與 {email} 會自動變成連結。
  */
 
-/** 支援信箱：正式上線前請換成真的信箱（也可以用環境變數 VITE_SUPPORT_EMAIL 設定） */
-export const CONTACT_EMAIL: string = import.meta.env.VITE_SUPPORT_EMAIL ?? 'support@example.com'
+/** 支援信箱（也可以用環境變數 VITE_SUPPORT_EMAIL 覆寫） */
+export const CONTACT_EMAIL: string = import.meta.env.VITE_SUPPORT_EMAIL ?? 'acacia.qiqi@gmail.com'
 export const EFFECTIVE_DATE = '2026-11-22'
 export const UPDATED_DATE = '2026-11-22'
 
@@ -111,7 +111,7 @@ const zhTW: PolicyDoc = {
           ],
         },
         { sub: '3.4 我們不持有你的資料' },
-        '我們沒有任何伺服器或資料庫保存你的個人資料，無法存取、檢視、分析，也無法替你復原資料。請善用匯出 JSON 與自動備份功能保護你的資料。',
+        '除了第 4 節所述的地點搜尋服務會收到搜尋字詞外，我們沒有任何伺服器或資料庫保存你的個人資料，無法存取、檢視、分析，也無法替你復原資料。請善用匯出 JSON 與自動備份功能保護你的資料。',
       ],
     },
     {
@@ -124,7 +124,7 @@ const zhTW: PolicyDoc = {
             'Google Identity Services（accounts.google.com）：只在你按下「Google 登入同步」時載入，用於登入與授權。',
             'Google OAuth 使用者資訊 API：登入後取得姓名與大頭貼（見 2.1）。',
             'Google Drive API：讀寫你 Drive 應用程式專用資料夾中的 ACACIA 檔案（見 3.2）。',
-            'Google Places API（地點搜尋）：在新增最愛地點時使用搜尋功能，你輸入的搜尋字詞會經由我們架設在 Cloudflare Workers 上的轉送服務送到 Google Places API 取得結果。只傳送搜尋字詞，不包含你的位置或其他資料；轉送服務只負責轉送，不保存或分析搜尋內容。',
+            '地點搜尋：在新增最愛地點時使用搜尋功能，你輸入的搜尋字詞會從瀏覽器傳送到 App 設定的地點搜尋服務（架設在 Cloudflare Workers 上的網址 bold-cloud-4bb3.s3311453038.workers.dev，沿用自舊版 ACACIA），由它向 Google Places API 查詢地點名稱、地址與營業時間。會收到搜尋字詞的對象為：Cloudflare（Workers 平台）、該搜尋服務的營運者，以及 Google。傳送的只有搜尋字詞與一般連線資訊（例如 IP 位址），不包含你的位置或其他 ACACIA 資料。這些對象依各自的政策處理資料。若不使用搜尋、改為手動輸入地點，就不會傳送任何內容；搜尋服務無法使用時，搜尋會失敗，但仍可手動輸入',
             'Google Fonts（fonts.googleapis.com、fonts.gstatic.com）：網頁載入字型時，你的瀏覽器會直接向 Google 下載字型檔，Google 因此會收到你的 IP 位址與瀏覽器資訊。',
             'Cloudflare Pages：網頁版的託管服務。如同一般網站，Cloudflare 可能為了安全與維運記錄連線資訊（例如 IP 位址、請求時間）。',
             'Google 地圖：只有在你點擊地點的地圖連結時，才會在新分頁開啟 Google 地圖。',
@@ -277,7 +277,7 @@ const ja: PolicyDoc = {
           ],
         },
         { sub: '3.4 私たちはデータを保有しません' },
-        '私たちは個人データを保存するサーバーやデータベースを持たず、あなたのデータにアクセス、閲覧、分析することも、代わりに復元することもできません。JSON の書き出しと自動バックアップでデータを守ってください。',
+        '第 4 節の場所検索サービスが検索語を受け取ることを除き、私たちは個人データを保存するサーバーやデータベースを持たず、あなたのデータにアクセス、閲覧、分析することも、代わりに復元することもできません。JSON の書き出しと自動バックアップでデータを守ってください。',
       ],
     },
     {
@@ -290,7 +290,7 @@ const ja: PolicyDoc = {
             'Google Identity Services（accounts.google.com）：「Google でログインして同期」を押したときだけ読み込み、ログインと認可に使います。',
             'Google OAuth ユーザー情報 API：ログイン後に名前とプロフィール画像を取得します（2.1 参照）。',
             'Google Drive API：ドライブのアプリ専用フォルダにある ACACIA のファイルを読み書きします（3.2 参照）。',
-            'Google Places API（場所検索）：お気に入りの場所を追加するときに検索を使うと、入力した検索語が私たちの Cloudflare Workers 上の中継サービスを経由して Google Places API に送られ、結果を取得します。送るのは検索語だけで、位置情報やほかのデータは含みません。中継サービスは転送のみを行い、検索内容を保存・分析しません。',
+            '場所検索：お気に入りの場所を追加するときに検索を使うと、入力した検索語がブラウザからアプリに設定された場所検索サービス（Cloudflare Workers 上の bold-cloud-4bb3.s3311453038.workers.dev、旧版 ACACIA から引き継いだもの）に送られ、そこから Google Places API に場所の名前・住所・営業時間を問い合わせます。検索語を受け取るのは Cloudflare（Workers プラットフォーム）、この検索サービスの運営者、Google です。送られるのは検索語と一般的な接続情報（IP アドレスなど）だけで、位置情報やほかの ACACIA のデータは含みません。これらの事業者はそれぞれのポリシーに従ってデータを取り扱います。検索を使わず場所を手入力すれば何も送信されません。検索サービスが利用できない場合は検索が失敗しますが、手入力はできます',
             'Google Fonts（fonts.googleapis.com、fonts.gstatic.com）：Web ページがフォントを読み込む際、ブラウザが Google から直接フォントをダウンロードするため、Google は IP アドレスとブラウザ情報を受け取ります。',
             'Cloudflare Pages：Web 版のホスティングサービスです。一般的な Web サイトと同様に、Cloudflare がセキュリティと運用のために接続情報（IP アドレス、リクエスト時刻など）を記録する場合があります。',
             'Google マップ：場所の地図リンクをタップしたときだけ、新しいタブで Google マップを開きます。',
@@ -443,7 +443,7 @@ const en: PolicyDoc = {
           ],
         },
         { sub: '3.4 We do not hold your data' },
-        'We operate no server or database that stores your personal data. We cannot access, view, analyze or recover your data for you, so please use JSON export and automatic backups to protect it.',
+        'Apart from the place-search service in Section 4, which receives your search text, we operate no server or database that stores your personal data. We cannot access, view, analyze or recover your data for you, so please use JSON export and automatic backups to protect it.',
       ],
     },
     {
@@ -456,7 +456,7 @@ const en: PolicyDoc = {
             'Google Identity Services (accounts.google.com): loaded only when you tap “Sign in with Google to sync”, for sign-in and authorization.',
             'Google OAuth userinfo API: fetches your name and profile picture after sign-in (see 2.1).',
             'Google Drive API: reads and writes ACACIA’s files in your Drive’s app-specific folder (see 3.2).',
-            'Google Places API (place search): when you search while adding a favorite place, your search text is sent through a relay we run on Cloudflare Workers to the Google Places API to get results. Only the search text is sent — not your location or any other data. The relay only forwards requests and does not store or analyze searches.',
+            'Place search: when you search while adding a favorite place, your search text is sent from your browser to the place-search service configured in the app (bold-cloud-4bb3.s3311453038.workers.dev on Cloudflare Workers, carried over from the previous ACACIA), which queries the Google Places API for place names, addresses and opening hours. The parties that receive your search text are Cloudflare (the Workers platform), the operator of that search service, and Google. Only the search text and ordinary connection data (such as your IP address) are sent — not your location or any other ACACIA data — and these parties handle it under their own policies. If you type a place in manually instead of searching, nothing is sent; if the search service is unavailable, search fails but manual entry still works',
             'Google Fonts (fonts.googleapis.com, fonts.gstatic.com): when the web app loads its fonts, your browser downloads them directly from Google, so Google receives your IP address and browser information.',
             'Cloudflare Pages: hosts the web app. Like any website host, Cloudflare may log connection information (such as IP address and request time) for security and operations.',
             'Google Maps: opened in a new tab only when you tap a place’s map link.',

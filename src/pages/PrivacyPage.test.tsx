@@ -58,5 +58,8 @@ describe('隱私權政策', () => {
     expect(all).toContain('不會對資料另外做端對端加密')
     expect(all).toContain('IndexedDB')
     expect(all).not.toContain('加密上傳')
+    // 地點搜尋服務的程式不在這個 repo，不寫無法驗證的「不保存」保證
+    expect(all).not.toContain('不保存或分析')
+    expect(all).toContain('bold-cloud-4bb3.s3311453038.workers.dev')
   })
 })
