@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { useFontScale } from '../hooks/useFontScale'
 import { useTranslation } from 'react-i18next'
 import { NavLink, Outlet, useLocation } from 'react-router'
@@ -15,6 +15,10 @@ import { useNow } from '../hooks/useNow'
 import { toLocalISO } from '../core/date'
 import { isDue, isLow } from '../core/inventory'
 import { useAppStore } from '../store/useAppStore'
+import { useConsentStore } from '../store/useConsentStore'
+
+// 同意面板含政策全文與授權清單，只有需要詢問時才下載
+const ConsentGate = lazy(() => import('../components/ConsentGate'))
 
 const MAIN = [
   { to: '/', ico: 'today', key: 'today', end: true },
@@ -28,7 +32,25 @@ const linkClass = ({ isActive }: { isActive: boolean }) =>
     isActive ? 'bg-sage-light text-sage-dark' : 'text-[#7e8b85] hover:bg-[#f6f9f7] hover:text-[#5a6d63]'
   }`
 
+/**
+ * 第一次使用或政策改版時，先顯示同意面板；同意之前不顯示 App，
+ * 也不啟動定位等功能（/privacy 網址一樣顯示同意面板，政策全文照樣可以閱讀）。
+ */
 export function Layout() {
+  const status = useConsentStore((s) => s.status)
+  if (status === 'accepted') return <AppShell />
+  return (
+    <div className="min-h-dvh bg-oat">
+      {status === 'required' && (
+        <Suspense fallback={null}>
+          <ConsentGate />
+        </Suspense>
+      )}
+    </div>
+  )
+}
+
+function AppShell() {
   const { t } = useTranslation()
   const openTasks = useAppStore((s) => s.tasks.filter((x) => !x.done).length)
   const todayISO = toLocalISO(useNow())

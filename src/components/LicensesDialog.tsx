@@ -24,13 +24,31 @@ const names = (list: LicensePackage[]) => list.map((p) => `${p.name}@${p.version
 
 export default function LicensesDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
   const { t } = useTranslation()
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange} title={t('licenses.title')} wide>
+      <LicensesContent />
+      <div className="mt-3 flex justify-end">
+        <Button variant="ghost" onClick={() => onOpenChange(false)}>
+          {t('licenses.close')}
+        </Button>
+      </div>
+    </Dialog>
+  )
+}
+
+/**
+ * 授權清單內容（不含面板外框），同意面板也用這個。
+ * 搜尋列用 sticky -top-6 -mx-6，外層捲動容器需要 p-6。
+ */
+export function LicensesContent() {
+  const { t } = useTranslation()
   const [query, setQuery] = useState('')
   const [scope, setScope] = useState<ScopeFilter>('all')
   const sum = summarize(PACKAGES)
   const groups = groupByLicense(filterPackages(PACKAGES, query, scope))
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange} title={t('licenses.title')} wide>
+    <>
       <p className="mb-3 text-xs leading-relaxed text-muted">{t('licenses.intro')}</p>
 
       <div className="mb-4 grid gap-2 text-xs leading-relaxed">
@@ -104,12 +122,7 @@ export default function LicensesDialog({ open, onOpenChange }: { open: boolean; 
       )}
 
       <p className="mt-5 border-t border-line pt-3 text-[length:calc(11px*var(--fs))] leading-relaxed text-muted">{t('licenses.update')}</p>
-      <div className="mt-3 flex justify-end">
-        <Button variant="ghost" onClick={() => onOpenChange(false)}>
-          {t('licenses.close')}
-        </Button>
-      </div>
-    </Dialog>
+    </>
   )
 }
 

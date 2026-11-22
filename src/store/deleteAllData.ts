@@ -3,6 +3,7 @@ import { BACKUP_DRIVE_FILE, deleteFile, DRIVE_FILE, findFile, LEGACY_DRIVE_FILE 
 import { emptyAppData } from '../core/schema'
 import { useAppStore } from './useAppStore'
 import { useBackupStore } from './useBackupStore'
+import { useConsentStore } from './useConsentStore'
 import { useSyncStore } from './useSyncStore'
 
 /** ACACIA 在 Google Drive 應用程式專用資料夾裡會用到的所有檔案（含舊版網站的同步檔） */
@@ -22,6 +23,7 @@ function clearLocalPrefs() {
  * 1. 已登入 Google 時，先刪除 Drive 應用程式專用資料夾裡的同步檔與備份檔（失敗就停下來，本機資料不動）
  * 2. 登出並撤銷這次登入的授權
  * 3. 清空本機的主資料、自動備份快照與小設定
+ * 4. 清掉使用條款同意紀錄：畫面回到同意面板，跟第一次使用一樣
  * 回傳是否有刪到雲端資料
  */
 export async function deleteAllData(): Promise<{ cloud: boolean }> {
@@ -41,5 +43,6 @@ export async function deleteAllData(): Promise<{ cloud: boolean }> {
   useBackupStore.getState().reset()
   useAppStore.setState(emptyAppData())
   clearLocalPrefs()
+  await useConsentStore.getState().reset()
   return { cloud }
 }
