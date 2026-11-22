@@ -33,6 +33,7 @@ const { useSyncStore } = await import('./useSyncStore')
 const { useBackupStore } = await import('./useBackupStore')
 const { deleteAllData } = await import('./deleteAllData')
 const storage = await import('../adapters/backupStorage')
+const { useConsentStore } = await import('./useConsentStore')
 
 const task = (title: string) => ({ title, loc: '', date: '', time: '' })
 
@@ -139,6 +140,7 @@ describe('刪除所有資料', () => {
     useSyncStore.setState({ token: 'tok', status: 'synced' })
     useAppStore.getState().addTask(task('秘密'))
     await useBackupStore.getState().backupNow('manual')
+    await useConsentStore.getState().accept()
 
     const r = await deleteAllData()
     expect(r.cloud).toBe(true)
@@ -150,6 +152,10 @@ describe('刪除所有資料', () => {
     expect((await storage.loadIndex()).snapshots).toEqual([])
     expect(localStorage.getItem('acacia_lang')).toBeNull()
     expect(localStorage.getItem('unrelated')).toBe('1')
+    // 同意紀錄也清掉，回到第一次使用的狀態
+    expect(useConsentStore.getState().status).toBe('required')
+    await useConsentStore.getState().load()
+    expect(useConsentStore.getState().record).toBeNull()
   })
 
   it('未登入：只清本機', async () => {

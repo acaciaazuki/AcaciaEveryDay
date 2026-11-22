@@ -849,5 +849,33 @@
     "done": "All data on this device has been deleted",
     "doneCloud": "All ACACIA data on this device and in Google Drive has been deleted, and you have been signed out",
     "fail": "Delete failed and your data was not changed. Check your connection and try again."
+  },
+  "consent": {
+    "language": "Language",
+    "title": {
+      "first": "Please read and agree before you start",
+      "updated": "Our documents have been updated. Please read and agree again"
+    },
+    "intro": {
+      "first": "Welcome to ACACIA. Before you start, please read the Privacy Policy and the Third-party licenses below. By tapping “Agree and start”, you confirm that you have read and agree to them.",
+      "updated": "Since you last agreed, we have updated: {{docs}}. Please read again and agree to keep using ACACIA. Your data is not affected."
+    },
+    "tabs": "Documents to read",
+    "tab": {
+      "privacy": "Privacy Policy",
+      "licenses": "Third-party licenses"
+    },
+    "docSep": " and ",
+    "updatedBadge": "Updated",
+    "versions": "Privacy Policy version {{privacy}} · Third-party licenses version {{licenses}}.",
+    "note": "Your agreement is saved only in this browser on this device. You will be asked again if you clear browser data or switch devices.",
+    "agree": "Agree and start",
+    "decline": "I don't agree",
+    "declined": {
+      "title": "You need to agree to use ACACIA",
+      "body": "If you don't agree, you can't use ACACIA. Until you agree, ACACIA will not start Google sign-in, location, automatic backups or cloud sync.",
+      "leave": "If you don't want to use it, just close this tab. If you change your mind, tap “Agree and start” below.",
+      "back": "Back to reading"
+    }
   }
 }
