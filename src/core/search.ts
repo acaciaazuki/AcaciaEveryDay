@@ -1,11 +1,11 @@
-import type { Archive, CalendarEvent, Expense, Place, Task } from './schema'
+import type { Archive, CalendarEvent, Expense, Place, Subscription, Task } from './schema'
 
-export const SEARCH_SCOPES = ['all', 'events', 'tasks', 'shopping', 'places'] as const
+export const SEARCH_SCOPES = ['all', 'events', 'tasks', 'shopping', 'places', 'subscriptions'] as const
 export type SearchScope = (typeof SEARCH_SCOPES)[number]
 export type SearchKind = Exclude<SearchScope, 'all'>
 
 /** 比對的欄位。title 以外命中時，結果會多顯示一行摘錄 */
-export type SearchField = 'title' | 'note' | 'loc' | 'store' | 'cat' | 'address'
+export type SearchField = 'title' | 'note' | 'loc' | 'store' | 'cat' | 'address' | 'plan' | 'payment'
 
 export interface SearchHit {
   key: string
@@ -27,12 +27,17 @@ export interface SearchData {
   shopping: Expense[]
   archives: Archive[]
   places: Place[]
+  /** 舊的呼叫端可以不傳 */
+  subscriptions?: Subscription[]
 }
 
 export interface SearchFormat {
   money: (n: number) => string
   expenseCat: (e: Pick<Expense, 'cat' | 'customCat'>) => string
   placeCat: (cat: string) => string
+  /** 訂閱的金額（含幣別）與分類名稱；沒傳時退回簡單格式 */
+  subMoney?: (s: Pick<Subscription, 'amount' | 'currency'>) => string
+  subCat?: (cat: string) => string
 }
 
 /** 以空白切成多個關鍵字，每個關鍵字都要命中（任一欄位）才算符合 */
@@ -165,8 +170,36 @@ export function searchAll(data: SearchData, query: string, scope: SearchScope, f
       })
     }
 
-  // 各類內依日期新到舊（沒有日期的排在後面）；類別順序維持 行程、待辦、記帳、地點
-  const order: SearchKind[] = ['events', 'tasks', 'shopping', 'places']
+  if (want('subscriptions'))
+    for (const x of data.subscriptions ?? []) {
+      const catLabel = fmt.subCat?.(x.cat) ?? x.cat
+      const m = matches(
+        {
+          fields: [
+            ['title', x.name],
+            ['plan', x.plan],
+            ['payment', x.payment],
+            ['note', x.note],
+            ['cat', catLabel],
+          ],
+        },
+        tokens,
+      )
+      if (!m) continue
+      out.push({
+        key: `sub-${x.id}`,
+        kind: 'subscriptions',
+        id: x.id,
+        title: x.plan ? `${x.name} · ${x.plan}` : x.name,
+        meta: [x.nextDate, fmt.subMoney?.(x) ?? `${x.currency} ${x.amount}`].filter(Boolean).join(' · '),
+        snippet: m === 'title' || m.field === 'plan' ? undefined : m,
+        done: x.status === 'cancelled',
+        path: `/subscriptions?open=${x.id}`,
+      })
+    }
+
+  // 各類內依日期新到舊（沒有日期的排在後面）；類別順序維持 行程、待辦、記帳、地點、訂閱
+  const order: SearchKind[] = ['events', 'tasks', 'shopping', 'places', 'subscriptions']
   return out.sort((a, b) => order.indexOf(a.kind) - order.indexOf(b.kind) || byDateDesc(a, b))
 }
 

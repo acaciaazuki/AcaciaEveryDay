@@ -16,7 +16,8 @@
       "tasks": "Tasks",
       "shopping": "Budget"
     },
-    "reminders": "Don’t forget"
+    "reminders": "Don’t forget",
+    "subscriptions": "Subscriptions"
   },
   "common": {
     "save": "Save",
@@ -298,13 +299,15 @@
       "events": "Calendar",
       "tasks": "Later",
       "shopping": "Shopping",
-      "places": "Places"
+      "places": "Places",
+      "subscriptions": "Subscriptions"
     },
     "badge": {
       "events": "Event",
       "tasks": "Task",
       "shopping": "Expense",
-      "places": "Place"
+      "places": "Place",
+      "subscriptions": "Subscription"
     },
     "field": {
       "title": "Name",
@@ -312,7 +315,9 @@
       "loc": "Location",
       "store": "Store",
       "cat": "Category",
-      "address": "Address"
+      "address": "Address",
+      "plan": "Plan",
+      "payment": "Payment"
     }
   },
   "sync": {
@@ -446,5 +451,88 @@
     "exercise": "Exercise",
     "health": "Health & beauty",
     "default": "General"
+  },
+  "subs": {
+    "eyebrow": "Every recurring charge, at a glance",
+    "title": "Subscriptions & renewals",
+    "add": "+ Add subscription",
+    "openPage": "Open subscriptions",
+    "settingsHelp": "Keep track of monthly, quarterly and yearly charges, and see what's coming up.",
+    "board": {
+      "title": "This month's bills",
+      "text": "A little tidying now means no surprise charges later.",
+      "month": "Spending this month",
+      "year": "Estimated per year",
+      "upcoming": "Due in {{days}} days",
+      "upcomingUnit": "{{count}} due",
+      "active": "Active subscriptions",
+      "activeUnit": "{{count}} active",
+      "none": "—"
+    },
+    "soon": {
+      "title": "Upcoming charges",
+      "window": "Range",
+      "days": "{{days}} days",
+      "empty": "Nothing is due in the next {{days}} days.",
+      "today": "Charged today",
+      "tomorrow": "Charged tomorrow",
+      "inDays": "In {{count}} days"
+    },
+    "list": {
+      "title": "All subscriptions",
+      "count": "{{count}} total",
+      "empty": "No subscriptions yet. Add one, or load the samples to see the layout.",
+      "loadSamples": "Load sample data",
+      "filter": "Filter by status",
+      "all": "All",
+      "next": "Next {{date}}",
+      "noDate": "No charge date",
+      "perYear": "About {{amount}} a year"
+    },
+    "cycle": {
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "yearly": "Yearly"
+    },
+    "cycleShort": {
+      "monthly": "/mo",
+      "quarterly": "/qtr",
+      "yearly": "/yr"
+    },
+    "status": {
+      "active": "Active",
+      "paused": "Paused",
+      "cancelled": "Cancelled"
+    },
+    "cat": {
+      "entertainment": "Entertainment",
+      "tools": "Tools",
+      "work": "Work",
+      "learning": "Learning",
+      "life": "Living",
+      "other": "Other"
+    },
+    "form": {
+      "newTitle": "Add subscription",
+      "editTitle": "Edit subscription",
+      "name": "Service",
+      "namePlaceholder": "e.g. Netflix, Spotify, iCloud, ChatGPT",
+      "nameRequired": "Enter the service name",
+      "plan": "Plan",
+      "planPlaceholder": "e.g. Pro, Plus, Student, Trial, Family share",
+      "cat": "Category",
+      "cycle": "Billing cycle",
+      "amount": "Amount",
+      "currency": "Currency",
+      "nextDate": "Next charge date",
+      "payment": "Payment method",
+      "paymentPlaceholder": "e.g. Credit card, Apple Pay, PayPal",
+      "status": "Status",
+      "note": "Note",
+      "deleteConfirm": "Delete \"{{name}}\"?"
+    },
+    "planSuggest": "Pro|Plus|Student|Trial|Family share|Family plan",
+    "paymentSuggest": "Credit card|Apple Pay|Google Pay|PayPal|Bank transfer",
+    "samplePayment": "Credit card"
   }
 }

@@ -134,6 +134,14 @@ const ART: Record<IconName, ReactNode> = {
       <path d="M15.4 15.4L20 20" />
     </>
   ),
+  subscription: (
+    <>
+      <path d="M19.5 12a7.5 7.5 0 0 1-12.8 5.3M4.5 12a7.5 7.5 0 0 1 12.8-5.3" />
+      <path d="M17.6 3.6v3.2h-3.2M6.4 20.4v-3.2h3.2" />
+      <rect x="8.2" y="9.2" width="7.6" height="5.6" rx="1.4" fill="#ffe9b0" />
+      <path d="M8.2 11.2h7.6" />
+    </>
+  ),
 
   // ---- 通用 ----
   close: <path d="M6.5 6.5l11 11M17.5 6.5l-11 11" />,
@@ -163,6 +171,19 @@ const ART: Record<IconName, ReactNode> = {
     <>
       <circle cx="12" cy="12" r="8.5" fill="#fff1c1" />
       <path d="M12 7.2V12l3.2 2" />
+    </>
+  ),
+  card: (
+    <>
+      <rect x="3" y="5.5" width="18" height="13" rx="3" fill="#cfe4f6" />
+      <path d="M3 10h18" />
+      <rect x="6" y="13.2" width="4.4" height="2.4" rx="1" fill="#fff7dc" />
+    </>
+  ),
+  receipt: (
+    <>
+      <path d="M6 3.5h12v17l-2-1.4-2 1.4-2-1.4-2 1.4-2-1.4-2 1.4z" fill="#fff1c1" />
+      <path d="M9 8h6M9 11.5h6M9 15h3.5" />
     </>
   ),
 
