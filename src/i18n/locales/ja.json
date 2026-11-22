@@ -201,7 +201,8 @@
       "textColor": "文字色",
       "preview": "プレビュー",
       "qty": "数量",
-      "unit": "単価"
+      "unit": "単価",
+      "amtHint": "金額は任意なので、普通の買い物リストとしても使えます。項目ごとに通貨を選べ、通貨ごとに小計します。"
     },
     "archive": {
       "button": "今期をアーカイブ",
@@ -215,11 +216,12 @@
       "year": "年",
       "empty": "アーカイブされた期間はまだありません。各期の終了後（毎月10日以降）に自動で収められます。「今期をアーカイブ」で手動でも保存できます。",
       "yearBook": "{{year}}年の記録帳",
-      "yearSummary": "全{{periods}}期 · {{total}}",
+      "yearSummary": "全{{periods}}期 ·",
       "range": "{{start}} – {{end}}",
       "restore": "記録リストに戻す"
     },
-    "qtyOnly": "数量 {{count}}"
+    "qtyOnly": "数量 {{count}}",
+    "budgetOnly": "予算の進捗は {{sym}} の支出のみ集計します。他の通貨は換算せず別に表示します。"
   },
   "settings": {
     "eyebrow": "言語とデータ",
@@ -698,5 +700,14 @@
     "update": "この一覧は npm run licenses で package-lock.json から生成しています。パッケージを追加・更新したら再実行してください。",
     "close": "閉じる",
     "scopeLabel": "表示範囲"
+  },
+  "currency": {
+    "label": "通貨",
+    "custom": "通貨記号をカスタム…",
+    "customOption": "{{sym}}（カスタム）",
+    "customLabel": "カスタム通貨記号",
+    "customPlaceholder": "例：฿、RM、₫、pt",
+    "customHelp": "8 文字まで。3 文字の大文字コード（例：THB）はその通貨の表示形式になります。",
+    "customRequired": "カスタム通貨記号を入力してください"
   }
 }

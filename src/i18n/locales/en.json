@@ -201,7 +201,8 @@
       "textColor": "Text color",
       "preview": "Preview",
       "qty": "Quantity",
-      "unit": "Unit price"
+      "unit": "Unit price",
+      "amtHint": "Amount is optional, so it works as a plain shopping list too. Each item can use its own currency; currencies are subtotaled separately."
     },
     "archive": {
       "button": "Archive this period",
@@ -215,11 +216,12 @@
       "year": "Year",
       "empty": "No archived periods yet. Each period is archived automatically after it ends (from the 10th of each month), or tap “Archive this period” to do it now.",
       "yearBook": "{{year}} ledger",
-      "yearSummary": "{{periods}} periods · {{total}}",
+      "yearSummary": "{{periods}} periods ·",
       "range": "{{start}} – {{end}}",
       "restore": "Restore to the list"
     },
-    "qtyOnly": "Qty {{count}}"
+    "qtyOnly": "Qty {{count}}",
+    "budgetOnly": "Budget progress counts {{sym}} spending only; other currencies are listed separately, not converted."
   },
   "settings": {
     "eyebrow": "Language and data",
@@ -698,5 +700,14 @@
     "update": "Generated from package-lock.json with npm run licenses. Run it again after adding or upgrading packages.",
     "close": "Close",
     "scopeLabel": "Filter by scope"
+  },
+  "currency": {
+    "label": "Currency",
+    "custom": "Custom symbol…",
+    "customOption": "{{sym}} (custom)",
+    "customLabel": "Custom currency symbol",
+    "customPlaceholder": "e.g. ฿, RM, ₫, pts",
+    "customHelp": "Up to 8 characters. A 3-letter uppercase code (e.g. THB) uses that currency’s formatting.",
+    "customRequired": "Enter a custom currency symbol"
   }
 }

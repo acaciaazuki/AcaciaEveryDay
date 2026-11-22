@@ -33,7 +33,8 @@ export interface SearchData {
 }
 
 export interface SearchFormat {
-  money: (n: number) => string
+  /** 記帳金額；currency 是那一筆自己的幣別，舊資料沒有時由呼叫端補預設貨幣 */
+  money: (n: number, currency?: string) => string
   expenseCat: (e: Pick<Expense, 'cat' | 'customCat'>) => string
   placeCat: (cat: string) => string
   /** 訂閱的金額（含幣別）與分類名稱；沒傳時退回簡單格式 */
@@ -138,7 +139,7 @@ export function searchAll(data: SearchData, query: string, scope: SearchScope, f
         kind: 'shopping',
         id: s.id,
         title: s.title,
-        meta: [s.date, fmt.money(s.amt), m !== 'title' && m.field === 'store' ? '' : s.store].filter(Boolean).join(' · '),
+        meta: [s.date, fmt.money(s.amt, s.currency), m !== 'title' && m.field === 'store' ? '' : s.store].filter(Boolean).join(' · '),
         snippet: m === 'title' ? undefined : m,
         done: s.done,
         archived,

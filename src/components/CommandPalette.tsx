@@ -92,7 +92,7 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
   const hits = useMemo(
     () =>
       searchAll({ events, tasks, shopping, archives, places, subscriptions, inventory }, query, scope, {
-        money: (n) => formatMoney(n, lng, currency),
+        money: (n, cur) => formatMoney(n, lng, cur || currency),
         expenseCat: (e) => (e.cat === 'other' && e.customCat ? e.customCat : t(`expenseCat.${e.cat}`)),
         placeCat: (c) => t(`placeCat.${c}`),
         subMoney: (x) => formatCurrency(x.amount, x.currency, lng),
@@ -106,7 +106,7 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
 
   const counts = useMemo(() => {
     const all = searchAll({ events, tasks, shopping, archives, places, subscriptions, inventory }, query, 'all', {
-      money: (n) => formatMoney(n, lng, currency),
+      money: (n, cur) => formatMoney(n, lng, cur || currency),
       expenseCat: (e) => (e.cat === 'other' && e.customCat ? e.customCat : t(`expenseCat.${e.cat}`)),
       placeCat: (c) => t(`placeCat.${c}`),
       subMoney: (x) => formatCurrency(x.amount, x.currency, lng),

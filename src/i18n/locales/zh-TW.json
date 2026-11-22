@@ -201,7 +201,8 @@
       "textColor": "文字顏色",
       "preview": "預覽",
       "qty": "數量",
-      "unit": "單價"
+      "unit": "單價",
+      "amtHint": "金額選填，不填也能當一般購物清單用。每一筆可以選不同幣別，不同幣別會分開小計。"
     },
     "archive": {
       "button": "歸檔本期",
@@ -215,11 +216,12 @@
       "year": "年份",
       "empty": "還沒有歸檔的週期。每期結束（每月 10 日起）會自動收進來，也可以按「歸檔本期」手動封存。",
       "yearBook": "{{year}} 年記帳本",
-      "yearSummary": "共 {{periods}} 期 · {{total}}",
+      "yearSummary": "共 {{periods}} 期 ·",
       "range": "{{start}} – {{end}}",
       "restore": "還原到記帳清單"
     },
-    "qtyOnly": "數量 {{count}}"
+    "qtyOnly": "數量 {{count}}",
+    "budgetOnly": "預算進度只計算 {{sym}} 的支出；其他幣別分開列出，不換算匯率。"
   },
   "settings": {
     "eyebrow": "語言與資料",
@@ -698,5 +700,14 @@
     "update": "這份清單由 npm run licenses 依 package-lock.json 產生；新增或升級套件後重新執行即可更新。",
     "close": "關閉",
     "scopeLabel": "篩選範圍"
+  },
+  "currency": {
+    "label": "幣別",
+    "custom": "自訂幣別符號…",
+    "customOption": "{{sym}}（自訂）",
+    "customLabel": "自訂幣別符號",
+    "customPlaceholder": "例如 ฿、RM、₫、點",
+    "customHelp": "最多 8 個字。輸入三碼大寫代碼（例如 THB）會自動套用該幣別的格式。",
+    "customRequired": "請輸入自訂幣別符號"
   }
 }

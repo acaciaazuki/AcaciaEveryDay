@@ -43,7 +43,7 @@ describe('庫存與提醒頁', () => {
     fireEvent.click(within(cardOf('抽取式衛生紙')).getByRole('button', { name: /加入購物清單/ }))
     const { shopping, inventory } = useAppStore.getState()
     expect(shopping).toHaveLength(1)
-    expect(shopping[0]).toMatchObject({ title: '抽取式衛生紙', quantity: 2, amt: 0, cat: 'housing', done: false })
+    expect(shopping[0]).toMatchObject({ title: '抽取式衛生紙', quantity: 2, amt: 0, cat: 'housing', done: false, currency: 'TWD' })
     expect(inventory.find((x) => x.name === '抽取式衛生紙')?.shoppingId).toBe(shopping[0]!.id)
     expect(screen.getByRole('status')).toHaveTextContent('已加入購物清單：抽取式衛生紙 × 2 包')
     expect(within(cardOf('抽取式衛生紙')).getByText(/已在購物清單中/)).toBeInTheDocument()

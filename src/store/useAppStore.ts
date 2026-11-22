@@ -4,7 +4,7 @@ import { webStorage } from '../adapters/storage'
 import { archiveCurrent, archiveEnded, restoreArchive as restoreArchiveData } from '../core/archive'
 import { INV_TO_EXPENSE, restockQty } from '../core/inventory'
 import { migrate } from '../core/migrate'
-import { emptyAppData, newId, type AppData, type FontSize, type CalendarEvent, type Expense, type InventoryItem, type Place, type Reminder, type Subscription, type Task } from '../core/schema'
+import { DEFAULT_CURRENCY, emptyAppData, newId, type AppData, type FontSize, type CalendarEvent, type Expense, type InventoryItem, type Place, type Reminder, type Subscription, type Task } from '../core/schema'
 
 type TaskInput = Omit<Task, 'id' | 'done'>
 type ExpenseInput = Omit<Expense, 'id' | 'done'>
@@ -132,7 +132,7 @@ export const useAppStore = create<AppState>()(
       markReplaced: (id, todayISO) =>
         setState((s) => ({ inventory: s.inventory.map((x) => (x.id === id ? { ...x, lastReplaced: todayISO } : x)), ...touch() })),
       addInventoryToShopping: (id, todayISO, time) => {
-        const { inventory, shopping } = getState()
+        const { inventory, shopping, settings } = getState()
         const item = inventory.find((x) => x.id === id)
         if (!item) return 0
         const linked = item.shoppingId ? shopping.find((e) => e.id === item.shoppingId) : undefined
@@ -145,6 +145,8 @@ export const useAppStore = create<AppState>()(
           store: '',
           cat: INV_TO_EXPENSE[item.cat],
           quantity,
+          // 先記下當下的預設貨幣，之後改預設貨幣也不會讓這一筆跟著變
+          currency: settings.currency || DEFAULT_CURRENCY,
           date: todayISO,
           time,
           done: false,

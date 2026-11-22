@@ -6,6 +6,7 @@ import { Dialog } from '../components/Dialog'
 import { Field } from '../components/Field'
 import { IconSelect } from '../components/IconSelect'
 import { PageHead } from '../components/PageHead'
+import { TotalsText } from '../components/TotalsText'
 import { toLocalISO } from '../core/date'
 import { currencySymbol, formatCurrency } from '../core/format'
 import { useCurrency } from '../hooks/useCurrency'
@@ -20,7 +21,6 @@ import {
   upcoming,
   UPCOMING_WINDOWS,
   yearlyTotals,
-  type Totals,
   type UpcomingWindow,
 } from '../core/subscriptions'
 import { useNow } from '../hooks/useNow'
@@ -226,21 +226,6 @@ function Stat({ icon, bg, label, value }: { icon: IconName; bg: string; label: s
       </span>
       <span className="flex flex-wrap items-baseline gap-x-1 text-[length:calc(17px*var(--fs))] leading-tight font-extrabold tracking-tight min-[681px]:text-[length:calc(20px*var(--fs))]">{value}</span>
     </div>
-  )
-}
-
-/** 多種幣別不換算匯率，分開顯示：NT$1,300 + US$20 */
-function TotalsText({ totals, money, fallback }: { totals: Totals; money: (n: number, cur: string) => string; fallback: string }) {
-  if (totals.length === 0) return <>{money(0, fallback)}</>
-  return (
-    <>
-      {totals.map(([cur, n], i) => (
-        <span key={cur} className="whitespace-nowrap">
-          {i > 0 && <span className="mr-1 text-muted">+</span>}
-          {money(Math.round(n * 100) / 100, cur)}
-        </span>
-      ))}
-    </>
   )
 }
 
