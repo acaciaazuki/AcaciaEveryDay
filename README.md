@@ -25,9 +25,9 @@ npm run lint     # oxlint
 npm run build    # 正式建置，輸出到 dist/
 ```
 
-## 開源套件授權清單
+## 第三方授權清單
 
-側邊欄「設定」下方（手機在設定頁最底部）有「開源授權」小連結，列出所有套件的授權、版權聲明與授權全文。資料放在 `src/licenses/`，由腳本依 `package-lock.json` 與 `node_modules` 產生：
+側邊欄「設定」下方（手機在設定頁最底部）有「第三方授權清單」小連結，列出所有套件的授權、版權聲明與授權全文。資料放在 `src/licenses/`，由腳本依 `package-lock.json` 與 `node_modules` 產生：
 
 ```sh
 npm install

@@ -1,5 +1,5 @@
 /**
- * 開源套件授權清單的型別與篩選、分組。
+ * 第三方套件授權清單的型別與篩選、分組。
  * 資料由 `npm run licenses`（scripts/generate-licenses.mjs）產生在 src/licenses/。
  */
 

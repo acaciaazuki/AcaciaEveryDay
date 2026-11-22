@@ -171,7 +171,7 @@ export function SettingsPage() {
           </div>
           {msg && <p role="status" className="mt-3 text-xs text-sage-dark">{msg}</p>}
         </section>
-        {/* 手機沒有側邊欄，開源授權的入口放在設定頁最底部 */}
+        {/* 手機沒有側邊欄，第三方授權清單的入口放在設定頁最底部 */}
         <LicensesLink className="justify-self-center py-2" />
       </div>
     </>

@@ -3,15 +3,15 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import i18n from '../i18n'
 import { LicensesLink } from './LicensesLink'
 
-describe('開源授權清單', () => {
+describe('第三方授權清單', () => {
   beforeEach(async () => {
     await i18n.changeLanguage('zh-TW')
   })
 
   it('點小連結打開面板，可搜尋、篩選並檢視授權全文', async () => {
     render(<LicensesLink />)
-    fireEvent.click(screen.getByRole('button', { name: '開源授權' }))
-    const dialog = await screen.findByRole('dialog', { name: '開源套件授權清單' })
+    fireEvent.click(screen.getByRole('button', { name: '第三方授權清單' }))
+    const dialog = await screen.findByRole('dialog', { name: '第三方授權清單' })
     expect(within(dialog).getByText(/沒有使用 GPL \/ AGPL/)).toBeInTheDocument()
     expect(within(dialog).getByRole('region', { name: 'MIT' })).toBeInTheDocument()
 
