@@ -7,7 +7,8 @@ import { Field } from '../components/Field'
 import { IconSelect } from '../components/IconSelect'
 import { PageHead } from '../components/PageHead'
 import { toLocalISO } from '../core/date'
-import { formatCurrency } from '../core/format'
+import { currencySymbol, formatCurrency } from '../core/format'
+import { useCurrency } from '../hooks/useCurrency'
 import type { IconName } from '../core/icons'
 import { SUB_CATEGORIES, SUB_CURRENCIES, SUB_CYCLES, SUB_STATUSES, type SubStatus, type Subscription } from '../core/schema'
 import {
@@ -48,6 +49,7 @@ export function SubscriptionsPage() {
   const [editing, setEditing] = useState<Subscription | 'new' | null>(null)
   const [windowDays, setWindowDays] = useState<UpcomingWindow>(30)
   const [filter, setFilter] = useState<Filter>('all')
+  const currency = useCurrency()
   useOpenFromUrl(subs, setEditing)
 
   const lng = i18n.resolvedLanguage ?? 'zh-TW'
@@ -85,8 +87,8 @@ export function SubscriptionsPage() {
         <h2 className="mb-1.5 text-lg font-extrabold">{t('subs.board.title')}</h2>
         <p className="mb-4 text-[length:calc(13px*var(--fs))] text-[#55645d]">{t('subs.board.text')}</p>
         <div className="grid grid-cols-2 gap-3 min-[1001px]:grid-cols-4">
-          <Stat icon="card" bg="#cfe4f6" label={t('subs.board.month')} value={<TotalsText totals={monthTotals(subs, todayISO)} money={money} />} />
-          <Stat icon="calendar" bg="#dff2e9" label={t('subs.board.year')} value={<TotalsText totals={yearlyTotals(subs)} money={money} />} />
+          <Stat icon="card" bg="#cfe4f6" label={t('subs.board.month')} value={<TotalsText totals={monthTotals(subs, todayISO, currency)} money={money} fallback={currency} />} />
+          <Stat icon="calendar" bg="#dff2e9" label={t('subs.board.year')} value={<TotalsText totals={yearlyTotals(subs, currency)} money={money} fallback={currency} />} />
           <Stat icon="clock" bg="#fff1c1" label={t('subs.board.upcoming', { days: windowDays })} value={t('subs.board.upcomingUnit', { count: soon.length })} />
           <Stat icon="subscription" bg="#fbe0f5" label={t('subs.board.active')} value={t('subs.board.activeUnit', { count: active.length })} />
         </div>
@@ -228,8 +230,8 @@ function Stat({ icon, bg, label, value }: { icon: IconName; bg: string; label: s
 }
 
 /** 多種幣別不換算匯率，分開顯示：NT$1,300 + US$20 */
-function TotalsText({ totals, money }: { totals: Totals; money: (n: number, cur: string) => string }) {
-  if (totals.length === 0) return <>{money(0, 'TWD')}</>
+function TotalsText({ totals, money, fallback }: { totals: Totals; money: (n: number, cur: string) => string; fallback: string }) {
+  if (totals.length === 0) return <>{money(0, fallback)}</>
   return (
     <>
       {totals.map(([cur, n], i) => (
@@ -244,9 +246,9 @@ function TotalsText({ totals, money }: { totals: Totals; money: (n: number, cur:
 
 function Select({ label, children, ...props }: SelectHTMLAttributes<HTMLSelectElement> & { label: string }) {
   return (
-    <label className="grid gap-1.5 text-xs font-semibold text-muted">
+    <label className="grid min-w-0 gap-1.5 text-xs font-semibold text-muted">
       {label}
-      <select className="rounded-(--radius-control) border border-line bg-oat px-3 py-2.5 text-sm font-normal text-ink outline-none focus:border-sage" {...props}>
+      <select className="w-full min-w-0 rounded-(--radius-control) border border-line bg-oat px-3 py-2.5 text-sm font-normal text-ink outline-none focus:border-sage" {...props}>
         {children}
       </select>
     </label>
@@ -269,7 +271,9 @@ function Segmented<V extends string>({ label, value, options, onChange }: { labe
 }
 
 function SubscriptionDialog({ sub, todayISO, onClose }: { sub: Subscription | null; todayISO: string; onClose: () => void }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const lng = i18n.resolvedLanguage ?? 'zh-TW'
+  const defaultCurrency = useCurrency()
   const addSubscription = useAppStore((s) => s.addSubscription)
   const updateSubscription = useAppStore((s) => s.updateSubscription)
   const removeSubscription = useAppStore((s) => s.removeSubscription)
@@ -278,7 +282,8 @@ function SubscriptionDialog({ sub, todayISO, onClose }: { sub: Subscription | nu
   const [draft, setDraft] = useState<SubscriptionInput>(() =>
     sub
       ? { ...sub, nextDate: nextCharge(sub, todayISO) || sub.nextDate }
-      : { name: '', plan: '', cat: 'tools', cycle: 'monthly', amount: 0, currency: 'TWD', nextDate: todayISO, payment: '', status: 'active', note: '' },
+      : // 新增時預先帶入設定頁的預設貨幣；編輯既有訂閱則保留它原本的幣別
+        { name: '', plan: '', cat: 'tools', cycle: 'monthly', amount: 0, currency: defaultCurrency, nextDate: todayISO, payment: '', status: 'active', note: '' },
   )
   const [amount, setAmount] = useState(sub ? String(sub.amount) : '')
   const [error, setError] = useState('')
@@ -314,11 +319,11 @@ function SubscriptionDialog({ sub, todayISO, onClose }: { sub: Subscription | nu
         />
         <Segmented label={t('subs.form.cycle')} value={draft.cycle} options={SUB_CYCLES.map((c) => ({ value: c, label: t(`subs.cycle.${c}`) }))} onChange={(cycle) => set({ cycle })} />
         <div className="grid grid-cols-[1fr_120px] gap-3">
-          <Field label={t('subs.form.amount')} type="number" inputMode="decimal" min={0} step="any" placeholder="0" value={amount} onChange={(e) => setAmount(e.target.value)} />
+          <Field label={t('common.withCurrency', { label: t('subs.form.amount'), sym: currencySymbol(draft.currency, lng) })} type="number" inputMode="decimal" min={0} step="any" placeholder="0" value={amount} onChange={(e) => setAmount(e.target.value)} />
           <Select label={t('subs.form.currency')} value={draft.currency} onChange={(e) => set({ currency: e.target.value })}>
             {currencies.map((c) => (
               <option key={c} value={c}>
-                {c}
+                {c} {currencySymbol(c, lng) !== c ? currencySymbol(c, lng) : ''}
               </option>
             ))}
           </Select>

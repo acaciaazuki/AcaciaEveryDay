@@ -68,8 +68,15 @@ export type FontSize = (typeof FONT_SIZES)[number]
 /** 文字縮放倍率，對應 CSS 變數 --fs */
 export const FONT_SCALE: Record<FontSize, number> = { sm: 0.9, md: 1, lg: 1.15, xl: 1.3 }
 
+/** 設定頁「預設貨幣」提供的幣別（第一個是預設值）；資料本身接受任何三碼 ISO 幣別 */
+export const CURRENCIES = ['TWD', 'USD', 'JPY', 'EUR', 'CNY', 'HKD', 'KRW', 'GBP'] as const
+export const DEFAULT_CURRENCY = 'TWD'
+const currencyCode = z.string().regex(/^[A-Z]{3}$/)
+
 export const settingsSchema = z.object({
   fontSize: z.enum(FONT_SIZES).default('md'),
+  /** 預設貨幣：記帳金額的顯示幣別，也是新增訂閱時預先帶入的幣別。不做匯率換算 */
+  currency: currencyCode.default(DEFAULT_CURRENCY),
 })
 
 export const REMINDER_RADII = [100, 300, 500] as const
@@ -98,8 +105,8 @@ export const reminderSchema = z.object({
 export const SUB_CYCLES = ['monthly', 'quarterly', 'yearly'] as const
 export const SUB_STATUSES = ['active', 'paused', 'cancelled'] as const
 export const SUB_CATEGORIES = ['entertainment', 'tools', 'work', 'learning', 'life', 'other'] as const
-/** 下拉選單提供的幣別；資料本身接受任何三碼 ISO 幣別 */
-export const SUB_CURRENCIES = ['TWD', 'JPY', 'USD', 'EUR', 'HKD', 'CNY', 'KRW', 'GBP'] as const
+/** 訂閱表單下拉選單提供的幣別，跟設定頁的預設貨幣同一份清單 */
+export const SUB_CURRENCIES = CURRENCIES
 
 /** 訂閱與續費：定期扣款的服務（Netflix、iCloud…） */
 export const subscriptionSchema = z.object({
@@ -110,7 +117,7 @@ export const subscriptionSchema = z.object({
   cat: z.enum(SUB_CATEGORIES).default('other'),
   cycle: z.enum(SUB_CYCLES).default('monthly'),
   amount: z.number().default(0),
-  currency: z.string().regex(/^[A-Z]{3}$/).default('TWD'),
+  currency: currencyCode.default(DEFAULT_CURRENCY),
   /** 下次扣款日。過了之後畫面會依週期自動往後推算，不必手動改 */
   nextDate: isoDate.default(''),
   payment: z.string().default(''),
@@ -154,7 +161,7 @@ export const archiveSchema = z.object({
 export const appDataSchema = z.object({
   schemaVersion: z.literal(SCHEMA_VERSION),
   /** 使用者設定（字體大小…），舊資料沒有時補預設值 */
-  settings: settingsSchema.default({ fontSize: 'md' }),
+  settings: settingsSchema.default({ fontSize: 'md', currency: DEFAULT_CURRENCY }),
   events: z.array(eventSchema),
   tasks: z.array(taskSchema),
   shopping: z.array(expenseSchema),
@@ -191,7 +198,7 @@ export type AppData = z.infer<typeof appDataSchema>
 
 export const emptyAppData = (): AppData => ({
   schemaVersion: SCHEMA_VERSION,
-  settings: { fontSize: 'md' },
+  settings: { fontSize: 'md', currency: DEFAULT_CURRENCY },
   events: [],
   tasks: [],
   shopping: [],

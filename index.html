@@ -7,6 +7,10 @@
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="ACACIA" />
+    <!--
+      刻意不加 maximum-scale=1 / user-scalable=no：那樣會讓使用者無法雙指放大（Android 與無障礙都受影響）。
+      點輸入框自動放大的問題改由 CSS 讓輸入框在手機上至少 16px 解決（見 src/index.css）。
+    -->
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#f7faf8" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />

@@ -7,7 +7,9 @@ import { LicensesLink } from '../components/LicensesLink'
 import { PageHead } from '../components/PageHead'
 import { SyncPanel } from '../components/SyncPanel'
 import { LANGUAGES } from '../i18n'
-import { FONT_SCALE, FONT_SIZES } from '../core/schema'
+import { currencyName, currencySymbol } from '../core/format'
+import { CURRENCIES, FONT_SCALE, FONT_SIZES } from '../core/schema'
+import { useCurrency } from '../hooks/useCurrency'
 import { useAppStore } from '../store/useAppStore'
 
 export function SettingsPage() {
@@ -16,6 +18,9 @@ export function SettingsPage() {
   const exportData = useAppStore((s) => s.exportData)
   const fontSize = useAppStore((s) => s.settings.fontSize)
   const setFontSize = useAppStore((s) => s.setFontSize)
+  const currency = useCurrency()
+  const setCurrency = useAppStore((s) => s.setCurrency)
+  const lng = i18n.resolvedLanguage ?? 'zh-TW'
   const fileRef = useRef<HTMLInputElement>(null)
   const [msg, setMsg] = useState('')
 
@@ -76,6 +81,38 @@ export function SettingsPage() {
                     Aa
                   </span>
                   <span className="text-xs font-bold">{t(`settings.fontSize.${size}`)}</span>
+                </button>
+              )
+            })}
+          </div>
+        </section>
+        <section className="rounded-(--radius-card) bg-paper p-6 shadow-card">
+          <h2 className="mb-1 font-bold">{t('settings.currency.title')}</h2>
+          <p className="mb-3 text-xs leading-relaxed text-muted">{t('settings.currency.help')}</p>
+          <div role="radiogroup" aria-label={t('settings.currency.title')} className="grid grid-cols-2 gap-2 min-[520px]:grid-cols-4">
+            {CURRENCIES.map((code) => {
+              const on = currency === code
+              const name = currencyName(code, lng)
+              return (
+                <button
+                  key={code}
+                  type="button"
+                  role="radio"
+                  aria-checked={on}
+                  aria-label={`${code} ${name}`}
+                  onClick={() => setCurrency(code)}
+                  className={`relative grid justify-items-center gap-0.5 rounded-(--radius-control) border px-2 py-3 transition ${on ? 'border-sage bg-sage-light text-sage-dark ring-2 ring-sage/25' : 'border-line bg-oat hover:bg-sage-light/60'}`}
+                >
+                  {on && (
+                    <span aria-hidden className="absolute top-1.5 right-1.5 grid size-4 place-items-center rounded-full bg-sage text-[10px] leading-none text-white">
+                      <Icon name="check" className="size-[85%]" />
+                    </span>
+                  )}
+                  <span aria-hidden className="text-lg leading-tight font-extrabold">
+                    {currencySymbol(code, lng)}
+                  </span>
+                  <span className="text-xs font-bold">{code}</span>
+                  <span className="text-center text-[length:calc(11px*var(--fs))] leading-tight text-muted">{name}</span>
                 </button>
               )
             })}

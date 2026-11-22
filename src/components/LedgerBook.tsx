@@ -8,7 +8,7 @@ import type { Archive, Expense } from '../core/schema'
 import { Button } from './Button'
 
 /** 年度記帳本：依年份切換，底下列出每個已結算週期的總額、分類與明細 */
-export function LedgerBook({ archives, lng, currentStart, onRestore, focusId }: { archives: Archive[]; lng: string; currentStart: string; onRestore: (start: string) => void; focusId?: string | null }) {
+export function LedgerBook({ archives, lng, currency, currentStart, onRestore, focusId }: { archives: Archive[]; lng: string; currency?: string; currentStart: string; onRestore: (start: string) => void; focusId?: string | null }) {
   const { t } = useTranslation()
   const years = ledgerYears(archives)
   const [picked, setPicked] = useState<string | null>(null)
@@ -59,7 +59,7 @@ export function LedgerBook({ archives, lng, currentStart, onRestore, focusId }: 
           <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
             <h3 className="text-sm font-bold">{t('shopping.ledger.yearBook', { year: active.year })}</h3>
             <span className="text-xs text-muted">
-              {t('shopping.ledger.yearSummary', { periods: active.periods.length, total: formatMoney(active.periods.reduce((n, p) => n + summarize(p.expenses, p).total, 0), lng) })}
+              {t('shopping.ledger.yearSummary', { periods: active.periods.length, total: formatMoney(active.periods.reduce((n, p) => n + summarize(p.expenses, p).total, 0), lng, currency) })}
             </span>
           </div>
           <ul className="grid gap-2.5">
@@ -72,14 +72,14 @@ export function LedgerBook({ archives, lng, currentStart, onRestore, focusId }: 
                       <span className="text-[length:calc(13px*var(--fs))] font-bold">{t('shopping.ledger.range', { start: p.start, end: p.end })}</span>
                       <span className="flex items-center gap-3 text-xs text-muted">
                         {t('shopping.count', { count: p.expenses.length })}
-                        <b className="text-sm text-ink">{formatMoney(total, lng)}</b>
+                        <b className="text-sm text-ink">{formatMoney(total, lng, currency)}</b>
                       </span>
                     </summary>
                     <div className="border-t border-line p-3">
                       <div className="mb-3 flex flex-wrap gap-2">
                         {byCategory.map(([k, v]) => (
                           <span key={k} className="rounded-full border border-line bg-[#f9fbf9] px-3 py-1.5 text-[length:calc(11px*var(--fs))] font-semibold text-[#55645d]">
-                            {keyLabel(k)}: {formatMoney(v, lng)}
+                            {keyLabel(k)}: {formatMoney(v, lng, currency)}
                           </span>
                         ))}
                       </div>
@@ -92,10 +92,10 @@ export function LedgerBook({ archives, lng, currentStart, onRestore, focusId }: 
                                 <strong>{e.title}</strong>
                                 <small className="block text-[length:calc(11px*var(--fs))] opacity-80">
                                   {e.date} · <Icon name={EXPENSE_STYLE[e.cat].icon} className="size-[1.5em]" /> {catLabel(e)}
-                                  {e.unitPrice != null && ` · ${e.quantity ?? 1} × ${formatMoney(e.unitPrice, lng)}`}
+                                  {e.unitPrice != null && ` · ${e.quantity ?? 1} × ${formatMoney(e.unitPrice, lng, currency)}`}
                                 </small>
                               </span>
-                              <span className="shrink-0 font-bold">{formatMoney(e.amt, lng)}</span>
+                              <span className="shrink-0 font-bold">{formatMoney(e.amt, lng, currency)}</span>
                             </li>
                           ))}
                       </ul>

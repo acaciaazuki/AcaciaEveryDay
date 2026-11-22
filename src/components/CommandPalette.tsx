@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import { PLACE_CATEGORIES, type PlaceCategory } from '../core/categories'
 import { formatCurrency, formatMoney } from '../core/format'
+import { useCurrency } from '../hooks/useCurrency'
 import { SEARCH_SCOPES, excerpt, searchAll, splitHighlight, tokenize, type SearchHit, type SearchKind, type SearchScope } from '../core/search'
 import { useAppStore } from '../store/useAppStore'
 
@@ -85,12 +86,13 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
   const [scope, setScope] = useState<SearchScope>('all')
   const [recent, setRecent] = useState<string[]>(loadRecent)
   const lng = i18n.resolvedLanguage ?? 'zh-TW'
+  const currency = useCurrency()
 
   const tokens = useMemo(() => tokenize(query), [query])
   const hits = useMemo(
     () =>
       searchAll({ events, tasks, shopping, archives, places, subscriptions, inventory }, query, scope, {
-        money: (n) => formatMoney(n, lng),
+        money: (n) => formatMoney(n, lng, currency),
         expenseCat: (e) => (e.cat === 'other' && e.customCat ? e.customCat : t(`expenseCat.${e.cat}`)),
         placeCat: (c) => t(`placeCat.${c}`),
         subMoney: (x) => formatCurrency(x.amount, x.currency, lng),
@@ -99,12 +101,12 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
         invMeta: (x) => t('inv.searchMeta', { count: x.stock, unit: x.unit || t('inv.defaultUnit') }),
       }),
     // eslint 無法追 t 的穩定性；語系變了就重算
-    [events, tasks, shopping, archives, places, subscriptions, inventory, query, scope, lng, t],
+    [events, tasks, shopping, archives, places, subscriptions, inventory, query, scope, lng, currency, t],
   )
 
   const counts = useMemo(() => {
     const all = searchAll({ events, tasks, shopping, archives, places, subscriptions, inventory }, query, 'all', {
-      money: (n) => formatMoney(n, lng),
+      money: (n) => formatMoney(n, lng, currency),
       expenseCat: (e) => (e.cat === 'other' && e.customCat ? e.customCat : t(`expenseCat.${e.cat}`)),
       placeCat: (c) => t(`placeCat.${c}`),
       subMoney: (x) => formatCurrency(x.amount, x.currency, lng),
@@ -123,7 +125,7 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
     }
     for (const h of all) c[h.kind]++
     return c
-  }, [events, tasks, shopping, archives, places, subscriptions, inventory, query, lng, t])
+  }, [events, tasks, shopping, archives, places, subscriptions, inventory, query, lng, currency, t])
 
   const remember = () => {
     const q = query.trim()

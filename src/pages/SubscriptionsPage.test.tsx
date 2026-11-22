@@ -57,7 +57,7 @@ describe('訂閱與續費頁', () => {
     fireEvent.change(within(dialog).getByLabelText('服務名稱'), { target: { value: 'Netflix' } })
     fireEvent.change(within(dialog).getByLabelText('方案'), { target: { value: '標準' } })
     fireEvent.click(within(dialog).getByRole('radio', { name: '年付' }))
-    fireEvent.change(within(dialog).getByLabelText('金額'), { target: { value: '3900' } })
+    fireEvent.change(within(dialog).getByLabelText('金額（NT$）'), { target: { value: '3900' } })
     fireEvent.change(within(dialog).getByLabelText('下次扣款日'), { target: { value: addDays(toLocalISO(), 10) } })
     fireEvent.click(within(dialog).getByText('儲存'))
 

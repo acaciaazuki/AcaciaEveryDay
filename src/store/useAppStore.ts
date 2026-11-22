@@ -58,6 +58,8 @@ interface Actions {
   /** 第一次進入庫存頁時帶入範例；跟訂閱一樣不更新 updatedAt */
   seedInventory: (inputs: InventoryInput[]) => void
   setFontSize: (size: FontSize) => void
+  /** 預設貨幣（三碼 ISO，例如 TWD、USD）。只影響顯示與新增時的預設值，不改動已存的資料 */
+  setCurrency: (currency: string) => void
   /** 歸檔記帳：'ended' 把已結束週期的記帳收進年度記帳本，'current' 立即封存本期。回傳歸檔的筆數 */
   archiveShopping: (mode: 'ended' | 'current', todayISO: string) => number
   /** 把某個歸檔還原回記帳清單 */
@@ -167,6 +169,7 @@ export const useAppStore = create<AppState>()(
         setState((s) => (s.inventorySeeded ? {} : { inventory: [...s.inventory, ...inputs.map((i) => ({ id: newId(), ...i }))], inventorySeeded: true })),
 
       setFontSize: (fontSize) => setState((s) => ({ settings: { ...s.settings, fontSize }, ...touch() })),
+      setCurrency: (currency) => setState((s) => ({ settings: { ...s.settings, currency }, ...touch() })),
 
       archiveShopping: (mode, todayISO) => {
         const { shopping, archives } = getState()
@@ -191,6 +194,11 @@ export const useAppStore = create<AppState>()(
       name: 'acacia-next',
       storage: createJSONStorage(() => webStorage),
       partialize: (s) => s.exportData(),
+      // 舊版存的 settings 沒有新欄位（例如 currency），合併時補上預設值，不讓整個 settings 被蓋掉
+      merge: (persisted, current) => {
+        const p = (persisted ?? {}) as Partial<AppState>
+        return { ...current, ...p, settings: { ...current.settings, ...p.settings } }
+      },
       version: 2,
     },
   ),
