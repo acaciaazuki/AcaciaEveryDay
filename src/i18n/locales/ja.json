@@ -202,7 +202,9 @@
       "preview": "プレビュー",
       "qty": "数量",
       "unit": "単価",
-      "amtHint": "金額は任意なので、普通の買い物リストとしても使えます。項目ごとに通貨を選べ、通貨ごとに小計します。"
+      "amtHint": "金額は任意なので、普通の買い物リストとしても使えます。項目ごとに通貨を選べ、通貨ごとに小計します。",
+      "note": "メモ",
+      "notePlaceholder": "任意"
     },
     "archive": {
       "button": "今期をアーカイブ",
@@ -257,6 +259,7 @@
     "leisure": "娯楽",
     "stocks": "株",
     "loan": "ローン",
+    "insurance": "保険",
     "other": "その他"
   },
   "placeCat": {
@@ -311,7 +314,8 @@
       "shopping": "買い物・家計",
       "places": "お気に入りの場所",
       "subscriptions": "サブスク",
-      "inventory": "ストック"
+      "inventory": "ストック",
+      "recurring": "固定費"
     },
     "badge": {
       "events": "予定",
@@ -319,7 +323,8 @@
       "shopping": "家計",
       "places": "場所",
       "subscriptions": "サブスク",
-      "inventory": "ストック"
+      "inventory": "ストック",
+      "recurring": "固定費"
     },
     "field": {
       "title": "名前",
@@ -723,5 +728,48 @@
     "done": "完了",
     "hourInvalid": "時は 1–12 で入力してください（0–23 の 24 時間表記も可）",
     "minuteInvalid": "分は 00–59 で入力してください"
+  },
+  "recurring": {
+    "button": "固定費をまとめて追加",
+    "importTitle": "固定費をまとめて追加",
+    "importHint": "今期に追加する項目を選び、金額やメモを調整できます。今期（{{start}} – {{end}}）の家計簿に追加されます。",
+    "empty": "固定費のテンプレートがまだありません。毎期支払う項目（スマホ代、分割払い、ローン、保険…）を登録すると、毎期ワンタップで追加できます。",
+    "manage": "固定費を管理",
+    "added": "今期追加済み",
+    "due": "{{date}} 引き落とし",
+    "installment": "{{current}}/{{total}} 回目",
+    "amount": "今期の金額",
+    "note": "メモ",
+    "notePlaceholder": "任意",
+    "selectAll": "すべて選択",
+    "selectNone": "選択解除",
+    "confirm": "追加する（{{count}} 件）",
+    "allAdded": "今期の固定費はすべて追加済みです。締め後の次の期にまた追加できます。",
+    "imported": "固定費を {{count}} 件追加しました",
+    "listTitle": "固定費テンプレート",
+    "add": "＋ 固定費を追加",
+    "back": "まとめて追加に戻る",
+    "dayLabel": "毎月 {{day}} 日",
+    "done": "完了",
+    "searchMeta": "毎月 {{day}} 日 · {{amount}}",
+    "form": {
+      "newTitle": "固定費を追加",
+      "editTitle": "固定費を編集",
+      "name": "項目名",
+      "namePlaceholder": "例：スマホ代、カード分割払い",
+      "nameRequired": "項目名を入力してください",
+      "amount": "既定の金額",
+      "day": "毎月の引き落とし日",
+      "dayHint": "1–31 日。1–9 日は期の翌月になります。その月にない日付は月末になります。",
+      "dayInvalid": "引き落とし日は 1〜31 で入力してください",
+      "note": "メモ",
+      "notePlaceholder": "任意（例：引き落とし口座）",
+      "installments": "分割払い",
+      "total": "支払回数",
+      "next": "次に追加するのは何回目",
+      "installmentInvalid": "支払回数は 1 回以上、次の回は 1〜支払回数の範囲で入力してください",
+      "installmentHint": "追加するたびに回数が 1 つ進み、最終回を追加すると自動で完了になります。",
+      "done": "完了（まとめて追加に表示しない）"
+    }
   }
 }

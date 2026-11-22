@@ -8,6 +8,8 @@ const id = z.string().min(1)
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).or(z.literal(''))
 const hhmm = z.string().regex(/^\d{2}:\d{2}$/).or(z.literal(''))
 const color = z.string().optional()
+/** 跟下面的 DEFAULT_CURRENCY 相同；範本 schema 定義在前面，先用這個常數 */
+const DEFAULT_CURRENCY_CODE = 'TWD'
 
 export const eventSchema = z.object({
   id,
@@ -55,6 +57,35 @@ export const expenseSchema = z.object({
   done: z.boolean().default(false),
   titleColor: color,
   bgColor: color,
+  /** 備註（選填）。從固定支出批次帶入時可以填，例如「本期含漫遊費」 */
+  note: z.string().optional(),
+  /** 從哪一個固定支出範本帶入；手動新增的記帳沒有 */
+  recurringId: z.string().optional(),
+  /** 帶入的是哪一期（週期開始日）。「範本 id＋週期」用來判斷本期是否已加入，避免重複 */
+  recurringPeriod: isoDate.optional(),
+  /** 分期款帶入時是第幾期，刪掉這一筆時用來退回範本的期數 */
+  installment: z.number().int().min(1).optional(),
+})
+
+/**
+ * 週期固定支出範本：每期都要付的款項（手機月費、信用卡分期、貸款、管理費、保險月繳…）。
+ * 範本本身不算支出，在記帳本按「批次加入固定支出」才會寫成本期的記帳。
+ */
+export const recurringSchema = z.object({
+  id,
+  name: z.string(),
+  cat: z.enum(EXPENSE_CATEGORIES).default('other'),
+  customCat: z.string().optional(),
+  amount: z.number().min(0).default(0),
+  /** 跟記帳一樣：三碼 ISO 幣別或自訂符號 */
+  currency: z.string().trim().min(1).max(8).default(DEFAULT_CURRENCY_CODE),
+  /** 每月扣款／入帳日（1–31）。小於 10 的日期落在週期的下個月；該月沒有那一天時用月底 */
+  day: z.number().int().min(1).max(31).default(10),
+  note: z.string().default(''),
+  /** 分期（選填）：total 總期數、next 下一次帶入是第幾期。帶入後 next 加 1，超過 total 就自動標記完成 */
+  installments: z.object({ total: z.number().int().min(1), next: z.number().int().min(1) }).optional(),
+  /** 已完成（分期繳清或不再扣款）：不會出現在批次帶入清單 */
+  done: z.boolean().default(false),
 })
 
 export const placeSchema = z.object({
@@ -183,6 +214,8 @@ export const appDataSchema = z.object({
   inventory: z.array(inventoryItemSchema).default([]),
   /** 是否已經帶入過範例用品（只帶一次） */
   inventorySeeded: z.boolean().default(false),
+  /** 週期固定支出範本；舊資料沒有這個欄位，讀進來時補空陣列 */
+  recurring: z.array(recurringSchema).default([]),
   updatedAt: z.number(),
 })
 
@@ -197,6 +230,7 @@ export type SubStatus = (typeof SUB_STATUSES)[number]
 export type SubCategory = (typeof SUB_CATEGORIES)[number]
 export type InventoryItem = z.infer<typeof inventoryItemSchema>
 export type InvCategory = (typeof INV_CATEGORIES)[number]
+export type Recurring = z.infer<typeof recurringSchema>
 export type Archive = z.infer<typeof archiveSchema>
 export type Place = z.infer<typeof placeSchema>
 export type AppData = z.infer<typeof appDataSchema>
@@ -215,6 +249,7 @@ export const emptyAppData = (): AppData => ({
   subscriptionsSeeded: false,
   inventory: [],
   inventorySeeded: false,
+  recurring: [],
   updatedAt: 0,
 })
 

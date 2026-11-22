@@ -1,10 +1,11 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { webStorage } from '../adapters/storage'
-import { archiveCurrent, archiveEnded, restoreArchive as restoreArchiveData } from '../core/archive'
+import { archiveCurrent, archiveEnded, periodOf, restoreArchive as restoreArchiveData } from '../core/archive'
 import { INV_TO_EXPENSE, restockQty } from '../core/inventory'
 import { migrate } from '../core/migrate'
-import { DEFAULT_CURRENCY, emptyAppData, newId, type AppData, type FontSize, type CalendarEvent, type Expense, type InventoryItem, type Place, type Reminder, type Subscription, type Task } from '../core/schema'
+import { buildImports, importedInPeriod, rollbackInstallment, type ImportPick } from '../core/recurring'
+import { DEFAULT_CURRENCY, emptyAppData, newId, type AppData, type FontSize, type CalendarEvent, type Expense, type InventoryItem, type Place, type Recurring, type Reminder, type Subscription, type Task } from '../core/schema'
 
 type TaskInput = Omit<Task, 'id' | 'done'>
 type ExpenseInput = Omit<Expense, 'id' | 'done'>
@@ -13,6 +14,7 @@ type PlaceInput = Omit<Place, 'id'>
 type ReminderInput = Omit<Reminder, 'id'>
 export type SubscriptionInput = Omit<Subscription, 'id'>
 export type InventoryInput = Omit<InventoryItem, 'id'>
+export type RecurringInput = Omit<Recurring, 'id'>
 
 interface Actions {
   addEvent: (input: EventInput) => void
@@ -57,6 +59,14 @@ interface Actions {
   restockFromShopping: (id: string) => number
   /** 第一次進入庫存頁時帶入範例；跟訂閱一樣不更新 updatedAt */
   seedInventory: (inputs: InventoryInput[]) => void
+  addRecurring: (input: RecurringInput) => void
+  updateRecurring: (id: string, patch: Partial<RecurringInput>) => void
+  removeRecurring: (id: string) => void
+  /**
+   * 批次把固定支出寫進今天所在週期的記帳清單。已完成、本期已帶入過的範本會略過；
+   * 分期款期數加 1。回傳實際加入的筆數
+   */
+  importRecurring: (picks: ImportPick[], todayISO: string) => number
   setFontSize: (size: FontSize) => void
   /** 預設貨幣（三碼 ISO，例如 TWD、USD）。只影響顯示與新增時的預設值，不改動已存的資料 */
   setCurrency: (currency: string) => void
@@ -110,7 +120,29 @@ export const useAppStore = create<AppState>()(
         setState((s) => ({ shopping: s.shopping.map((x) => (x.id === id ? { ...x, ...patch } : x)), ...touch() })),
       toggleExpense: (id) =>
         setState((s) => ({ shopping: s.shopping.map((x) => (x.id === id ? { ...x, done: !x.done } : x)), ...touch() })),
-      removeExpense: (id) => setState((s) => ({ shopping: s.shopping.filter((x) => x.id !== id), ...touch() })),
+      removeExpense: (id) =>
+        setState((s) => {
+          const removed = s.shopping.find((x) => x.id === id)
+          return {
+            shopping: s.shopping.filter((x) => x.id !== id),
+            // 刪掉剛帶入的分期款時把期數退回，重新帶入才不會跳號
+            ...(removed?.recurringId ? { recurring: rollbackInstallment(s.recurring, removed) } : {}),
+            ...touch(),
+          }
+        }),
+
+      addRecurring: (input) => setState((s) => ({ recurring: [...s.recurring, { id: newId(), ...input }], ...touch() })),
+      updateRecurring: (id, patch) =>
+        setState((s) => ({ recurring: s.recurring.map((x) => (x.id === id ? { ...x, ...patch } : x)), ...touch() })),
+      removeRecurring: (id) => setState((s) => ({ recurring: s.recurring.filter((x) => x.id !== id), ...touch() })),
+      importRecurring: (picks, todayISO) => {
+        const { recurring, shopping, archives } = getState()
+        const period = periodOf(todayISO)
+        const r = buildImports(recurring, picks, period, importedInPeriod(period, shopping, archives))
+        if (r.expenses.length === 0) return 0
+        setState((s) => ({ shopping: [...r.expenses, ...s.shopping], recurring: r.templates, ...touch() }))
+        return r.expenses.length
+      },
 
       addSubscription: (input) =>
         setState((s) => ({ subscriptions: [{ id: newId(), ...input }, ...s.subscriptions], subscriptionsSeeded: true, ...touch() })),
@@ -188,8 +220,8 @@ export const useAppStore = create<AppState>()(
 
       importData: (raw) => setState(migrate(raw)),
       exportData: () => {
-        const { schemaVersion, settings, events, tasks, shopping, places, favorites, reminders, archives, subscriptions, subscriptionsSeeded, inventory, inventorySeeded, updatedAt } = getState()
-        return { schemaVersion, settings, events, tasks, shopping, places, favorites, reminders, archives, subscriptions, subscriptionsSeeded, inventory, inventorySeeded, updatedAt }
+        const { schemaVersion, settings, events, tasks, shopping, places, favorites, reminders, archives, subscriptions, subscriptionsSeeded, inventory, inventorySeeded, recurring, updatedAt } = getState()
+        return { schemaVersion, settings, events, tasks, shopping, places, favorites, reminders, archives, subscriptions, subscriptionsSeeded, inventory, inventorySeeded, recurring, updatedAt }
       },
     }),
     {

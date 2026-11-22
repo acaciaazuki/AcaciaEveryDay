@@ -8,9 +8,9 @@ export const ICON_NAMES = [
   // 導覽
   'today', 'calendar', 'pin', 'tasks', 'settings', 'reminders', 'search', 'subscription', 'inventory',
   // 通用
-  'close', 'check', 'user', 'sun', 'cloudSun', 'moon', 'cloud', 'clock', 'card', 'receipt', 'plus', 'minus',
+  'close', 'check', 'user', 'sun', 'cloudSun', 'moon', 'cloud', 'clock', 'card', 'receipt', 'plus', 'minus', 'recurring',
   // 記帳分類
-  'food', 'clothing', 'housing', 'transport', 'education', 'leisure', 'stocks', 'loan', 'box',
+  'food', 'clothing', 'housing', 'transport', 'education', 'leisure', 'stocks', 'loan', 'insurance', 'box',
   // 庫存分類
   'toothbrush', 'lotion', 'pencil',
   // 地點分類

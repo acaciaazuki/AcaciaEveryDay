@@ -202,7 +202,9 @@
       "preview": "預覽",
       "qty": "數量",
       "unit": "單價",
-      "amtHint": "金額選填，不填也能當一般購物清單用。每一筆可以選不同幣別，不同幣別會分開小計。"
+      "amtHint": "金額選填，不填也能當一般購物清單用。每一筆可以選不同幣別，不同幣別會分開小計。",
+      "note": "備註",
+      "notePlaceholder": "選填"
     },
     "archive": {
       "button": "歸檔本期",
@@ -257,6 +259,7 @@
     "leisure": "樂",
     "stocks": "股票",
     "loan": "貸款",
+    "insurance": "保險",
     "other": "其他"
   },
   "placeCat": {
@@ -311,7 +314,8 @@
       "shopping": "購物記帳",
       "places": "最愛地點",
       "subscriptions": "訂閱",
-      "inventory": "庫存"
+      "inventory": "庫存",
+      "recurring": "固定支出"
     },
     "badge": {
       "events": "行程",
@@ -319,7 +323,8 @@
       "shopping": "記帳",
       "places": "地點",
       "subscriptions": "訂閱",
-      "inventory": "庫存"
+      "inventory": "庫存",
+      "recurring": "固定支出"
     },
     "field": {
       "title": "名稱",
@@ -723,5 +728,48 @@
     "done": "完成",
     "hourInvalid": "小時請輸入 1–12（也可以打 0–23 的 24 小時制）",
     "minuteInvalid": "分鐘請輸入 00–59"
+  },
+  "recurring": {
+    "button": "批次加入固定支出",
+    "importTitle": "批次加入固定支出",
+    "importHint": "勾選本期要加入的款項，可以先微調金額與備註，會寫進本期（{{start}} – {{end}}）的記帳清單。",
+    "empty": "還沒有固定支出範本。先把每期都要付的款項（手機月費、分期、貸款、保險…）設定好，之後每期一鍵帶入。",
+    "manage": "管理固定支出",
+    "added": "本期已加入",
+    "due": "{{date}} 扣款",
+    "installment": "第 {{current}}/{{total}} 期",
+    "amount": "本期金額",
+    "note": "備註",
+    "notePlaceholder": "選填",
+    "selectAll": "全選",
+    "selectNone": "全不選",
+    "confirm": "確認加入（{{count}} 筆）",
+    "allAdded": "本期的固定支出都已加入。歸檔後的下一期可以再帶入。",
+    "imported": "已加入 {{count}} 筆固定支出",
+    "listTitle": "固定支出範本",
+    "add": "＋ 新增固定支出",
+    "back": "返回批次加入",
+    "dayLabel": "每月 {{day}} 日",
+    "done": "已完成",
+    "searchMeta": "每月 {{day}} 日 · {{amount}}",
+    "form": {
+      "newTitle": "新增固定支出",
+      "editTitle": "編輯固定支出",
+      "name": "項目名稱",
+      "namePlaceholder": "例如：中華電信月費、信用卡分期",
+      "nameRequired": "請輸入項目名稱",
+      "amount": "預設金額",
+      "day": "每月扣款日",
+      "dayHint": "1–31 日。1–9 日會落在週期的下個月；該月沒有這一天時記在月底。",
+      "dayInvalid": "扣款日請填 1 到 31",
+      "note": "備註",
+      "notePlaceholder": "選填，例如：扣款帳戶",
+      "installments": "分期付款",
+      "total": "總期數",
+      "next": "下一次帶入第幾期",
+      "installmentInvalid": "總期數至少 1 期，下一期要介於 1 到總期數之間",
+      "installmentHint": "帶入一次期數就加 1，最後一期帶入後自動標記完成。",
+      "done": "已完成（不會出現在批次加入）"
+    }
   }
 }

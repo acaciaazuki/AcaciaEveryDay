@@ -202,7 +202,9 @@
       "preview": "Preview",
       "qty": "Quantity",
       "unit": "Unit price",
-      "amtHint": "Amount is optional, so it works as a plain shopping list too. Each item can use its own currency; currencies are subtotaled separately."
+      "amtHint": "Amount is optional, so it works as a plain shopping list too. Each item can use its own currency; currencies are subtotaled separately.",
+      "note": "Note",
+      "notePlaceholder": "Optional"
     },
     "archive": {
       "button": "Archive this period",
@@ -257,6 +259,7 @@
     "leisure": "Leisure",
     "stocks": "Stocks",
     "loan": "Loans",
+    "insurance": "Insurance",
     "other": "Other"
   },
   "placeCat": {
@@ -311,7 +314,8 @@
       "shopping": "Shopping",
       "places": "Places",
       "subscriptions": "Subscriptions",
-      "inventory": "Supplies"
+      "inventory": "Supplies",
+      "recurring": "Fixed costs"
     },
     "badge": {
       "events": "Event",
@@ -319,7 +323,8 @@
       "shopping": "Expense",
       "places": "Place",
       "subscriptions": "Subscription",
-      "inventory": "Supply"
+      "inventory": "Supply",
+      "recurring": "Fixed cost"
     },
     "field": {
       "title": "Name",
@@ -723,5 +728,48 @@
     "done": "Done",
     "hourInvalid": "Enter an hour from 1–12 (0–23 also works)",
     "minuteInvalid": "Enter minutes from 00–59"
+  },
+  "recurring": {
+    "button": "Add fixed costs",
+    "importTitle": "Add fixed costs",
+    "importHint": "Pick what to add this period and adjust amounts or notes first. They go into this period's ledger ({{start}} – {{end}}).",
+    "empty": "No fixed costs yet. Set up what you pay every period (phone bill, installments, loans, insurance…) and add them all in one tap each period.",
+    "manage": "Manage fixed costs",
+    "added": "Added this period",
+    "due": "Due {{date}}",
+    "installment": "Payment {{current}}/{{total}}",
+    "amount": "This period",
+    "note": "Note",
+    "notePlaceholder": "Optional",
+    "selectAll": "Select all",
+    "selectNone": "Select none",
+    "confirm": "Add ({{count}})",
+    "allAdded": "All fixed costs are already in this period. You can add them again next period.",
+    "imported": "Added {{count}} fixed costs",
+    "listTitle": "Fixed cost templates",
+    "add": "+ New fixed cost",
+    "back": "Back to adding",
+    "dayLabel": "Day {{day}} monthly",
+    "done": "Done",
+    "searchMeta": "Day {{day}} monthly · {{amount}}",
+    "form": {
+      "newTitle": "New fixed cost",
+      "editTitle": "Edit fixed cost",
+      "name": "Name",
+      "namePlaceholder": "e.g. Phone bill, card installment",
+      "nameRequired": "Enter a name",
+      "amount": "Default amount",
+      "day": "Charge day each month",
+      "dayHint": "Day 1–31. Days 1–9 fall in the period's second month; if a month is shorter, the last day is used.",
+      "dayInvalid": "Charge day must be 1 to 31",
+      "note": "Note",
+      "notePlaceholder": "Optional, e.g. which account",
+      "installments": "Installments",
+      "total": "Total payments",
+      "next": "Next payment number",
+      "installmentInvalid": "Total must be at least 1, and the next payment must be between 1 and the total",
+      "installmentHint": "Each time it's added the count goes up by one; after the last payment it's marked done.",
+      "done": "Done (hidden from adding)"
+    }
   }
 }

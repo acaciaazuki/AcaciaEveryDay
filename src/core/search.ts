@@ -1,6 +1,6 @@
-import type { Archive, CalendarEvent, Expense, InventoryItem, Place, Subscription, Task } from './schema'
+import type { Archive, CalendarEvent, Expense, InventoryItem, Place, Recurring, Subscription, Task } from './schema'
 
-export const SEARCH_SCOPES = ['all', 'events', 'tasks', 'shopping', 'places', 'subscriptions', 'inventory'] as const
+export const SEARCH_SCOPES = ['all', 'events', 'tasks', 'shopping', 'places', 'subscriptions', 'inventory', 'recurring'] as const
 export type SearchScope = (typeof SEARCH_SCOPES)[number]
 export type SearchKind = Exclude<SearchScope, 'all'>
 
@@ -30,6 +30,8 @@ export interface SearchData {
   /** 舊的呼叫端可以不傳 */
   subscriptions?: Subscription[]
   inventory?: InventoryItem[]
+  /** 週期固定支出範本 */
+  recurring?: Recurring[]
 }
 
 export interface SearchFormat {
@@ -43,6 +45,8 @@ export interface SearchFormat {
   /** 用品分類名稱與摘要（例如「庫存 2 包」）；沒傳時退回代碼 */
   invCat?: (cat: string) => string
   invMeta?: (x: InventoryItem) => string
+  /** 固定支出範本的摘要（例如「每月 10 日 · NT$599」）；沒傳時退回簡單格式 */
+  recurringMeta?: (x: Recurring) => string
 }
 
 /** 以空白切成多個關鍵字，每個關鍵字都要命中（任一欄位）才算符合 */
@@ -128,6 +132,7 @@ export function searchAll(data: SearchData, query: string, scope: SearchScope, f
           fields: [
             ['title', s.title],
             ['store', s.store],
+            ['note', s.note ?? ''],
             ['cat', fmt.expenseCat(s)],
           ],
         },
@@ -227,8 +232,33 @@ export function searchAll(data: SearchData, query: string, scope: SearchScope, f
       })
     }
 
-  // 各類內依日期新到舊（沒有日期的排在後面）；類別順序維持 行程、待辦、記帳、地點、訂閱、庫存
-  const order: SearchKind[] = ['events', 'tasks', 'shopping', 'places', 'subscriptions', 'inventory']
+  if (want('recurring'))
+    for (const x of data.recurring ?? []) {
+      const m = matches(
+        {
+          fields: [
+            ['title', x.name],
+            ['note', x.note],
+            ['cat', fmt.expenseCat(x)],
+          ],
+        },
+        tokens,
+      )
+      if (!m) continue
+      out.push({
+        key: `rec-${x.id}`,
+        kind: 'recurring',
+        id: x.id,
+        title: x.name,
+        meta: fmt.recurringMeta?.(x) ?? `${x.day} · ${fmt.money(x.amount, x.currency)}`,
+        snippet: m === 'title' ? undefined : m,
+        done: x.done,
+        path: `/shopping?recurring=${x.id}`,
+      })
+    }
+
+  // 各類內依日期新到舊（沒有日期的排在後面）；類別順序維持 行程、待辦、記帳、地點、訂閱、庫存、固定支出
+  const order: SearchKind[] = ['events', 'tasks', 'shopping', 'places', 'subscriptions', 'inventory', 'recurring']
   return out.sort((a, b) => order.indexOf(a.kind) - order.indexOf(b.kind) || byDateDesc(a, b))
 }
 
