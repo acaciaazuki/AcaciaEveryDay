@@ -41,7 +41,9 @@ describe('設定頁：自動備份與刪除資料', () => {
     useAppStore.getState().addTask({ title: '重要待辦', loc: '', date: '', time: '' })
     renderPage()
     fireEvent.click(await screen.findByRole('button', { name: '立即備份' }))
-    const list = await screen.findByRole('list', { name: '歷史備份' })
+    // 等備份流程整個結束（按鈕解除停用）再操作還原
+    await screen.findByText('已建立備份')
+    const list = screen.getByRole('list', { name: '歷史備份' })
     expect(within(list).getByText(/待辦 1/)).toBeInTheDocument()
     expect(screen.getByTestId('backup-last')).not.toHaveTextContent('尚未備份')
 
@@ -59,10 +61,14 @@ describe('設定頁：自動備份與刪除資料', () => {
     useAppStore.getState().addTask({ title: 'A', loc: '', date: '', time: '' })
     renderPage()
     fireEvent.click(await screen.findByRole('button', { name: '立即備份' }))
-    const list = await screen.findByRole('list', { name: '歷史備份' })
+    // 等備份流程整個結束（按鈕解除停用）再操作還原
+    await screen.findByText('已建立備份')
+    const list = screen.getByRole('list', { name: '歷史備份' })
     useAppStore.setState({ tasks: [], updatedAt: Date.now() + 1 })
     vi.spyOn(window, 'confirm').mockReturnValue(false)
-    fireEvent.click(within(list).getByRole('button', { name: /^還原/ }))
+    const btn = within(list).getByRole('button', { name: /^還原/ })
+    expect(btn).toBeEnabled()
+    fireEvent.click(btn)
     expect(useAppStore.getState().tasks).toEqual([])
   })
 
