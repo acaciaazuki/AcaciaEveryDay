@@ -10,6 +10,7 @@ import { addDays, dateRange, toLocalISO } from '../core/date'
 import { eventIconOf } from '../core/eventIcons'
 import type { CalendarEvent } from '../core/schema'
 import { dayRhythm, eventsOn, greetingKey, hours } from '../core/today'
+import { formatTime, formatTimeRange, periodFirst, timeParts } from '../core/time'
 import { useNow } from '../hooks/useNow'
 import { useAppStore } from '../store/useAppStore'
 
@@ -144,7 +145,7 @@ export function TodayPage() {
                 const gap = next && e.end && next.start > e.end ? diffMin(e.end, next.start) : 0
                 return (
                   <li key={e.id} className="relative grid grid-cols-[calc(48px*var(--fs))_calc(36px*var(--fs))_1fr] items-start gap-x-3">
-                    <time className="pt-2.5 text-xs font-bold text-muted">{e.start}</time>
+                    <TimelineTime hhmm={e.start} lng={lng} />
                     <EventIconBadge icon={eventIconOf(e)} className="relative z-10 ring-4 ring-paper" />
                     {/* 垂直時間軸線：從這顆徽章連到下一顆 */}
                     {next && <span aria-hidden className="absolute top-[calc(36px*var(--fs)+0.25rem)] -bottom-2 left-[calc(48px*var(--fs)+0.75rem+18px*var(--fs)-1px)] w-0.5 bg-[#e1eae5]" />}
@@ -158,7 +159,7 @@ export function TodayPage() {
                         {e.title}
                       </h3>
                       <small className="text-[length:calc(11px*var(--fs))] text-muted">
-                        {e.start}–{e.end} {e.note && `· ${e.note}`}
+                        {formatTimeRange(e.start, e.end, lng)} {e.note && `· ${e.note}`}
                       </small>
                     </button>
                     {gap >= 30 && (
@@ -185,7 +186,7 @@ export function TodayPage() {
             <div className="mb-3 flex items-center justify-between">
               <div>
                 <strong>
-                  {WAKE} <span className="text-xs text-[#a8b1ac]">—</span> {SLEEP}
+                  {formatTime(WAKE, lng)} <span className="text-xs text-[#a8b1ac]">—</span> {formatTime(SLEEP, lng)}
                 </strong>
                 <small className="block text-[length:calc(11px*var(--fs))] text-muted">{t('today.rhythmRange')}</small>
               </div>
@@ -208,6 +209,17 @@ export function TodayPage() {
 
       {editing && <EventDialog key={editing === 'new' ? 'new' : editing.id} event={editing === 'new' ? null : editing} date={viewISO} onClose={() => setEditing(null)} />}
     </>
+  )
+}
+
+/** 時間軸左側的時間：時間與 AM／PM 分兩行，窄欄位也放得下（日文「午後」在上） */
+function TimelineTime({ hhmm, lng }: { hhmm: string; lng: string | undefined }) {
+  const p = timeParts(hhmm, lng)
+  return (
+    <time dateTime={hhmm} className={`flex pt-1.5 text-xs leading-tight font-bold text-muted ${periodFirst(lng) ? 'flex-col-reverse' : 'flex-col'}`}>
+      <span className="tabular-nums">{p?.time ?? hhmm}</span>
+      {p && <span className="text-[length:calc(10px*var(--fs))] font-semibold">{p.period}</span>}
+    </time>
   )
 }
 
@@ -243,7 +255,7 @@ function RangeList({ days, events, lng, todayISO, onEdit }: { days: string[]; ev
                         {e.title}
                       </strong>
                       <small className="text-[length:calc(11px*var(--fs))] text-muted">
-                        {e.start}–{e.end} {e.note && `· ${e.note}`}
+                        {formatTimeRange(e.start, e.end, lng)} {e.note && `· ${e.note}`}
                       </small>
                     </button>
                   </li>

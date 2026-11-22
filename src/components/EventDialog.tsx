@@ -9,6 +9,7 @@ import { ColorSwatches, TextColorSwatches } from './ColorSwatches'
 import { Dialog } from './Dialog'
 import { EventIconArt } from './EventIcon'
 import { Field } from './Field'
+import { TimeField } from './TimeField'
 
 type Draft = Omit<CalendarEvent, 'id'>
 
@@ -46,9 +47,9 @@ export function EventDialog({ event, date, onClose }: { event: CalendarEvent | n
         </div>
         <Field label={t('event.title')} placeholder={t('event.titlePlaceholder')} value={draft.title} onChange={(e) => set({ title: e.target.value })} autoFocus />
         <Field label={t('event.date')} type="date" value={draft.dateISO} onChange={(e) => set({ dateISO: e.target.value })} />
-        <div className="grid grid-cols-2 gap-3">
-          <Field label={t('event.start')} type="time" value={draft.start} onChange={(e) => set({ start: e.target.value })} />
-          <Field label={t('event.end')} type="time" value={draft.end} onChange={(e) => set({ end: e.target.value })} />
+        <div className="grid gap-3 min-[30rem]:grid-cols-2">
+          <TimeField label={t('event.start')} value={draft.start} onChange={(start) => set({ start })} />
+          <TimeField label={t('event.end')} value={draft.end} onChange={(end) => set({ end })} />
         </div>
         {error && <p className="-mt-2 text-xs text-[#c2583d]">{error}</p>}
         <div className="grid gap-1.5 text-xs font-semibold text-muted">

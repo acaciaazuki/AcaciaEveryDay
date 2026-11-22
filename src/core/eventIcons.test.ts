@@ -10,7 +10,19 @@ describe('detectEventIcon', () => {
     ['睡覺', 'sleep'],
     ['Bedtime', 'sleep'],
     ['上課：資料結構', 'study'],
-    ['讀書會', 'study'],
+    ['讀書會', 'book'],
+    ['圖書館念書', 'book'],
+    ['Reading', 'book'],
+    ['考試', 'study'],
+    ['夏威夷度假', 'vacation'],
+    ['京都旅行', 'vacation'],
+    ['Beach trip', 'vacation'],
+    ['搭高鐵回台南', 'train'],
+    ['新幹線', 'train'],
+    ['Take the train', 'train'],
+    ['去機場', 'flight'],
+    ['フライト', 'flight'],
+    ['Flight to Tokyo', 'flight'],
     ['勉強', 'study'],
     ['週會 開會', 'work'],
     ['Team meeting', 'work'],
@@ -37,6 +49,12 @@ describe('detectEventIcon', () => {
     expect(detectEventIcon('Team brunch')).toBe('meal')
     expect(detectEventIcon('Breakfast')).toBe('meal')
     expect(detectEventIcon('Ballroom run club')).toBe('exercise')
+    // 交通工具優先：出差搭高鐵顯示火車、旅行搭機顯示飛機
+    expect(detectEventIcon('搭高鐵出差')).toBe('train')
+    expect(detectEventIcon('旅行 搭機')).toBe('flight')
+    // booking、bread 不會被當成 book、read
+    expect(detectEventIcon('Hotel booking')).toBe('default')
+    expect(detectEventIcon('Buy bread')).toBe('default')
   })
 })
 

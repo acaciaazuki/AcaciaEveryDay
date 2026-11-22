@@ -462,6 +462,10 @@
     "shopping": "Shopping",
     "exercise": "Exercise",
     "health": "Health & beauty",
+    "vacation": "Vacation",
+    "train": "Train",
+    "flight": "Flight",
+    "book": "Reading",
     "default": "General"
   },
   "subs": {
@@ -709,5 +713,15 @@
     "customPlaceholder": "e.g. ฿, RM, ₫, pts",
     "customHelp": "Up to 8 characters. A 3-letter uppercase code (e.g. THB) uses that currency’s formatting.",
     "customRequired": "Enter a custom currency symbol"
+  },
+  "time": {
+    "hour": "hour",
+    "minute": "minute",
+    "period": "AM/PM",
+    "pick": "Pick {{label}}",
+    "clear": "Clear {{label}}",
+    "done": "Done",
+    "hourInvalid": "Enter an hour from 1–12 (0–23 also works)",
+    "minuteInvalid": "Enter minutes from 00–59"
   }
 }

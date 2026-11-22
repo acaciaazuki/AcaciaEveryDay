@@ -1,0 +1,296 @@
+import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
+import { useTranslation } from 'react-i18next'
+import { from12, parseHourInput, parseMinuteInput, periodFirst, periodLabel, to12, type Period } from '../core/time'
+import { Icon } from './AcaciaIcons'
+
+const pad = (n: number) => String(n).padStart(2, '0')
+const HOURS = Array.from({ length: 12 }, (_, i) => i + 1)
+const MINUTES = Array.from({ length: 12 }, (_, i) => i * 5)
+
+/**
+ * 時間輸入：小時（HH）、分鐘（mm）兩個可以直接打數字的格子 + AM／PM 切換，旁邊的時鐘按鈕可以點選常用時間。
+ * 取代原生 <input type="time">（繁中瀏覽器會顯示「上午／下午」，iOS 只能滾輪選）。
+ * value／onChange 一律是 24 小時制 "HH:mm"；optional 的欄位可以清空成 ""。
+ */
+export function TimeField({ label, value, onChange, optional = false }: { label: string; value: string; onChange: (v: string) => void; optional?: boolean }) {
+  const { t, i18n } = useTranslation()
+  const lng = i18n.resolvedLanguage
+  const uid = useId()
+  const labelId = `${uid}-label`
+  const errorId = `${uid}-error`
+  const pickerId = `${uid}-picker`
+
+  const init = to12(value)
+  const [hh, setHh] = useState(init ? pad(init.h12) : '')
+  const [mm, setMm] = useState(init ? pad(init.m) : '')
+  const [period, setPeriod] = useState<Period>(init?.period ?? 'am')
+  const [invalid, setInvalid] = useState<'hour' | 'minute' | null>(null)
+  const [open, setOpen] = useState(false)
+  const emitted = useRef(value)
+  const root = useRef<HTMLDivElement>(null)
+  const hourRef = useRef<HTMLInputElement>(null)
+  const minuteRef = useRef<HTMLInputElement>(null)
+
+  /** 依 value 重設格子內容（外部改值、或輸入不合法要還原時） */
+  const resetFrom = (v: string) => {
+    const p = to12(v)
+    setHh(p ? pad(p.h12) : '')
+    setMm(p ? pad(p.m) : '')
+    if (p) setPeriod(p.period)
+    setInvalid(null)
+  }
+
+  // 外部改了 value（例如切換要編輯的行程）才同步，自己送出去的值不要覆蓋使用者正在打的字
+  useEffect(() => {
+    if (value === emitted.current) return
+    emitted.current = value
+    resetFrom(value)
+  }, [value])
+
+  const emit = (v: string) => {
+    emitted.current = v
+    onChange(v)
+  }
+  const emitParts = (h12: number, m: number, p: Period) => emit(from12(h12, m, p))
+
+  // 點選元件外面就收起點選面板
+  useEffect(() => {
+    if (!open) return
+    const onDown = (e: PointerEvent) => {
+      if (!root.current?.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('pointerdown', onDown)
+    return () => document.removeEventListener('pointerdown', onDown)
+  }, [open])
+
+  const onHour = (raw: string) => {
+    const text = raw.replace(/\D/g, '').slice(0, 2)
+    setHh(text)
+    if (!text) {
+      setInvalid(null)
+      if (optional && !mm) emit('')
+      return
+    }
+    const r = parseHourInput(text, period)
+    if (!r) return setInvalid('hour')
+    setInvalid(null)
+    setPeriod(r.period)
+    emitParts(r.h12, parseMinuteInput(mm) ?? 0, r.period)
+    if (!mm) setMm('00')
+    // 打滿兩位數就跳到分鐘
+    if (text.length === 2) {
+      minuteRef.current?.focus()
+      minuteRef.current?.select()
+    }
+  }
+
+  const onMinute = (raw: string) => {
+    const text = raw.replace(/\D/g, '').slice(0, 2)
+    setMm(text)
+    if (!text) return setInvalid(null)
+    const m = parseMinuteInput(text)
+    if (m == null) return setInvalid('minute')
+    setInvalid(null)
+    const h = parseHourInput(hh, period)
+    if (h) emitParts(h.h12, m, h.period)
+  }
+
+  /** 離開格子時：不合法或沒填完就還原成目前的值，合法的補零（9 → 09、21 → 09 PM） */
+  const onBlurField = () => {
+    const h = parseHourInput(hh, period)
+    const m = parseMinuteInput(mm)
+    if (optional && !hh && !mm) {
+      setInvalid(null)
+      if (value) emit('')
+      return
+    }
+    if (!h || m == null) return resetFrom(value)
+    setHh(pad(h.h12))
+    setMm(pad(m))
+  }
+
+  const togglePeriod = (p: Period) => {
+    setPeriod(p)
+    const h = parseHourInput(hh, p)
+    // 已經是 1–12 的小時才照按鈕換；0、13–23 這種 24 小時制的打法以數字為準
+    if (h && h.period === p) emitParts(h.h12, parseMinuteInput(mm) ?? 0, p)
+  }
+
+  /** ↑↓ 微調：小時照時鐘順序走（11 AM ↑ 變 12 PM），分鐘 0–59 循環 */
+  const onArrow = (part: 'hour' | 'minute') => (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace' && part === 'minute' && !mm) {
+      e.preventDefault()
+      hourRef.current?.focus()
+      return
+    }
+    if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return
+    e.preventDefault()
+    const d = e.key === 'ArrowUp' ? 1 : -1
+    const [h, m] = (value || from12(12, 0, period)).split(':').map(Number)
+    const next = part === 'hour' ? `${pad((h + d + 24) % 24)}:${pad(m)}` : `${pad(h)}:${pad((m + d + 60) % 60)}`
+    resetFrom(next)
+    emit(next)
+  }
+
+  const pickHour = (h12: number) => {
+    const m = parseMinuteInput(mm) ?? 0
+    setHh(pad(h12))
+    setMm(pad(m))
+    setInvalid(null)
+    emitParts(h12, m, period)
+  }
+  const pickMinute = (m: number) => {
+    const h = parseHourInput(hh, period)
+    const h12 = h?.h12 ?? 12
+    setHh(pad(h12))
+    setMm(pad(m))
+    setInvalid(null)
+    emitParts(h12, m, h?.period ?? period)
+  }
+
+  const clear = () => {
+    setHh('')
+    setMm('')
+    setInvalid(null)
+    emit('')
+  }
+
+  const cur = to12(value)
+  const digit = 'w-[2.2em] min-w-0 rounded-md bg-transparent px-0.5 py-0.5 text-center text-sm font-normal text-ink tabular-nums outline-none placeholder:text-[#b8c2bd] focus:bg-sage-light'
+  const periodToggle = (
+    <div role="group" aria-label={t('time.period')} className="flex shrink-0 overflow-hidden rounded-full border border-line bg-paper">
+      {(['am', 'pm'] as const).map((p) => (
+        <button
+          key={p}
+          type="button"
+          aria-pressed={period === p}
+          onClick={() => togglePeriod(p)}
+          className={`px-1.5 py-1 text-[length:calc(11px*var(--fs))] leading-none font-bold ${period === p ? 'bg-sage text-white' : 'text-muted'}`}
+        >
+          {periodLabel(p, lng)}
+        </button>
+      ))}
+    </div>
+  )
+
+  return (
+    <div ref={root} role="group" aria-labelledby={labelId} className="relative grid min-w-0 gap-1.5 text-xs font-semibold text-muted">
+      <span id={labelId}>{label}</span>
+      <div
+        className={`flex min-w-0 items-center gap-1 rounded-(--radius-control) border bg-oat px-2 py-1.5 focus-within:border-sage ${invalid ? 'border-[#e0a493]' : 'border-line'}`}
+      >
+        {periodFirst(lng) && periodToggle}
+        <input
+          ref={hourRef}
+          aria-label={`${label} ${t('time.hour')}`}
+          aria-invalid={invalid === 'hour' || undefined}
+          aria-describedby={invalid ? errorId : undefined}
+          inputMode="numeric"
+          autoComplete="off"
+          placeholder="HH"
+          maxLength={2}
+          value={hh}
+          onChange={(e) => onHour(e.target.value)}
+          onFocus={(e) => e.target.select()}
+          onBlur={onBlurField}
+          onKeyDown={onArrow('hour')}
+          className={digit}
+        />
+        <span aria-hidden className="text-sm text-ink">
+          :
+        </span>
+        <input
+          ref={minuteRef}
+          aria-label={`${label} ${t('time.minute')}`}
+          aria-invalid={invalid === 'minute' || undefined}
+          aria-describedby={invalid ? errorId : undefined}
+          inputMode="numeric"
+          autoComplete="off"
+          placeholder="mm"
+          maxLength={2}
+          value={mm}
+          onChange={(e) => onMinute(e.target.value)}
+          onFocus={(e) => e.target.select()}
+          onBlur={onBlurField}
+          onKeyDown={onArrow('minute')}
+          className={digit}
+        />
+        {!periodFirst(lng) && periodToggle}
+        <span className="ml-auto flex shrink-0 items-center">
+          {optional && value && (
+            <button type="button" onClick={clear} aria-label={t('time.clear', { label })} title={t('time.clear', { label })} className="grid size-7 place-items-center rounded-full text-muted hover:bg-sage-light">
+              <Icon name="close" className="size-[1.3em]" />
+            </button>
+          )}
+          <button
+            type="button"
+            aria-label={t('time.pick', { label })}
+            title={t('time.pick', { label })}
+            aria-expanded={open}
+            aria-controls={open ? pickerId : undefined}
+            onClick={() => setOpen((o) => !o)}
+            className={`grid size-7 place-items-center rounded-full text-sage-dark hover:bg-sage-light ${open ? 'bg-sage-light' : ''}`}
+          >
+            <Icon name="clock" className="size-[1.5em]" />
+          </button>
+        </span>
+      </div>
+      {invalid && (
+        <p id={errorId} role="alert" className="text-[length:calc(11px*var(--fs))] font-normal text-[#c2583d]">
+          {t(invalid === 'hour' ? 'time.hourInvalid' : 'time.minuteInvalid')}
+        </p>
+      )}
+      {open && (
+        <div
+          id={pickerId}
+          role="dialog"
+          aria-label={t('time.pick', { label })}
+          onKeyDown={(e) => {
+            // 面板裡的 Esc 只收面板，不要連對話框一起關掉
+            if (e.key === 'Escape') {
+              e.preventDefault()
+              e.stopPropagation()
+              setOpen(false)
+            }
+          }}
+          className="absolute inset-x-0 top-full z-20 mt-1 grid gap-2.5 rounded-(--radius-control) border border-line bg-paper p-3 shadow-card"
+        >
+          <div className="flex items-center justify-between">
+            <span>{t('time.hour')}</span>
+            {periodToggle}
+          </div>
+          <div className="grid grid-cols-6 gap-1">
+            {HOURS.map((h) => (
+              <button
+                key={h}
+                type="button"
+                aria-pressed={cur?.h12 === h && cur.period === period}
+                onClick={() => pickHour(h)}
+                className={`rounded-lg py-1.5 text-[length:calc(13px*var(--fs))] font-semibold tabular-nums ${cur?.h12 === h && cur.period === period ? 'bg-sage text-white' : 'bg-oat text-ink hover:bg-sage-light'}`}
+              >
+                {pad(h)}
+              </button>
+            ))}
+          </div>
+          <span>{t('time.minute')}</span>
+          <div className="grid grid-cols-6 gap-1">
+            {MINUTES.map((m) => (
+              <button
+                key={m}
+                type="button"
+                aria-pressed={cur?.m === m}
+                onClick={() => pickMinute(m)}
+                className={`rounded-lg py-1.5 text-[length:calc(13px*var(--fs))] font-semibold tabular-nums ${cur?.m === m ? 'bg-sage text-white' : 'bg-oat text-ink hover:bg-sage-light'}`}
+              >
+                {pad(m)}
+              </button>
+            ))}
+          </div>
+          <button type="button" onClick={() => setOpen(false)} className="justify-self-end rounded-full bg-sage px-4 py-1.5 text-[length:calc(13px*var(--fs))] font-bold text-white">
+            {t('time.done')}
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
