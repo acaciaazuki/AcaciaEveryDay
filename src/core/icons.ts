@@ -12,7 +12,7 @@ export const ICON_NAMES = [
   // 記帳分類
   'food', 'clothing', 'housing', 'transport', 'education', 'leisure', 'stocks', 'loan', 'insurance', 'box',
   // 庫存分類
-  'toothbrush', 'lotion', 'pencil',
+  'toothbrush', 'lotion', 'pencil', 'fridge', 'jar', 'tag',
   // 地點分類
   'dessert', 'cafe', 'drinks', 'clinic', 'convenience', 'bookstore', 'park', 'attraction', 'school', 'market',
 ] as const

@@ -178,13 +178,34 @@ export const subscriptionSchema = z.object({
   note: z.string().default(''),
 })
 
-export const INV_CATEGORIES = ['personal', 'home', 'kitchen', 'health', 'skincare', 'stationery', 'other'] as const
+/**
+ * 庫存內建分類（也是預設排列順序）。key 會存進使用者資料，不要改名；
+ * 新增內建分類時，讀取舊的自訂排序會自動補進去（見 core/invCategories.ts）
+ */
+export const INV_CATEGORIES = ['personal', 'home', 'kitchen', 'chilled', 'pantry', 'health', 'skincare', 'stationery', 'other'] as const
+
+/** 自訂分類名稱的長度上限（字元數） */
+export const INV_CAT_NAME_MAX = 12
+
+/** 使用者自訂的庫存分類 */
+export const invCustomCatSchema = z.object({
+  /** 以 c_ 開頭，跟內建分類的 key 不會重複 */
+  id: z.string().regex(/^c_/),
+  name: z.string().min(1),
+})
+
+/** 庫存分類的使用者設定：自訂分類與排序（order 空陣列代表用預設順序） */
+export const invCatsSchema = z.object({
+  custom: z.array(invCustomCatSchema).default([]),
+  order: z.array(z.string()).default([]),
+})
 
 /** 庫存與到期提醒：家裡的備品與耗材（牙刷、衛生紙、洗碗精…） */
 export const inventoryItemSchema = z.object({
   id,
   name: z.string(),
-  cat: z.enum(INV_CATEGORIES).default('home'),
+  /** 內建分類 key 或自訂分類 id；找不到的（例如已刪除的自訂分類）畫面上當「其他」 */
+  cat: z.string().min(1).default('home'),
   /** 單位（支、包、瓶…），自由輸入 */
   unit: z.string().default(''),
   /** 目前庫存與最低安全庫存量：庫存低於安全庫存就算待補貨（等於安全庫存算足夠） */
@@ -231,6 +252,8 @@ export const appDataSchema = z.object({
   inventory: z.array(inventoryItemSchema).default([]),
   /** 是否已經帶入過範例用品（只帶一次） */
   inventorySeeded: z.boolean().default(false),
+  /** 庫存分類的自訂分類與排序；舊資料沒有這個欄位，讀進來時補預設值 */
+  invCats: invCatsSchema.default({ custom: [], order: [] }),
   /** 週期固定支出範本；舊資料沒有這個欄位，讀進來時補空陣列 */
   recurring: z.array(recurringSchema).default([]),
   updatedAt: z.number(),
@@ -247,6 +270,8 @@ export type SubStatus = (typeof SUB_STATUSES)[number]
 export type SubCategory = (typeof SUB_CATEGORIES)[number]
 export type InventoryItem = z.infer<typeof inventoryItemSchema>
 export type InvCategory = (typeof INV_CATEGORIES)[number]
+export type InvCustomCat = z.infer<typeof invCustomCatSchema>
+export type InvCats = z.infer<typeof invCatsSchema>
 export type Recurring = z.infer<typeof recurringSchema>
 export type Archive = z.infer<typeof archiveSchema>
 export type Place = z.infer<typeof placeSchema>
@@ -266,6 +291,7 @@ export const emptyAppData = (): AppData => ({
   subscriptionsSeeded: false,
   inventory: [],
   inventorySeeded: false,
+  invCats: { custom: [], order: [] },
   recurring: [],
   updatedAt: 0,
 })

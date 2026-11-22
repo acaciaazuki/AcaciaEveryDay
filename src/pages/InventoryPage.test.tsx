@@ -119,3 +119,90 @@ describe('庫存與提醒頁', () => {
     expect(within(cardOf('洗碗精')).getByText('待補貨')).toBeInTheDocument()
   })
 })
+
+describe('庫存分類：新增、刪除、排序', () => {
+  beforeEach(async () => {
+    await i18n.changeLanguage('zh-TW')
+    useAppStore.setState({ ...emptyAppData(), inventorySeeded: true })
+  })
+  afterEach(() => vi.restoreAllMocks())
+
+  const openNew = () => {
+    renderPage()
+    fireEvent.click(screen.getByRole('button', { name: '＋ 新增用品' }))
+    return screen.getByRole('dialog')
+  }
+  const pickCat = (dialog: HTMLElement, label: string) => {
+    fireEvent.click(within(dialog).getByRole('combobox', { name: '分類' }))
+    fireEvent.click(within(dialog).getByRole('option', { name: label }))
+  }
+
+  it('分類選單有低溫食材與常溫食材', () => {
+    const d = openNew()
+    fireEvent.click(within(d).getByRole('combobox', { name: '分類' }))
+    expect(within(d).getByRole('option', { name: '低溫食材' })).toBeInTheDocument()
+    expect(within(d).getByRole('option', { name: '常溫食材' })).toBeInTheDocument()
+  })
+
+  it('選「其他」才出現自訂分類；新增後自動選取並存進用品，重複與空白會提示', () => {
+    const d = openNew()
+    expect(within(d).queryByLabelText('自訂分類')).toBeNull()
+    pickCat(d, '其他')
+    const input = within(d).getByLabelText('自訂分類')
+    fireEvent.click(within(d).getByRole('button', { name: '新增' }))
+    expect(within(d).getByText('請輸入分類名稱')).toBeInTheDocument()
+    fireEvent.change(input, { target: { value: '廚房耗材' } })
+    fireEvent.keyDown(input, { key: 'Enter' })
+    expect(within(d).getByText('已經有同名的分類了')).toBeInTheDocument()
+    fireEvent.change(input, { target: { value: '寵物用品' } })
+    fireEvent.keyDown(input, { key: 'Enter' })
+    const custom = useAppStore.getState().invCats.custom
+    expect(custom).toHaveLength(1)
+    expect(within(d).getByRole('combobox', { name: '分類' })).toHaveTextContent('寵物用品')
+    fireEvent.change(within(d).getByLabelText('用品名稱'), { target: { value: '貓砂' } })
+    fireEvent.click(within(d).getByRole('button', { name: '儲存' }))
+    expect(useAppStore.getState().inventory[0]).toMatchObject({ name: '貓砂', cat: custom[0]!.id })
+    expect(within(list()).getByText('寵物用品')).toBeInTheDocument()
+  })
+
+  it('刪除自訂分類先確認，用品改歸「其他」；取消就不刪', () => {
+    useAppStore.getState().addInvCategory('寵物用品')
+    const id = useAppStore.getState().invCats.custom[0]!.id
+    useAppStore.getState().addInventory({ name: '貓砂', cat: id, unit: '', stock: 1, minStock: 1, lastReplaced: '', cycleDays: 0, expiry: '', openedDate: '', paoMonths: 0, note: '' })
+    renderPage()
+    fireEvent.click(screen.getByRole('button', { name: '分類設定' }))
+    const d = screen.getByRole('dialog', { name: '分類設定' })
+    const confirm = vi.spyOn(window, 'confirm').mockReturnValueOnce(false).mockReturnValueOnce(true)
+    fireEvent.click(within(d).getByRole('button', { name: '刪除分類「寵物用品」' }))
+    expect(confirm).toHaveBeenLastCalledWith(expect.stringContaining('1 個用品'))
+    expect(useAppStore.getState().invCats.custom).toHaveLength(1)
+    fireEvent.click(within(d).getByRole('button', { name: '刪除分類「寵物用品」' }))
+    expect(useAppStore.getState().invCats.custom).toHaveLength(0)
+    expect(useAppStore.getState().inventory[0]!.cat).toBe('other')
+  })
+
+  it('分類設定可以上下移動排序並恢復預設，新增用品的選單跟著變', () => {
+    renderPage()
+    fireEvent.click(screen.getByRole('button', { name: '分類設定' }))
+    const d = screen.getByRole('dialog', { name: '分類設定' })
+    expect(within(d).getByRole('button', { name: '恢復預設順序' })).toBeDisabled()
+    fireEvent.click(within(d).getByRole('button', { name: '上移「低溫食材」' }))
+    const order = useAppStore.getState().invCats.order
+    expect(order.indexOf('chilled')).toBeLessThan(order.indexOf('kitchen'))
+    fireEvent.click(within(d).getByRole('button', { name: '恢復預設順序' }))
+    expect(useAppStore.getState().invCats.order).toEqual([])
+  })
+
+  it('依分類篩選用品清單', () => {
+    const base = { unit: '', stock: 5, minStock: 1, lastReplaced: '', cycleDays: 0, expiry: '', openedDate: '', paoMonths: 0, note: '' }
+    useAppStore.getState().addInventory({ ...base, name: '冷凍水餃', cat: 'chilled' })
+    useAppStore.getState().addInventory({ ...base, name: '米', cat: 'pantry' })
+    renderPage()
+    const group = screen.getByRole('group', { name: '依分類篩選' })
+    fireEvent.click(within(group).getByRole('button', { name: /低溫食材/ }))
+    expect(within(list()).getByText('冷凍水餃')).toBeInTheDocument()
+    expect(within(list()).queryByText('米')).toBeNull()
+    fireEvent.click(within(group).getByRole('button', { name: '所有分類' }))
+    expect(within(list()).getByText('米')).toBeInTheDocument()
+  })
+})

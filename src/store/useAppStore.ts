@@ -2,7 +2,8 @@ import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { webStorage } from '../adapters/storage'
 import { archiveCurrent, archiveEnded, periodOf, restoreArchive as restoreArchiveData } from '../core/archive'
-import { INV_TO_EXPENSE, restockQty, toggleShoppingStock, type StockChange } from '../core/inventory'
+import { addCustomCat, removeCustomCat } from '../core/invCategories'
+import { invToExpense, restockQty, toggleShoppingStock, type StockChange } from '../core/inventory'
 import { migrate } from '../core/migrate'
 import { buildImports, importedKeys, rollbackInstallment, type ImportPick } from '../core/recurring'
 import { DEFAULT_CURRENCY, emptyAppData, newId, type AppData, type FontSize, type CalendarEvent, type Expense, type InventoryItem, type Place, type Recurring, type Reminder, type Subscription, type Task } from '../core/schema'
@@ -60,6 +61,12 @@ interface Actions {
   restockFromShopping: (id: string) => number
   /** 第一次進入庫存頁時帶入範例；跟訂閱一樣不更新 updatedAt */
   seedInventory: (inputs: InventoryInput[]) => void
+  /** 新增自訂庫存分類（名稱請先用 validateCatName 驗證），回傳新分類 id */
+  addInvCategory: (name: string) => string
+  /** 刪除自訂庫存分類，原本屬於它的用品改歸「其他」；回傳改歸的用品數。內建分類不可刪 */
+  removeInvCategory: (id: string) => number
+  /** 庫存分類的順序；傳 null 恢復預設順序 */
+  setInvCatOrder: (keys: string[] | null) => void
   addRecurring: (input: RecurringInput) => void
   updateRecurring: (id: string, patch: Partial<RecurringInput>) => void
   removeRecurring: (id: string) => void
@@ -183,7 +190,7 @@ export const useAppStore = create<AppState>()(
           title: item.name,
           amt: 0,
           store: '',
-          cat: INV_TO_EXPENSE[item.cat],
+          cat: invToExpense(item.cat),
           quantity,
           // 先記下當下的預設貨幣，之後改預設貨幣也不會讓這一筆跟著變
           currency: settings.currency || DEFAULT_CURRENCY,
@@ -215,6 +222,19 @@ export const useAppStore = create<AppState>()(
       },
       seedInventory: (inputs) =>
         setState((s) => (s.inventorySeeded ? {} : { inventory: [...s.inventory, ...inputs.map((i) => ({ id: newId(), ...i }))], inventorySeeded: true })),
+      addInvCategory: (name) => {
+        const id = `c_${newId()}`
+        setState((s) => ({ invCats: addCustomCat(s.invCats, name, id), ...touch() }))
+        return id
+      },
+      removeInvCategory: (id) => {
+        const { invCats, inventory } = getState()
+        if (!invCats.custom.some((c) => c.id === id)) return 0
+        const r = removeCustomCat(invCats, inventory, id)
+        setState({ invCats: r.invCats, inventory: r.inventory, ...touch() })
+        return r.moved
+      },
+      setInvCatOrder: (keys) => setState((s) => ({ invCats: { ...s.invCats, order: keys ?? [] }, ...touch() })),
 
       setFontSize: (fontSize) => setState((s) => ({ settings: { ...s.settings, fontSize }, ...touch() })),
       setCurrency: (currency) => setState((s) => ({ settings: { ...s.settings, currency }, ...touch() })),
@@ -243,8 +263,8 @@ export const useAppStore = create<AppState>()(
 
       importData: (raw) => setState(migrate(raw)),
       exportData: () => {
-        const { schemaVersion, settings, events, tasks, shopping, places, favorites, reminders, archives, subscriptions, subscriptionsSeeded, inventory, inventorySeeded, recurring, updatedAt } = getState()
-        return { schemaVersion, settings, events, tasks, shopping, places, favorites, reminders, archives, subscriptions, subscriptionsSeeded, inventory, inventorySeeded, recurring, updatedAt }
+        const { schemaVersion, settings, events, tasks, shopping, places, favorites, reminders, archives, subscriptions, subscriptionsSeeded, inventory, inventorySeeded, invCats, recurring, updatedAt } = getState()
+        return { schemaVersion, settings, events, tasks, shopping, places, favorites, reminders, archives, subscriptions, subscriptionsSeeded, inventory, inventorySeeded, invCats, recurring, updatedAt }
       },
     }),
     {

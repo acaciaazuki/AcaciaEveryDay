@@ -8,6 +8,7 @@ import { PLACE_CATEGORIES, type PlaceCategory } from '../core/categories'
 import { formatCurrency, formatMoney } from '../core/format'
 import { useCurrency } from '../hooks/useCurrency'
 import { SEARCH_SCOPES, excerpt, searchAll, splitHighlight, tokenize, type SearchHit, type SearchKind, type SearchScope } from '../core/search'
+import { invCatLabel } from '../hooks/useInvCategories'
 import { useAppStore } from '../store/useAppStore'
 
 const RECENT_KEY = 'acacia_recent_search'
@@ -81,7 +82,7 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
 function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
-  const { events, tasks, shopping, archives, places, subscriptions, inventory, recurring } = useAppStore()
+  const { events, tasks, shopping, archives, places, subscriptions, inventory, invCats, recurring } = useAppStore()
   const [query, setQuery] = useState('')
   const [scope, setScope] = useState<SearchScope>('all')
   const [recent, setRecent] = useState<string[]>(loadRecent)
@@ -97,12 +98,12 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
         placeCat: (c) => t(`placeCat.${c}`),
         subMoney: (x) => formatCurrency(x.amount, x.currency, lng),
         subCat: (c) => t(`subs.cat.${c}`),
-        invCat: (c) => t(`inv.cat.${c}`),
+        invCat: (c) => invCatLabel(c, invCats, t),
         invMeta: (x) => t('inv.searchMeta', { count: x.stock, unit: x.unit || t('inv.defaultUnit') }),
         recurringMeta: (x) => t('recurring.searchMeta', { day: x.day, amount: formatMoney(x.amount, lng, x.currency) }),
       }),
     // eslint 無法追 t 的穩定性；語系變了就重算
-    [events, tasks, shopping, archives, places, subscriptions, inventory, recurring, query, scope, lng, currency, t],
+    [events, tasks, shopping, archives, places, subscriptions, inventory, invCats, recurring, query, scope, lng, currency, t],
   )
 
   const counts = useMemo(() => {
@@ -112,7 +113,7 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
       placeCat: (c) => t(`placeCat.${c}`),
       subMoney: (x) => formatCurrency(x.amount, x.currency, lng),
       subCat: (c) => t(`subs.cat.${c}`),
-      invCat: (c) => t(`inv.cat.${c}`),
+      invCat: (c) => invCatLabel(c, invCats, t),
       invMeta: (x) => t('inv.searchMeta', { count: x.stock, unit: x.unit || t('inv.defaultUnit') }),
       recurringMeta: (x) => t('recurring.searchMeta', { day: x.day, amount: formatMoney(x.amount, lng, x.currency) }),
     })
@@ -128,7 +129,7 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
     }
     for (const h of all) c[h.kind]++
     return c
-  }, [events, tasks, shopping, archives, places, subscriptions, inventory, recurring, query, lng, currency, t])
+  }, [events, tasks, shopping, archives, places, subscriptions, inventory, invCats, recurring, query, lng, currency, t])
 
   const remember = () => {
     const q = query.trim()
