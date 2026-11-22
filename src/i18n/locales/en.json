@@ -802,7 +802,7 @@
   },
   "privacy": {
     "link": "Privacy policy",
-    "backToSettings": "← Back to Settings"
+    "close": "Close"
   },
   "backup": {
     "title": "Automatic backup",

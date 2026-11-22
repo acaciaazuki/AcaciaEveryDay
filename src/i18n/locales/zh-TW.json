@@ -802,7 +802,7 @@
   },
   "privacy": {
     "link": "隱私權政策",
-    "backToSettings": "← 回到設定"
+    "close": "關閉"
   },
   "backup": {
     "title": "自動備份",
