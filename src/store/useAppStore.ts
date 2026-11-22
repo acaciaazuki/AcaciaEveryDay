@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { webStorage } from '../adapters/storage'
 import { archiveCurrent, archiveEnded, periodOf, restoreArchive as restoreArchiveData } from '../core/archive'
-import { INV_TO_EXPENSE, restockQty } from '../core/inventory'
+import { INV_TO_EXPENSE, restockQty, toggleShoppingStock, type StockChange } from '../core/inventory'
 import { migrate } from '../core/migrate'
 import { buildImports, importedKeys, rollbackInstallment, type ImportPick } from '../core/recurring'
 import { DEFAULT_CURRENCY, emptyAppData, newId, type AppData, type FontSize, type CalendarEvent, type Expense, type InventoryItem, type Place, type Recurring, type Reminder, type Subscription, type Task } from '../core/schema'
@@ -33,7 +33,8 @@ interface Actions {
   removeTask: (id: string) => void
   addExpense: (input: ExpenseInput) => void
   updateExpense: (id: string, patch: Partial<ExpenseInput>) => void
-  toggleExpense: (id: string) => void
+  /** 打勾／取消打勾；對得到庫存用品時會自動補進（或扣回）庫存，回傳庫存變動 */
+  toggleExpense: (id: string) => StockChange | undefined
   removeExpense: (id: string) => void
   addSubscription: (input: SubscriptionInput) => void
   updateSubscription: (id: string, patch: Partial<SubscriptionInput>) => void
@@ -121,8 +122,12 @@ export const useAppStore = create<AppState>()(
         setState((s) => ({ shopping: [{ id: newId(), done: false, ...input }, ...s.shopping], ...touch() })),
       updateExpense: (id, patch) =>
         setState((s) => ({ shopping: s.shopping.map((x) => (x.id === id ? { ...x, ...patch } : x)), ...touch() })),
-      toggleExpense: (id) =>
-        setState((s) => ({ shopping: s.shopping.map((x) => (x.id === id ? { ...x, done: !x.done } : x)), ...touch() })),
+      toggleExpense: (id) => {
+        const { shopping, inventory } = getState()
+        const r = toggleShoppingStock(shopping, inventory, id)
+        setState({ shopping: r.shopping, inventory: r.inventory, ...touch() })
+        return r.change
+      },
       removeExpense: (id) =>
         setState((s) => {
           const removed = s.shopping.find((x) => x.id === id)
@@ -199,7 +204,13 @@ export const useAppStore = create<AppState>()(
         const linked = item?.shoppingId ? shopping.find((e) => e.id === item.shoppingId) : undefined
         if (!item || !linked) return 0
         const qty = linked.quantity && linked.quantity > 0 ? linked.quantity : 1
-        setState((s) => ({ inventory: s.inventory.map((x) => (x.id === id ? { ...x, stock: x.stock + qty, shoppingId: undefined } : x)), ...touch() }))
+        // 舊資料（自動入庫之前就打勾的）才會走到這裡；記下入庫記號，之後取消打勾才扣得回來、也不會再入庫一次
+        if (linked.stockedItemId) return 0
+        setState((s) => ({
+          inventory: s.inventory.map((x) => (x.id === id ? { ...x, stock: x.stock + qty, shoppingId: undefined } : x)),
+          shopping: s.shopping.map((e) => (e.id === linked.id ? { ...e, stockedItemId: id, stockedQty: qty } : e)),
+          ...touch(),
+        }))
         return qty
       },
       seedInventory: (inputs) =>

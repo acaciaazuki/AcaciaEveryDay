@@ -370,6 +370,7 @@ function ItemDialog({ item, todayISO, onClose }: { item: InventoryItem | null; t
             <Field label={t('inv.form.minStock')} type="number" inputMode="numeric" min={0} step="any" value={nums.minStock} onChange={(e) => setNum('minStock', e.target.value)} />
             <Field label={t('inv.form.unit')} placeholder={t('inv.defaultUnit')} list={`${uid}-unit`} value={draft.unit} onChange={(e) => set({ unit: e.target.value })} />
           </div>
+          <p className="-mt-1 text-[length:calc(11px*var(--fs))] text-muted">{t('inv.form.minStockHint')}</p>
           <datalist id={`${uid}-unit`}>
             {t('inv.unitSuggest').split('|').map((u) => (
               <option key={u} value={u} />

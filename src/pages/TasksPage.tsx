@@ -1,5 +1,6 @@
-import { Icon } from '../components/AcaciaIcons'
-import { useState, type FormEvent } from 'react'
+import { Icon, IconBadge } from '../components/AcaciaIcons'
+import { useCallback, useState, type FormEvent } from 'react'
+import { Link } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../components/Button'
 import { ColorSwatches, TextColorSwatches } from '../components/ColorSwatches'
@@ -7,6 +8,10 @@ import { Dialog } from '../components/Dialog'
 import { Field } from '../components/Field'
 import { TimeField } from '../components/TimeField'
 import { PageHead } from '../components/PageHead'
+import { Toast } from '../components/Toast'
+import { INV_STYLE, lowStockReminders } from '../core/inventory'
+import { toLocalISO } from '../core/date'
+import { useNow } from '../hooks/useNow'
 import { DEFAULT_TEXT_COLOR } from '../core/categories'
 import type { Task } from '../core/schema'
 import { useOpenFromUrl } from '../hooks/useOpenFromUrl'
@@ -29,6 +34,8 @@ export function TasksPage() {
   return (
     <>
       <PageHead eyebrow={t('tasks.eyebrow')} title={t('tasks.title')} actions={<Button onClick={() => setEditing('new')}>{t('tasks.add')}</Button>} />
+
+      <LowStockSection />
 
       {tasks.length === 0 ? (
         <div className="rounded-(--radius-card) bg-paper p-10 text-center text-muted shadow-card">{t('tasks.empty')}</div>
@@ -87,6 +94,74 @@ export function TasksPage() {
 
       {editing && <TaskDialog key={editing === 'new' ? 'new' : editing.id} task={editing === 'new' ? null : editing} onClose={() => setEditing(null)} />}
     </>
+  )
+}
+
+/**
+ * 庫存不足提醒：不存成待辦，每次依庫存與購物清單即時算出來。
+ * 補貨到安全庫存（例如購物清單打勾自動入庫）後就自動消失，不會留下殘留的待辦
+ */
+function LowStockSection() {
+  const { t } = useTranslation()
+  const inventory = useAppStore((s) => s.inventory)
+  const shopping = useAppStore((s) => s.shopping)
+  const addToShopping = useAppStore((s) => s.addInventoryToShopping)
+  const now = useNow()
+  const [toast, setToast] = useState<string | null>(null)
+  const clearToast = useCallback(() => setToast(null), [])
+  const list = lowStockReminders(inventory, shopping)
+  if (list.length === 0) return toast ? <Toast message={toast} onDone={clearToast} /> : null
+  const time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+
+  return (
+    <section className="mb-6 rounded-(--radius-card) border border-line bg-[#f3f8f4] p-4 shadow-soft" aria-labelledby="low-stock-title">
+      <h2 id="low-stock-title" className="flex items-center gap-2 text-sm font-bold text-sage-dark">
+        <Icon name="box" className="size-[1.4em]" />
+        {t('tasks.lowStock.title')} · {list.length}
+      </h2>
+      <p className="mt-1 text-[length:calc(11px*var(--fs))] text-muted">{t('tasks.lowStock.hint')}</p>
+      <ul className="mt-3 grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-3">
+        {list.map(({ item, need, pending }) => {
+          const st = INV_STYLE[item.cat]
+          const unit = item.unit || t('inv.defaultUnit')
+          return (
+            <li key={item.id} className="grid content-start gap-2.5 rounded-xl border border-l-4 border-line bg-paper p-3.5" style={{ borderLeftColor: st.fg }}>
+              <div className="flex items-start gap-3">
+                <IconBadge name={st.icon} bg={st.bg} />
+                <Link to={`/inventory?open=${item.id}`} className="min-w-0 flex-1" aria-label={t('tasks.lowStock.openItem', { name: item.name })}>
+                  <strong className="block truncate text-sm">{item.name}</strong>
+                  <small className="mt-0.5 block text-[length:calc(11px*var(--fs))] text-muted">
+                    {t('tasks.lowStock.detail', { stock: item.stock, min: item.minStock, need, unit })}
+                  </small>
+                </Link>
+              </div>
+              {pending ? (
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1 rounded-(--radius-control) bg-sage-light px-3 py-1.5 text-xs font-bold text-sage-dark">
+                    <Icon name="check" className="size-[1.2em]" />
+                    {t('tasks.lowStock.inList', { count: pending.quantity ?? 1, unit })}
+                  </span>
+                  <Link to={`/shopping?open=${pending.id}`} className="ml-auto text-xs font-bold text-sage-dark underline-offset-2 hover:underline">
+                    {t('tasks.lowStock.goShopping')}
+                  </Link>
+                </div>
+              ) : (
+                <Button
+                  className="justify-self-end px-3! py-1.5!"
+                  onClick={() => {
+                    const n = addToShopping(item.id, toLocalISO(now), time)
+                    if (n > 0) setToast(t('inv.toast.added', { name: item.name, count: n, unit }))
+                  }}
+                >
+                  {t('inv.action.addToList', { count: need, unit })}
+                </Button>
+              )}
+            </li>
+          )
+        })}
+      </ul>
+      {toast && <Toast message={toast} onDone={clearToast} />}
+    </section>
   )
 }
 

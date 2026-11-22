@@ -139,7 +139,13 @@ export function ShoppingPage() {
                     <button
                       type="button"
                       aria-label={s.done ? t('shopping.markUndone') : t('shopping.markDone')}
-                      onClick={() => toggleExpense(s.id)}
+                      onClick={() => {
+                        // 對得到庫存用品時會自動補進（取消打勾則扣回）庫存，用提示告訴使用者
+                        const c = toggleExpense(s.id)
+                        if (!c) return
+                        const unit = c.item.unit || t('inv.defaultUnit')
+                        setToast(c.qty > 0 ? t('inv.toast.restocked', { name: c.item.name, count: c.qty, unit }) : t('inv.toast.unstocked', { name: c.item.name, count: -c.qty, unit }))
+                      }}
                       className={`grid size-5 shrink-0 place-items-center rounded-full border-2 text-[length:calc(10px*var(--fs))] ${s.done ? 'border-[#888] bg-[#888] text-white' : 'border-current'}`}
                     >
                       {s.done && <Icon name="check" className="size-[1.3em]" />}

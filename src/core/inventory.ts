@@ -70,8 +70,8 @@ export const isDue = (x: InventoryItem, todayISO: string) => {
   return d != null && d.daysLeft <= DUE_SOON_DAYS
 }
 
-/** 庫存 ≤ 安全庫存量就算待補貨 */
-export const isLow = (x: Pick<InventoryItem, 'stock' | 'minStock'>) => x.stock <= x.minStock
+/** 庫存低於安全庫存量就算待補貨；補到等於安全庫存就算足夠（安全庫存設 0 代表不提醒） */
+export const isLow = (x: Pick<InventoryItem, 'stock' | 'minStock'>) => x.stock < x.minStock
 
 /** 建議補貨數量：安全庫存 − 目前庫存，至少 1 */
 export const restockQty = (x: Pick<InventoryItem, 'stock' | 'minStock'>) => Math.max(1, Math.ceil(x.minStock - x.stock))
@@ -99,6 +99,92 @@ export function shoppingLink(x: Pick<InventoryItem, 'shoppingId'>, shopping: Exp
   const expense = shopping.find((e) => e.id === x.shoppingId)
   if (!expense) return { state: 'none' }
   return { state: expense.done ? 'bought' : 'pending', expense }
+}
+
+/** 名稱比對用：去頭尾空白、全形半形統一、不分大小寫 */
+const normName = (s: string) => s.normalize('NFKC').trim().toLowerCase()
+
+/** 這一筆購買記錄的數量；沒填或不合理時當 1 */
+const expenseQty = (e: Pick<Expense, 'quantity'>) => (e.quantity && e.quantity > 0 ? e.quantity : 1)
+
+/**
+ * 購物清單上的這一筆是哪一個庫存用品：
+ * 1. 從庫存頁加入的（用品記著這一筆的 shoppingId）
+ * 2. 使用者自己在購物清單新增、名稱跟用品完全相同的（固定支出帶入的不算）
+ */
+export function inventoryFor(e: Expense, inventory: InventoryItem[]): InventoryItem | undefined {
+  const linked = inventory.find((x) => x.shoppingId === e.id)
+  if (linked) return linked
+  if (e.recurringId) return undefined
+  const name = normName(e.title)
+  return name ? inventory.find((x) => normName(x.name) === name) : undefined
+}
+
+export interface StockChange {
+  item: InventoryItem
+  /** 正數是補進庫存，負數是取消打勾扣回 */
+  qty: number
+}
+
+/**
+ * 購物清單打勾／取消打勾時同步庫存（純函式，store 用它算新狀態）：
+ * - 打勾且對得到用品、還沒入庫過：庫存加上購買數量，在這一筆記下 stockedItemId／stockedQty
+ * - 取消打勾且之前自動入庫過：把那次加的數量扣回（最低 0），清掉記號，用品重新連回這一筆（顯示「已在購物清單」）
+ * 同一筆反覆勾選、取消，庫存一定回到原本的數字，不會重複入庫
+ */
+export function toggleShoppingStock(
+  shopping: Expense[],
+  inventory: InventoryItem[],
+  id: string,
+): { shopping: Expense[]; inventory: InventoryItem[]; change?: StockChange } {
+  const e = shopping.find((x) => x.id === id)
+  if (!e) return { shopping, inventory }
+  const done = !e.done
+  const setExpense = (patch: Partial<Expense>) => shopping.map((x) => (x.id === id ? { ...x, ...patch } : x))
+
+  if (done && !e.stockedItemId) {
+    const item = inventoryFor(e, inventory)
+    if (!item) return { shopping: setExpense({ done }), inventory }
+    const qty = expenseQty(e)
+    const next = { ...item, stock: item.stock + qty, shoppingId: item.shoppingId === id ? undefined : item.shoppingId }
+    return {
+      shopping: setExpense({ done, stockedItemId: item.id, stockedQty: qty }),
+      inventory: inventory.map((x) => (x.id === item.id ? next : x)),
+      change: { item: next, qty },
+    }
+  }
+
+  if (!done && e.stockedItemId) {
+    const item = inventory.find((x) => x.id === e.stockedItemId)
+    const cleared = setExpense({ done, stockedItemId: undefined, stockedQty: undefined })
+    if (!item) return { shopping: cleared, inventory }
+    const qty = e.stockedQty ?? 0
+    const next = { ...item, stock: Math.max(0, item.stock - qty), shoppingId: item.shoppingId ?? id }
+    return { shopping: cleared, inventory: inventory.map((x) => (x.id === item.id ? next : x)), change: { item: next, qty: -qty } }
+  }
+
+  return { shopping: setExpense({ done }), inventory }
+}
+
+/** 稍後辦的庫存不足提醒：不另外存，每次依庫存與購物清單即時算出來 */
+export interface LowStockReminder {
+  item: InventoryItem
+  /** 還差多少才補到安全庫存 */
+  need: number
+  /** 已在購物清單中（還沒買）的那一筆；沒有就是還沒安排採購 */
+  pending?: Expense
+}
+
+export function lowStockReminders(inventory: InventoryItem[], shopping: Expense[]): LowStockReminder[] {
+  const open = shopping.filter((e) => !e.done)
+  return inventory
+    .filter(isLow)
+    .map((item) => ({
+      item,
+      need: restockQty(item),
+      pending: (item.shoppingId && open.find((e) => e.id === item.shoppingId)) || open.find((e) => inventoryFor(e, inventory)?.id === item.id),
+    }))
+    .sort((a, b) => Number(!!a.pending) - Number(!!b.pending) || a.item.stock / (a.item.minStock || 1) - b.item.stock / (b.item.minStock || 1) || a.item.name.localeCompare(b.item.name))
 }
 
 /** 搜尋關鍵字：名稱、備註、分類名稱都比對，空白分隔的每個字都要命中 */

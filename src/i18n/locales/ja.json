@@ -77,7 +77,8 @@
     "timelineEmptyOther": "この日の予定はまだありません。タップして追加 ＋",
     "rhythmOn": "{{date}}のリズム",
     "rangeEmpty": "予定なし",
-    "todayBadge": "今日"
+    "todayBadge": "今日",
+    "lowStock": "{{count}} 件のアイテムが在庫不足です。買い物の予定を立てましょう"
   },
   "calendar": {
     "eyebrow": "大切なことを、ちょうどいい場所に",
@@ -182,7 +183,15 @@
       "preview": "プレビュー"
     },
     "markDone": "完了にする",
-    "markUndone": "未完了に戻す"
+    "markUndone": "未完了に戻す",
+    "lowStock": {
+      "title": "在庫が少なくなっています",
+      "hint": "安全在庫を下回ったアイテムが自動でここに表示されます。買い物リストでチェックすると購入数が在庫に自動で加算され、安全在庫に達すると消えます。",
+      "detail": "在庫 {{stock}} {{unit}} · 安全在庫 {{min}} {{unit}} · あと {{need}} {{unit}}",
+      "inList": "買い物リストに追加済み（{{count}} {{unit}}）",
+      "goShopping": "買い物リストへ",
+      "openItem": "{{name}} の在庫を見る"
+    }
   },
   "shopping": {
     "eyebrow": "毎月 10 日から翌月 9 日で締め",
@@ -642,7 +651,8 @@
     "toast": {
       "added": "買い物リストに追加しました：{{name}} × {{count}} {{unit}}",
       "restocked": "在庫に追加しました：{{name}} +{{count}} {{unit}}",
-      "replaced": "交換を記録しました：{{name}}、カウントをリセット"
+      "replaced": "交換を記録しました：{{name}}、カウントをリセット",
+      "unstocked": "チェックを外したため在庫を戻しました：{{name}} −{{count}} {{unit}}"
     },
     "cat": {
       "personal": "パーソナルケア",
@@ -674,7 +684,8 @@
       "paoMonths": "開封後の使用期間（か月）",
       "paoPlaceholder": "例：6、12",
       "note": "メモ",
-      "deleteConfirm": "「{{name}}」を削除しますか？"
+      "deleteConfirm": "「{{name}}」を削除しますか？",
+      "minStockHint": "在庫がこの数を下回ると「あとでやる」でお知らせします"
     },
     "sample": {
       "sponge": {

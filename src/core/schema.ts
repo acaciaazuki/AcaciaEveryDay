@@ -65,6 +65,12 @@ export const expenseSchema = z.object({
   recurringPeriod: isoDate.optional(),
   /** 分期款帶入時是第幾期，刪掉這一筆時用來退回範本的期數 */
   installment: z.number().int().min(1).optional(),
+  /**
+   * 打勾（買到）時自動補進哪一個庫存用品、補了多少。用來避免重複入庫：
+   * 有這兩個欄位就代表這一筆已經入庫過；取消打勾時依此扣回並清掉。舊資料沒有這兩個欄位
+   */
+  stockedItemId: z.string().optional(),
+  stockedQty: z.number().optional(),
 })
 
 /**
@@ -181,7 +187,7 @@ export const inventoryItemSchema = z.object({
   cat: z.enum(INV_CATEGORIES).default('home'),
   /** 單位（支、包、瓶…），自由輸入 */
   unit: z.string().default(''),
-  /** 目前庫存與最低安全庫存量：庫存 ≤ 安全庫存就算待補貨 */
+  /** 目前庫存與最低安全庫存量：庫存低於安全庫存就算待補貨（等於安全庫存算足夠） */
   stock: z.number().min(0).default(0),
   minStock: z.number().min(0).default(1),
   /** 上次更換日與更換週期（天）。週期 0 代表不追蹤更換 */

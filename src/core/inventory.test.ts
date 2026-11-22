@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { dueDates, dueTone, isDue, isLow, matchesFilter, nextReplace, paoDate, restockQty, sampleInventory, shoppingLink, sortInventory } from './inventory'
+import { dueDates, dueTone, inventoryFor, isDue, isLow, lowStockReminders, matchesFilter, nextReplace, paoDate, restockQty, sampleInventory, shoppingLink, sortInventory, toggleShoppingStock } from './inventory'
 import type { Expense, InventoryItem } from './schema'
 
 const today = '2026-11-22'
@@ -45,11 +45,13 @@ describe('庫存與到期計算', () => {
     expect([-1, 0, 3, 4, 7, 8].map(dueTone)).toEqual(['overdue', 'urgent', 'urgent', 'soon', 'soon', 'ok'])
   })
 
-  it('庫存 ≤ 安全庫存就要補貨，建議數量是差額、至少 1', () => {
-    expect(isLow(item({ stock: 1, minStock: 1 }))).toBe(true)
+  it('庫存低於安全庫存才要補貨（等於算足夠、安全庫存 0 不提醒），建議數量是差額、至少 1', () => {
+    expect(isLow(item({ stock: 0, minStock: 1 }))).toBe(true)
+    expect(isLow(item({ stock: 1, minStock: 1 }))).toBe(false)
+    expect(isLow(item({ stock: 0, minStock: 0 }))).toBe(false)
     expect(isLow(item({ stock: 2, minStock: 1 }))).toBe(false)
     expect(restockQty(item({ stock: 1, minStock: 4 }))).toBe(3)
-    expect(restockQty(item({ stock: 1, minStock: 1 }))).toBe(1)
+    expect(restockQty(item({ stock: 0, minStock: 1 }))).toBe(1)
   })
 
   it('篩選：需補貨與庫存充足互斥', () => {
@@ -80,5 +82,70 @@ describe('庫存與到期計算', () => {
     expect(s.filter((x) => isDue(x, today))).toHaveLength(3)
     expect(s.filter(isLow).map((x) => x.name)).toEqual(['sponge.name', 'tissue.name'])
     expect(dueDates(s[1]!, today)[0]!.daysLeft).toBe(-5)
+  })
+})
+
+describe('庫存不足提醒與購物清單自動入庫', () => {
+  const exp = (p: Partial<Expense> = {}): Expense => ({ id: 'e1', title: '牙刷', amt: 0, store: '', cat: 'housing', date: today, time: '', done: false, ...p })
+
+  it('低於安全庫存才出現在稍後辦，已在購物清單的標示出來並排在後面', () => {
+    const inv = [item({ id: 'a', name: '衛生紙', stock: 1, minStock: 4, shoppingId: 'e1' }), item({ id: 'b', name: '牙刷', stock: 0, minStock: 1 }), item({ id: 'c', name: '海綿', stock: 2, minStock: 2 })]
+    const r = lowStockReminders(inv, [exp({ title: '衛生紙', quantity: 3 })])
+    expect(r.map((x) => [x.item.id, x.need, x.pending?.id])).toEqual([
+      ['b', 1, undefined],
+      ['a', 3, 'e1'],
+    ])
+  })
+
+  it('購物清單手動新增、名稱相同（不分大小寫與全半形）也算同一個用品；固定支出帶入的不算', () => {
+    const inv = [item({ id: 'a', name: 'Kleenex' })]
+    expect(inventoryFor(exp({ title: ' ｋｌｅｅｎｅｘ ' }), inv)?.id).toBe('a')
+    expect(inventoryFor(exp({ title: 'Kleenex', recurringId: 'r1' }), inv)).toBeUndefined()
+    expect(inventoryFor(exp({ title: '別的' }), inv)).toBeUndefined()
+  })
+
+  it('打勾自動入庫、提醒消失；反覆勾選取消庫存不會重複增加', () => {
+    let inv = [item({ id: 'a', stock: 0, minStock: 2, shoppingId: 'e1' })]
+    let shop = [exp({ quantity: 2 })]
+    let r = toggleShoppingStock(shop, inv, 'e1')
+    expect(r.change?.qty).toBe(2)
+    expect(r.inventory[0]).toMatchObject({ stock: 2, shoppingId: undefined })
+    expect(r.shopping[0]).toMatchObject({ done: true, stockedItemId: 'a', stockedQty: 2 })
+    expect(lowStockReminders(r.inventory, r.shopping)).toEqual([])
+    for (let i = 0; i < 3; i++) {
+      r = toggleShoppingStock(r.shopping, r.inventory, 'e1')
+      r = toggleShoppingStock(r.shopping, r.inventory, 'e1')
+    }
+    expect(r.inventory[0].stock).toBe(2)
+    // 取消打勾：扣回、重新連回這一筆，提醒顯示「已在購物清單」
+    r = toggleShoppingStock(r.shopping, r.inventory, 'e1')
+    expect(r.inventory[0]).toMatchObject({ stock: 0, shoppingId: 'e1' })
+    expect(r.shopping[0].stockedItemId).toBeUndefined()
+    expect(lowStockReminders(r.inventory, r.shopping)[0].pending?.id).toBe('e1')
+    inv = r.inventory
+    shop = r.shopping
+    expect(inv[0].stock).toBe(0)
+    expect(shop[0].done).toBe(false)
+  })
+
+  it('買得不夠多：照樣入庫，但還低於安全庫存時提醒繼續顯示', () => {
+    const r = toggleShoppingStock([exp({ quantity: 1 })], [item({ id: 'a', stock: 0, minStock: 3 })], 'e1')
+    expect(r.inventory[0].stock).toBe(1)
+    expect(lowStockReminders(r.inventory, r.shopping).map((x) => x.need)).toEqual([2])
+  })
+
+  it('沒填數量當 1；對不到用品的只切換打勾；扣回最低到 0', () => {
+    expect(toggleShoppingStock([exp()], [item({ id: 'a', stock: 0 })], 'e1').inventory[0].stock).toBe(1)
+    const none = toggleShoppingStock([exp({ title: '咖啡豆' })], [item()], 'e1')
+    expect(none.change).toBeUndefined()
+    expect(none.shopping[0].done).toBe(true)
+    const back = toggleShoppingStock([exp({ done: true, stockedItemId: 'a', stockedQty: 5 })], [item({ id: 'a', stock: 2 })], 'e1')
+    expect(back.inventory[0].stock).toBe(0)
+  })
+
+  it('舊資料：打勾前就存在的已勾選記帳沒有入庫記號，取消打勾不會扣庫存', () => {
+    const r = toggleShoppingStock([exp({ done: true, quantity: 3 })], [item({ id: 'a', stock: 5, shoppingId: 'e1' })], 'e1')
+    expect(r.inventory[0].stock).toBe(5)
+    expect(r.change).toBeUndefined()
   })
 })

@@ -77,7 +77,8 @@
     "timelineEmptyOther": "這天還沒有安排，點擊新增 ＋",
     "rhythmOn": "{{date}}的節奏",
     "rangeEmpty": "沒有行程",
-    "todayBadge": "今天"
+    "todayBadge": "今天",
+    "lowStock": "{{count}} 項用品庫存不足，記得安排採購"
   },
   "calendar": {
     "eyebrow": "把重要的事，放進剛好的位置",
@@ -182,7 +183,15 @@
       "preview": "預覽"
     },
     "markDone": "標記為完成",
-    "markUndone": "標記為未完成"
+    "markUndone": "標記為未完成",
+    "lowStock": {
+      "title": "庫存不足，記得安排採購",
+      "hint": "低於安全庫存的用品會自動出現在這裡；在購物清單打勾買到後，數量會自動補進庫存，補到安全庫存就會消失。",
+      "detail": "庫存 {{stock}} {{unit}} · 安全庫存 {{min}} {{unit}} · 還差 {{need}} {{unit}}",
+      "inList": "已在購物清單（{{count}} {{unit}}）",
+      "goShopping": "前往購物清單",
+      "openItem": "查看 {{name}} 的庫存"
+    }
   },
   "shopping": {
     "eyebrow": "每月 10 日至次月 9 日結算",
@@ -642,7 +651,8 @@
     "toast": {
       "added": "已加入購物清單：{{name}} × {{count}} {{unit}}",
       "restocked": "已補進庫存：{{name}} +{{count}} {{unit}}",
-      "replaced": "已記錄更換：{{name}}，重新開始倒數"
+      "replaced": "已記錄更換：{{name}}，重新開始倒數",
+      "unstocked": "已取消打勾，庫存扣回：{{name}} −{{count}} {{unit}}"
     },
     "cat": {
       "personal": "個人護理",
@@ -674,7 +684,8 @@
       "paoMonths": "開封後可用（月）",
       "paoPlaceholder": "例如 6、12",
       "note": "備註",
-      "deleteConfirm": "確定要刪除「{{name}}」嗎？"
+      "deleteConfirm": "確定要刪除「{{name}}」嗎？",
+      "minStockHint": "庫存低於這個數量時，會在稍後辦提醒你安排採購"
     },
     "sample": {
       "sponge": {

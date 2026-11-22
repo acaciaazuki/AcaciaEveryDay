@@ -77,7 +77,8 @@
     "timelineEmptyOther": "Nothing planned for this day. Tap to add +",
     "rhythmOn": "{{date}}'s rhythm",
     "rangeEmpty": "No plans",
-    "todayBadge": "Today"
+    "todayBadge": "Today",
+    "lowStock": "{{count}} items running low, plan a restock"
   },
   "calendar": {
     "eyebrow": "Put what matters in just the right place",
@@ -182,7 +183,15 @@
       "preview": "Preview"
     },
     "markDone": "Mark as done",
-    "markUndone": "Mark as not done"
+    "markUndone": "Mark as not done",
+    "lowStock": {
+      "title": "Running low, plan a restock",
+      "hint": "Items below their safety stock show up here automatically. Check them off on the shopping list and the quantity is added to stock; they disappear once back at safety stock.",
+      "detail": "Stock {{stock}} {{unit}} · Safety stock {{min}} {{unit}} · Need {{need}} {{unit}}",
+      "inList": "On shopping list ({{count}} {{unit}})",
+      "goShopping": "Go to shopping list",
+      "openItem": "View stock for {{name}}"
+    }
   },
   "shopping": {
     "eyebrow": "Each period runs from the 10th to the 9th of next month",
@@ -642,7 +651,8 @@
     "toast": {
       "added": "Added to shopping list: {{name}} × {{count}} {{unit}}",
       "restocked": "Added to stock: {{name}} +{{count}} {{unit}}",
-      "replaced": "Replacement logged: {{name}}, countdown restarted"
+      "replaced": "Replacement logged: {{name}}, countdown restarted",
+      "unstocked": "Unchecked, stock reverted: {{name}} −{{count}} {{unit}}"
     },
     "cat": {
       "personal": "Personal care",
@@ -674,7 +684,8 @@
       "paoMonths": "Usable after opening (months)",
       "paoPlaceholder": "e.g. 6, 12",
       "note": "Note",
-      "deleteConfirm": "Delete \"{{name}}\"?"
+      "deleteConfirm": "Delete \"{{name}}\"?",
+      "minStockHint": "When stock drops below this, the Later page will remind you to restock"
     },
     "sample": {
       "sponge": {

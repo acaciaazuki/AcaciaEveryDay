@@ -12,6 +12,7 @@ import { eventIconOf } from '../core/eventIcons'
 import type { CalendarEvent } from '../core/schema'
 import { agendaOn, type AgendaItem, type ShoppingEntry } from '../core/shoppingAgenda'
 import { dayRhythm, eventsOn, greetingKey, hours } from '../core/today'
+import { isLow } from '../core/inventory'
 import { formatTime, formatTimeRange, periodFirst, timeParts } from '../core/time'
 import { useNow } from '../hooks/useNow'
 import { useShoppingByDate } from '../hooks/useShoppingAgenda'
@@ -327,6 +328,8 @@ function QuickTasks() {
   const [open, setOpen] = useState(false)
   const [title, setTitle] = useState('')
   const top = tasks.filter((x) => !x.done).slice(0, 5)
+  const inventory = useAppStore((s) => s.inventory)
+  const lowCount = inventory.filter(isLow).length
 
   const submit = (e: FormEvent) => {
     e.preventDefault()
@@ -344,8 +347,14 @@ function QuickTasks() {
           {t('today.all')}
         </Link>
       </div>
+      {lowCount > 0 && (
+        <Link to="/tasks" className="mb-1.5 flex items-center gap-2 rounded-xl bg-[#eef6f0] px-3 py-2.5 text-[length:calc(12px*var(--fs))] font-semibold text-sage-dark hover:bg-sage-light">
+          <Icon name="box" className="size-[1.4em] shrink-0" />
+          {t('today.lowStock', { count: lowCount })}
+        </Link>
+      )}
       {top.length === 0 ? (
-        <p className="py-2.5 text-[length:calc(11px*var(--fs))] text-[#a5b0aa]">{t('today.quickEmpty')}</p>
+        lowCount === 0 && <p className="py-2.5 text-[length:calc(11px*var(--fs))] text-[#a5b0aa]">{t('today.quickEmpty')}</p>
       ) : (
         <ul>
           {top.map((task) => (
