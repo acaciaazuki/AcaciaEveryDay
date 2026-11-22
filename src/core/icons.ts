@@ -6,9 +6,9 @@ export const ICON_NAMES = [
   // 時間軸生活插畫
   'wake', 'sleep', 'study', 'work', 'rest', 'meal', 'shopping', 'exercise', 'health', 'default',
   // 導覽
-  'today', 'calendar', 'pin', 'tasks', 'settings', 'reminders', 'search',
+  'today', 'calendar', 'pin', 'tasks', 'settings', 'reminders', 'search', 'subscription',
   // 通用
-  'close', 'check', 'user', 'sun', 'cloudSun', 'moon', 'cloud', 'clock',
+  'close', 'check', 'user', 'sun', 'cloudSun', 'moon', 'cloud', 'clock', 'card', 'receipt',
   // 記帳分類
   'food', 'clothing', 'housing', 'transport', 'education', 'leisure', 'stocks', 'loan', 'box',
   // 地點分類

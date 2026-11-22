@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import { PLACE_CATEGORIES, type PlaceCategory } from '../core/categories'
-import { formatMoney } from '../core/format'
+import { formatCurrency, formatMoney } from '../core/format'
 import { SEARCH_SCOPES, excerpt, searchAll, splitHighlight, tokenize, type SearchHit, type SearchKind, type SearchScope } from '../core/search'
 import { useAppStore } from '../store/useAppStore'
 
@@ -45,7 +45,7 @@ function Highlight({ text, tokens }: { text: string; tokens: string[] }) {
   )
 }
 
-/** ⌘K / Ctrl+K 全域搜尋：行程、待辦、記帳（含已歸檔）、地點 */
+/** ⌘K / Ctrl+K 全域搜尋：行程、待辦、記帳（含已歸檔）、地點、訂閱 */
 export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
   const { t } = useTranslation()
 
@@ -80,7 +80,7 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
 function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
-  const { events, tasks, shopping, archives, places } = useAppStore()
+  const { events, tasks, shopping, archives, places, subscriptions } = useAppStore()
   const [query, setQuery] = useState('')
   const [scope, setScope] = useState<SearchScope>('all')
   const [recent, setRecent] = useState<string[]>(loadRecent)
@@ -89,20 +89,24 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
   const tokens = useMemo(() => tokenize(query), [query])
   const hits = useMemo(
     () =>
-      searchAll({ events, tasks, shopping, archives, places }, query, scope, {
+      searchAll({ events, tasks, shopping, archives, places, subscriptions }, query, scope, {
         money: (n) => formatMoney(n, lng),
         expenseCat: (e) => (e.cat === 'other' && e.customCat ? e.customCat : t(`expenseCat.${e.cat}`)),
         placeCat: (c) => t(`placeCat.${c}`),
+        subMoney: (x) => formatCurrency(x.amount, x.currency, lng),
+        subCat: (c) => t(`subs.cat.${c}`),
       }),
     // eslint 無法追 t 的穩定性；語系變了就重算
-    [events, tasks, shopping, archives, places, query, scope, lng, t],
+    [events, tasks, shopping, archives, places, subscriptions, query, scope, lng, t],
   )
 
   const counts = useMemo(() => {
-    const all = searchAll({ events, tasks, shopping, archives, places }, query, 'all', {
+    const all = searchAll({ events, tasks, shopping, archives, places, subscriptions }, query, 'all', {
       money: (n) => formatMoney(n, lng),
       expenseCat: (e) => (e.cat === 'other' && e.customCat ? e.customCat : t(`expenseCat.${e.cat}`)),
       placeCat: (c) => t(`placeCat.${c}`),
+      subMoney: (x) => formatCurrency(x.amount, x.currency, lng),
+      subCat: (c) => t(`subs.cat.${c}`),
     })
     const c: Record<SearchScope, number> = {
       all: all.length,
@@ -110,10 +114,11 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
       tasks: 0,
       shopping: 0,
       places: 0,
+      subscriptions: 0,
     }
     for (const h of all) c[h.kind]++
     return c
-  }, [events, tasks, shopping, archives, places, query, lng, t])
+  }, [events, tasks, shopping, archives, places, subscriptions, query, lng, t])
 
   const remember = () => {
     const q = query.trim()
@@ -195,6 +200,7 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
           hits.map((h) => (
             <Command.Item key={h.key} value={h.key} onSelect={() => go(h)} className={item}>
               <span className={`${badge} inline-flex items-center gap-1`}>
+                {h.kind === 'subscriptions' && <Icon name="subscription" className="size-[1.7em]" />}
                 {h.kind === 'places' && <Icon name={PLACE_CATEGORIES[(places.find((p) => p.id === h.id)?.cat ?? 'other') as PlaceCategory]?.icon ?? 'pin'} className="size-[1.7em]" />}
                 {badgeLabel(h.kind)}
               </span>

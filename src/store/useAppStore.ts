@@ -3,13 +3,14 @@ import { createJSONStorage, persist } from 'zustand/middleware'
 import { webStorage } from '../adapters/storage'
 import { archiveCurrent, archiveEnded, restoreArchive as restoreArchiveData } from '../core/archive'
 import { migrate } from '../core/migrate'
-import { emptyAppData, newId, type AppData, type FontSize, type CalendarEvent, type Expense, type Place, type Reminder, type Task } from '../core/schema'
+import { emptyAppData, newId, type AppData, type FontSize, type CalendarEvent, type Expense, type Place, type Reminder, type Subscription, type Task } from '../core/schema'
 
 type TaskInput = Omit<Task, 'id' | 'done'>
 type ExpenseInput = Omit<Expense, 'id' | 'done'>
 type EventInput = Omit<CalendarEvent, 'id'>
 type PlaceInput = Omit<Place, 'id'>
 type ReminderInput = Omit<Reminder, 'id'>
+export type SubscriptionInput = Omit<Subscription, 'id'>
 
 interface Actions {
   addEvent: (input: EventInput) => void
@@ -30,6 +31,14 @@ interface Actions {
   updateExpense: (id: string, patch: Partial<ExpenseInput>) => void
   toggleExpense: (id: string) => void
   removeExpense: (id: string) => void
+  addSubscription: (input: SubscriptionInput) => void
+  updateSubscription: (id: string, patch: Partial<SubscriptionInput>) => void
+  removeSubscription: (id: string) => void
+  /**
+   * 第一次進入訂閱頁時帶入範例。不更新 updatedAt：範例不算使用者的修改，
+   * 新裝置登入時雲端資料仍然會優先。
+   */
+  seedSubscriptions: (inputs: SubscriptionInput[]) => void
   setFontSize: (size: FontSize) => void
   /** 歸檔記帳：'ended' 把已結束週期的記帳收進年度記帳本，'current' 立即封存本期。回傳歸檔的筆數 */
   archiveShopping: (mode: 'ended' | 'current', todayISO: string) => number
@@ -83,6 +92,16 @@ export const useAppStore = create<AppState>()(
         setState((s) => ({ shopping: s.shopping.map((x) => (x.id === id ? { ...x, done: !x.done } : x)), ...touch() })),
       removeExpense: (id) => setState((s) => ({ shopping: s.shopping.filter((x) => x.id !== id), ...touch() })),
 
+      addSubscription: (input) =>
+        setState((s) => ({ subscriptions: [{ id: newId(), ...input }, ...s.subscriptions], subscriptionsSeeded: true, ...touch() })),
+      updateSubscription: (id, patch) =>
+        setState((s) => ({ subscriptions: s.subscriptions.map((x) => (x.id === id ? { ...x, ...patch } : x)), ...touch() })),
+      removeSubscription: (id) => setState((s) => ({ subscriptions: s.subscriptions.filter((x) => x.id !== id), ...touch() })),
+      seedSubscriptions: (inputs) =>
+        setState((s) =>
+          s.subscriptionsSeeded ? {} : { subscriptions: [...s.subscriptions, ...inputs.map((i) => ({ id: newId(), ...i }))], subscriptionsSeeded: true },
+        ),
+
       setFontSize: (fontSize) => setState((s) => ({ settings: { ...s.settings, fontSize }, ...touch() })),
 
       archiveShopping: (mode, todayISO) => {
@@ -100,8 +119,8 @@ export const useAppStore = create<AppState>()(
 
       importData: (raw) => setState(migrate(raw)),
       exportData: () => {
-        const { schemaVersion, settings, events, tasks, shopping, places, favorites, reminders, archives, updatedAt } = getState()
-        return { schemaVersion, settings, events, tasks, shopping, places, favorites, reminders, archives, updatedAt }
+        const { schemaVersion, settings, events, tasks, shopping, places, favorites, reminders, archives, subscriptions, subscriptionsSeeded, updatedAt } = getState()
+        return { schemaVersion, settings, events, tasks, shopping, places, favorites, reminders, archives, subscriptions, subscriptionsSeeded, updatedAt }
       },
     }),
     {

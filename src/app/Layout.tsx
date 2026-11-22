@@ -70,6 +70,10 @@ export function Layout() {
             <Icon name="reminders" className="size-[1.9em]" />
             {t('nav.reminders')}
           </NavLink>
+          <NavLink to="/subscriptions" className={linkClass}>
+            <Icon name="subscription" className="size-[1.9em]" />
+            {t('nav.subscriptions')}
+          </NavLink>
         </nav>
         <div className="mt-auto grid gap-3">
           <div className="rounded-(--radius-card) border border-line p-3">

@@ -16,7 +16,8 @@
       "tasks": "タスク",
       "shopping": "家計簿"
     },
-    "reminders": "忘れ物防止"
+    "reminders": "忘れ物防止",
+    "subscriptions": "サブスク・更新"
   },
   "common": {
     "save": "保存",
@@ -298,13 +299,15 @@
       "events": "カレンダー",
       "tasks": "あとで",
       "shopping": "買い物・家計",
-      "places": "お気に入りの場所"
+      "places": "お気に入りの場所",
+      "subscriptions": "サブスク"
     },
     "badge": {
       "events": "予定",
       "tasks": "タスク",
       "shopping": "家計",
-      "places": "場所"
+      "places": "場所",
+      "subscriptions": "サブスク"
     },
     "field": {
       "title": "名前",
@@ -312,7 +315,9 @@
       "loc": "場所",
       "store": "お店",
       "cat": "カテゴリ",
-      "address": "住所"
+      "address": "住所",
+      "plan": "プラン",
+      "payment": "支払い方法"
     }
   },
   "sync": {
@@ -446,5 +451,88 @@
     "exercise": "運動",
     "health": "通院・美容",
     "default": "その他"
+  },
+  "subs": {
+    "eyebrow": "毎月の引き落としを、すっきり見える化",
+    "title": "サブスク・更新",
+    "add": "＋ サブスクを追加",
+    "openPage": "サブスク・更新を開く",
+    "settingsHelp": "月・四半期・年ごとの定期支払いをまとめて、引き落とし前にお知らせします。",
+    "board": {
+      "title": "今月の支払いボード",
+      "text": "少しずつ整理すれば、急な引き落としにも慌てません。",
+      "month": "今月の支出",
+      "year": "年間の見込み",
+      "upcoming": "{{days}} 日以内の引き落とし",
+      "upcomingUnit": "{{count}} 件",
+      "active": "利用中のサブスク",
+      "activeUnit": "{{count}} 件",
+      "none": "—"
+    },
+    "soon": {
+      "title": "まもなく引き落とし",
+      "window": "表示範囲",
+      "days": "{{days}} 日",
+      "empty": "{{days}} 日以内に引き落としはありません。ひと安心です。",
+      "today": "今日引き落とし",
+      "tomorrow": "明日引き落とし",
+      "inDays": "あと {{count}} 日"
+    },
+    "list": {
+      "title": "サブスク一覧",
+      "count": "{{count}} 件",
+      "empty": "まだサブスクがありません。追加するか、サンプルでレイアウトを確認しましょう。",
+      "loadSamples": "サンプルを読み込む",
+      "filter": "状態で絞り込む",
+      "all": "すべて",
+      "next": "次回 {{date}}",
+      "noDate": "引き落とし日未設定",
+      "perYear": "年間 約 {{amount}}"
+    },
+    "cycle": {
+      "monthly": "月払い",
+      "quarterly": "四半期払い",
+      "yearly": "年払い"
+    },
+    "cycleShort": {
+      "monthly": "/月",
+      "quarterly": "/四半期",
+      "yearly": "/年"
+    },
+    "status": {
+      "active": "利用中",
+      "paused": "一時停止",
+      "cancelled": "解約済み"
+    },
+    "cat": {
+      "entertainment": "エンタメ",
+      "tools": "ツール",
+      "work": "仕事",
+      "learning": "学習",
+      "life": "生活",
+      "other": "その他"
+    },
+    "form": {
+      "newTitle": "サブスクを追加",
+      "editTitle": "サブスクを編集",
+      "name": "サービス名",
+      "namePlaceholder": "例：Netflix、Spotify、iCloud、ChatGPT",
+      "nameRequired": "サービス名を入力してください",
+      "plan": "プラン",
+      "planPlaceholder": "例：Pro、Plus、学割、お試し、ファミリー共有",
+      "cat": "カテゴリ",
+      "cycle": "支払いサイクル",
+      "amount": "金額",
+      "currency": "通貨",
+      "nextDate": "次回引き落とし日",
+      "payment": "支払い方法",
+      "paymentPlaceholder": "例：クレジットカード、Apple Pay、PayPay",
+      "status": "状態",
+      "note": "メモ",
+      "deleteConfirm": "「{{name}}」を削除しますか？"
+    },
+    "planSuggest": "Pro|Plus|学割|お試し|ファミリー共有|家族プラン",
+    "paymentSuggest": "クレジットカード|Apple Pay|Google Pay|PayPay|LINE Pay|口座振替",
+    "samplePayment": "クレジットカード"
   }
 }

@@ -133,3 +133,22 @@ describe('highlight helpers', () => {
     expect(r.length).toBeLessThan(long.length)
   })
 })
+
+describe('searchAll：訂閱', () => {
+  const subData: SearchData = {
+    ...data,
+    subscriptions: [
+      { id: 'u1', name: 'Netflix', plan: '標準', cat: 'entertainment', cycle: 'monthly', amount: 390, currency: 'TWD', nextDate: '2026-12-01', payment: 'LINE Pay', status: 'active', note: '' },
+      { id: 'u2', name: 'Spotify', plan: '', cat: 'entertainment', cycle: 'monthly', amount: 149, currency: 'TWD', nextDate: '', payment: '信用卡', status: 'cancelled', note: '' },
+    ],
+  }
+  it('依名稱、付款方式搜尋，導到訂閱頁', () => {
+    const [hit] = searchAll(subData, 'netflix', 'subscriptions', fmt)
+    expect(hit).toMatchObject({ kind: 'subscriptions', title: 'Netflix · 標準', meta: '2026-12-01 · TWD 390', path: '/subscriptions?open=u1' })
+    const [pay] = searchAll(subData, '信用卡', 'all', fmt)
+    expect(pay).toMatchObject({ id: 'u2', done: true, snippet: { field: 'payment', text: '信用卡' } })
+  })
+  it('沒傳訂閱資料也不會壞', () => {
+    expect(searchAll(data, 'netflix', 'all', fmt)).toEqual([])
+  })
+})

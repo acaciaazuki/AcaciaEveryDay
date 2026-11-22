@@ -95,6 +95,29 @@ export const reminderSchema = z.object({
   enabled: z.boolean().default(true),
 })
 
+export const SUB_CYCLES = ['monthly', 'quarterly', 'yearly'] as const
+export const SUB_STATUSES = ['active', 'paused', 'cancelled'] as const
+export const SUB_CATEGORIES = ['entertainment', 'tools', 'work', 'learning', 'life', 'other'] as const
+/** 下拉選單提供的幣別；資料本身接受任何三碼 ISO 幣別 */
+export const SUB_CURRENCIES = ['TWD', 'JPY', 'USD', 'EUR', 'HKD', 'CNY', 'KRW', 'GBP'] as const
+
+/** 訂閱與續費：定期扣款的服務（Netflix、iCloud…） */
+export const subscriptionSchema = z.object({
+  id,
+  name: z.string(),
+  /** 方案（Pro、Plus、學生、試用、親友分享…），自由輸入 */
+  plan: z.string().default(''),
+  cat: z.enum(SUB_CATEGORIES).default('other'),
+  cycle: z.enum(SUB_CYCLES).default('monthly'),
+  amount: z.number().default(0),
+  currency: z.string().regex(/^[A-Z]{3}$/).default('TWD'),
+  /** 下次扣款日。過了之後畫面會依週期自動往後推算，不必手動改 */
+  nextDate: isoDate.default(''),
+  payment: z.string().default(''),
+  status: z.enum(SUB_STATUSES).default('active'),
+  note: z.string().default(''),
+})
+
 /** 一個已結算的記帳週期。start 是週期開始日，同時也是這筆歸檔的識別，年度記帳本依 start 的年份歸屬 */
 export const archiveSchema = z.object({
   start: isoDate,
@@ -115,6 +138,10 @@ export const appDataSchema = z.object({
   reminders: z.array(reminderSchema).default([]),
   /** 已歸檔的記帳週期；舊版資料沒有這個欄位，讀進來時補空陣列 */
   archives: z.array(archiveSchema).default([]),
+  /** 訂閱與續費；舊資料沒有這個欄位，讀進來時補空陣列 */
+  subscriptions: z.array(subscriptionSchema).default([]),
+  /** 是否已經帶入過範例訂閱（只帶一次，刪光後不會再出現） */
+  subscriptionsSeeded: z.boolean().default(false),
   updatedAt: z.number(),
 })
 
@@ -123,6 +150,10 @@ export type Task = z.infer<typeof taskSchema>
 export type Expense = z.infer<typeof expenseSchema>
 export type Settings = z.infer<typeof settingsSchema>
 export type Reminder = z.infer<typeof reminderSchema>
+export type Subscription = z.infer<typeof subscriptionSchema>
+export type SubCycle = (typeof SUB_CYCLES)[number]
+export type SubStatus = (typeof SUB_STATUSES)[number]
+export type SubCategory = (typeof SUB_CATEGORIES)[number]
 export type Archive = z.infer<typeof archiveSchema>
 export type Place = z.infer<typeof placeSchema>
 export type AppData = z.infer<typeof appDataSchema>
@@ -137,6 +168,8 @@ export const emptyAppData = (): AppData => ({
   favorites: [],
   reminders: [],
   archives: [],
+  subscriptions: [],
+  subscriptionsSeeded: false,
   updatedAt: 0,
 })
 

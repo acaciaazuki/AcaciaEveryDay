@@ -4,6 +4,7 @@ import { PlacesPage } from '../pages/PlacesPage'
 import { RemindersPage } from '../pages/RemindersPage'
 import { SettingsPage } from '../pages/SettingsPage'
 import { ShoppingPage } from '../pages/ShoppingPage'
+import { SubscriptionsPage } from '../pages/SubscriptionsPage'
 import { TasksPage } from '../pages/TasksPage'
 import { TodayPage } from '../pages/TodayPage'
 import { Layout } from './Layout'
@@ -19,6 +20,7 @@ export const router = createBrowserRouter([
       { path: 'tasks', Component: TasksPage },
       { path: 'shopping', Component: ShoppingPage },
       { path: 'reminders', Component: RemindersPage },
+      { path: 'subscriptions', Component: SubscriptionsPage },
       { path: 'settings', Component: SettingsPage },
     ],
   },

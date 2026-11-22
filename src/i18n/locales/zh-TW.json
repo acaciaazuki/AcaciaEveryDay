@@ -16,7 +16,8 @@
       "tasks": "待辦",
       "shopping": "記帳"
     },
-    "reminders": "防遺漏提醒"
+    "reminders": "防遺漏提醒",
+    "subscriptions": "訂閱與續費"
   },
   "common": {
     "save": "儲存",
@@ -298,13 +299,15 @@
       "events": "行事曆",
       "tasks": "稍後辦",
       "shopping": "購物記帳",
-      "places": "最愛地點"
+      "places": "最愛地點",
+      "subscriptions": "訂閱"
     },
     "badge": {
       "events": "行程",
       "tasks": "待辦",
       "shopping": "記帳",
-      "places": "地點"
+      "places": "地點",
+      "subscriptions": "訂閱"
     },
     "field": {
       "title": "名稱",
@@ -312,7 +315,9 @@
       "loc": "地點",
       "store": "店家",
       "cat": "分類",
-      "address": "地址"
+      "address": "地址",
+      "plan": "方案",
+      "payment": "付款方式"
     }
   },
   "sync": {
@@ -446,5 +451,88 @@
     "exercise": "運動",
     "health": "看診美容",
     "default": "一般"
+  },
+  "subs": {
+    "eyebrow": "每一筆固定扣款，都清清楚楚",
+    "title": "訂閱與續費",
+    "add": "＋ 新增訂閱",
+    "openPage": "前往訂閱與續費",
+    "settingsHelp": "整理每月、每季、每年的固定扣款，到期前提醒你。",
+    "board": {
+      "title": "本月帳單控制台",
+      "text": "慢慢整理，就不會被突然的扣款嚇到。",
+      "month": "本月支出",
+      "year": "年度預估支出",
+      "upcoming": "{{days}} 天內即將扣款",
+      "upcomingUnit": "{{count}} 筆",
+      "active": "使用中的訂閱",
+      "activeUnit": "{{count}} 個",
+      "none": "—"
+    },
+    "soon": {
+      "title": "即將扣款提醒",
+      "window": "提醒範圍",
+      "days": "{{days}} 天",
+      "empty": "{{days}} 天內沒有要扣款的訂閱，可以安心一下。",
+      "today": "今天扣款",
+      "tomorrow": "明天扣款",
+      "inDays": "還有 {{count}} 天"
+    },
+    "list": {
+      "title": "訂閱清單",
+      "count": "共 {{count}} 筆",
+      "empty": "還沒有訂閱。新增一筆，或先載入範例看看版面。",
+      "loadSamples": "載入範例資料",
+      "filter": "篩選狀態",
+      "all": "全部",
+      "next": "下次扣款 {{date}}",
+      "noDate": "未設定扣款日",
+      "perYear": "一年約 {{amount}}"
+    },
+    "cycle": {
+      "monthly": "月付",
+      "quarterly": "季付",
+      "yearly": "年付"
+    },
+    "cycleShort": {
+      "monthly": "/月",
+      "quarterly": "/季",
+      "yearly": "/年"
+    },
+    "status": {
+      "active": "使用中",
+      "paused": "暫停",
+      "cancelled": "已取消"
+    },
+    "cat": {
+      "entertainment": "娛樂",
+      "tools": "工具",
+      "work": "工作",
+      "learning": "學習",
+      "life": "生活",
+      "other": "其他"
+    },
+    "form": {
+      "newTitle": "新增訂閱",
+      "editTitle": "編輯訂閱",
+      "name": "服務名稱",
+      "namePlaceholder": "例如：Netflix、Spotify、iCloud、ChatGPT",
+      "nameRequired": "請輸入服務名稱",
+      "plan": "方案",
+      "planPlaceholder": "例如：Pro、Plus、學生、試用、親友分享",
+      "cat": "分類",
+      "cycle": "扣款週期",
+      "amount": "金額",
+      "currency": "幣別",
+      "nextDate": "下次扣款日",
+      "payment": "付款方式",
+      "paymentPlaceholder": "例如：信用卡、Apple Pay、LINE Pay",
+      "status": "狀態",
+      "note": "備註",
+      "deleteConfirm": "確定要刪除「{{name}}」嗎？"
+    },
+    "planSuggest": "Pro|Plus|學生|試用|親友分享|家庭方案",
+    "paymentSuggest": "信用卡|Apple Pay|Google Pay|LINE Pay|街口支付|銀行轉帳",
+    "samplePayment": "信用卡"
   }
 }
