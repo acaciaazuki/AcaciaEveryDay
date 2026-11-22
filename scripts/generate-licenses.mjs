@@ -27,7 +27,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 export const OUT_DIR = join(ROOT, 'src/licenses')
 
 /** 寬鬆授權：保留版權與授權聲明即可，不要求公開自己的原始碼 */
-const PERMISSIVE = /^(MIT|MIT-0|ISC|0BSD|BSD-[1234]-Clause.*|Apache-2\.0|BlueOak-1\.0\.0|Unlicense|CC0-1\.0|CC-BY-[34]\.0|Zlib|WTFPL|Python-2\.0|BSL-1\.0|PSF-2\.0)$/i
+const PERMISSIVE = /^(MIT|MIT-0|ISC|0BSD|BSD-[1234]-Clause.*|Apache-2\.0|BlueOak-1\.0\.0|Unlicense|CC0-1\.0|CC-BY-[34]\.0|Zlib|WTFPL|Python-2\.0|BSL-1\.0|PSF-2\.0|OGDL-Taiwan-1\.0)$/i
 /** 弱著作權：只有修改「該套件本身的檔案」時，才要公開那些檔案 */
 const WEAK = /^(MPL-[12]\.[01]|LGPL-.*|EPL-[12]\.0|CDDL-1\.[01]|EUPL-.*|CC-BY-SA-.*)$/i
 /** 強著作權：散布時整個作品要用同授權公開原始碼；AGPL / SSPL 連「透過網路提供服務」也算 */
@@ -118,6 +118,46 @@ const TEMPLATES = {
   ISC: (c) => `ISC License\n\n${c}\n\nPermission to use, copy, modify, and/or distribute this software for any\npurpose with or without fee is hereby granted, provided that the above\ncopyright notice and this permission notice appear in all copies.\n\nTHE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES\nWITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF\nMERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR\nANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES\nWHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN\nACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF\nOR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.`,
 }
 
+/**
+ * 不是 npm 套件、但打包進網站的第三方資料（例如國定假日資料，見 scripts/generate-holidays.mjs）。
+ * 產生資料用的套件本身是開發工具（scope: dev），但產生出來的資料會隨網站發布，所以另外列為 runtime。
+ * text 是授權全文檔（相對於專案根目錄）。
+ */
+export const DATA_SOURCES = [
+  {
+    name: 'holiday-data: date-holidays (JP, US, HK, SG, GB, CA, AU)',
+    versionFrom: 'node_modules/date-holidays/package.json',
+    license: 'CC-BY-SA-4.0',
+    copyright: 'Copyright (c) 2015-present, commenthol; holiday data CC BY-SA 4.0 (Wikipedia contributors)',
+    repository: 'https://github.com/commenthol/date-holidays',
+    text: 'node_modules/date-holidays/LICENSE',
+  },
+  {
+    name: 'holiday-data: holidays-kr (KR)',
+    versionFrom: 'node_modules/@hyunbinseo/holidays-kr/package.json',
+    license: 'MIT',
+    copyright: 'Copyright (c) 2023 Hyunbin Seo',
+    repository: 'https://github.com/hyunbinseo/holidays-kr',
+    text: 'node_modules/@hyunbinseo/holidays-kr/LICENSE',
+  },
+  {
+    name: 'holiday-data: holiday-cn (CN)',
+    version: 'data',
+    license: 'MIT',
+    copyright: 'Copyright (c) 2019 NateScarlet',
+    repository: 'https://github.com/NateScarlet/holiday-cn',
+    text: 'scripts/data-licenses/holiday-cn.txt',
+  },
+  {
+    name: 'holiday-data: Taiwan DGPA office calendar (TW)',
+    version: 'data',
+    license: 'OGDL-Taiwan-1.0',
+    copyright: '行政院人事行政總處（Directorate-General of Personnel Administration, Executive Yuan）',
+    repository: 'https://data.gov.tw/dataset/14718',
+    text: 'scripts/data-licenses/tw-gov-open-data.txt',
+  },
+]
+
 export function collect(root = ROOT) {
   const lock = JSON.parse(readFileSync(join(root, 'package-lock.json'), 'utf8'))
   const seen = new Map()
@@ -167,6 +207,23 @@ export function collect(root = ROOT) {
       repository: normalizeRepo(pkg?.repository) ?? (pkg?.homepage?.startsWith('http') ? pkg.homepage : undefined),
       textId,
       textGenerated: generated ? true : undefined,
+    })
+  }
+
+  for (const d of DATA_SOURCES) {
+    const version = d.version ?? JSON.parse(readFileSync(join(root, d.versionFrom), 'utf8')).version
+    const full = readFileSync(join(root, d.text), 'utf8').replace(/\r\n/g, '\n').trim()
+    const textId = createHash('sha1').update(full).digest('hex').slice(0, 10)
+    texts[textId] = full
+    seen.set(`${d.name}@${version}`, {
+      name: d.name,
+      version,
+      license: d.license,
+      category: classify(d.license),
+      scope: 'runtime',
+      copyright: d.copyright,
+      repository: d.repository,
+      textId,
     })
   }
 

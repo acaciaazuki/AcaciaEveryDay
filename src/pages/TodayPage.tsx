@@ -5,6 +5,7 @@ import { Button } from '../components/Button'
 import { Icon } from '../components/AcaciaIcons'
 import { EventIconBadge } from '../components/EventIcon'
 import { EventDialog } from '../components/EventDialog'
+import { HolidayCard } from '../components/HolidayAgenda'
 import { PageHead } from '../components/PageHead'
 import { ShoppingBadge, ShoppingCard, ShoppingDetailDialog } from '../components/ShoppingAgenda'
 import { addDays, dateRange, toLocalISO } from '../core/date'
@@ -16,6 +17,8 @@ import { isLow } from '../core/inventory'
 import { formatTime, formatTimeRange, periodFirst, timeParts } from '../core/time'
 import { useNow } from '../hooks/useNow'
 import { useShoppingByDate } from '../hooks/useShoppingAgenda'
+import { useHolidaysByDate } from '../hooks/useHolidays'
+import type { HolidayEntry } from '../core/holidays'
 import { useAppStore } from '../store/useAppStore'
 
 type View = 'day' | 'week' | 'two'
@@ -40,6 +43,8 @@ export function TodayPage() {
   // 購物記帳連動進來的行程（唯讀）
   const shopByDate = useShoppingByDate()
   const [viewingShop, setViewingShop] = useState<ShoppingEntry | null>(null)
+  // 匯入的國定假日（唯讀），顯示在時間軸最上面
+  const holidaysByDate = useHolidaysByDate()
 
   const now = useNow()
   const todayISO = toLocalISO(now)
@@ -141,8 +146,17 @@ export function TodayPage() {
               </Link>
             </div>
           </div>
+          {view === 'day' && (holidaysByDate.get(viewISO)?.length ?? 0) > 0 && (
+            <ul className="mb-3 grid gap-2">
+              {holidaysByDate.get(viewISO)!.map((h) => (
+                <li key={h.id}>
+                  <HolidayCard holiday={h} />
+                </li>
+              ))}
+            </ul>
+          )}
           {view !== 'day' ? (
-            <RangeList days={days} agenda={(d) => agendaOn(allEvents, shopByDate, d)} lng={lng} todayISO={todayISO} onEdit={setEditing} onShop={setViewingShop} />
+            <RangeList days={days} agenda={(d) => agendaOn(allEvents, shopByDate, d)} holidays={(d) => holidaysByDate.get(d) ?? []} lng={lng} todayISO={todayISO} onEdit={setEditing} onShop={setViewingShop} />
           ) : items.length === 0 ? (
             <button type="button" onClick={() => setEditing('new')} className="w-full rounded-xl border border-dashed border-line py-8 text-center text-muted hover:bg-oat">
               {offset === 0 ? t('today.timelineEmpty') : t('today.timelineEmptyOther')}
@@ -250,6 +264,7 @@ function TimelineTime({ hhmm, lng }: { hhmm: string; lng: string | undefined }) 
 function RangeList({
   days,
   agenda,
+  holidays,
   lng,
   todayISO,
   onEdit,
@@ -257,6 +272,7 @@ function RangeList({
 }: {
   days: string[]
   agenda: (iso: string) => AgendaItem[]
+  holidays: (iso: string) => HolidayEntry[]
   lng: string | undefined
   todayISO: string
   onEdit: (e: CalendarEvent) => void
@@ -268,6 +284,7 @@ function RangeList({
     <ol className="grid gap-1.5">
       {days.map((d) => {
         const evs = agenda(d)
+        const hols = holidays(d)
         const label = fmt.format(new Date(`${d}T00:00`))
         const isToday = d === todayISO
         return (
@@ -276,10 +293,15 @@ function RangeList({
               {label}
               {isToday && <span className="mt-1 block w-fit rounded-full bg-sage px-1.5 py-px text-[length:calc(10px*var(--fs))] text-white">{t('today.todayBadge')}</span>}
             </div>
-            {evs.length === 0 ? (
+            {evs.length === 0 && hols.length === 0 ? (
               <span className="py-2 text-[length:calc(11px*var(--fs))] text-[#a5b0aa]">{t('today.rangeEmpty')}</span>
             ) : (
               <ul className="grid gap-1.5">
+                {hols.map((h) => (
+                  <li key={h.id}>
+                    <HolidayCard compact holiday={h} />
+                  </li>
+                ))}
                 {evs.map((it) => {
                   if (it.kind === 'shopping')
                     return (
