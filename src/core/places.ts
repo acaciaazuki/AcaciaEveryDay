@@ -33,6 +33,16 @@ export interface PlaceResult {
   nationalPhoneNumber?: string
   editorialSummary?: string | { text?: string }
   reviews?: { rating?: number; text?: string | { text?: string } }[]
+  /** 座標：搜尋服務有回傳時才有（取決於服務端要求的欄位） */
+  location?: { latitude?: number; longitude?: number }
+}
+
+/** 搜尋結果的座標；沒有或不合理時回傳 null */
+export function resultCoords(p: PlaceResult): { lat: number; lng: number } | null {
+  const lat = p.location?.latitude
+  const lng = p.location?.longitude
+  if (typeof lat !== 'number' || typeof lng !== 'number' || !Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) return null
+  return { lat, lng }
 }
 
 const text = (v: string | { text?: string } | undefined) => (typeof v === 'string' ? v : (v?.text ?? ''))

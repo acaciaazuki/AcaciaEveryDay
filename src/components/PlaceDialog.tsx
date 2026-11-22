@@ -2,7 +2,8 @@ import { useRef, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PlacesSearchError, searchPlaces } from '../adapters/placesSearch'
 import { PLACE_CATEGORIES, PLACE_CATEGORY_KEYS, type PlaceCategory } from '../core/categories'
-import { buildPlaceNote, detectPlaceCategory, formatOpeningHours, placeName, type PlaceNoteLabels, type PlaceResult } from '../core/places'
+import { buildPlaceNote, detectPlaceCategory, formatOpeningHours, placeName, resultCoords, type PlaceNoteLabels, type PlaceResult } from '../core/places'
+import { parseCoords } from '../core/reminders'
 import type { Place } from '../core/schema'
 import { useAppStore } from '../store/useAppStore'
 import { Button } from './Button'
@@ -23,9 +24,12 @@ export function PlaceDialog({ place, onClose }: { place: Place | null; onClose: 
   const updatePlace = useAppStore((s) => s.updatePlace)
   const removePlace = useAppStore((s) => s.removePlace)
   const [draft, setDraft] = useState<Draft>(place ? { ...blank, ...place } : blank)
+  const coordsOf = (d: Pick<Draft, 'lat' | 'lng'>) => (typeof d.lat === 'number' && typeof d.lng === 'number' ? `${d.lat}, ${d.lng}` : '')
+  const [coordText, setCoordText] = useState(() => coordsOf(draft))
   const [q, setQ] = useState('')
   const [search, setSearch] = useState<SearchState>({ kind: 'idle' })
   const [error, setError] = useState('')
+  const [coordError, setCoordError] = useState('')
   const abortRef = useRef<AbortController | null>(null)
   const set = (patch: Partial<Draft>) => setDraft((d) => ({ ...d, ...patch }))
 
@@ -44,7 +48,11 @@ export function PlaceDialog({ place, onClose }: { place: Place | null; onClose: 
   const fill = (p: PlaceResult) => {
     const name = placeName(p)
     const cat = detectPlaceCategory(name, p.types)
+    const c = resultCoords(p)
+    setCoordText(c ? coordsOf(c) : '')
     set({
+      lat: c?.lat,
+      lng: c?.lng,
       name,
       cat,
       address: p.formattedAddress ?? '',
@@ -77,7 +85,9 @@ export function PlaceDialog({ place, onClose }: { place: Place | null; onClose: 
     e.preventDefault()
     const name = draft.name.trim()
     if (!name) return setError(t('places.form.nameRequired'))
-    const data = { ...draft, name, address: draft.address.trim(), hours: draft.hours.trim(), note: draft.note.trim(), url: draft.url.trim() }
+    const coords = coordText.trim() ? parseCoords(coordText) : null
+    if (coordText.trim() && !coords) return setCoordError(t('places.form.coordsInvalid'))
+    const data = { ...draft, lat: coords?.lat, lng: coords?.lng, name, address: draft.address.trim(), hours: draft.hours.trim(), note: draft.note.trim(), url: draft.url.trim() }
     if (place) updatePlace(place.id, data)
     else addPlace(data)
     onClose()
@@ -130,6 +140,18 @@ export function PlaceDialog({ place, onClose }: { place: Place | null; onClose: 
         <Field label={t('places.form.name')} placeholder={t('places.form.namePlaceholder')} value={draft.name} onChange={(e) => set({ name: e.target.value })} />
         {error && <p className="-mt-2 text-xs text-[#c2583d]">{error}</p>}
         <Field label={t('places.form.address')} value={draft.address} onChange={(e) => set({ address: e.target.value })} />
+        <Field
+          label={t('places.form.coords')}
+          placeholder={t('places.form.coordsPlaceholder')}
+          value={coordText}
+          inputMode="text"
+          onChange={(e) => {
+            setCoordText(e.target.value)
+            setCoordError('')
+          }}
+        />
+        <p className="-mt-2.5 text-[length:calc(11px*var(--fs))] leading-relaxed text-muted">{t('places.form.coordsHint')}</p>
+        {coordError && <p className="-mt-2 text-xs text-[#c2583d]">{coordError}</p>}
         <IconSelect
           label={t('places.form.cat')}
           value={draft.cat as PlaceCategory}

@@ -13,6 +13,11 @@ export interface LocationAdapter {
   watch(onFix: (fix: Fix) => void, onError: (e: LocationError) => void): () => void
   /** 取得一次目前位置 */
   getCurrent(): Promise<Fix>
+  /**
+   * 目前的定位權限狀態（不會跳出詢問）。查不到時回傳 'unknown'。
+   * 用來判斷能不能在不打擾使用者的情況下自動取得位置
+   */
+  permission?(): Promise<'granted' | 'prompt' | 'denied' | 'unknown'>
 }
 
 const toFix = (p: GeolocationPosition): Fix => ({ lat: p.coords.latitude, lng: p.coords.longitude, accuracy: p.coords.accuracy })
@@ -35,6 +40,14 @@ export const webLocation: LocationAdapter = {
       if (!this.supported) return reject('unavailable' satisfies LocationError)
       navigator.geolocation.getCurrentPosition((p) => resolve(toFix(p)), (e) => reject(toError(e)), { enableHighAccuracy: true, timeout: 20_000 })
     })
+  },
+  async permission() {
+    try {
+      const r = await navigator.permissions?.query({ name: 'geolocation' })
+      return r?.state ?? 'unknown'
+    } catch {
+      return 'unknown'
+    }
   },
 }
 
