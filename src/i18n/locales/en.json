@@ -1,7 +1,8 @@
 {
   "app": {
     "name": "ACACIA",
-    "tagline": "Leave a little space in your day"
+    "tagline": "Leave a little space in your day",
+    "loading": "Loading…"
   },
   "nav": {
     "today": "Today",

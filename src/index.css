@@ -26,6 +26,17 @@
   --radius-control: 10px;
   --shadow-card: 0 12px 36px #29483a0b;
   --shadow-soft: 0 2px 8px #29483a08;
+  /* 相思樹枝條在載入、備份時輕輕擺動 */
+  --animate-sway: sway 2.4s ease-in-out infinite;
+  @keyframes sway {
+    0%,
+    100% {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(-3deg);
+    }
+  }
 }
 
 @layer base {
@@ -43,6 +54,9 @@
   }
   button {
     cursor: pointer;
+  }
+  [data-art='acacia'] {
+    transform-origin: 6% 92%;
   }
 }
 

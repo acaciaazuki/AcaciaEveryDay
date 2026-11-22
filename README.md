@@ -36,6 +36,16 @@ npm run licenses   # 重新產生 src/licenses/packages.json 與 texts.json
 
 新增、移除或升級套件後要重跑並 commit 產生的檔案；`npm test` 會檢查資料是否過期，也會擋下隨網站發布的 GPL / AGPL 套件。腳本執行時會列出 GPL / AGPL、MPL 等需要注意的授權。
 
+## 網站圖示（台灣相思樹）
+
+Favicon、PWA 圖示、iOS 主畫面圖示、側邊欄 Logo、載入畫面與備份區塊的枝條，都由 `src/brand/acaciaArt.ts` 的向量形狀畫出來（React 元件直接 inline SVG，見 `src/components/BrandMark.tsx`）。改了形狀之後重新產生 `public/` 的圖檔與 `index.html` 的載入畫面：
+
+```sh
+npm run icons   # 需要 Playwright 的 Chromium（npx playwright install chromium）
+```
+
+換圖示時把 `index.html` 與 `public/manifest.webmanifest` 裡的 `?v=` 一起加一，瀏覽器才會抓新圖。`npm test` 會檢查 `public/` 的圖檔有沒有跟程式裡的形狀同步。
+
 ## 側邊欄排序
 
 設定頁「側邊欄排序」可以調整「收集與整理」區塊的順序（拖曳把手、方向鍵、上下移動按鈕），側邊欄區塊標題旁也有低調的「排序」入口。順序存在 `settings.navOrder`（跟著備份與 Drive 同步）。可排序的項目定義在 `src/app/navSections.ts`：新增功能加進陣列即可，使用者已存的順序會自動把新項目補在最後，移除的項目會被忽略（`src/core/navOrder.ts`）。項目的 `key` 存在使用者資料裡，請勿改名。

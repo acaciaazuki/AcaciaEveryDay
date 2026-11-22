@@ -1,7 +1,8 @@
 {
   "app": {
     "name": "ACACIA",
-    "tagline": "讓今天留一點空白"
+    "tagline": "讓今天留一點空白",
+    "loading": "載入中…"
   },
   "nav": {
     "today": "今天",
