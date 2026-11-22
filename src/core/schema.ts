@@ -82,7 +82,13 @@ export const recurringSchema = z.object({
   /** 每月扣款／入帳日（1–31）。小於 10 的日期落在週期的下個月；該月沒有那一天時用月底 */
   day: z.number().int().min(1).max(31).default(10),
   note: z.string().default(''),
-  /** 分期（選填）：total 總期數、next 下一次帶入是第幾期。帶入後 next 加 1，超過 total 就自動標記完成 */
+  /** 批次加入時一次從本期起連續產生幾個月（1–12）。舊資料沒有這個欄位時當 1 個月 */
+  batchMonths: z.number().int().min(1).max(12).default(1),
+  /**
+   * 分期（選填）：total 總期數、next 下一次帶入是第幾期（＝已付到第幾期＋1）。
+   * 表單上顯示的是「已付到第幾期」(next − 1)，儲存仍用 next，舊資料不用轉換。
+   * 帶入後 next 加 1，超過 total 就自動標記完成
+   */
   installments: z.object({ total: z.number().int().min(1), next: z.number().int().min(1) }).optional(),
   /** 已完成（分期繳清或不再扣款）：不會出現在批次帶入清單 */
   done: z.boolean().default(false),
