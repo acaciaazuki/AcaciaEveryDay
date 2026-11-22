@@ -657,5 +657,40 @@
         "unit": "bottle"
       }
     }
+  },
+  "licenses": {
+    "link": "Open-source licenses",
+    "title": "Open-source licenses",
+    "intro": "ACACIA is built with the open-source packages below. Thanks to their authors and communities. Each entry lists its license and copyright notice, and you can read the full license text.",
+    "loading": "Loading…",
+    "loadFail": "Couldn't load the license list. Please try again later.",
+    "summary": "{{total}} packages: {{runtime}} ship with the site, {{dev}} are used only for development and builds.",
+    "noStrong": "No packages use strong copyleft licenses such as GPL or AGPL, so none of them require publishing this project's source code.",
+    "strongWarn": "{{count}} packages use strong copyleft licenses such as GPL or AGPL and may require publishing source code when distributed: {{names}}",
+    "networkWarn": "AGPL: source code must be published even when only offered as a network service",
+    "weakNote": "Weak copyleft (such as MPL): only changes to that package's own files would have to be published; this project's code is not affected. {{names}}",
+    "unknownWarn": "Couldn't identify the license of {{count}} packages. Please check them manually: {{names}}",
+    "search": "Search packages, licenses or authors",
+    "scope": {
+      "all": "All",
+      "runtime": "Ships with site",
+      "dev": "Dev tools"
+    },
+    "category": {
+      "permissive": "Permissive",
+      "weak": "Weak copyleft",
+      "strong": "Strong copyleft",
+      "unknown": "Unrecognized"
+    },
+    "count": "{{count}}",
+    "viewText": "View license text",
+    "hideText": "Hide license text",
+    "textGenerated": "This package ships no license file, so the standard {{license}} text is shown with its author.",
+    "noText": "This package ships no license text. Please check its source repository.",
+    "repo": "Source",
+    "empty": "No matching packages",
+    "update": "Generated from package-lock.json with npm run licenses. Run it again after adding or upgrading packages.",
+    "close": "Close",
+    "scopeLabel": "Filter by scope"
   }
 }
