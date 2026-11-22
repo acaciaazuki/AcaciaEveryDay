@@ -40,7 +40,10 @@ describe('設定頁：自動備份與刪除資料', () => {
   it('立即備份後出現在歷史清單，確認後一鍵還原', async () => {
     useAppStore.getState().addTask({ title: '重要待辦', loc: '', date: '', time: '' })
     renderPage()
-    fireEvent.click(await screen.findByRole('button', { name: '立即備份' }))
+    // 快照清單從 IndexedDB 讀進來之前按鈕是停用的，要等它可以按
+    const backupBtn = await screen.findByRole('button', { name: '立即備份' })
+    await vi.waitFor(() => expect(backupBtn).toBeEnabled())
+    fireEvent.click(backupBtn)
     // 等備份流程整個結束（按鈕解除停用）再操作還原
     await screen.findByText('已建立備份')
     const list = screen.getByRole('list', { name: '歷史備份' })
@@ -60,7 +63,10 @@ describe('設定頁：自動備份與刪除資料', () => {
   it('取消確認時不還原', async () => {
     useAppStore.getState().addTask({ title: 'A', loc: '', date: '', time: '' })
     renderPage()
-    fireEvent.click(await screen.findByRole('button', { name: '立即備份' }))
+    // 快照清單從 IndexedDB 讀進來之前按鈕是停用的，要等它可以按
+    const backupBtn = await screen.findByRole('button', { name: '立即備份' })
+    await vi.waitFor(() => expect(backupBtn).toBeEnabled())
+    fireEvent.click(backupBtn)
     // 等備份流程整個結束（按鈕解除停用）再操作還原
     await screen.findByText('已建立備份')
     const list = screen.getByRole('list', { name: '歷史備份' })
