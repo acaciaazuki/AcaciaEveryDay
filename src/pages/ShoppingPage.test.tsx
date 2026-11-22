@@ -9,7 +9,9 @@ import { emptyAppData, type Expense } from '../core/schema'
 import { useAppStore } from '../store/useAppStore'
 import { ShoppingPage } from './ShoppingPage'
 
-const ex = (id: string, date: string, amt = 100): Expense => ({ id, title: id, amt, store: '', cat: 'food', date, time: '12:00', done: false })
+const ex = (id: string, date: string, amt = 100, currency?: string): Expense => ({ id, title: id, amt, store: '', cat: 'food', date, time: '12:00', done: false, currency })
+/** 文字被拆成多個元素時，比對整個元素的 textContent */
+const fullText = (text: string) => (_: string, el: Element | null) => el?.textContent === text && [...(el?.children ?? [])].every((c) => c.textContent !== text)
 
 describe('ShoppingPage', () => {
   beforeEach(async () => {
@@ -27,7 +29,7 @@ describe('ShoppingPage', () => {
     fireEvent.change(screen.getByLabelText('自訂分類名稱'), { target: { value: '寵物' } })
     fireEvent.click(screen.getByText('儲存'))
     expect(useAppStore.getState().shopping[0]).toMatchObject({ title: '貓砂', amt: 300, cat: 'other', customCat: '寵物' })
-    expect(screen.getByText(/寵物: /)).toBeInTheDocument()
+    expect(screen.getByText(fullText('寵物: NT$300'))).toBeInTheDocument()
   })
 
   it('數量與單價自動算出總金額，改總金額時單價清空、不互相覆蓋', () => {
@@ -92,7 +94,7 @@ describe('ShoppingPage', () => {
     expect(screen.getByText('2026 年記帳本')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: '2025' }))
     expect(screen.getByText('2025 年記帳本')).toBeInTheDocument()
-    expect(screen.getByText('共 1 期 · NT$700')).toBeInTheDocument()
+    expect(screen.getByText(fullText('共 1 期 · NT$700'))).toBeInTheDocument()
     expect(screen.getByText('2025-12-10 – 2026-01-09')).toBeInTheDocument()
   })
 
@@ -111,5 +113,81 @@ describe('ShoppingPage', () => {
     fireEvent.click(screen.getByText('還原到記帳清單'))
     expect(useAppStore.getState().shopping).toHaveLength(2)
     expect(useAppStore.getState().archives).toHaveLength(0)
+  })
+
+  describe('單筆自訂貨幣', () => {
+    it('新增時預帶設定頁的預設貨幣，並把幣別存進這一筆', () => {
+      useAppStore.setState({ settings: { fontSize: 'md', currency: 'JPY' } })
+      render(<MemoryRouter><ShoppingPage /></MemoryRouter>)
+      fireEvent.click(screen.getByText('＋ 新增記帳'))
+      expect((screen.getByLabelText('幣別') as HTMLSelectElement).value).toBe('JPY')
+      fireEvent.change(screen.getByLabelText('購買項目'), { target: { value: '抹茶' } })
+      fireEvent.change(screen.getByLabelText('總金額（¥）'), { target: { value: '1200' } })
+      fireEvent.click(screen.getByText('儲存'))
+      expect(useAppStore.getState().shopping[0]).toMatchObject({ title: '抹茶', amt: 1200, currency: 'JPY' })
+    })
+
+    it('可以個別切換幣別，輸入框標籤跟著換符號', () => {
+      render(<MemoryRouter><ShoppingPage /></MemoryRouter>)
+      fireEvent.click(screen.getByText('＋ 新增記帳'))
+      fireEvent.change(screen.getByLabelText('購買項目'), { target: { value: '機場咖啡' } })
+      fireEvent.change(screen.getByLabelText('幣別'), { target: { value: 'USD' } })
+      fireEvent.change(screen.getByLabelText('總金額（US$）'), { target: { value: '4.5' } })
+      fireEvent.click(screen.getByText('儲存'))
+      expect(useAppStore.getState().shopping[0]).toMatchObject({ amt: 4.5, currency: 'USD' })
+      expect(screen.getAllByText('US$4.5').length).toBeGreaterThan(0)
+    })
+
+    it('支援自訂幣別符號；沒填符號不能儲存', () => {
+      render(<MemoryRouter><ShoppingPage /></MemoryRouter>)
+      fireEvent.click(screen.getByText('＋ 新增記帳'))
+      fireEvent.change(screen.getByLabelText('購買項目'), { target: { value: '芒果糯米' } })
+      fireEvent.change(screen.getByLabelText('幣別'), { target: { value: '__custom__' } })
+      fireEvent.click(screen.getByText('儲存'))
+      expect(screen.getByText('請輸入自訂幣別符號')).toBeInTheDocument()
+      expect(useAppStore.getState().shopping).toHaveLength(0)
+      fireEvent.change(screen.getByLabelText('自訂幣別符號'), { target: { value: '฿' } })
+      fireEvent.change(screen.getByLabelText('總金額（฿）'), { target: { value: '120' } })
+      fireEvent.click(screen.getByText('儲存'))
+      expect(useAppStore.getState().shopping[0]).toMatchObject({ amt: 120, currency: '฿' })
+      expect(screen.getAllByText('฿120').length).toBeGreaterThan(0)
+      // 用過的自訂符號會出現在下一筆的選單裡
+      fireEvent.click(screen.getByText('＋ 新增記帳'))
+      expect(within(screen.getByLabelText('幣別')).getByRole('option', { name: '฿（自訂）' })).toBeInTheDocument()
+    })
+
+    it('不同幣別分開小計、不相加；預算只算預設貨幣', () => {
+      const { start } = billingPeriod()
+      useAppStore.setState({ shopping: [ex('a', start, 1200), ex('b', start, 15, 'USD'), ex('c', start, 300, 'TWD'), ex('d', start, 0, 'JPY')] })
+      render(<MemoryRouter><ShoppingPage /></MemoryRouter>)
+      expect(screen.getByTestId('period-total').textContent).toBe('NT$1,500+US$15')
+      expect(screen.getByText(fullText('食: NT$1,500+US$15'))).toBeInTheDocument()
+      // 金額 0 的日圓項目只是購物清單，不會多出 ¥0
+      expect(screen.getByTestId('period-total').textContent).not.toContain('¥')
+      expect(screen.getByText('預算進度 7.5%')).toBeInTheDocument()
+      expect(screen.getByText(/預算進度只計算 NT\$ 的支出/)).toBeInTheDocument()
+    })
+
+    it('舊資料沒有幣別：照設定頁的預設貨幣顯示，跟改版前一樣；編輯時預選它', () => {
+      const { start } = billingPeriod()
+      useAppStore.setState({ settings: { fontSize: 'md', currency: 'JPY' }, shopping: [ex('舊的一筆', start, 800)] })
+      render(<MemoryRouter><ShoppingPage /></MemoryRouter>)
+      expect(screen.getByTestId('period-total').textContent).toBe('¥800')
+      expect(screen.queryByText(/預算進度只計算/)).not.toBeInTheDocument()
+      fireEvent.click(screen.getByText('舊的一筆'))
+      expect((screen.getByLabelText('幣別') as HTMLSelectElement).value).toBe('JPY')
+    })
+
+    it('年度記帳本依幣別分開加總', () => {
+      useAppStore.setState({
+        archives: [
+          { start: '2025-11-10', end: '2025-12-09', archivedAt: 1, expenses: [ex('x', '2025-11-11', 500), ex('y', '2025-11-12', 20, 'EUR')] },
+          { start: '2025-12-10', end: '2026-01-09', archivedAt: 2, expenses: [ex('z', '2025-12-11', 200), ex('w', '2025-12-12', 5.5, 'EUR')] },
+        ],
+      })
+      render(<MemoryRouter><ShoppingPage /></MemoryRouter>)
+      fireEvent.click(screen.getByRole('button', { name: '2025' }))
+      expect(screen.getByText(fullText('共 2 期 · NT$700+€25.5'))).toBeInTheDocument()
+    })
   })
 })

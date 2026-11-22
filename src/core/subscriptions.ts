@@ -1,4 +1,5 @@
 import { addDays } from './date'
+import { addTo, toTotals, type Totals } from './totals'
 import type { IconName } from './icons'
 import type { SubCategory, SubCycle, Subscription } from './schema'
 
@@ -70,12 +71,7 @@ export function nextCharge(sub: Pick<Subscription, 'nextDate' | 'cycle'>, todayI
   return chargeDates(sub, todayISO, addMonths(todayISO, CYCLE_MONTHS[sub.cycle]))[0] ?? ''
 }
 
-/** 幣別 → 金額。預設貨幣排第一，其他依幣別代碼排序（不換算匯率） */
-export type Totals = [currency: string, amount: number][]
-
-function toTotals(map: Map<string, number>, first: string): Totals {
-  return [...map.entries()].sort(([a], [b]) => (a === first ? -1 : b === first ? 1 : a.localeCompare(b)))
-}
+export type { Totals } from './totals'
 
 const isActive = (s: Subscription) => s.status === 'active'
 
@@ -86,7 +82,7 @@ export function monthTotals(subs: Subscription[], todayISO: string, first = 'TWD
   const map = new Map<string, number>()
   for (const s of subs.filter(isActive)) {
     const n = chargeDates(s, start, end).length
-    if (n) map.set(s.currency, (map.get(s.currency) ?? 0) + s.amount * n)
+    if (n) addTo(map, s.currency, s.amount * n)
   }
   return toTotals(map, first)
 }
@@ -94,7 +90,7 @@ export function monthTotals(subs: Subscription[], todayISO: string, first = 'TWD
 /** 一年預估支出：月繳 × 12、季繳 × 4、年繳 × 1 */
 export function yearlyTotals(subs: Subscription[], first = 'TWD'): Totals {
   const map = new Map<string, number>()
-  for (const s of subs.filter(isActive)) map.set(s.currency, (map.get(s.currency) ?? 0) + (s.amount * 12) / CYCLE_MONTHS[s.cycle])
+  for (const s of subs.filter(isActive)) addTo(map, s.currency, (s.amount * 12) / CYCLE_MONTHS[s.cycle])
   return toTotals(map, first)
 }
 

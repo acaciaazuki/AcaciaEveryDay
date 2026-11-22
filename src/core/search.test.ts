@@ -103,6 +103,12 @@ describe('searchAll', () => {
       end: '2026-10-09',
     })
   })
+  it('記帳結果的金額用那一筆自己的幣別，舊資料沒有幣別交給呼叫端補預設貨幣', () => {
+    const f: SearchFormat = { ...fmt, money: (n, cur) => `${cur ?? 'DEFAULT'} ${n}` }
+    const withUsd: SearchData = { ...data, shopping: data.shopping.map((x) => ({ ...x, currency: 'USD' })) }
+    expect(searchAll(withUsd, '牛奶', 'shopping', f)[0]?.meta).toContain('USD 85')
+    expect(searchAll(data, '牛奶', 'shopping', f)[0]?.meta).toContain('DEFAULT 85')
+  })
   it('分頁會限制範圍', () => {
     expect(searchAll(data, '全聯', 'events', fmt)).toEqual([])
     expect(searchAll(data, '台中', 'places', fmt)[0]?.snippet?.field).toBe('address')

@@ -45,6 +45,11 @@ export const expenseSchema = z.object({
   /** 數量與單價（選填）。amt 永遠是總金額，舊資料沒有這兩個欄位 */
   quantity: z.number().optional(),
   unitPrice: z.number().optional(),
+  /**
+   * 這一筆的貨幣：三碼 ISO 幣別（TWD、USD…）或使用者自訂的幣別符號（฿、RM、點…）。
+   * 舊資料沒有這個欄位，顯示與統計時當作設定頁的預設貨幣（跟加這個欄位之前的畫面一模一樣）。
+   */
+  currency: z.string().trim().min(1).max(8).optional(),
   date: isoDate.default(''),
   time: hhmm.default(''),
   done: z.boolean().default(false),

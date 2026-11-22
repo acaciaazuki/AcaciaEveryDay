@@ -5,13 +5,15 @@ import { Button } from '../components/Button'
 import { ColorSwatches, TextColorSwatches } from '../components/ColorSwatches'
 import { Dialog } from '../components/Dialog'
 import { Field } from '../components/Field'
+import { CurrencyPicker } from '../components/CurrencyPicker'
 import { IconSelect } from '../components/IconSelect'
 import { LedgerBook } from '../components/LedgerBook'
 import { PageHead } from '../components/PageHead'
+import { TotalsText } from '../components/TotalsText'
 import { EXPENSE_CATEGORIES } from '../core/categories'
 import { toLocalISO } from '../core/date'
-import { billingPeriod, formatQty, lineTotal, DEFAULT_BUDGET, EXPENSE_STYLE, summarize } from '../core/expenses'
-import { currencySymbol, formatMoney } from '../core/format'
+import { billingPeriod, expenseCurrency, formatQty, lineTotal, DEFAULT_BUDGET, EXPENSE_STYLE, summarize } from '../core/expenses'
+import { currencyOptions, currencySymbol, CUSTOM_CURRENCY, formatMoney } from '../core/format'
 import { useCurrency } from '../hooks/useCurrency'
 import type { Expense } from '../core/schema'
 import { useNow } from '../hooks/useNow'
@@ -36,7 +38,8 @@ export function ShoppingPage() {
   useOpenFromUrl(archived, (e) => setFocusId(e.id))
   const lng = i18n.resolvedLanguage ?? 'zh-TW'
   const currency = useCurrency()
-  const money = (n: number) => formatMoney(n, lng, currency)
+  // 每一筆用自己的幣別顯示；舊資料沒有幣別時用預設貨幣（跟以前一樣）
+  const money = (n: number, cur: string) => formatMoney(n, lng, cur)
 
   const now = useNow()
   const period = billingPeriod(now)
@@ -46,7 +49,9 @@ export function ShoppingPage() {
     archiveShopping('ended', todayISO)
   }, [shopping, todayISO, archiveShopping])
   const inPeriod = shopping.filter((e) => e.date >= period.start && e.date <= period.end).length
-  const { total, byCategory } = summarize(shopping, period)
+  // 不同幣別分開小計、不相加；預算只跟預設貨幣的合計比較
+  const { total, totals, byCategory } = summarize(shopping, period, currency)
+  const hasForeign = totals.some(([c]) => c !== currency)
   const percent = Math.min((total / DEFAULT_BUDGET) * 100, 100)
   const over = total > DEFAULT_BUDGET
   const catLabel = (e: Pick<Expense, 'cat' | 'customCat'>) => (e.cat === 'other' && e.customCat ? e.customCat : t(`expenseCat.${e.cat}`))
@@ -58,12 +63,14 @@ export function ShoppingPage() {
 
       <section className="mb-4 rounded-2xl border border-line bg-paper p-5 shadow-soft">
         <div className="mb-3 flex items-end justify-between gap-3">
-          <div>
+          <div className="min-w-0">
             <h2 className="mb-1 text-[length:calc(13px*var(--fs))] font-bold text-[#78867f]">{t('shopping.period', { start: period.start.slice(5).replace('-', '/'), end: period.end.slice(5).replace('-', '/') })}</h2>
-            <p className={`text-[length:calc(32px*var(--fs))] leading-none font-extrabold tracking-tight ${over ? 'text-[#ef4444]' : ''}`}>{money(total)}</p>
+            <p className={`flex flex-wrap items-baseline gap-x-1 gap-y-1 text-[length:calc(32px*var(--fs))] leading-none font-extrabold tracking-tight ${over ? 'text-[#ef4444]' : ''}`} data-testid="period-total">
+              <TotalsText totals={totals} money={money} fallback={currency} />
+            </p>
           </div>
-          <div className="grid justify-items-end gap-2">
-            <p className="text-right text-[length:calc(11px*var(--fs))] text-[#9aa59f]">{t('shopping.budget', { percent: percent.toFixed(1) })}</p>
+          <div className="grid shrink-0 justify-items-end gap-2">
+            <p className="text-right whitespace-nowrap text-[length:calc(11px*var(--fs))] text-[#9aa59f]">{t('shopping.budget', { percent: percent.toFixed(1) })}</p>
             <Button variant="ghost" disabled={inPeriod === 0} title={inPeriod === 0 ? t('shopping.archive.nothing') : undefined} onClick={() => setConfirmArchive(true)}>
               {t('shopping.archive.button')}
             </Button>
@@ -72,10 +79,14 @@ export function ShoppingPage() {
         <div className="mb-4 h-2 overflow-hidden rounded-full bg-[#f0f3f1]" role="progressbar" aria-valuenow={Math.round(percent)} aria-valuemin={0} aria-valuemax={100}>
           <div className={`h-full transition-[width] duration-500 ${over ? 'bg-[#ef4444]' : 'bg-sage'}`} style={{ width: `${percent}%` }} />
         </div>
+        {hasForeign && <p className="-mt-2 mb-3 text-[length:calc(11px*var(--fs))] text-[#9aa59f]">{t('shopping.budgetOnly', { sym: currencySymbol(currency, lng) })}</p>}
         <div className="flex flex-wrap gap-2">
           {byCategory.map(([k, v]) => (
             <span key={k} className="rounded-full border border-line bg-[#f9fbf9] px-3 py-1.5 text-[length:calc(11px*var(--fs))] font-semibold text-[#55645d]">
-              {keyLabel(k)}: {money(v)}
+              {keyLabel(k)}:{' '}
+              <span className="inline-flex flex-wrap gap-x-1">
+                <TotalsText totals={v} money={money} fallback={currency} />
+              </span>
             </span>
           ))}
         </div>
@@ -92,6 +103,7 @@ export function ShoppingPage() {
           <ul className="grid gap-2.5">
             {shopping.map((s) => {
               const st = EXPENSE_STYLE[s.cat]
+              const cur = expenseCurrency(s, currency)
               const custom = s.bgColor && s.bgColor !== '#ffffff'
               // 舊資料預設的 #263633 視為沒設定，維持原本的分類配色
               const textColor = s.titleColor && s.titleColor !== '#263633' ? s.titleColor : st.fg
@@ -116,12 +128,12 @@ export function ShoppingPage() {
                       </strong>
                       <small className="mt-1 block text-[length:calc(11px*var(--fs))] opacity-80">
                         {s.store || t('shopping.noStore')} · <Icon name={st.icon} className="size-[1.5em]" /> {catLabel(s)} · {s.date} {s.time}
-                        {s.unitPrice != null && ` · ${formatQty(s.quantity)} × ${money(s.unitPrice)}`}
+                        {s.unitPrice != null && ` · ${formatQty(s.quantity)} × ${money(s.unitPrice, cur)}`}
                         {s.unitPrice == null && s.quantity != null && s.quantity !== 1 && ` · ${t('shopping.qtyOnly', { count: s.quantity })}`}
                       </small>
                     </button>
                   </div>
-                  <span className="shrink-0 font-bold">{money(s.amt)}</span>
+                  <span className="shrink-0 font-bold">{money(s.amt, cur)}</span>
                 </li>
               )
             })}
@@ -155,8 +167,20 @@ export function ShoppingPage() {
 
 function ExpenseDialog({ expense, onClose }: { expense: Expense | null; onClose: () => void }) {
   const { t, i18n } = useTranslation()
-  // 輸入框旁的幣別標籤跟著預設貨幣
-  const sym = currencySymbol(useCurrency(), i18n.resolvedLanguage ?? 'zh-TW')
+  const defaultCurrency = useCurrency()
+  const shopping = useAppStore((s) => s.shopping)
+  const archives = useAppStore((s) => s.archives)
+  // 選單裡除了常用幣別，也列出曾經用過的其他幣別與自訂符號，方便旅遊時連續記同一種外幣
+  const options = useMemo(
+    () => currencyOptions([...shopping, ...archives.flatMap((a) => a.expenses)].map((e) => e.currency ?? '')),
+    [shopping, archives],
+  )
+  // 新增時帶入設定頁的預設貨幣；舊資料沒有幣別，也當作預設貨幣（跟原本顯示的一樣）
+  const [curChoice, setCurChoice] = useState(expense ? expenseCurrency(expense, defaultCurrency) : defaultCurrency)
+  const [customSym, setCustomSym] = useState('')
+  const cur = curChoice === CUSTOM_CURRENCY ? customSym.trim() : curChoice
+  // 輸入框旁的幣別標籤跟著這一筆選的幣別
+  const sym = cur ? currencySymbol(cur, i18n.resolvedLanguage ?? 'zh-TW') : '?'
   const addExpense = useAppStore((s) => s.addExpense)
   const updateExpense = useAppStore((s) => s.updateExpense)
   const removeExpense = useAppStore((s) => s.removeExpense)
@@ -181,6 +205,7 @@ function ExpenseDialog({ expense, onClose }: { expense: Expense | null; onClose:
     e.preventDefault()
     const title = draft.title.trim()
     if (!title) return setError(t('shopping.form.titleRequired'))
+    if (!cur) return setError(t('currency.customRequired'))
     const customCat = draft.cat === 'other' ? draft.customCat?.trim() || undefined : undefined
     const quantity = Number(qty)
     const unitPrice = unit.trim() === '' ? undefined : Number(unit)
@@ -190,6 +215,7 @@ function ExpenseDialog({ expense, onClose }: { expense: Expense | null; onClose:
       store: draft.store.trim(),
       amt: Number(amt) || 0,
       customCat,
+      currency: cur,
       // 有填單價才記錄數量與單價，沒填就維持舊格式
       unitPrice: unitPrice != null && Number.isFinite(unitPrice) ? unitPrice : undefined,
       quantity: unitPrice != null && Number.isFinite(unitPrice) && quantity > 0 ? quantity : undefined,
@@ -223,8 +249,10 @@ function ExpenseDialog({ expense, onClose }: { expense: Expense | null; onClose:
               setUnit('')
             }}
           />
-          <Field label={t('shopping.form.store')} placeholder={t('shopping.form.storePlaceholder')} value={draft.store} onChange={(e) => set({ store: e.target.value })} />
+          <CurrencyPicker value={curChoice} custom={customSym} options={options} onChange={setCurChoice} onCustomChange={setCustomSym} />
+          <p className="col-span-full -mt-1.5 text-[length:calc(11px*var(--fs))] text-muted">{t('shopping.form.amtHint')}</p>
         </div>
+        <Field label={t('shopping.form.store')} placeholder={t('shopping.form.storePlaceholder')} value={draft.store} onChange={(e) => set({ store: e.target.value })} />
         <IconSelect
           label={t('shopping.form.cat')}
           value={draft.cat}
