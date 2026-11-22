@@ -5,6 +5,7 @@ import { archiveCurrent, archiveEnded, periodOf, restoreArchive as restoreArchiv
 import { addCustomCat, removeCustomCat } from '../core/invCategories'
 import { invToExpense, restockQty, toggleShoppingStock, type StockChange } from '../core/inventory'
 import { migrate } from '../core/migrate'
+import type { PlaceSort } from '../core/placeSort'
 import { buildImports, importedKeys, rollbackInstallment, type ImportPick } from '../core/recurring'
 import { DEFAULT_CURRENCY, emptyAppData, newId, type AppData, type FontSize, type CalendarEvent, type Expense, type InventoryItem, type Place, type Recurring, type Reminder, type Subscription, type Task } from '../core/schema'
 
@@ -25,6 +26,10 @@ interface Actions {
   addPlace: (input: PlaceInput) => void
   updatePlace: (id: string, patch: Partial<PlaceInput>) => void
   removePlace: (id: string) => void
+  /** 最愛地點的自訂順序：傳入新的 id 順序（漏掉的地點依原順序補在最後） */
+  reorderPlaces: (ids: string[]) => void
+  /** 最愛地點的排序方式 */
+  setPlaceSort: (sort: PlaceSort) => void
   addReminder: (input: ReminderInput) => void
   updateReminder: (id: string, patch: Partial<ReminderInput>) => void
   removeReminder: (id: string) => void
@@ -111,6 +116,24 @@ export const useAppStore = create<AppState>()(
         setState((s) => ({ places: s.places.map((x) => (x.id === id ? { ...x, ...patch } : x)), ...touch() })),
       removePlace: (id) =>
         setState((s) => ({ places: s.places.filter((x) => x.id !== id), favorites: s.favorites.filter((f) => f !== id), ...touch() })),
+      reorderPlaces: (ids) =>
+        setState((s) => {
+          const byId = new Map(s.places.map((p) => [p.id, p]))
+          const seen = new Set<string>()
+          const next: Place[] = []
+          for (const id of ids) {
+            const p = byId.get(id)
+            if (p && !seen.has(id)) {
+              next.push(p)
+              seen.add(id)
+            }
+          }
+          for (const p of s.places) if (!seen.has(p.id)) next.push(p)
+          if (next.every((p, i) => p === s.places[i])) return {}
+          return { places: next, ...touch() }
+        }),
+      setPlaceSort: (sort) =>
+        setState((s) => (s.settings.placeSort === sort || (!s.settings.placeSort && sort === 'custom') ? {} : { settings: { ...s.settings, placeSort: sort }, ...touch() })),
 
       addReminder: (input) => setState((s) => ({ reminders: [{ id: newId(), ...input }, ...s.reminders], ...touch() })),
       updateReminder: (id, patch) =>
