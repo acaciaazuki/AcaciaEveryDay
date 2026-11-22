@@ -267,6 +267,26 @@
   "textId": "08451381c1"
  },
  {
+  "name": "@hnw/date-tibetan",
+  "version": "1.0.2",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2025 Yoshio HANAWA",
+  "repository": "https://github.com/hnw/date-tibetan",
+  "textId": "46ea8ebfc2"
+ },
+ {
+  "name": "@hyunbinseo/holidays-kr",
+  "version": "5.2027.2",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2023 Hyunbin Seo",
+  "repository": "https://github.com/hyunbinseo/holidays-kr",
+  "textId": "bbe95f0890"
+ },
+ {
   "name": "@jridgewell/gen-mapping",
   "version": "0.3.13",
   "license": "MIT",
@@ -787,6 +807,15 @@
   "textId": "52d8ac3fda"
  },
  {
+  "name": "argparse",
+  "version": "3.0.4",
+  "license": "PSF-2.0",
+  "category": "permissive",
+  "scope": "dev",
+  "repository": "https://github.com/nodeca/argparse",
+  "textId": "ad51965c85"
+ },
+ {
   "name": "aria-hidden",
   "version": "1.2.6",
   "license": "MIT",
@@ -824,6 +853,16 @@
   "scope": "dev",
   "copyright": "Copyright (c) 2013 Jake Luer jake@qualiancy.com (http://qualiancy.com)",
   "textId": "655adc31f8"
+ },
+ {
+  "name": "astronomia",
+  "version": "4.3.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2013 Sonia Keys\nCopyright (c) 2016 Commenthol",
+  "repository": "https://github.com/commenthol/astronomia",
+  "textId": "433d3e326f"
  },
  {
   "name": "babel-plugin-react-compiler",
@@ -873,6 +912,16 @@
   "copyright": "Copyright 2014 Andrey Sitnik <andrey@sitnik.es> and other contributors",
   "repository": "https://github.com/browserslist/browserslist",
   "textId": "da4728b19c"
+ },
+ {
+  "name": "caldate",
+  "version": "2.1.0",
+  "license": "ISC",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2016, commenthol",
+  "repository": "https://github.com/commenthol/caldate",
+  "textId": "a55cc73384"
  },
  {
   "name": "caniuse-lite",
@@ -955,6 +1004,36 @@
   "textId": "c1890f63b3"
  },
  {
+  "name": "date-bengali-revised",
+  "version": "2.1.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2018-present commenthol",
+  "repository": "https://github.com/commenthol/date-bengali-revised",
+  "textId": "c845ef9ffe"
+ },
+ {
+  "name": "date-chinese",
+  "version": "2.2.1",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2016-present commenthol",
+  "repository": "https://github.com/commenthol/date-chinese",
+  "textId": "d4c7e83f99"
+ },
+ {
+  "name": "date-easter",
+  "version": "1.1.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2014 commenthol",
+  "repository": "https://github.com/commenthol/date-easter",
+  "textId": "c67b363a1c"
+ },
+ {
   "name": "date-fns",
   "version": "4.4.0",
   "license": "MIT",
@@ -965,6 +1044,26 @@
   "textId": "675e4b68ec"
  },
  {
+  "name": "date-holidays",
+  "version": "3.39.2",
+  "license": "(ISC AND CC-BY-SA-4.0)",
+  "category": "weak",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2015-present, commenthol",
+  "repository": "https://github.com/commenthol/date-holidays",
+  "textId": "53a9afcf6c"
+ },
+ {
+  "name": "date-holidays-parser",
+  "version": "3.7.0",
+  "license": "ISC",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2015-present, commenthol",
+  "repository": "https://github.com/commenthol/date-holidays-parser",
+  "textId": "dc25c2251a"
+ },
+ {
   "name": "decimal.js",
   "version": "10.6.0",
   "license": "MIT",
@@ -973,6 +1072,16 @@
   "copyright": "Copyright (c) 2025 Michael Mclaughlin",
   "repository": "https://github.com/MikeMcl/decimal.js",
   "textId": "0dcb1574c6"
+ },
+ {
+  "name": "deepmerge",
+  "version": "4.3.1",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2012 James Halliday, Josh Duff, and other contributors",
+  "repository": "https://github.com/TehShrike/deepmerge",
+  "textId": "9edad4e307"
  },
  {
   "name": "dequal",
@@ -1165,6 +1274,46 @@
   "textId": "f578f231f0"
  },
  {
+  "name": "holiday-data: date-holidays (JP, US, HK, SG, GB, CA, AU)",
+  "version": "3.39.2",
+  "license": "CC-BY-SA-4.0",
+  "category": "weak",
+  "scope": "runtime",
+  "copyright": "Copyright (c) 2015-present, commenthol; holiday data CC BY-SA 4.0 (Wikipedia contributors)",
+  "repository": "https://github.com/commenthol/date-holidays",
+  "textId": "53a9afcf6c"
+ },
+ {
+  "name": "holiday-data: holiday-cn (CN)",
+  "version": "data",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "runtime",
+  "copyright": "Copyright (c) 2019 NateScarlet",
+  "repository": "https://github.com/NateScarlet/holiday-cn",
+  "textId": "66273af119"
+ },
+ {
+  "name": "holiday-data: holidays-kr (KR)",
+  "version": "5.2027.2",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "runtime",
+  "copyright": "Copyright (c) 2023 Hyunbin Seo",
+  "repository": "https://github.com/hyunbinseo/holidays-kr",
+  "textId": "bbe95f0890"
+ },
+ {
+  "name": "holiday-data: Taiwan DGPA office calendar (TW)",
+  "version": "data",
+  "license": "OGDL-Taiwan-1.0",
+  "category": "permissive",
+  "scope": "runtime",
+  "copyright": "行政院人事行政總處（Directorate-General of Personnel Administration, Executive Yuan）",
+  "repository": "https://data.gov.tw/dataset/14718",
+  "textId": "75bf1a3543"
+ },
+ {
   "name": "html-encoding-sniffer",
   "version": "7.0.0",
   "license": "MIT",
@@ -1275,6 +1424,16 @@
   "textId": "2981a83f8b"
  },
  {
+  "name": "jalaali-js",
+  "version": "2.0.1",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2020 Behrang Norouzinia",
+  "repository": "https://github.com/jalaali/jalaali-js",
+  "textId": "749bc07a72"
+ },
+ {
   "name": "jiti",
   "version": "2.7.0",
   "license": "MIT",
@@ -1303,6 +1462,16 @@
   "copyright": "Copyright (c) 2014, 2015, 2016, 2017, 2018 Simon Lydell",
   "repository": "https://github.com/lydell/js-tokens",
   "textId": "7df4be24bb"
+ },
+ {
+  "name": "js-yaml",
+  "version": "5.5.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (C) 2011-2015 by Vitaly Puzrin",
+  "repository": "https://github.com/nodeca/js-yaml",
+  "textId": "4648826518"
  },
  {
   "name": "jsdom",
@@ -1344,6 +1513,16 @@
   "textId": "b6475ce18f"
  },
  {
+  "name": "lodash",
+  "version": "4.18.1",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright OpenJS Foundation and other contributors <https://openjsf.org/>\nCopyright and related rights for sample code are waived via CC0. Sample",
+  "repository": "https://github.com/lodash/lodash",
+  "textId": "028d82c16a"
+ },
+ {
   "name": "lru-cache",
   "version": "11.5.3",
   "license": "BlueOak-1.0.0",
@@ -1382,6 +1561,26 @@
   "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com), James Kyle <me@thejameskyle.com> (thejameskyle.com)",
   "repository": "https://github.com/thejameskyle/min-indent",
   "textId": "d2e5797a2f"
+ },
+ {
+  "name": "moment",
+  "version": "2.31.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) OpenJS Foundation and other contributors",
+  "repository": "https://github.com/moment/moment",
+  "textId": "b1772487fd"
+ },
+ {
+  "name": "moment-timezone",
+  "version": "0.6.6",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) JS Foundation and other contributors",
+  "repository": "https://github.com/moment/moment-timezone",
+  "textId": "58ef769c4c"
  },
  {
   "name": "nanoid",
@@ -1472,6 +1671,15 @@
   "copyright": "Copyright 2013 Andrey Sitnik <andrey@sitnik.es>",
   "repository": "https://github.com/postcss/postcss",
   "textId": "13bd5ba625"
+ },
+ {
+  "name": "prepin",
+  "version": "1.0.3",
+  "license": "Unlicense",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) commenthol",
+  "repository": "https://github.com/commenthol/prepin"
  },
  {
   "name": "pretty-format",

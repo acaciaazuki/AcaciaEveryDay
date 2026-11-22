@@ -130,6 +130,8 @@ export const settingsSchema = z.object({
    * 沒有時用預設順序；讀取時會忽略已移除的項目、補上新項目（見 core/navOrder.ts）
    */
   navOrder: z.record(z.string(), z.array(z.string())).optional(),
+  /** 匯入國定假日時選的國家（ISO 3166 兩碼，例如 TW、JP）。沒有時依瀏覽器時區與語言推測，不會用到位置 */
+  holidayCountry: z.string().regex(/^[A-Z]{2}$/).optional(),
 })
 
 export const REMINDER_RADII = [100, 300, 500] as const
@@ -224,6 +226,27 @@ export const inventoryItemSchema = z.object({
   shoppingId: z.string().optional(),
 })
 
+/** 匯入的國定假日中的一天（唯讀，不能在行事曆編輯） */
+export const holidayDaySchema = z.object({
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  /** 當地名稱（例如 春節、元日、Christmas Day） */
+  name: z.string(),
+  /** 英文名稱（有的話，英文介面優先顯示） */
+  en: z.string().optional(),
+  /** 補班／调休上班日：放假日以外，週末要上班的那一天 */
+  work: z.boolean().optional(),
+})
+
+/** 某國某一年匯入的國定假日。「國家＋年份」唯一，重新匯入時整份替換，所以不會重複 */
+export const holidaySetSchema = z.object({
+  country: z.string().regex(/^[A-Z]{2}$/),
+  year: z.number().int(),
+  /** official：政府公告（含補假、補班）｜rules：依法定規則推算 */
+  source: z.enum(['official', 'rules']),
+  importedAt: z.number().default(0),
+  days: z.array(holidayDaySchema),
+})
+
 /** 一個已結算的記帳週期。start 是週期開始日，同時也是這筆歸檔的識別，年度記帳本依 start 的年份歸屬 */
 export const archiveSchema = z.object({
   start: isoDate,
@@ -256,6 +279,8 @@ export const appDataSchema = z.object({
   invCats: invCatsSchema.default({ custom: [], order: [] }),
   /** 週期固定支出範本；舊資料沒有這個欄位，讀進來時補空陣列 */
   recurring: z.array(recurringSchema).default([]),
+  /** 匯入的國定假日；舊資料沒有這個欄位，讀進來時補空陣列 */
+  holidays: z.array(holidaySetSchema).default([]),
   updatedAt: z.number(),
 })
 
@@ -273,6 +298,8 @@ export type InvCategory = (typeof INV_CATEGORIES)[number]
 export type InvCustomCat = z.infer<typeof invCustomCatSchema>
 export type InvCats = z.infer<typeof invCatsSchema>
 export type Recurring = z.infer<typeof recurringSchema>
+export type HolidayDay = z.infer<typeof holidayDaySchema>
+export type HolidaySet = z.infer<typeof holidaySetSchema>
 export type Archive = z.infer<typeof archiveSchema>
 export type Place = z.infer<typeof placeSchema>
 export type AppData = z.infer<typeof appDataSchema>
@@ -293,6 +320,7 @@ export const emptyAppData = (): AppData => ({
   inventorySeeded: false,
   invCats: { custom: [], order: [] },
   recurring: [],
+  holidays: [],
   updatedAt: 0,
 })
 

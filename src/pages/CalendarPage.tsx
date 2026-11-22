@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { BatchEventsDialog } from '../components/BatchEventsDialog'
 import { Button } from '../components/Button'
 import { EventDialog } from '../components/EventDialog'
+import { HolidayCard, HolidayChip, HolidayImportDialog } from '../components/HolidayAgenda'
 import { MonthNav } from '../components/MonthNav'
 import { PageHead } from '../components/PageHead'
 import { ShoppingCard, ShoppingChip, ShoppingDetailDialog } from '../components/ShoppingAgenda'
@@ -14,6 +15,7 @@ import { agendaOn, type ShoppingEntry } from '../core/shoppingAgenda'
 import { useNow } from '../hooks/useNow'
 import { SHOP_STYLE, useShoppingByDate } from '../hooks/useShoppingAgenda'
 import { useOpenFromUrl } from '../hooks/useOpenFromUrl'
+import { HOLIDAY_STYLE, holidayStyle, useHolidaysByDate } from '../hooks/useHolidays'
 import { useAppStore } from '../store/useAppStore'
 
 // 桌面版每天最多顯示的行程標籤數，超過的折成「還有 X 個」
@@ -29,6 +31,9 @@ export function CalendarPage() {
   const [selected, setSelected] = useState(todayISO)
   const [editing, setEditing] = useState<CalendarEvent | 'new' | null>(null)
   const [batchOpen, setBatchOpen] = useState(false)
+  // 匯入的國定假日：唯讀，排在每天最前面
+  const holidaysByDate = useHolidaysByDate()
+  const [holidayOpen, setHolidayOpen] = useState(false)
   // 購物記帳連動進來的行程：只能看，點開是唯讀詳情
   const shopByDate = useShoppingByDate()
   const [viewingShop, setViewingShop] = useState<ShoppingEntry | null>(null)
@@ -41,6 +46,7 @@ export function CalendarPage() {
 
   const cells = monthCells(ym.year, ym.month)
   const dayItems = agendaOn(events, shopByDate, selected)
+  const dayHolidays = holidaysByDate.get(selected) ?? []
   const selectedLabel = new Intl.DateTimeFormat(i18n.resolvedLanguage, { dateStyle: 'full' }).format(new Date(`${selected}T00:00`))
 
   return (
@@ -50,6 +56,9 @@ export function CalendarPage() {
         title={t('calendar.title')}
         actions={
           <>
+            <Button variant="ghost" onClick={() => setHolidayOpen(true)}>
+              {t('holidays.open')}
+            </Button>
             <Button variant="ghost" onClick={() => setBatchOpen(true)}>
               {t('calendar.batch')}
             </Button>
@@ -80,6 +89,10 @@ export function CalendarPage() {
               // 每週從星期日開始，第 0 欄是日、第 6 欄是六
               const weekend = i % 7 === 0 || i % 7 === 6
               const evs = agendaOn(events, shopByDate, iso)
+              const hols = holidaysByDate.get(iso) ?? []
+              // 放假日（不含補班）的日期數字用假日色
+              const isHoliday = hols.some((h) => !h.work)
+              const chipRoom = Math.max(0, MAX_CHIPS - hols.length)
               const isSel = iso === selected
               const isToday = iso === todayISO
               return (
@@ -94,15 +107,26 @@ export function CalendarPage() {
                     isSel ? `border-sage ${weekend ? 'bg-weekend' : 'bg-sage-light/60'}` : `border-transparent ${weekend ? 'bg-weekend hover:bg-weekend-hover' : 'hover:bg-oat'}`
                   }`}
                 >
-                  <div className={`mb-1 grid size-6 place-items-center rounded-full text-xs font-bold ${isToday ? 'bg-sage text-white' : ''}`}>{Number(iso.slice(8))}</div>
+                  <div
+                    className={`mb-1 grid size-6 place-items-center rounded-full text-xs font-bold ${isToday ? 'bg-sage text-white' : ''}`}
+                    style={isHoliday && !isToday ? { color: HOLIDAY_STYLE.day } : undefined}
+                  >
+                    {Number(iso.slice(8))}
+                  </div>
                   {/* 手機寬度只顯示圓點，桌面顯示行程標籤 */}
                   <div className="flex flex-wrap gap-0.5 sm:hidden">
+                    {hols.map((h) => (
+                      <span key={h.id} data-holiday-dot={h.id} className="h-1.5 w-3 rounded-full" style={{ background: holidayStyle(h).dot }} />
+                    ))}
                     {evs.slice(0, 4).map((it) => (
                       <span key={it.id} className="size-1.5 rounded-full" style={{ background: it.kind === 'shopping' ? SHOP_STYLE.dot : it.event.titleColor || '#4a987b' }} />
                     ))}
                   </div>
                   <div className="hidden gap-px sm:grid">
-                    {evs.slice(0, MAX_CHIPS).map((it) => {
+                    {hols.map((h) => (
+                      <HolidayChip key={h.id} holiday={h} />
+                    ))}
+                    {evs.slice(0, chipRoom).map((it) => {
                       if (it.kind === 'shopping') return <ShoppingChip key={it.id} entry={it.entry} onOpen={setViewingShop} />
                       const e = it.event
                       return (
@@ -120,7 +144,7 @@ export function CalendarPage() {
                       </button>
                       )
                     })}
-                    {evs.length > MAX_CHIPS && <span className="px-1.5 text-[length:calc(10px*var(--fs))] text-muted">{t('calendar.more', { count: evs.length - MAX_CHIPS })}</span>}
+                    {evs.length > chipRoom && <span className="px-1.5 text-[length:calc(10px*var(--fs))] text-muted">{t('calendar.more', { count: evs.length - chipRoom })}</span>}
                   </div>
                 </div>
               )
@@ -130,6 +154,15 @@ export function CalendarPage() {
 
         <section className="content-start rounded-(--radius-card) bg-paper p-5 shadow-card">
           <h2 className="mb-3 font-bold">{selectedLabel}</h2>
+          {dayHolidays.length > 0 && (
+            <ul className="mb-2 grid gap-2">
+              {dayHolidays.map((h) => (
+                <li key={h.id}>
+                  <HolidayCard compact holiday={h} />
+                </li>
+              ))}
+            </ul>
+          )}
           {dayItems.length === 0 ? (
             <p className="py-2 text-[length:calc(13px*var(--fs))] text-muted">{t('calendar.dayEmpty')}</p>
           ) : (
@@ -170,6 +203,7 @@ export function CalendarPage() {
 
       {editing && <EventDialog key={editing === 'new' ? 'new' : editing.id} event={editing === 'new' ? null : editing} date={selected} onClose={() => setEditing(null)} />}
       {viewingShop && <ShoppingDetailDialog entry={viewingShop} onClose={() => setViewingShop(null)} />}
+      {holidayOpen && <HolidayImportDialog onClose={() => setHolidayOpen(false)} />}
       {batchOpen && <BatchEventsDialog initialYear={ym.year} initialMonth={ym.month} onClose={() => setBatchOpen(false)} />}
     </>
   )

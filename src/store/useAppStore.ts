@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { webStorage } from '../adapters/storage'
 import { archiveCurrent, archiveEnded, periodOf, restoreArchive as restoreArchiveData } from '../core/archive'
+import { clearCountry, importSets, type HolidayFile, type ImportResult } from '../core/holidays'
 import { addCustomCat, removeCustomCat } from '../core/invCategories'
 import { invToExpense, restockQty, toggleShoppingStock, type StockChange } from '../core/inventory'
 import { migrate } from '../core/migrate'
@@ -76,6 +77,12 @@ interface Actions {
    */
   /** 回傳加入了幾筆記帳，以及這次付完最後一期、自動標記完成的範本名稱 */
   importRecurring: (picks: ImportPick[], todayISO: string) => { count: number; completed: string[] }
+  /** 把某國某幾年的國定假日寫進行事曆（同國家同年份整份替換，不會重複）。回傳新增、更新、略過的年份 */
+  importHolidays: (file: HolidayFile, years: number[]) => Omit<ImportResult, 'sets'>
+  /** 清除某國匯入的所有假日 */
+  clearHolidays: (country: string) => void
+  /** 匯入國定假日用的國家 */
+  setHolidayCountry: (country: string) => void
   setFontSize: (size: FontSize) => void
   /** 預設貨幣（三碼 ISO，例如 TWD、USD）。只影響顯示與新增時的預設值，不改動已存的資料 */
   setCurrency: (currency: string) => void
@@ -236,6 +243,14 @@ export const useAppStore = create<AppState>()(
       },
       setInvCatOrder: (keys) => setState((s) => ({ invCats: { ...s.invCats, order: keys ?? [] }, ...touch() })),
 
+      importHolidays: (file, years) => {
+        const { sets, ...result } = importSets(getState().holidays, file, years, Date.now())
+        if (result.added.length || result.updated.length) setState({ holidays: sets, ...touch() })
+        return result
+      },
+      clearHolidays: (country) => setState((s) => ({ holidays: clearCountry(s.holidays, country), ...touch() })),
+      setHolidayCountry: (holidayCountry) => setState((s) => ({ settings: { ...s.settings, holidayCountry }, ...touch() })),
+
       setFontSize: (fontSize) => setState((s) => ({ settings: { ...s.settings, fontSize }, ...touch() })),
       setCurrency: (currency) => setState((s) => ({ settings: { ...s.settings, currency }, ...touch() })),
       setNavOrder: (section, keys) =>
@@ -263,8 +278,8 @@ export const useAppStore = create<AppState>()(
 
       importData: (raw) => setState(migrate(raw)),
       exportData: () => {
-        const { schemaVersion, settings, events, tasks, shopping, places, favorites, reminders, archives, subscriptions, subscriptionsSeeded, inventory, inventorySeeded, invCats, recurring, updatedAt } = getState()
-        return { schemaVersion, settings, events, tasks, shopping, places, favorites, reminders, archives, subscriptions, subscriptionsSeeded, inventory, inventorySeeded, invCats, recurring, updatedAt }
+        const { schemaVersion, settings, events, tasks, shopping, places, favorites, reminders, archives, subscriptions, subscriptionsSeeded, inventory, inventorySeeded, invCats, recurring, holidays, updatedAt } = getState()
+        return { schemaVersion, settings, events, tasks, shopping, places, favorites, reminders, archives, subscriptions, subscriptionsSeeded, inventory, inventorySeeded, invCats, recurring, holidays, updatedAt }
       },
     }),
     {

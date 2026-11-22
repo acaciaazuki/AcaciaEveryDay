@@ -929,5 +929,54 @@
     "up": "上移「{{label}}」",
     "down": "下移「{{label}}」",
     "moved": "「{{label}}」已移到第 {{pos}} 個，共 {{total}} 個"
+  },
+  "holidays": {
+    "open": "國定假日",
+    "title": "匯入國定假日",
+    "intro": "選擇國家與年份，把國定假日放進行事曆。假日資料已內建在 App 中，匯入時不會連線到其他服務，也不會使用你的位置；預設國家只依瀏覽器的時區與語言推測。",
+    "country": "國家／地區",
+    "gbRegion": "（英格蘭與威爾斯）",
+    "from": "從",
+    "to": "到",
+    "import": "匯入國定假日",
+    "imported": "已匯入",
+    "none": "還沒有匯入任何國家的假日。",
+    "summary": "{{years}} 年 · {{count}} 天假日",
+    "resync": "重新同步",
+    "clear": "清除",
+    "clearYes": "清除假日",
+    "clearConfirm": "確定清除{{name}}的所有假日？",
+    "cleared": "已清除{{name}}的假日。",
+    "close": "關閉",
+    "loadError": "假日資料載入失敗，請重新整理後再試一次。",
+    "tag": "國定假日",
+    "workTag": "補班",
+    "allDay": "整天",
+    "workHint": "補班日（這天要上班）",
+    "estimated": "依規則推算",
+    "nationalOnly": "只包含全國性的假日，各省／州自訂的假日沒有列入。",
+    "source": {
+      "official": "資料來源：{{source}}。依官方公告收錄，含補假與補班，只提供已公告的年份。",
+      "rules": "資料來源：{{source}}。依各國法定規則推算，可能與政府臨時公告（例如選舉日、依月相決定的節日）不同，請以官方公告為準。"
+    },
+    "sourceName": {
+      "TW": "行政院人事行政總處「政府行政機關辦公日曆表」（政府資料開放平台）",
+      "CN": "中國國務院辦公廳放假安排公告（經 holiday-cn 整理）",
+      "KR": "韓國宇宙航空廳月曆要項（經 holidays-kr 整理）",
+      "JP": "date-holidays 開源假日資料",
+      "US": "date-holidays 開源假日資料",
+      "HK": "date-holidays 開源假日資料",
+      "SG": "date-holidays 開源假日資料",
+      "GB": "date-holidays 開源假日資料",
+      "CA": "date-holidays 開源假日資料",
+      "AU": "date-holidays 開源假日資料"
+    },
+    "result": {
+      "line": "{{name}}：{{detail}}",
+      "sep": "；",
+      "added": "已匯入 {{years}} 年",
+      "updated": "已更新 {{years}} 年（沒有重複新增）",
+      "skipped": "{{years}} 年沒有資料，已略過"
+    }
   }
 }

@@ -929,5 +929,54 @@
     "up": "Move “{{label}}” up",
     "down": "Move “{{label}}” down",
     "moved": "“{{label}}” moved to position {{pos}} of {{total}}"
+  },
+  "holidays": {
+    "open": "Public holidays",
+    "title": "Import public holidays",
+    "intro": "Pick a country and years to add its public holidays to your calendar. Holiday data is built into the app, so importing never connects to another service or uses your location. The default country is only guessed from your browser's time zone and language.",
+    "country": "Country / region",
+    "gbRegion": "(England & Wales)",
+    "from": "From",
+    "to": "To",
+    "import": "Import holidays",
+    "imported": "Imported",
+    "none": "No holidays imported yet.",
+    "summary": "{{years}} · {{count}} holidays",
+    "resync": "Re-sync",
+    "clear": "Clear",
+    "clearYes": "Clear holidays",
+    "clearConfirm": "Clear all holidays for {{name}}?",
+    "cleared": "Holidays for {{name}} cleared.",
+    "close": "Close",
+    "loadError": "Couldn't load holiday data. Please reload the page and try again.",
+    "tag": "Public holiday",
+    "workTag": "Make-up workday",
+    "allDay": "All day",
+    "workHint": "Make-up workday (a working day)",
+    "estimated": "Calculated from rules",
+    "nationalOnly": "Only nationwide holidays are included; state and provincial holidays are not.",
+    "source": {
+      "official": "Source: {{source}}. Based on official announcements, including substitute holidays and make-up workdays. Only announced years are available.",
+      "rules": "Source: {{source}}. Calculated from each country's statutory rules, so it may differ from ad-hoc government announcements (such as election days or holidays set by the moon). Please check official announcements."
+    },
+    "sourceName": {
+      "TW": "Taiwan DGPA government office calendar (Government Open Data Platform)",
+      "CN": "China State Council holiday notices (compiled by holiday-cn)",
+      "KR": "Korea AeroSpace Administration almanac (compiled by holidays-kr)",
+      "JP": "date-holidays open-source holiday data",
+      "US": "date-holidays open-source holiday data",
+      "HK": "date-holidays open-source holiday data",
+      "SG": "date-holidays open-source holiday data",
+      "GB": "date-holidays open-source holiday data",
+      "CA": "date-holidays open-source holiday data",
+      "AU": "date-holidays open-source holiday data"
+    },
+    "result": {
+      "line": "{{name}}: {{detail}}",
+      "sep": "; ",
+      "added": "imported {{years}}",
+      "updated": "updated {{years}} (no duplicates added)",
+      "skipped": "no data for {{years}}, skipped"
+    }
   }
 }
