@@ -2,9 +2,12 @@ import { useRef, useState } from 'react'
 import { Icon } from '../components/AcaciaIcons'
 import { Link } from 'react-router'
 import { useTranslation } from 'react-i18next'
+import { BackupPanel } from '../components/BackupPanel'
 import { Button } from '../components/Button'
+import { DeleteDataPanel } from '../components/DeleteDataPanel'
 import { LicensesLink } from '../components/LicensesLink'
 import { PageHead } from '../components/PageHead'
+import { PrivacyLink } from '../components/PrivacyLink'
 import { SyncPanel } from '../components/SyncPanel'
 import { LANGUAGES } from '../i18n'
 import { currencyName, currencySymbol } from '../core/format'
@@ -170,9 +173,14 @@ export function SettingsPage() {
             />
           </div>
           {msg && <p role="status" className="mt-3 text-xs text-sage-dark">{msg}</p>}
+          <BackupPanel />
         </section>
-        {/* 手機沒有側邊欄，第三方授權清單的入口放在設定頁最底部 */}
-        <LicensesLink className="justify-self-center py-2" />
+        <DeleteDataPanel />
+        {/* 手機沒有側邊欄，隱私權政策與第三方授權清單的入口放在設定頁最底部 */}
+        <div className="flex justify-center gap-4 py-2">
+          <PrivacyLink />
+          <LicensesLink />
+        </div>
       </div>
     </>
   )

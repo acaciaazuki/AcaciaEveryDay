@@ -5,6 +5,8 @@
  */
 export const DRIVE_FILE = 'acacia_data_v2.json'
 export const LEGACY_DRIVE_FILE = 'acacia_data.json'
+/** 自動備份槽：只放最新一份自動備份，跟同步檔分開，不會覆蓋 acacia_data_v2.json */
+export const BACKUP_DRIVE_FILE = 'acacia_backup_v2.json'
 
 export class DriveError extends Error {
   readonly status?: number
@@ -43,4 +45,10 @@ export async function upload(token: string, id: string | null, name: string, dat
   const url = id ? `${api}/upload/drive/v3/files/${id}?uploadType=multipart` : `${api}/upload/drive/v3/files?uploadType=multipart`
   const res = await call(token, url, { method: id ? 'PATCH' : 'POST', headers: { 'Content-Type': `multipart/related; boundary=${boundary}` }, body })
   return ((await res.json()) as { id: string }).id
+}
+
+/** 刪除檔案（「刪除所有資料」用）。檔案已不存在時視為成功 */
+export async function deleteFile(token: string, id: string): Promise<void> {
+  const res = await fetch(`${api}/drive/v3/files/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } })
+  if (!res.ok && res.status !== 404) throw new DriveError(`Drive ${res.status}`, res.status)
 }
