@@ -37,8 +37,25 @@
     background: var(--color-oat);
     color: var(--color-ink);
     font-size: calc(14px * var(--fs));
+    /* 手機橫放時不要自動把文字放大，版面維持一致 */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
   button {
     cursor: pointer;
+  }
+}
+
+/*
+ * 手機與平板：iOS Safari 在聚焦字級小於 16px 的輸入框時會自動放大整個畫面。
+ * 所有可輸入的 input／select／textarea 至少 16px；字體大小設成「大／特大」時照樣跟著放大。
+ * 放在 @layer 外面，才能蓋過元件上的 text-sm 等 Tailwind class（核取方塊、顏色等不會觸發縮放，不受影響）。
+ * 自訂下拉（IconSelect）是按鈕不是輸入框，不會觸發縮放，維持原樣式。
+ */
+@media (max-width: 767.98px), (pointer: coarse) {
+  input:not([type='checkbox'], [type='radio'], [type='range'], [type='color'], [type='file'], [type='button'], [type='submit'], [type='reset'], [type='image']),
+  select,
+  textarea {
+    font-size: max(16px, calc(0.875rem * var(--fs))) !important;
   }
 }

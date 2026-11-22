@@ -11,7 +11,8 @@ import { PageHead } from '../components/PageHead'
 import { EXPENSE_CATEGORIES } from '../core/categories'
 import { toLocalISO } from '../core/date'
 import { billingPeriod, formatQty, lineTotal, DEFAULT_BUDGET, EXPENSE_STYLE, summarize } from '../core/expenses'
-import { formatMoney } from '../core/format'
+import { currencySymbol, formatMoney } from '../core/format'
+import { useCurrency } from '../hooks/useCurrency'
 import type { Expense } from '../core/schema'
 import { useNow } from '../hooks/useNow'
 import { useOpenFromUrl } from '../hooks/useOpenFromUrl'
@@ -34,6 +35,8 @@ export function ShoppingPage() {
   const archived = useMemo(() => archives.flatMap((a) => a.expenses), [archives])
   useOpenFromUrl(archived, (e) => setFocusId(e.id))
   const lng = i18n.resolvedLanguage ?? 'zh-TW'
+  const currency = useCurrency()
+  const money = (n: number) => formatMoney(n, lng, currency)
 
   const now = useNow()
   const period = billingPeriod(now)
@@ -57,7 +60,7 @@ export function ShoppingPage() {
         <div className="mb-3 flex items-end justify-between gap-3">
           <div>
             <h2 className="mb-1 text-[length:calc(13px*var(--fs))] font-bold text-[#78867f]">{t('shopping.period', { start: period.start.slice(5).replace('-', '/'), end: period.end.slice(5).replace('-', '/') })}</h2>
-            <p className={`text-[length:calc(32px*var(--fs))] leading-none font-extrabold tracking-tight ${over ? 'text-[#ef4444]' : ''}`}>{formatMoney(total, lng)}</p>
+            <p className={`text-[length:calc(32px*var(--fs))] leading-none font-extrabold tracking-tight ${over ? 'text-[#ef4444]' : ''}`}>{money(total)}</p>
           </div>
           <div className="grid justify-items-end gap-2">
             <p className="text-right text-[length:calc(11px*var(--fs))] text-[#9aa59f]">{t('shopping.budget', { percent: percent.toFixed(1) })}</p>
@@ -72,7 +75,7 @@ export function ShoppingPage() {
         <div className="flex flex-wrap gap-2">
           {byCategory.map(([k, v]) => (
             <span key={k} className="rounded-full border border-line bg-[#f9fbf9] px-3 py-1.5 text-[length:calc(11px*var(--fs))] font-semibold text-[#55645d]">
-              {keyLabel(k)}: {formatMoney(v, lng)}
+              {keyLabel(k)}: {money(v)}
             </span>
           ))}
         </div>
@@ -113,12 +116,12 @@ export function ShoppingPage() {
                       </strong>
                       <small className="mt-1 block text-[length:calc(11px*var(--fs))] opacity-80">
                         {s.store || t('shopping.noStore')} · <Icon name={st.icon} className="size-[1.5em]" /> {catLabel(s)} · {s.date} {s.time}
-                        {s.unitPrice != null && ` · ${formatQty(s.quantity)} × ${formatMoney(s.unitPrice, lng)}`}
+                        {s.unitPrice != null && ` · ${formatQty(s.quantity)} × ${money(s.unitPrice)}`}
                         {s.unitPrice == null && s.quantity != null && s.quantity !== 1 && ` · ${t('shopping.qtyOnly', { count: s.quantity })}`}
                       </small>
                     </button>
                   </div>
-                  <span className="shrink-0 font-bold">{formatMoney(s.amt, lng)}</span>
+                  <span className="shrink-0 font-bold">{money(s.amt)}</span>
                 </li>
               )
             })}
@@ -126,7 +129,7 @@ export function ShoppingPage() {
         )}
       </section>
 
-      <LedgerBook archives={archives} lng={lng} currentStart={period.start} onRestore={restoreArchive} focusId={focusId} />
+      <LedgerBook archives={archives} lng={lng} currency={currency} currentStart={period.start} onRestore={restoreArchive} focusId={focusId} />
 
       <Dialog open={confirmArchive} onOpenChange={setConfirmArchive} title={t('shopping.archive.confirmTitle')}>
         <p className="mb-5 text-sm text-muted">{t('shopping.archive.confirmText', { start: period.start, end: period.end, count: inPeriod, year: period.start.slice(0, 4) })}</p>
@@ -151,7 +154,9 @@ export function ShoppingPage() {
 }
 
 function ExpenseDialog({ expense, onClose }: { expense: Expense | null; onClose: () => void }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  // 輸入框旁的幣別標籤跟著預設貨幣
+  const sym = currencySymbol(useCurrency(), i18n.resolvedLanguage ?? 'zh-TW')
   const addExpense = useAppStore((s) => s.addExpense)
   const updateExpense = useAppStore((s) => s.updateExpense)
   const removeExpense = useAppStore((s) => s.removeExpense)
@@ -201,11 +206,11 @@ function ExpenseDialog({ expense, onClose }: { expense: Expense | null; onClose:
         {error && <p className="-mt-2 text-xs text-[#c2583d]">{error}</p>}
         <div className="grid grid-cols-2 gap-3">
           <Field label={t('shopping.form.qty')} type="number" inputMode="decimal" min={0} step="any" value={qty} onChange={(e) => onQtyUnit(e.target.value, unit)} />
-          <Field label={t('shopping.form.unit')} type="number" inputMode="decimal" min={0} step="any" placeholder="0" value={unit} onChange={(e) => onQtyUnit(qty, e.target.value)} />
+          <Field label={t('common.withCurrency', { label: t('shopping.form.unit'), sym })} type="number" inputMode="decimal" min={0} step="any" placeholder="0" value={unit} onChange={(e) => onQtyUnit(qty, e.target.value)} />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <Field
-            label={t('shopping.form.amt')}
+            label={t('common.withCurrency', { label: t('shopping.form.amt'), sym })}
             type="number"
             inputMode="decimal"
             min={0}

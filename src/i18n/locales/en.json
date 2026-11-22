@@ -25,7 +25,8 @@
     "cancel": "Cancel",
     "delete": "Delete",
     "add": "Add",
-    "edit": "Edit"
+    "edit": "Edit",
+    "withCurrency": "{{label}} ({{sym}})"
   },
   "today": {
     "eyebrow": "Take it slow today",
@@ -238,6 +239,11 @@
       "md": "Standard",
       "lg": "Large",
       "xl": "Extra large"
+    },
+    "currency": {
+      "title": "Default currency",
+      "help": "Expense amounts and the currency label next to amount fields use this currency, and new subscriptions start with it. Only the symbol changes; amounts are not converted, and saved subscriptions keep their own currency.",
+      "current": "Current: {{name}}"
     }
   },
   "expenseCat": {
