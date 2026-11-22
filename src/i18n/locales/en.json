@@ -261,6 +261,13 @@
       "title": "Default currency",
       "help": "Expense amounts and the currency label next to amount fields use this currency, and new subscriptions start with it. Only the symbol changes; amounts are not converted, and saved subscriptions keep their own currency.",
       "current": "Current: {{name}}"
+    },
+    "navOrder": {
+      "title": "Sidebar order",
+      "help": "Change the order of items under “Collect & organize” in the sidebar. Drag the handle on the left, or use the up and down arrows. Your order is saved, backed up and synced.",
+      "reset": "Restore default order",
+      "edit": "Edit the order of “Collect & organize”",
+      "editShort": "Reorder"
     }
   },
   "expenseCat": {
@@ -877,5 +884,13 @@
       "leave": "If you don't want to use it, just close this tab. If you change your mind, tap “Agree and start” below.",
       "back": "Back to reading"
     }
+  },
+  "sortable": {
+    "handle": "Drag to reorder “{{label}}”",
+    "handleTitle": "Drag to reorder",
+    "keyboardHelp": "Press the up and down arrow keys to move this item.",
+    "up": "Move “{{label}}” up",
+    "down": "Move “{{label}}” down",
+    "moved": "“{{label}}” moved to position {{pos}} of {{total}}"
   }
 }

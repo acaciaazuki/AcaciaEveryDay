@@ -36,6 +36,10 @@ npm run licenses   # 重新產生 src/licenses/packages.json 與 texts.json
 
 新增、移除或升級套件後要重跑並 commit 產生的檔案；`npm test` 會檢查資料是否過期，也會擋下隨網站發布的 GPL / AGPL 套件。腳本執行時會列出 GPL / AGPL、MPL 等需要注意的授權。
 
+## 側邊欄排序
+
+設定頁「側邊欄排序」可以調整「收集與整理」區塊的順序（拖曳把手、方向鍵、上下移動按鈕），側邊欄區塊標題旁也有低調的「排序」入口。順序存在 `settings.navOrder`（跟著備份與 Drive 同步）。可排序的項目定義在 `src/app/navSections.ts`：新增功能加進陣列即可，使用者已存的順序會自動把新項目補在最後，移除的項目會被忽略（`src/core/navOrder.ts`）。項目的 `key` 存在使用者資料裡，請勿改名。
+
 ## 隱私權政策、自動備份與刪除資料
 
 - 隱私權政策（繁中／日文／英文）：側邊欄與設定頁底部的小連結點了跳出面板（`src/components/PrivacyDialog.tsx`）；公開網址 `/privacy` 打開時以今天頁為背景自動跳出同一個面板，全文在 `src/pages/privacy/policy.ts`。改到儲存、同步、定位或第三方服務時要一起更新，並改 `UPDATED_DATE`。支援信箱用環境變數 `VITE_SUPPORT_EMAIL` 覆寫（預設 acacia.qiqi@gmail.com）。

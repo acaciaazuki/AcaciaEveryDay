@@ -119,6 +119,11 @@ export const settingsSchema = z.object({
   fontSize: z.enum(FONT_SIZES).default('md'),
   /** 預設貨幣：記帳金額的顯示幣別，也是新增訂閱時預先帶入的幣別。不做匯率換算 */
   currency: currencyCode.default(DEFAULT_CURRENCY),
+  /**
+   * 側邊欄各區塊的自訂順序：{ 區塊名稱: 項目 key 陣列 }，例如 { collect: ['inventory', 'shopping', …] }。
+   * 沒有時用預設順序；讀取時會忽略已移除的項目、補上新項目（見 core/navOrder.ts）
+   */
+  navOrder: z.record(z.string(), z.array(z.string())).optional(),
 })
 
 export const REMINDER_RADII = [100, 300, 500] as const

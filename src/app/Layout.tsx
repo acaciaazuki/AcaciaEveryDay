@@ -1,7 +1,7 @@
 import { lazy, Suspense, useState } from 'react'
 import { useFontScale } from '../hooks/useFontScale'
 import { useTranslation } from 'react-i18next'
-import { NavLink, Outlet, useLocation } from 'react-router'
+import { Link, NavLink, Outlet, useLocation } from 'react-router'
 import { Icon } from '../components/AcaciaIcons'
 import type { IconName } from '../core/icons'
 import { BrandMark } from '../components/BrandMark'
@@ -14,6 +14,7 @@ import { useReminderMonitor } from '../hooks/useReminderMonitor'
 import { useNow } from '../hooks/useNow'
 import { toLocalISO } from '../core/date'
 import { isDue, isLow } from '../core/inventory'
+import { useNavOrder } from '../hooks/useNavOrder'
 import { useAppStore } from '../store/useAppStore'
 import { useConsentStore } from '../store/useConsentStore'
 
@@ -56,6 +57,7 @@ function AppShell() {
   const todayISO = toLocalISO(useNow())
   // 側邊欄提示：要汰換／即期或待補貨的用品數
   const invAlerts = useAppStore((s) => s.inventory.filter((x) => isLow(x) || isDue(x, todayISO)).length)
+  const collect = useNavOrder('collect')
   const [searchOpen, setSearchOpen] = useState(false)
   useFontScale()
   useReminderMonitor()
@@ -90,29 +92,30 @@ function AppShell() {
             </NavLink>
           ))}
         </nav>
-        <div className="px-3 pt-4 pb-2 text-[length:calc(10px*var(--fs))] font-bold tracking-[1.5px] text-[#a4afaa] uppercase">{t('nav.sectionCollect')}</div>
+        <div className="group/collect flex items-center px-3 pt-4 pb-2">
+          <span className="flex-1 text-[length:calc(10px*var(--fs))] font-bold tracking-[1.5px] text-[#a4afaa] uppercase">{t('nav.sectionCollect')}</span>
+          {/* 低調的排序入口：滑過或用 Tab 移到時才明顯 */}
+          <Link
+            to="/settings#nav-order"
+            title={t('settings.navOrder.edit')}
+            aria-label={t('settings.navOrder.edit')}
+            className="rounded-full px-1.5 text-[length:calc(10px*var(--fs))] font-semibold text-[#c2cbc6] transition-colors group-hover/collect:text-[#8c9993] hover:bg-sage-light hover:text-sage-dark focus-visible:text-sage-dark"
+          >
+            {t('settings.navOrder.editShort')}
+          </Link>
+        </div>
         <nav className="grid gap-1">
-          <NavLink to="/shopping" className={linkClass}>
-            <Icon name="shopping" className="size-[1.9em]" />
-            {t('nav.shopping')}
-          </NavLink>
-          <NavLink to="/reminders" className={linkClass}>
-            <Icon name="reminders" className="size-[1.9em]" />
-            {t('nav.reminders')}
-          </NavLink>
-          <NavLink to="/subscriptions" className={linkClass}>
-            <Icon name="subscription" className="size-[1.9em]" />
-            {t('nav.subscriptions')}
-          </NavLink>
-          <NavLink to="/inventory" className={linkClass}>
-            <Icon name="inventory" className="size-[1.9em]" />
-            {t('nav.inventory')}
-            {invAlerts > 0 && (
-              <span className="ml-auto rounded-full bg-[#ffe6d1] px-2 py-0.5 text-[length:calc(10px*var(--fs))] font-bold text-[#b4532a]" title={t('inv.navBadge', { count: invAlerts })}>
-                {invAlerts}
-              </span>
-            )}
-          </NavLink>
+          {collect.map((n) => (
+            <NavLink key={n.key} to={n.to} className={linkClass}>
+              <Icon name={n.ico} className="size-[1.9em]" />
+              {t(`nav.${n.key}`)}
+              {n.key === 'inventory' && invAlerts > 0 && (
+                <span className="ml-auto rounded-full bg-[#ffe6d1] px-2 py-0.5 text-[length:calc(10px*var(--fs))] font-bold text-[#b4532a]" title={t('inv.navBadge', { count: invAlerts })}>
+                  {invAlerts}
+                </span>
+              )}
+            </NavLink>
+          ))}
         </nav>
         <div className="mt-auto grid gap-3">
           <div className="rounded-(--radius-card) border border-line p-3">
