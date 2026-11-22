@@ -7,6 +7,7 @@ import type { IconName } from '../core/icons'
 import { BrandMark } from '../components/BrandMark'
 import { CommandPalette } from '../components/CommandPalette'
 import { ReminderBanner } from '../components/ReminderBanner'
+import { LicensesLink } from '../components/LicensesLink'
 import { SyncPanel } from '../components/SyncPanel'
 import { useReminderMonitor } from '../hooks/useReminderMonitor'
 import { useNow } from '../hooks/useNow'
@@ -100,6 +101,7 @@ export function Layout() {
             {t('nav.settings')}
           </NavLink>
         </nav>
+        <LicensesLink className="-mt-2 justify-self-start px-3" />
         </div>
       </aside>
 

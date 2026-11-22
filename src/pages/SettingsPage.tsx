@@ -3,6 +3,7 @@ import { Icon } from '../components/AcaciaIcons'
 import { Link } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../components/Button'
+import { LicensesLink } from '../components/LicensesLink'
 import { PageHead } from '../components/PageHead'
 import { SyncPanel } from '../components/SyncPanel'
 import { LANGUAGES } from '../i18n'
@@ -133,6 +134,8 @@ export function SettingsPage() {
           </div>
           {msg && <p role="status" className="mt-3 text-xs text-sage-dark">{msg}</p>}
         </section>
+        {/* 手機沒有側邊欄，開源授權的入口放在設定頁最底部 */}
+        <LicensesLink className="justify-self-center py-2" />
       </div>
     </>
   )

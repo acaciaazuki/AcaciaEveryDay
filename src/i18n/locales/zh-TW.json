@@ -657,5 +657,40 @@
         "unit": "瓶"
       }
     }
+  },
+  "licenses": {
+    "link": "開源授權",
+    "title": "開源套件授權清單",
+    "intro": "ACACIA 使用了下列開源套件，感謝這些作者與社群。每個套件都列出授權類型與版權聲明，並可檢視授權全文。",
+    "loading": "載入中…",
+    "loadFail": "授權清單載入失敗，請稍後再試。",
+    "summary": "共 {{total}} 個套件：{{runtime}} 個隨網站發布，{{dev}} 個只在開發與建置時使用。",
+    "noStrong": "沒有使用 GPL / AGPL 等強著作權授權的套件，不需要因此公開本專案的原始碼。",
+    "strongWarn": "有 {{count}} 個套件使用 GPL / AGPL 等強著作權授權，散布時可能必須公開原始碼，請確認：{{names}}",
+    "networkWarn": "AGPL：即使只透過網路提供服務，也必須公開原始碼",
+    "weakNote": "使用 MPL 等弱著作權授權：只有修改該套件本身的檔案時，才需公開修改的部分，不影響本專案的程式碼。{{names}}",
+    "unknownWarn": "{{count}} 個套件的授權無法自動辨識，請手動確認：{{names}}",
+    "search": "搜尋套件、授權或作者",
+    "scope": {
+      "all": "全部",
+      "runtime": "隨網站發布",
+      "dev": "開發工具"
+    },
+    "category": {
+      "permissive": "寬鬆授權",
+      "weak": "弱著作權",
+      "strong": "強著作權",
+      "unknown": "無法辨識"
+    },
+    "count": "{{count}} 個",
+    "viewText": "檢視授權全文",
+    "hideText": "收起全文",
+    "textGenerated": "此套件未附授權檔，以下依 {{license}} 標準條文與作者資訊顯示。",
+    "noText": "此套件未附授權全文，請到原始碼網站查看。",
+    "repo": "原始碼",
+    "empty": "找不到符合的套件",
+    "update": "這份清單由 npm run licenses 依 package-lock.json 產生；新增或升級套件後重新執行即可更新。",
+    "close": "關閉",
+    "scopeLabel": "篩選範圍"
   }
 }
