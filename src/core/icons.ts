@@ -6,11 +6,13 @@ export const ICON_NAMES = [
   // 時間軸生活插畫
   'wake', 'sleep', 'study', 'work', 'rest', 'meal', 'shopping', 'exercise', 'health', 'default',
   // 導覽
-  'today', 'calendar', 'pin', 'tasks', 'settings', 'reminders', 'search', 'subscription',
+  'today', 'calendar', 'pin', 'tasks', 'settings', 'reminders', 'search', 'subscription', 'inventory',
   // 通用
-  'close', 'check', 'user', 'sun', 'cloudSun', 'moon', 'cloud', 'clock', 'card', 'receipt',
+  'close', 'check', 'user', 'sun', 'cloudSun', 'moon', 'cloud', 'clock', 'card', 'receipt', 'plus', 'minus',
   // 記帳分類
   'food', 'clothing', 'housing', 'transport', 'education', 'leisure', 'stocks', 'loan', 'box',
+  // 庫存分類
+  'toothbrush', 'lotion', 'pencil',
   // 地點分類
   'dessert', 'cafe', 'drinks', 'clinic', 'convenience', 'bookstore', 'park', 'attraction', 'school', 'market',
 ] as const

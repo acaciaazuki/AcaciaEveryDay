@@ -9,6 +9,9 @@ import { CommandPalette } from '../components/CommandPalette'
 import { ReminderBanner } from '../components/ReminderBanner'
 import { SyncPanel } from '../components/SyncPanel'
 import { useReminderMonitor } from '../hooks/useReminderMonitor'
+import { useNow } from '../hooks/useNow'
+import { toLocalISO } from '../core/date'
+import { isDue, isLow } from '../core/inventory'
 import { useAppStore } from '../store/useAppStore'
 
 const MAIN = [
@@ -26,6 +29,9 @@ const linkClass = ({ isActive }: { isActive: boolean }) =>
 export function Layout() {
   const { t } = useTranslation()
   const openTasks = useAppStore((s) => s.tasks.filter((x) => !x.done).length)
+  const todayISO = toLocalISO(useNow())
+  // 側邊欄提示：要汰換／即期或待補貨的用品數
+  const invAlerts = useAppStore((s) => s.inventory.filter((x) => isLow(x) || isDue(x, todayISO)).length)
   const [searchOpen, setSearchOpen] = useState(false)
   useFontScale()
   useReminderMonitor()
@@ -73,6 +79,15 @@ export function Layout() {
           <NavLink to="/subscriptions" className={linkClass}>
             <Icon name="subscription" className="size-[1.9em]" />
             {t('nav.subscriptions')}
+          </NavLink>
+          <NavLink to="/inventory" className={linkClass}>
+            <Icon name="inventory" className="size-[1.9em]" />
+            {t('nav.inventory')}
+            {invAlerts > 0 && (
+              <span className="ml-auto rounded-full bg-[#ffe6d1] px-2 py-0.5 text-[length:calc(10px*var(--fs))] font-bold text-[#b4532a]" title={t('inv.navBadge', { count: invAlerts })}>
+                {invAlerts}
+              </span>
+            )}
           </NavLink>
         </nav>
         <div className="mt-auto grid gap-3">

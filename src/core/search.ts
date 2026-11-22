@@ -1,6 +1,6 @@
-import type { Archive, CalendarEvent, Expense, Place, Subscription, Task } from './schema'
+import type { Archive, CalendarEvent, Expense, InventoryItem, Place, Subscription, Task } from './schema'
 
-export const SEARCH_SCOPES = ['all', 'events', 'tasks', 'shopping', 'places', 'subscriptions'] as const
+export const SEARCH_SCOPES = ['all', 'events', 'tasks', 'shopping', 'places', 'subscriptions', 'inventory'] as const
 export type SearchScope = (typeof SEARCH_SCOPES)[number]
 export type SearchKind = Exclude<SearchScope, 'all'>
 
@@ -29,6 +29,7 @@ export interface SearchData {
   places: Place[]
   /** 舊的呼叫端可以不傳 */
   subscriptions?: Subscription[]
+  inventory?: InventoryItem[]
 }
 
 export interface SearchFormat {
@@ -38,6 +39,9 @@ export interface SearchFormat {
   /** 訂閱的金額（含幣別）與分類名稱；沒傳時退回簡單格式 */
   subMoney?: (s: Pick<Subscription, 'amount' | 'currency'>) => string
   subCat?: (cat: string) => string
+  /** 用品分類名稱與摘要（例如「庫存 2 包」）；沒傳時退回代碼 */
+  invCat?: (cat: string) => string
+  invMeta?: (x: InventoryItem) => string
 }
 
 /** 以空白切成多個關鍵字，每個關鍵字都要命中（任一欄位）才算符合 */
@@ -198,8 +202,32 @@ export function searchAll(data: SearchData, query: string, scope: SearchScope, f
       })
     }
 
-  // 各類內依日期新到舊（沒有日期的排在後面）；類別順序維持 行程、待辦、記帳、地點、訂閱
-  const order: SearchKind[] = ['events', 'tasks', 'shopping', 'places', 'subscriptions']
+  if (want('inventory'))
+    for (const x of data.inventory ?? []) {
+      const m = matches(
+        {
+          fields: [
+            ['title', x.name],
+            ['note', x.note],
+            ['cat', fmt.invCat?.(x.cat) ?? x.cat],
+          ],
+        },
+        tokens,
+      )
+      if (!m) continue
+      out.push({
+        key: `inv-${x.id}`,
+        kind: 'inventory',
+        id: x.id,
+        title: x.name,
+        meta: fmt.invMeta?.(x) ?? `${x.stock}${x.unit}`,
+        snippet: m === 'title' ? undefined : m,
+        path: `/inventory?open=${x.id}`,
+      })
+    }
+
+  // 各類內依日期新到舊（沒有日期的排在後面）；類別順序維持 行程、待辦、記帳、地點、訂閱、庫存
+  const order: SearchKind[] = ['events', 'tasks', 'shopping', 'places', 'subscriptions', 'inventory']
   return out.sort((a, b) => order.indexOf(a.kind) - order.indexOf(b.kind) || byDateDesc(a, b))
 }
 

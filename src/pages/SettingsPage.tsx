@@ -99,6 +99,15 @@ export function SettingsPage() {
           </Link>
         </section>
         <section className="rounded-(--radius-card) bg-paper p-6 shadow-card">
+          <h2 className="mb-1 flex items-center gap-1.5 font-bold">
+            <Icon name="inventory" /> {t('nav.inventory')}
+          </h2>
+          <p className="mb-3 text-xs text-muted">{t('inv.settingsHelp')}</p>
+          <Link to="/inventory" className="inline-block rounded-(--radius-control) border border-line bg-paper px-4 py-2.5 text-xs font-bold hover:bg-sage-light">
+            {t('inv.openPage')}
+          </Link>
+        </section>
+        <section className="rounded-(--radius-card) bg-paper p-6 shadow-card">
           <h2 className="mb-3 font-bold">{t('sync.title')}</h2>
           <SyncPanel showHelp />
         </section>

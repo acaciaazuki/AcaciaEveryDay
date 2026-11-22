@@ -17,7 +17,8 @@
       "shopping": "Budget"
     },
     "reminders": "Don’t forget",
-    "subscriptions": "Subscriptions"
+    "subscriptions": "Subscriptions",
+    "inventory": "Supplies & reminders"
   },
   "common": {
     "save": "Save",
@@ -216,7 +217,8 @@
       "yearSummary": "{{periods}} periods · {{total}}",
       "range": "{{start}} – {{end}}",
       "restore": "Restore to the list"
-    }
+    },
+    "qtyOnly": "Qty {{count}}"
   },
   "settings": {
     "eyebrow": "Language and data",
@@ -300,14 +302,16 @@
       "tasks": "Later",
       "shopping": "Shopping",
       "places": "Places",
-      "subscriptions": "Subscriptions"
+      "subscriptions": "Subscriptions",
+      "inventory": "Supplies"
     },
     "badge": {
       "events": "Event",
       "tasks": "Task",
       "shopping": "Expense",
       "places": "Place",
-      "subscriptions": "Subscription"
+      "subscriptions": "Subscription",
+      "inventory": "Supply"
     },
     "field": {
       "title": "Name",
@@ -534,5 +538,124 @@
     "planSuggest": "Pro|Plus|Student|Trial|Family share|Family plan",
     "paymentSuggest": "Credit card|Apple Pay|Google Pay|PayPal|Bank transfer",
     "samplePayment": "Credit card"
+  },
+  "inv": {
+    "eyebrow": "Know what's in the cupboard",
+    "title": "Supplies & reminders",
+    "add": "+ Add item",
+    "openPage": "Open supplies & reminders",
+    "settingsHelp": "Track replacement cycles, stock and expiry dates for everyday supplies, and add what's running low to your shopping list in one tap.",
+    "navBadge": "{{count}} need attention",
+    "defaultUnit": "pcs",
+    "unitSuggest": "pcs|pack|bottle|box|roll|tube|set",
+    "searchMeta": "In stock: {{count}} {{unit}}",
+    "board": {
+      "title": "Take it slow, everything will work out",
+      "text": "What needs replacing and what's running low, noted for you.",
+      "due": "Replace / expiring",
+      "low": "Low stock / restock",
+      "total": "Items tracked",
+      "unit": "{{count}}"
+    },
+    "list": {
+      "title": "Supplies",
+      "count": "{{count}} total",
+      "filter": "Filter items",
+      "search": "Search items",
+      "searchPlaceholder": "Search by name, category or note…",
+      "empty": "No items yet. Add one, or load the samples to take a look.",
+      "loadSamples": "Load sample data",
+      "noMatch": "No items match"
+    },
+    "filter": {
+      "all": "All",
+      "due": "Replace / expiring",
+      "low": "Restock",
+      "ok": "Well stocked"
+    },
+    "badge": {
+      "low": "Restock",
+      "enough": "Well stocked"
+    },
+    "due": {
+      "replace": "Next replacement",
+      "expiry": "Unopened expiry",
+      "pao": "After opening",
+      "everyDays": "Every {{count}} days",
+      "paoDetail": "{{months}} months after opening",
+      "overdue": "{{count}} days overdue",
+      "today": "Due today",
+      "inDays": "{{count}} days left",
+      "progress": "Replacement cycle progress for {{name}}"
+    },
+    "stock": {
+      "label": "Stock",
+      "min": "Safety stock {{count}} {{unit}}",
+      "use": "Use -1",
+      "add": "Add +1",
+      "useAria": "Use one {{name}}",
+      "addAria": "Add one {{name}}"
+    },
+    "action": {
+      "replaced": "Replaced today",
+      "addToList": "+ Add to shopping list ({{count}} {{unit}})",
+      "inList": "On shopping list ({{count}} {{unit}})",
+      "restock": "Bought, add to stock +{{count}} {{unit}}"
+    },
+    "toast": {
+      "added": "Added to shopping list: {{name}} × {{count}} {{unit}}",
+      "restocked": "Added to stock: {{name}} +{{count}} {{unit}}",
+      "replaced": "Replacement logged: {{name}}, countdown restarted"
+    },
+    "cat": {
+      "personal": "Personal care",
+      "home": "Household",
+      "kitchen": "Kitchen",
+      "health": "Health",
+      "skincare": "Skincare",
+      "stationery": "Stationery",
+      "other": "Other"
+    },
+    "form": {
+      "newTitle": "Add item",
+      "editTitle": "Edit item",
+      "name": "Item name",
+      "namePlaceholder": "e.g. toothbrush, toothpaste, tissues, shampoo, dish soap",
+      "nameRequired": "Please enter an item name",
+      "cat": "Category",
+      "stockSection": "Stock",
+      "stock": "In stock",
+      "minStock": "Safety stock",
+      "unit": "Unit",
+      "cycleSection": "Replacement reminder (optional)",
+      "lastReplaced": "Last replaced",
+      "cycleDays": "Cycle (days)",
+      "cyclePlaceholder": "e.g. 30, 90",
+      "expirySection": "Expiry (optional)",
+      "expiry": "Unopened expiry date",
+      "openedDate": "Opened on",
+      "paoMonths": "Usable after opening (months)",
+      "paoPlaceholder": "e.g. 6, 12",
+      "note": "Note",
+      "deleteConfirm": "Delete \"{{name}}\"?"
+    },
+    "sample": {
+      "sponge": {
+        "name": "Dish sponge",
+        "unit": "pcs"
+      },
+      "toothbrush": {
+        "name": "Toothbrush",
+        "unit": "pcs"
+      },
+      "tissue": {
+        "name": "Facial tissues",
+        "unit": "pack"
+      },
+      "bodywash": {
+        "name": "Body wash",
+        "unit": "bottle"
+      }
+    }
   }
 }
