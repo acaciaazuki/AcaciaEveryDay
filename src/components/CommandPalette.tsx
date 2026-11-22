@@ -80,7 +80,7 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
 function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
-  const { events, tasks, shopping, archives, places, subscriptions } = useAppStore()
+  const { events, tasks, shopping, archives, places, subscriptions, inventory } = useAppStore()
   const [query, setQuery] = useState('')
   const [scope, setScope] = useState<SearchScope>('all')
   const [recent, setRecent] = useState<string[]>(loadRecent)
@@ -89,24 +89,28 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
   const tokens = useMemo(() => tokenize(query), [query])
   const hits = useMemo(
     () =>
-      searchAll({ events, tasks, shopping, archives, places, subscriptions }, query, scope, {
+      searchAll({ events, tasks, shopping, archives, places, subscriptions, inventory }, query, scope, {
         money: (n) => formatMoney(n, lng),
         expenseCat: (e) => (e.cat === 'other' && e.customCat ? e.customCat : t(`expenseCat.${e.cat}`)),
         placeCat: (c) => t(`placeCat.${c}`),
         subMoney: (x) => formatCurrency(x.amount, x.currency, lng),
         subCat: (c) => t(`subs.cat.${c}`),
+        invCat: (c) => t(`inv.cat.${c}`),
+        invMeta: (x) => t('inv.searchMeta', { count: x.stock, unit: x.unit || t('inv.defaultUnit') }),
       }),
     // eslint 無法追 t 的穩定性；語系變了就重算
-    [events, tasks, shopping, archives, places, subscriptions, query, scope, lng, t],
+    [events, tasks, shopping, archives, places, subscriptions, inventory, query, scope, lng, t],
   )
 
   const counts = useMemo(() => {
-    const all = searchAll({ events, tasks, shopping, archives, places, subscriptions }, query, 'all', {
+    const all = searchAll({ events, tasks, shopping, archives, places, subscriptions, inventory }, query, 'all', {
       money: (n) => formatMoney(n, lng),
       expenseCat: (e) => (e.cat === 'other' && e.customCat ? e.customCat : t(`expenseCat.${e.cat}`)),
       placeCat: (c) => t(`placeCat.${c}`),
       subMoney: (x) => formatCurrency(x.amount, x.currency, lng),
       subCat: (c) => t(`subs.cat.${c}`),
+      invCat: (c) => t(`inv.cat.${c}`),
+      invMeta: (x) => t('inv.searchMeta', { count: x.stock, unit: x.unit || t('inv.defaultUnit') }),
     })
     const c: Record<SearchScope, number> = {
       all: all.length,
@@ -115,10 +119,11 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
       shopping: 0,
       places: 0,
       subscriptions: 0,
+      inventory: 0,
     }
     for (const h of all) c[h.kind]++
     return c
-  }, [events, tasks, shopping, archives, places, subscriptions, query, lng, t])
+  }, [events, tasks, shopping, archives, places, subscriptions, inventory, query, lng, t])
 
   const remember = () => {
     const q = query.trim()
@@ -201,6 +206,7 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
             <Command.Item key={h.key} value={h.key} onSelect={() => go(h)} className={item}>
               <span className={`${badge} inline-flex items-center gap-1`}>
                 {h.kind === 'subscriptions' && <Icon name="subscription" className="size-[1.7em]" />}
+                {h.kind === 'inventory' && <Icon name="inventory" className="size-[1.7em]" />}
                 {h.kind === 'places' && <Icon name={PLACE_CATEGORIES[(places.find((p) => p.id === h.id)?.cat ?? 'other') as PlaceCategory]?.icon ?? 'pin'} className="size-[1.7em]" />}
                 {badgeLabel(h.kind)}
               </span>

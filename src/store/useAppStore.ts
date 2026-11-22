@@ -2,8 +2,9 @@ import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { webStorage } from '../adapters/storage'
 import { archiveCurrent, archiveEnded, restoreArchive as restoreArchiveData } from '../core/archive'
+import { INV_TO_EXPENSE, restockQty } from '../core/inventory'
 import { migrate } from '../core/migrate'
-import { emptyAppData, newId, type AppData, type FontSize, type CalendarEvent, type Expense, type Place, type Reminder, type Subscription, type Task } from '../core/schema'
+import { emptyAppData, newId, type AppData, type FontSize, type CalendarEvent, type Expense, type InventoryItem, type Place, type Reminder, type Subscription, type Task } from '../core/schema'
 
 type TaskInput = Omit<Task, 'id' | 'done'>
 type ExpenseInput = Omit<Expense, 'id' | 'done'>
@@ -11,6 +12,7 @@ type EventInput = Omit<CalendarEvent, 'id'>
 type PlaceInput = Omit<Place, 'id'>
 type ReminderInput = Omit<Reminder, 'id'>
 export type SubscriptionInput = Omit<Subscription, 'id'>
+export type InventoryInput = Omit<InventoryItem, 'id'>
 
 interface Actions {
   addEvent: (input: EventInput) => void
@@ -39,6 +41,22 @@ interface Actions {
    * 新裝置登入時雲端資料仍然會優先。
    */
   seedSubscriptions: (inputs: SubscriptionInput[]) => void
+  addInventory: (input: InventoryInput) => void
+  updateInventory: (id: string, patch: Partial<InventoryInput>) => void
+  removeInventory: (id: string) => void
+  /** 使用 −1／補充 +1；庫存不會小於 0 */
+  adjustStock: (id: string, delta: number) => void
+  /** 今天更換了：上次更換日改成今天，重新開始倒數 */
+  markReplaced: (id: string, todayISO: string) => void
+  /**
+   * 把待補貨的用品寫進購物清單（記帳清單的一筆：品名＋建議數量，金額先記 0），
+   * 並記下連結。已經在清單中（還沒買）就不重複加入。回傳加入的數量，沒加入回傳 0
+   */
+  addInventoryToShopping: (id: string, todayISO: string, time: string) => number
+  /** 購物清單那一筆已打勾：把買到的數量補進庫存，並解除連結。回傳補進的數量 */
+  restockFromShopping: (id: string) => number
+  /** 第一次進入庫存頁時帶入範例；跟訂閱一樣不更新 updatedAt */
+  seedInventory: (inputs: InventoryInput[]) => void
   setFontSize: (size: FontSize) => void
   /** 歸檔記帳：'ended' 把已結束週期的記帳收進年度記帳本，'current' 立即封存本期。回傳歸檔的筆數 */
   archiveShopping: (mode: 'ended' | 'current', todayISO: string) => number
@@ -102,6 +120,52 @@ export const useAppStore = create<AppState>()(
           s.subscriptionsSeeded ? {} : { subscriptions: [...s.subscriptions, ...inputs.map((i) => ({ id: newId(), ...i }))], subscriptionsSeeded: true },
         ),
 
+      addInventory: (input) =>
+        setState((s) => ({ inventory: [{ id: newId(), ...input }, ...s.inventory], inventorySeeded: true, ...touch() })),
+      updateInventory: (id, patch) =>
+        setState((s) => ({ inventory: s.inventory.map((x) => (x.id === id ? { ...x, ...patch } : x)), ...touch() })),
+      removeInventory: (id) => setState((s) => ({ inventory: s.inventory.filter((x) => x.id !== id), ...touch() })),
+      adjustStock: (id, delta) =>
+        setState((s) => ({ inventory: s.inventory.map((x) => (x.id === id ? { ...x, stock: Math.max(0, x.stock + delta) } : x)), ...touch() })),
+      markReplaced: (id, todayISO) =>
+        setState((s) => ({ inventory: s.inventory.map((x) => (x.id === id ? { ...x, lastReplaced: todayISO } : x)), ...touch() })),
+      addInventoryToShopping: (id, todayISO, time) => {
+        const { inventory, shopping } = getState()
+        const item = inventory.find((x) => x.id === id)
+        if (!item) return 0
+        const linked = item.shoppingId ? shopping.find((e) => e.id === item.shoppingId) : undefined
+        if (linked && !linked.done) return 0
+        const quantity = restockQty(item)
+        const expense: Expense = {
+          id: newId(),
+          title: item.name,
+          amt: 0,
+          store: '',
+          cat: INV_TO_EXPENSE[item.cat],
+          quantity,
+          date: todayISO,
+          time,
+          done: false,
+        }
+        setState((s) => ({
+          shopping: [expense, ...s.shopping],
+          inventory: s.inventory.map((x) => (x.id === id ? { ...x, shoppingId: expense.id } : x)),
+          ...touch(),
+        }))
+        return quantity
+      },
+      restockFromShopping: (id) => {
+        const { inventory, shopping } = getState()
+        const item = inventory.find((x) => x.id === id)
+        const linked = item?.shoppingId ? shopping.find((e) => e.id === item.shoppingId) : undefined
+        if (!item || !linked) return 0
+        const qty = linked.quantity && linked.quantity > 0 ? linked.quantity : 1
+        setState((s) => ({ inventory: s.inventory.map((x) => (x.id === id ? { ...x, stock: x.stock + qty, shoppingId: undefined } : x)), ...touch() }))
+        return qty
+      },
+      seedInventory: (inputs) =>
+        setState((s) => (s.inventorySeeded ? {} : { inventory: [...s.inventory, ...inputs.map((i) => ({ id: newId(), ...i }))], inventorySeeded: true })),
+
       setFontSize: (fontSize) => setState((s) => ({ settings: { ...s.settings, fontSize }, ...touch() })),
 
       archiveShopping: (mode, todayISO) => {
@@ -119,8 +183,8 @@ export const useAppStore = create<AppState>()(
 
       importData: (raw) => setState(migrate(raw)),
       exportData: () => {
-        const { schemaVersion, settings, events, tasks, shopping, places, favorites, reminders, archives, subscriptions, subscriptionsSeeded, updatedAt } = getState()
-        return { schemaVersion, settings, events, tasks, shopping, places, favorites, reminders, archives, subscriptions, subscriptionsSeeded, updatedAt }
+        const { schemaVersion, settings, events, tasks, shopping, places, favorites, reminders, archives, subscriptions, subscriptionsSeeded, inventory, inventorySeeded, updatedAt } = getState()
+        return { schemaVersion, settings, events, tasks, shopping, places, favorites, reminders, archives, subscriptions, subscriptionsSeeded, inventory, inventorySeeded, updatedAt }
       },
     }),
     {

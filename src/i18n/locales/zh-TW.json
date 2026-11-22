@@ -17,7 +17,8 @@
       "shopping": "記帳"
     },
     "reminders": "防遺漏提醒",
-    "subscriptions": "訂閱與續費"
+    "subscriptions": "訂閱與續費",
+    "inventory": "庫存與提醒"
   },
   "common": {
     "save": "儲存",
@@ -216,7 +217,8 @@
       "yearSummary": "共 {{periods}} 期 · {{total}}",
       "range": "{{start}} – {{end}}",
       "restore": "還原到記帳清單"
-    }
+    },
+    "qtyOnly": "數量 {{count}}"
   },
   "settings": {
     "eyebrow": "語言與資料",
@@ -300,14 +302,16 @@
       "tasks": "稍後辦",
       "shopping": "購物記帳",
       "places": "最愛地點",
-      "subscriptions": "訂閱"
+      "subscriptions": "訂閱",
+      "inventory": "庫存"
     },
     "badge": {
       "events": "行程",
       "tasks": "待辦",
       "shopping": "記帳",
       "places": "地點",
-      "subscriptions": "訂閱"
+      "subscriptions": "訂閱",
+      "inventory": "庫存"
     },
     "field": {
       "title": "名稱",
@@ -534,5 +538,124 @@
     "planSuggest": "Pro|Plus|學生|試用|親友分享|家庭方案",
     "paymentSuggest": "信用卡|Apple Pay|Google Pay|LINE Pay|街口支付|銀行轉帳",
     "samplePayment": "信用卡"
+  },
+  "inv": {
+    "eyebrow": "家裡的備品，心裡有數",
+    "title": "庫存與提醒",
+    "add": "＋ 新增用品",
+    "openPage": "前往庫存與提醒",
+    "settingsHelp": "追蹤牙刷、衛生紙等耗材的更換週期、庫存與有效期限，不夠時一鍵加入購物清單。",
+    "navBadge": "{{count}} 項需要注意",
+    "defaultUnit": "個",
+    "unitSuggest": "個|支|包|瓶|盒|捲|條|片|組",
+    "searchMeta": "庫存 {{count}} {{unit}}",
+    "board": {
+      "title": "慢慢來，一切都會剛剛好",
+      "text": "該換的、快用完的，都先幫你記著。",
+      "due": "請汰換 / 即期",
+      "low": "庫存不足 / 待補貨",
+      "total": "管理用品總數",
+      "unit": "{{count}} 項"
+    },
+    "list": {
+      "title": "用品清單",
+      "count": "共 {{count}} 項",
+      "filter": "篩選用品",
+      "search": "搜尋用品",
+      "searchPlaceholder": "搜尋名稱、分類或備註…",
+      "empty": "還沒有用品。新增一項，或先載入範例看看。",
+      "loadSamples": "載入範例資料",
+      "noMatch": "沒有符合條件的用品"
+    },
+    "filter": {
+      "all": "全部",
+      "due": "請汰換 / 即期",
+      "low": "需補貨",
+      "ok": "庫存充足"
+    },
+    "badge": {
+      "low": "待補貨",
+      "enough": "庫存充足"
+    },
+    "due": {
+      "replace": "下次更換",
+      "expiry": "未開封期限",
+      "pao": "開封後期限",
+      "everyDays": "每 {{count}} 天",
+      "paoDetail": "開封後 {{months}} 個月",
+      "overdue": "已逾期 {{count}} 天",
+      "today": "今天到期",
+      "inDays": "還有 {{count}} 天",
+      "progress": "{{name}} 的更換週期進度"
+    },
+    "stock": {
+      "label": "庫存",
+      "min": "安全庫存 {{count}} {{unit}}",
+      "use": "使用 -1",
+      "add": "補充 +1",
+      "useAria": "{{name}} 使用 -1",
+      "addAria": "{{name}} 補充 +1"
+    },
+    "action": {
+      "replaced": "今天已更換",
+      "addToList": "＋ 加入購物清單（{{count}} {{unit}}）",
+      "inList": "已在購物清單中（{{count}} {{unit}}）",
+      "restock": "已買到，補進庫存 +{{count}} {{unit}}"
+    },
+    "toast": {
+      "added": "已加入購物清單：{{name}} × {{count}} {{unit}}",
+      "restocked": "已補進庫存：{{name}} +{{count}} {{unit}}",
+      "replaced": "已記錄更換：{{name}}，重新開始倒數"
+    },
+    "cat": {
+      "personal": "個人護理",
+      "home": "居家日用",
+      "kitchen": "廚房耗材",
+      "health": "健康醫療",
+      "skincare": "保養護膚",
+      "stationery": "文具用品",
+      "other": "其他"
+    },
+    "form": {
+      "newTitle": "新增用品",
+      "editTitle": "編輯用品",
+      "name": "用品名稱",
+      "namePlaceholder": "例如：牙刷、牙膏、衛生紙、洗髮精、洗碗精",
+      "nameRequired": "請輸入用品名稱",
+      "cat": "分類",
+      "stockSection": "備品庫存",
+      "stock": "目前庫存",
+      "minStock": "安全庫存",
+      "unit": "單位",
+      "cycleSection": "更換週期提醒（選填）",
+      "lastReplaced": "上次更換日期",
+      "cycleDays": "更換週期（天）",
+      "cyclePlaceholder": "例如 30、90",
+      "expirySection": "有效期限（選填）",
+      "expiry": "未開封有效期限",
+      "openedDate": "開封日期",
+      "paoMonths": "開封後可用（月）",
+      "paoPlaceholder": "例如 6、12",
+      "note": "備註",
+      "deleteConfirm": "確定要刪除「{{name}}」嗎？"
+    },
+    "sample": {
+      "sponge": {
+        "name": "洗碗海綿",
+        "unit": "個"
+      },
+      "toothbrush": {
+        "name": "牙刷",
+        "unit": "支"
+      },
+      "tissue": {
+        "name": "抽取式衛生紙",
+        "unit": "包"
+      },
+      "bodywash": {
+        "name": "沐浴乳",
+        "unit": "瓶"
+      }
+    }
   }
 }

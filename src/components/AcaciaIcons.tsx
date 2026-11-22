@@ -142,6 +142,14 @@ const ART: Record<IconName, ReactNode> = {
       <path d="M8.2 11.2h7.6" />
     </>
   ),
+  inventory: (
+    <>
+      <rect x="3.5" y="11" width="8" height="8.5" rx="1.8" fill="#cfeadb" />
+      <rect x="12.5" y="11" width="8" height="8.5" rx="1.8" fill="#fff1c1" />
+      <rect x="8" y="3.5" width="8" height="7.5" rx="1.8" fill="#e4dbfa" />
+      <path d="M10.6 3.5v2.6h2.8V3.5M6.1 11v2.6h2.8V11M15.1 11v2.6h2.8V11" />
+    </>
+  ),
 
   // ---- 通用 ----
   close: <path d="M6.5 6.5l11 11M17.5 6.5l-11 11" />,
@@ -180,6 +188,8 @@ const ART: Record<IconName, ReactNode> = {
       <rect x="6" y="13.2" width="4.4" height="2.4" rx="1" fill="#fff7dc" />
     </>
   ),
+  plus: <path d="M12 6v12M6 12h12" />,
+  minus: <path d="M6 12h12" />,
   receipt: (
     <>
       <path d="M6 3.5h12v17l-2-1.4-2 1.4-2-1.4-2 1.4-2-1.4-2 1.4z" fill="#fff1c1" />
@@ -238,6 +248,28 @@ const ART: Record<IconName, ReactNode> = {
     <>
       <path d="M4 8.2L12 4l8 4.2v8.6L12 21l-8-4.2z" fill="#e6ecef" />
       <path d="M4 8.2L12 12.4l8-4.2M12 12.4V21" />
+    </>
+  ),
+
+  // ---- 庫存分類（居家＝housing、廚房＝meal、健康＝health、其他＝box 共用上面的圖） ----
+  toothbrush: (
+    <>
+      <rect x="10.2" y="9.5" width="3.6" height="11.5" rx="1.8" fill="#cfe4f6" />
+      <path d="M9.6 3v5.6h4.8V3" fill="#fff7dc" />
+      <path d="M11.2 3v4M12.8 3v4" />
+    </>
+  ),
+  lotion: (
+    <>
+      <path d="M10 3.5h4M12 3.5v3.2M9.6 6.7h4.8" />
+      <rect x="7" y="8.5" width="10" height="12" rx="3" fill="#fbd8e6" />
+      <rect x="9.4" y="12" width="5.2" height="4.4" rx="1.2" fill="#fff7dc" />
+    </>
+  ),
+  pencil: (
+    <>
+      <path d="M15.6 4.4l4 4L9 19l-5 1 1-5z" fill="#fff1c1" />
+      <path d="M13.2 6.8l4 4M5 15l4 4" />
     </>
   ),
 

@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router'
 import { CalendarPage } from '../pages/CalendarPage'
+import { InventoryPage } from '../pages/InventoryPage'
 import { PlacesPage } from '../pages/PlacesPage'
 import { RemindersPage } from '../pages/RemindersPage'
 import { SettingsPage } from '../pages/SettingsPage'
@@ -21,6 +22,7 @@ export const router = createBrowserRouter([
       { path: 'shopping', Component: ShoppingPage },
       { path: 'reminders', Component: RemindersPage },
       { path: 'subscriptions', Component: SubscriptionsPage },
+      { path: 'inventory', Component: InventoryPage },
       { path: 'settings', Component: SettingsPage },
     ],
   },

@@ -17,7 +17,8 @@
       "shopping": "家計簿"
     },
     "reminders": "忘れ物防止",
-    "subscriptions": "サブスク・更新"
+    "subscriptions": "サブスク・更新",
+    "inventory": "ストック・期限"
   },
   "common": {
     "save": "保存",
@@ -216,7 +217,8 @@
       "yearSummary": "全{{periods}}期 · {{total}}",
       "range": "{{start}} – {{end}}",
       "restore": "記録リストに戻す"
-    }
+    },
+    "qtyOnly": "数量 {{count}}"
   },
   "settings": {
     "eyebrow": "言語とデータ",
@@ -300,14 +302,16 @@
       "tasks": "あとで",
       "shopping": "買い物・家計",
       "places": "お気に入りの場所",
-      "subscriptions": "サブスク"
+      "subscriptions": "サブスク",
+      "inventory": "ストック"
     },
     "badge": {
       "events": "予定",
       "tasks": "タスク",
       "shopping": "家計",
       "places": "場所",
-      "subscriptions": "サブスク"
+      "subscriptions": "サブスク",
+      "inventory": "ストック"
     },
     "field": {
       "title": "名前",
@@ -534,5 +538,124 @@
     "planSuggest": "Pro|Plus|学割|お試し|ファミリー共有|家族プラン",
     "paymentSuggest": "クレジットカード|Apple Pay|Google Pay|PayPay|LINE Pay|口座振替",
     "samplePayment": "クレジットカード"
+  },
+  "inv": {
+    "eyebrow": "おうちのストック、ちゃんと把握",
+    "title": "ストック・期限",
+    "add": "＋ アイテムを追加",
+    "openPage": "ストック・期限へ",
+    "settingsHelp": "歯ブラシやティッシュなど消耗品の交換周期・在庫・使用期限を管理し、足りないときは買い物リストへワンタップで追加。",
+    "navBadge": "{{count}} 件の確認が必要",
+    "defaultUnit": "個",
+    "unitSuggest": "個|本|袋|箱|ロール|枚|セット",
+    "searchMeta": "在庫 {{count}} {{unit}}",
+    "board": {
+      "title": "ゆっくりで大丈夫、ちょうどよくなるから",
+      "text": "替えどきも、残りわずかも、先に覚えておきます。",
+      "due": "交換・期限間近",
+      "low": "在庫不足・要補充",
+      "total": "管理中のアイテム",
+      "unit": "{{count}} 件"
+    },
+    "list": {
+      "title": "アイテム一覧",
+      "count": "全 {{count}} 件",
+      "filter": "アイテムを絞り込む",
+      "search": "アイテムを検索",
+      "searchPlaceholder": "名前・カテゴリ・メモで検索…",
+      "empty": "まだアイテムがありません。追加するか、サンプルを読み込んでみてください。",
+      "loadSamples": "サンプルを読み込む",
+      "noMatch": "条件に合うアイテムがありません"
+    },
+    "filter": {
+      "all": "すべて",
+      "due": "交換・期限間近",
+      "low": "要補充",
+      "ok": "在庫十分"
+    },
+    "badge": {
+      "low": "要補充",
+      "enough": "在庫十分"
+    },
+    "due": {
+      "replace": "次の交換",
+      "expiry": "未開封の期限",
+      "pao": "開封後の期限",
+      "everyDays": "{{count}} 日ごと",
+      "paoDetail": "開封後 {{months}} か月",
+      "overdue": "{{count}} 日超過",
+      "today": "今日まで",
+      "inDays": "あと {{count}} 日",
+      "progress": "{{name}} の交換周期の進み具合"
+    },
+    "stock": {
+      "label": "在庫",
+      "min": "安全在庫 {{count}} {{unit}}",
+      "use": "使う -1",
+      "add": "補充 +1",
+      "useAria": "{{name}} を使う -1",
+      "addAria": "{{name}} を補充 +1"
+    },
+    "action": {
+      "replaced": "今日交換した",
+      "addToList": "＋ 買い物リストに追加（{{count}} {{unit}}）",
+      "inList": "買い物リストに追加済み（{{count}} {{unit}}）",
+      "restock": "購入済み、在庫に追加 +{{count}} {{unit}}"
+    },
+    "toast": {
+      "added": "買い物リストに追加しました：{{name}} × {{count}} {{unit}}",
+      "restocked": "在庫に追加しました：{{name}} +{{count}} {{unit}}",
+      "replaced": "交換を記録しました：{{name}}、カウントをリセット"
+    },
+    "cat": {
+      "personal": "パーソナルケア",
+      "home": "日用品",
+      "kitchen": "キッチン消耗品",
+      "health": "健康・医療",
+      "skincare": "スキンケア",
+      "stationery": "文房具",
+      "other": "その他"
+    },
+    "form": {
+      "newTitle": "アイテムを追加",
+      "editTitle": "アイテムを編集",
+      "name": "アイテム名",
+      "namePlaceholder": "例：歯ブラシ、歯みがき粉、ティッシュ、シャンプー、食器用洗剤",
+      "nameRequired": "アイテム名を入力してください",
+      "cat": "カテゴリ",
+      "stockSection": "ストック",
+      "stock": "現在の在庫",
+      "minStock": "安全在庫",
+      "unit": "単位",
+      "cycleSection": "交換周期のリマインド（任意）",
+      "lastReplaced": "前回の交換日",
+      "cycleDays": "交換周期（日）",
+      "cyclePlaceholder": "例：30、90",
+      "expirySection": "使用期限（任意）",
+      "expiry": "未開封の使用期限",
+      "openedDate": "開封日",
+      "paoMonths": "開封後の使用期間（か月）",
+      "paoPlaceholder": "例：6、12",
+      "note": "メモ",
+      "deleteConfirm": "「{{name}}」を削除しますか？"
+    },
+    "sample": {
+      "sponge": {
+        "name": "食器用スポンジ",
+        "unit": "個"
+      },
+      "toothbrush": {
+        "name": "歯ブラシ",
+        "unit": "本"
+      },
+      "tissue": {
+        "name": "ボックスティッシュ",
+        "unit": "箱"
+      },
+      "bodywash": {
+        "name": "ボディソープ",
+        "unit": "本"
+      }
+    }
   }
 }

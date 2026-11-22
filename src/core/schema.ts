@@ -118,6 +118,31 @@ export const subscriptionSchema = z.object({
   note: z.string().default(''),
 })
 
+export const INV_CATEGORIES = ['personal', 'home', 'kitchen', 'health', 'skincare', 'stationery', 'other'] as const
+
+/** 庫存與到期提醒：家裡的備品與耗材（牙刷、衛生紙、洗碗精…） */
+export const inventoryItemSchema = z.object({
+  id,
+  name: z.string(),
+  cat: z.enum(INV_CATEGORIES).default('home'),
+  /** 單位（支、包、瓶…），自由輸入 */
+  unit: z.string().default(''),
+  /** 目前庫存與最低安全庫存量：庫存 ≤ 安全庫存就算待補貨 */
+  stock: z.number().min(0).default(0),
+  minStock: z.number().min(0).default(1),
+  /** 上次更換日與更換週期（天）。週期 0 代表不追蹤更換 */
+  lastReplaced: isoDate.default(''),
+  cycleDays: z.number().int().min(0).default(0),
+  /** 未開封有效期限（選填） */
+  expiry: isoDate.default(''),
+  /** 開封日與開封後可用月數（PAO，0 代表不追蹤） */
+  openedDate: isoDate.default(''),
+  paoMonths: z.number().int().min(0).default(0),
+  note: z.string().default(''),
+  /** 加入購物清單時記下那一筆的 id，用來顯示「已在購物清單中」 */
+  shoppingId: z.string().optional(),
+})
+
 /** 一個已結算的記帳週期。start 是週期開始日，同時也是這筆歸檔的識別，年度記帳本依 start 的年份歸屬 */
 export const archiveSchema = z.object({
   start: isoDate,
@@ -142,6 +167,10 @@ export const appDataSchema = z.object({
   subscriptions: z.array(subscriptionSchema).default([]),
   /** 是否已經帶入過範例訂閱（只帶一次，刪光後不會再出現） */
   subscriptionsSeeded: z.boolean().default(false),
+  /** 庫存與到期提醒；舊資料沒有這個欄位，讀進來時補空陣列 */
+  inventory: z.array(inventoryItemSchema).default([]),
+  /** 是否已經帶入過範例用品（只帶一次） */
+  inventorySeeded: z.boolean().default(false),
   updatedAt: z.number(),
 })
 
@@ -154,6 +183,8 @@ export type Subscription = z.infer<typeof subscriptionSchema>
 export type SubCycle = (typeof SUB_CYCLES)[number]
 export type SubStatus = (typeof SUB_STATUSES)[number]
 export type SubCategory = (typeof SUB_CATEGORIES)[number]
+export type InventoryItem = z.infer<typeof inventoryItemSchema>
+export type InvCategory = (typeof INV_CATEGORIES)[number]
 export type Archive = z.infer<typeof archiveSchema>
 export type Place = z.infer<typeof placeSchema>
 export type AppData = z.infer<typeof appDataSchema>
@@ -170,6 +201,8 @@ export const emptyAppData = (): AppData => ({
   archives: [],
   subscriptions: [],
   subscriptionsSeeded: false,
+  inventory: [],
+  inventorySeeded: false,
   updatedAt: 0,
 })
 
