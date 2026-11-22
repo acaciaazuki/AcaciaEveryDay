@@ -802,7 +802,7 @@
   },
   "privacy": {
     "link": "プライバシーポリシー",
-    "backToSettings": "← 設定に戻る"
+    "close": "閉じる"
   },
   "backup": {
     "title": "自動バックアップ",
