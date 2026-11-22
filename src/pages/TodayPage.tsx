@@ -6,12 +6,15 @@ import { Icon } from '../components/AcaciaIcons'
 import { EventIconBadge } from '../components/EventIcon'
 import { EventDialog } from '../components/EventDialog'
 import { PageHead } from '../components/PageHead'
+import { ShoppingBadge, ShoppingCard, ShoppingDetailDialog } from '../components/ShoppingAgenda'
 import { addDays, dateRange, toLocalISO } from '../core/date'
 import { eventIconOf } from '../core/eventIcons'
 import type { CalendarEvent } from '../core/schema'
+import { agendaOn, type AgendaItem, type ShoppingEntry } from '../core/shoppingAgenda'
 import { dayRhythm, eventsOn, greetingKey, hours } from '../core/today'
 import { formatTime, formatTimeRange, periodFirst, timeParts } from '../core/time'
 import { useNow } from '../hooks/useNow'
+import { useShoppingByDate } from '../hooks/useShoppingAgenda'
 import { useAppStore } from '../store/useAppStore'
 
 type View = 'day' | 'week' | 'two'
@@ -33,6 +36,9 @@ export function TodayPage() {
   const [editing, setEditing] = useState<CalendarEvent | 'new' | null>(null)
   const [offset, setOffset] = useState(0) // 目前看的日期，相對今天的天數
   const [view, setView] = useState<View>('day')
+  // 購物記帳連動進來的行程（唯讀）
+  const shopByDate = useShoppingByDate()
+  const [viewingShop, setViewingShop] = useState<ShoppingEntry | null>(null)
 
   const now = useNow()
   const todayISO = toLocalISO(now)
@@ -41,7 +47,9 @@ export function TodayPage() {
   const span = VIEW_DAYS[view]
   const days = dateRange(viewISO, span)
   const events = eventsOn(allEvents, viewISO)
-  const rangeCount = days.reduce((n, d) => n + eventsOn(allEvents, d).length, 0)
+  const items = agendaOn(allEvents, shopByDate, viewISO)
+  // 行程數包含購物；節奏與自由時間只看一般行程（購物記帳只有時間點，沒有結束時間）
+  const rangeCount = days.reduce((n, d) => n + agendaOn(allEvents, shopByDate, d).length, 0)
   const openTasks = tasks.filter((x) => !x.done)
   const rhythm = dayRhythm(events, WAKE, SLEEP)
   const freeMinutes = days.reduce((sum, d) => sum + dayRhythm(eventsOn(allEvents, d), WAKE, SLEEP).freeMinutes, 0)
@@ -133,15 +141,25 @@ export function TodayPage() {
             </div>
           </div>
           {view !== 'day' ? (
-            <RangeList days={days} events={allEvents} lng={lng} todayISO={todayISO} onEdit={setEditing} />
-          ) : events.length === 0 ? (
+            <RangeList days={days} agenda={(d) => agendaOn(allEvents, shopByDate, d)} lng={lng} todayISO={todayISO} onEdit={setEditing} onShop={setViewingShop} />
+          ) : items.length === 0 ? (
             <button type="button" onClick={() => setEditing('new')} className="w-full rounded-xl border border-dashed border-line py-8 text-center text-muted hover:bg-oat">
               {offset === 0 ? t('today.timelineEmpty') : t('today.timelineEmptyOther')}
             </button>
           ) : (
             <ol className="grid gap-2">
-              {events.map((e, i) => {
-                const next = events.at(i + 1)
+              {items.map((it, i) => {
+                const next = items.at(i + 1)
+                if (it.kind === 'shopping')
+                  return (
+                    <li key={it.id} className="relative grid grid-cols-[calc(48px*var(--fs))_calc(36px*var(--fs))_1fr] items-start gap-x-3">
+                      <TimelineTime hhmm={it.start} lng={lng} />
+                      <ShoppingBadge className="relative z-10 ring-4 ring-paper" />
+                      {next && <span aria-hidden className="absolute top-[calc(36px*var(--fs)+0.25rem)] -bottom-2 left-[calc(48px*var(--fs)+0.75rem+18px*var(--fs)-1px)] w-0.5 bg-[#e1eae5]" />}
+                      <ShoppingCard entry={it.entry} onOpen={setViewingShop} />
+                    </li>
+                  )
+                const e = it.event
                 const gap = next && e.end && next.start > e.end ? diffMin(e.end, next.start) : 0
                 return (
                   <li key={e.id} className="relative grid grid-cols-[calc(48px*var(--fs))_calc(36px*var(--fs))_1fr] items-start gap-x-3">
@@ -173,7 +191,7 @@ export function TodayPage() {
               })}
             </ol>
           )}
-          {(view !== 'day' || events.length > 0) && (
+          {(view !== 'day' || items.length > 0) && (
             <button type="button" onClick={() => setEditing('new')} className={`${linkBtn} mt-4`}>
               {t('today.addOne')}
             </button>
@@ -208,12 +226,16 @@ export function TodayPage() {
       </div>
 
       {editing && <EventDialog key={editing === 'new' ? 'new' : editing.id} event={editing === 'new' ? null : editing} date={viewISO} onClose={() => setEditing(null)} />}
+      {viewingShop && <ShoppingDetailDialog entry={viewingShop} onClose={() => setViewingShop(null)} />}
     </>
   )
 }
 
 /** 時間軸左側的時間：時間與 AM／PM 分兩行，窄欄位也放得下（日文「午後」在上） */
 function TimelineTime({ hhmm, lng }: { hhmm: string; lng: string | undefined }) {
+  const { t } = useTranslation()
+  // 沒有時間的購物記帳當作整天
+  if (!hhmm) return <span className="pt-1.5 text-xs leading-tight font-bold text-muted">{t('calendar.shopping.allDay')}</span>
   const p = timeParts(hhmm, lng)
   return (
     <time dateTime={hhmm} className={`flex pt-1.5 text-xs leading-tight font-bold text-muted ${periodFirst(lng) ? 'flex-col-reverse' : 'flex-col'}`}>
@@ -224,13 +246,27 @@ function TimelineTime({ hhmm, lng }: { hhmm: string; lng: string | undefined }) 
 }
 
 /** 一週／兩週檢視：依日期分組列出行程，沒有行程的日子只留一行 */
-function RangeList({ days, events, lng, todayISO, onEdit }: { days: string[]; events: CalendarEvent[]; lng: string | undefined; todayISO: string; onEdit: (e: CalendarEvent) => void }) {
+function RangeList({
+  days,
+  agenda,
+  lng,
+  todayISO,
+  onEdit,
+  onShop,
+}: {
+  days: string[]
+  agenda: (iso: string) => AgendaItem[]
+  lng: string | undefined
+  todayISO: string
+  onEdit: (e: CalendarEvent) => void
+  onShop: (x: ShoppingEntry) => void
+}) {
   const { t } = useTranslation()
   const fmt = new Intl.DateTimeFormat(lng, { month: 'numeric', day: 'numeric', weekday: 'short' })
   return (
     <ol className="grid gap-1.5">
       {days.map((d) => {
-        const evs = eventsOn(events, d)
+        const evs = agenda(d)
         const label = fmt.format(new Date(`${d}T00:00`))
         const isToday = d === todayISO
         return (
@@ -243,7 +279,15 @@ function RangeList({ days, events, lng, todayISO, onEdit }: { days: string[]; ev
               <span className="py-2 text-[length:calc(11px*var(--fs))] text-[#a5b0aa]">{t('today.rangeEmpty')}</span>
             ) : (
               <ul className="grid gap-1.5">
-                {evs.map((e) => (
+                {evs.map((it) => {
+                  if (it.kind === 'shopping')
+                    return (
+                      <li key={it.id}>
+                        <ShoppingCard compact entry={it.entry} onOpen={onShop} />
+                      </li>
+                    )
+                  const e = it.event
+                  return (
                   <li key={e.id}>
                     <button
                       type="button"
@@ -259,7 +303,8 @@ function RangeList({ days, events, lng, todayISO, onEdit }: { days: string[]; ev
                       </small>
                     </button>
                   </li>
-                ))}
+                  )
+                })}
               </ul>
             )}
           </li>

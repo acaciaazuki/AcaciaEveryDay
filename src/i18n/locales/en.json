@@ -103,6 +103,19 @@
       "nameRequired": "Please enter a name",
       "datesRequired": "Pick at least one day",
       "note": "Added in bulk"
+    },
+    "shopping": {
+      "tag": "Shopping",
+      "linkedTitle": "Linked shopping entry",
+      "readOnlyHint": "This entry is synced from Shopping & Ledger and is view-only in the calendar. Change its time, amount or name, or delete it, in the shopping list and the calendar updates automatically.",
+      "archivedHint": "This entry is in the yearly ledger and is view-only in the calendar. To change it, restore it to the list from the ledger first.",
+      "goEdit": "Edit in shopping list",
+      "goView": "View in ledger",
+      "close": "Close",
+      "allDay": "All day",
+      "done": "Done",
+      "archived": "Archived",
+      "status": "Status"
     }
   },
   "places": {

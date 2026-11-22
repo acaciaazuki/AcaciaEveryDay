@@ -5,12 +5,14 @@ import { Button } from '../components/Button'
 import { EventDialog } from '../components/EventDialog'
 import { MonthNav } from '../components/MonthNav'
 import { PageHead } from '../components/PageHead'
+import { ShoppingCard, ShoppingChip, ShoppingDetailDialog } from '../components/ShoppingAgenda'
 import { monthCells, shiftMonth, weekdayNames } from '../core/calendar'
 import { toLocalISO } from '../core/date'
 import type { CalendarEvent } from '../core/schema'
 import { formatTime, formatTimeRange } from '../core/time'
-import { eventsOn } from '../core/today'
+import { agendaOn, type ShoppingEntry } from '../core/shoppingAgenda'
 import { useNow } from '../hooks/useNow'
+import { SHOP_STYLE, useShoppingByDate } from '../hooks/useShoppingAgenda'
 import { useOpenFromUrl } from '../hooks/useOpenFromUrl'
 import { useAppStore } from '../store/useAppStore'
 
@@ -27,6 +29,9 @@ export function CalendarPage() {
   const [selected, setSelected] = useState(todayISO)
   const [editing, setEditing] = useState<CalendarEvent | 'new' | null>(null)
   const [batchOpen, setBatchOpen] = useState(false)
+  // 購物記帳連動進來的行程：只能看，點開是唯讀詳情
+  const shopByDate = useShoppingByDate()
+  const [viewingShop, setViewingShop] = useState<ShoppingEntry | null>(null)
   useOpenFromUrl(events, (e) => {
     const [y, m] = e.dateISO.split('-').map(Number)
     if (y && m) setYm({ year: y, month: m - 1 })
@@ -35,7 +40,7 @@ export function CalendarPage() {
   })
 
   const cells = monthCells(ym.year, ym.month)
-  const dayEvents = eventsOn(events, selected)
+  const dayItems = agendaOn(events, shopByDate, selected)
   const selectedLabel = new Intl.DateTimeFormat(i18n.resolvedLanguage, { dateStyle: 'full' }).format(new Date(`${selected}T00:00`))
 
   return (
@@ -74,7 +79,7 @@ export function CalendarPage() {
               if (!iso) return <div key={`pad-${i}`} />
               // 每週從星期日開始，第 0 欄是日、第 6 欄是六
               const weekend = i % 7 === 0 || i % 7 === 6
-              const evs = eventsOn(events, iso)
+              const evs = agendaOn(events, shopByDate, iso)
               const isSel = iso === selected
               const isToday = iso === todayISO
               return (
@@ -92,12 +97,15 @@ export function CalendarPage() {
                   <div className={`mb-1 grid size-6 place-items-center rounded-full text-xs font-bold ${isToday ? 'bg-sage text-white' : ''}`}>{Number(iso.slice(8))}</div>
                   {/* 手機寬度只顯示圓點，桌面顯示行程標籤 */}
                   <div className="flex flex-wrap gap-0.5 sm:hidden">
-                    {evs.slice(0, 4).map((e) => (
-                      <span key={e.id} className="size-1.5 rounded-full" style={{ background: e.titleColor || '#4a987b' }} />
+                    {evs.slice(0, 4).map((it) => (
+                      <span key={it.id} className="size-1.5 rounded-full" style={{ background: it.kind === 'shopping' ? SHOP_STYLE.dot : it.event.titleColor || '#4a987b' }} />
                     ))}
                   </div>
                   <div className="hidden gap-px sm:grid">
-                    {evs.slice(0, MAX_CHIPS).map((e) => (
+                    {evs.slice(0, MAX_CHIPS).map((it) => {
+                      if (it.kind === 'shopping') return <ShoppingChip key={it.id} entry={it.entry} onOpen={setViewingShop} />
+                      const e = it.event
+                      return (
                       <button
                         key={e.id}
                         type="button"
@@ -110,7 +118,8 @@ export function CalendarPage() {
                       >
                         {formatTime(e.start, lng)} {e.title}
                       </button>
-                    ))}
+                      )
+                    })}
                     {evs.length > MAX_CHIPS && <span className="px-1.5 text-[length:calc(10px*var(--fs))] text-muted">{t('calendar.more', { count: evs.length - MAX_CHIPS })}</span>}
                   </div>
                 </div>
@@ -121,11 +130,19 @@ export function CalendarPage() {
 
         <section className="content-start rounded-(--radius-card) bg-paper p-5 shadow-card">
           <h2 className="mb-3 font-bold">{selectedLabel}</h2>
-          {dayEvents.length === 0 ? (
+          {dayItems.length === 0 ? (
             <p className="py-2 text-[length:calc(13px*var(--fs))] text-muted">{t('calendar.dayEmpty')}</p>
           ) : (
             <ul className="grid gap-2">
-              {dayEvents.map((e) => (
+              {dayItems.map((it) => {
+                if (it.kind === 'shopping')
+                  return (
+                    <li key={it.id}>
+                      <ShoppingCard compact entry={it.entry} onOpen={setViewingShop} />
+                    </li>
+                  )
+                const e = it.event
+                return (
                 <li key={e.id}>
                   <button
                     type="button"
@@ -141,7 +158,8 @@ export function CalendarPage() {
                     </small>
                   </button>
                 </li>
-              ))}
+                )
+              })}
             </ul>
           )}
           <button type="button" onClick={() => setEditing('new')} className="mt-3 text-xs font-semibold text-sage hover:text-sage-dark">
@@ -151,6 +169,7 @@ export function CalendarPage() {
       </div>
 
       {editing && <EventDialog key={editing === 'new' ? 'new' : editing.id} event={editing === 'new' ? null : editing} date={selected} onClose={() => setEditing(null)} />}
+      {viewingShop && <ShoppingDetailDialog entry={viewingShop} onClose={() => setViewingShop(null)} />}
       {batchOpen && <BatchEventsDialog initialYear={ym.year} initialMonth={ym.month} onClose={() => setBatchOpen(false)} />}
     </>
   )
