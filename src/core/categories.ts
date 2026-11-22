@@ -12,6 +12,8 @@ export const EXPENSE_CATEGORIES = [
   'leisure',
   'stocks',
   'loan',
+  /** 保險：後來新增的類別，放在「其他」前面；舊資料沒有用到，不受影響 */
+  'insurance',
   'other',
 ] as const
 export type ExpenseCategory = (typeof EXPENSE_CATEGORIES)[number]
@@ -25,6 +27,7 @@ export const LEGACY_EXPENSE_CATEGORY: Record<string, ExpenseCategory> = {
   樂: 'leisure',
   股票: 'stocks',
   貸款: 'loan',
+  保險: 'insurance',
   其他: 'other',
 }
 

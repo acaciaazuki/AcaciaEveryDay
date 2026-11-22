@@ -158,3 +158,21 @@ describe('searchAll：訂閱', () => {
     expect(searchAll(data, 'netflix', 'all', fmt)).toEqual([])
   })
 })
+
+describe('searchAll：固定支出範本', () => {
+  it('可以依名稱、備註找到範本，連到記帳頁的範本編輯', () => {
+    const d: SearchData = {
+      events: [],
+      tasks: [],
+      shopping: [],
+      archives: [],
+      places: [],
+      recurring: [{ id: 'r1', name: '中華電信月費', cat: 'other', amount: 599, currency: 'TWD', day: 5, note: '國泰扣款', done: false }],
+    }
+    const hits = searchAll(d, '中華', 'all', fmt)
+    expect(hits).toHaveLength(1)
+    expect(hits[0]).toMatchObject({ kind: 'recurring', path: '/shopping?recurring=r1' })
+    expect(searchAll(d, '國泰', 'recurring', fmt)[0]!.snippet).toEqual({ field: 'note', text: '國泰扣款' })
+    expect(searchAll(d, '中華', 'shopping', fmt)).toEqual([])
+  })
+})

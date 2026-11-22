@@ -221,6 +221,15 @@ const ART: Record<IconName, ReactNode> = {
   ),
   plus: <path d="M12 6v12M6 12h12" />,
   minus: <path d="M6 12h12" />,
+  /** 週期固定支出：日曆上一圈循環箭頭 */
+  recurring: (
+    <>
+      <rect x="3.5" y="5" width="17" height="15" rx="3.5" fill="#e3f1ea" />
+      <path d="M8 3.5v3M16 3.5v3" />
+      <path d="M15.6 11.4a3.8 3.8 0 0 0-6.9-.6M8.4 15a3.8 3.8 0 0 0 6.9.6" />
+      <path d="M15.8 9.2v2.3h-2.3M8.2 17.2v-2.3h2.3" />
+    </>
+  ),
   receipt: (
     <>
       <path d="M6 3.5h12v17l-2-1.4-2 1.4-2-1.4-2 1.4-2-1.4-2 1.4z" fill="#fff1c1" />
@@ -273,6 +282,12 @@ const ART: Record<IconName, ReactNode> = {
     <>
       <path d="M3.5 9.6L12 4l8.5 5.6z" fill="#ffe9b0" />
       <path d="M5.5 11.6v6M9.8 11.6v6M14.2 11.6v6M18.5 11.6v6M3.5 20h17" />
+    </>
+  ),
+  insurance: (
+    <>
+      <path d="M12 3.5l7 2.8v5.2c0 4.4-3 7.8-7 9-4-1.2-7-4.6-7-9V6.3z" fill="#cdeae6" />
+      <path d="M12 15.6s-3.2-1.9-3.2-4.1a1.7 1.7 0 0 1 3.2-.8 1.7 1.7 0 0 1 3.2.8c0 2.2-3.2 4.1-3.2 4.1z" fill="#fbd3df" />
     </>
   ),
   box: (

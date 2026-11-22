@@ -17,6 +17,7 @@ export const EXPENSE_STYLE: Record<ExpenseCategory, { bg: string; fg: string; ic
   leisure: { bg: '#fce4ec', fg: '#ad1457', icon: 'leisure' },
   stocks: { bg: '#e8f5e9', fg: '#2e7d32', icon: 'stocks' },
   loan: { bg: '#fff3e0', fg: '#ef6c00', icon: 'loan' },
+  insurance: { bg: '#e0f2f1', fg: '#00695c', icon: 'insurance' },
   other: { bg: '#eceff1', fg: '#455a64', icon: 'box' },
 }
 

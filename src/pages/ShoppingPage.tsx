@@ -1,5 +1,5 @@
 import { Icon } from '../components/AcaciaIcons'
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../components/Button'
 import { ColorSwatches, TextColorSwatches } from '../components/ColorSwatches'
@@ -10,19 +10,23 @@ import { CurrencyPicker } from '../components/CurrencyPicker'
 import { IconSelect } from '../components/IconSelect'
 import { LedgerBook } from '../components/LedgerBook'
 import { PageHead } from '../components/PageHead'
+import { RecurringFormDialog, RecurringImportDialog, RecurringListDialog } from '../components/RecurringDialogs'
+import { Toast } from '../components/Toast'
 import { TotalsText } from '../components/TotalsText'
 import { EXPENSE_CATEGORIES } from '../core/categories'
 import { toLocalISO } from '../core/date'
 import { billingPeriod, expenseCurrency, formatQty, lineTotal, DEFAULT_BUDGET, EXPENSE_STYLE, summarize } from '../core/expenses'
 import { currencyOptions, currencySymbol, CUSTOM_CURRENCY, formatMoney } from '../core/format'
 import { useCurrency } from '../hooks/useCurrency'
-import type { Expense } from '../core/schema'
+import type { Expense, Recurring } from '../core/schema'
 import { formatTime } from '../core/time'
 import { useNow } from '../hooks/useNow'
 import { useOpenFromUrl } from '../hooks/useOpenFromUrl'
 import { useAppStore } from '../store/useAppStore'
 
 type Draft = Omit<Expense, 'id' | 'done'>
+/** 固定支出的彈窗：批次帶入、範本清單、編輯範本（back 是存檔後回到哪一個） */
+type RecurringView = 'import' | 'list' | { edit: Recurring | null; back: 'import' | 'list' }
 
 export function ShoppingPage() {
   const { t, i18n } = useTranslation()
@@ -34,7 +38,14 @@ export function ShoppingPage() {
   const [editing, setEditing] = useState<Expense | 'new' | null>(null)
   const [confirmArchive, setConfirmArchive] = useState(false)
   const [focusId, setFocusId] = useState<string | null>(null)
+  const [recView, setRecView] = useState<RecurringView | null>(null)
+  const [toast, setToast] = useState<string | null>(null)
+  const clearToast = useCallback(() => setToast(null), [])
   useOpenFromUrl(shopping, setEditing)
+  // 搜尋結果是固定支出範本時，直接打開那個範本的編輯框
+  const recurring = useAppStore((s) => s.recurring)
+  const openRecurring = useCallback((r: Recurring) => setRecView({ edit: r, back: 'list' }), [])
+  useOpenFromUrl(recurring, openRecurring, 'recurring')
   // 搜尋結果若是已歸檔的記帳，不開編輯框，改成在年度記帳本裡展開並標出那一筆
   const archived = useMemo(() => archives.flatMap((a) => a.expenses), [archives])
   useOpenFromUrl(archived, (e) => setFocusId(e.id))
@@ -61,7 +72,16 @@ export function ShoppingPage() {
 
   return (
     <>
-      <PageHead eyebrow={t('shopping.eyebrow')} title={t('shopping.title')} actions={<Button onClick={() => setEditing('new')}>{t('shopping.add')}</Button>} />
+      <PageHead eyebrow={t('shopping.eyebrow')} title={t('shopping.title')} actions={
+          <>
+            <Button variant="ghost" className="inline-flex items-center gap-1" onClick={() => setRecView('import')}>
+              <Icon name="recurring" className="size-[1.5em]" />
+              {t('recurring.button')}
+            </Button>
+            <Button onClick={() => setEditing('new')}>{t('shopping.add')}</Button>
+          </>
+        }
+      />
 
       <section className="mb-4 rounded-2xl border border-line bg-paper p-5 shadow-soft">
         <div className="mb-3 flex items-end justify-between gap-3">
@@ -132,6 +152,13 @@ export function ShoppingPage() {
                         {s.store || t('shopping.noStore')} · <Icon name={st.icon} className="size-[1.5em]" /> {catLabel(s)} · {s.date} {formatTime(s.time, lng)}
                         {s.unitPrice != null && ` · ${formatQty(s.quantity)} × ${money(s.unitPrice, cur)}`}
                         {s.unitPrice == null && s.quantity != null && s.quantity !== 1 && ` · ${t('shopping.qtyOnly', { count: s.quantity })}`}
+                        {s.recurringId && (
+                          <>
+                            {' · '}
+                            <Icon name="recurring" className="size-[1.5em]" title={t('search.badge.recurring')} />
+                          </>
+                        )}
+                        {s.note && ` · ${s.note}`}
                       </small>
                     </button>
                   </div>
@@ -161,6 +188,20 @@ export function ShoppingPage() {
           </Button>
         </div>
       </Dialog>
+
+      {recView === 'import' && (
+        <RecurringImportDialog
+          period={period}
+          todayISO={todayISO}
+          onManage={() => setRecView('list')}
+          onAdd={() => setRecView({ edit: null, back: 'import' })}
+          onClose={() => setRecView(null)}
+          onImported={(count) => count > 0 && setToast(t('recurring.imported', { count }))}
+        />
+      )}
+      {recView === 'list' && <RecurringListDialog onEdit={(r) => setRecView({ edit: r, back: 'list' })} onBack={() => setRecView('import')} onClose={() => setRecView(null)} />}
+      {recView && typeof recView === 'object' && <RecurringFormDialog key={recView.edit?.id ?? 'new'} item={recView.edit} onDone={() => setRecView(recView.back)} />}
+      {toast && <Toast message={toast} onDone={clearToast} />}
 
       {editing && <ExpenseDialog key={editing === 'new' ? 'new' : editing.id} expense={editing === 'new' ? null : editing} onClose={() => setEditing(null)} />}
     </>
@@ -215,6 +256,7 @@ function ExpenseDialog({ expense, onClose }: { expense: Expense | null; onClose:
       ...draft,
       title,
       store: draft.store.trim(),
+      note: draft.note?.trim() || undefined,
       amt: Number(amt) || 0,
       customCat,
       currency: cur,
@@ -255,6 +297,7 @@ function ExpenseDialog({ expense, onClose }: { expense: Expense | null; onClose:
           <p className="col-span-full -mt-1.5 text-[length:calc(11px*var(--fs))] text-muted">{t('shopping.form.amtHint')}</p>
         </div>
         <Field label={t('shopping.form.store')} placeholder={t('shopping.form.storePlaceholder')} value={draft.store} onChange={(e) => set({ store: e.target.value })} />
+        <Field label={t('shopping.form.note')} placeholder={t('shopping.form.notePlaceholder')} value={draft.note ?? ''} onChange={(e) => set({ note: e.target.value })} />
         <IconSelect
           label={t('shopping.form.cat')}
           value={draft.cat}
