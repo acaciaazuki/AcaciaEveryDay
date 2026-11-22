@@ -4,7 +4,7 @@ import { webStorage } from '../adapters/storage'
 import { archiveCurrent, archiveEnded, periodOf, restoreArchive as restoreArchiveData } from '../core/archive'
 import { INV_TO_EXPENSE, restockQty } from '../core/inventory'
 import { migrate } from '../core/migrate'
-import { buildImports, importedInPeriod, rollbackInstallment, type ImportPick } from '../core/recurring'
+import { buildImports, importedKeys, rollbackInstallment, type ImportPick } from '../core/recurring'
 import { DEFAULT_CURRENCY, emptyAppData, newId, type AppData, type FontSize, type CalendarEvent, type Expense, type InventoryItem, type Place, type Recurring, type Reminder, type Subscription, type Task } from '../core/schema'
 
 type TaskInput = Omit<Task, 'id' | 'done'>
@@ -66,7 +66,8 @@ interface Actions {
    * 批次把固定支出寫進今天所在週期的記帳清單。已完成、本期已帶入過的範本會略過；
    * 分期款期數加 1。回傳實際加入的筆數
    */
-  importRecurring: (picks: ImportPick[], todayISO: string) => number
+  /** 回傳加入了幾筆記帳，以及這次付完最後一期、自動標記完成的範本名稱 */
+  importRecurring: (picks: ImportPick[], todayISO: string) => { count: number; completed: string[] }
   setFontSize: (size: FontSize) => void
   /** 預設貨幣（三碼 ISO，例如 TWD、USD）。只影響顯示與新增時的預設值，不改動已存的資料 */
   setCurrency: (currency: string) => void
@@ -138,10 +139,10 @@ export const useAppStore = create<AppState>()(
       importRecurring: (picks, todayISO) => {
         const { recurring, shopping, archives } = getState()
         const period = periodOf(todayISO)
-        const r = buildImports(recurring, picks, period, importedInPeriod(period, shopping, archives))
-        if (r.expenses.length === 0) return 0
+        const r = buildImports(recurring, picks, period, importedKeys(shopping, archives))
+        if (r.expenses.length === 0) return { count: 0, completed: [] }
         setState((s) => ({ shopping: [...r.expenses, ...s.shopping], recurring: r.templates, ...touch() }))
-        return r.expenses.length
+        return { count: r.expenses.length, completed: r.completed.map((x) => x.name) }
       },
 
       addSubscription: (input) =>

@@ -196,7 +196,9 @@ export function ShoppingPage() {
           onManage={() => setRecView('list')}
           onAdd={() => setRecView({ edit: null, back: 'import' })}
           onClose={() => setRecView(null)}
-          onImported={(count) => count > 0 && setToast(t('recurring.imported', { count }))}
+          onImported={(count, completed) =>
+            count > 0 && setToast([t('recurring.imported', { count }), ...completed.map((name) => t('recurring.completed', { name }))].join(' '))
+          }
         />
       )}
       {recView === 'list' && <RecurringListDialog onEdit={(r) => setRecView({ edit: r, back: 'list' })} onBack={() => setRecView('import')} onClose={() => setRecView(null)} />}

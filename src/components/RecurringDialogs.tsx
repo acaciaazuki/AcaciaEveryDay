@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { EXPENSE_CATEGORIES } from '../core/categories'
 import { EXPENSE_STYLE } from '../core/expenses'
 import { currencyOptions, currencySymbol, CUSTOM_CURRENCY, formatMoney } from '../core/format'
-import { dueDateInPeriod, importedInPeriod, installmentOf } from '../core/recurring'
+import { BATCH_MONTHS_MAX, batchMonthsOf, importedKeys, planImport, progressOf, type PlannedMonth } from '../core/recurring'
 import type { BillingPeriod } from '../core/expenses'
 import type { Recurring } from '../core/schema'
 import { useCurrency } from '../hooks/useCurrency'
@@ -17,6 +17,12 @@ import { IconSelect } from './IconSelect'
 
 const catLabelOf = (t: (k: string) => string, r: Pick<Recurring, 'cat' | 'customCat'>) => (r.cat === 'other' && r.customCat ? r.customCat : t(`expenseCat.${r.cat}`))
 const pill = 'inline-flex items-center rounded-full px-2 py-0.5 text-[length:calc(10px*var(--fs))] font-bold'
+
+/** 這次會產生的期數範圍，例如「本次第 3–5 期」 */
+const rangeOf = (plan: PlannedMonth[]) => {
+  const nums = plan.map((m) => m.installment).filter((n): n is number => n != null)
+  return nums.length ? { from: nums[0]!, to: nums[nums.length - 1]! } : null
+}
 
 interface Row {
   checked: boolean
@@ -41,7 +47,7 @@ export function RecurringImportDialog({
   onManage: () => void
   onAdd: () => void
   onClose: () => void
-  onImported: (count: number) => void
+  onImported: (count: number, completed: string[]) => void
 }) {
   const { t, i18n } = useTranslation()
   const lng = i18n.resolvedLanguage ?? 'zh-TW'
@@ -50,23 +56,27 @@ export function RecurringImportDialog({
   const archives = useAppStore((s) => s.archives)
   const importRecurring = useAppStore((s) => s.importRecurring)
   const active = recurring.filter((r) => !r.done)
-  const already = useMemo(() => importedInPeriod(period, shopping, archives), [period, shopping, archives])
+  const keys = useMemo(() => importedKeys(shopping, archives), [shopping, archives])
+  // 每個範本這次會產生哪些月份（依批次月數，略過已加入的月份）；空的代表都加過了
+  const plans = useMemo(() => new Map(active.map((r) => [r.id, planImport(r, period, keys)])), [active, period, keys])
+  const planOf = (r: Recurring) => plans.get(r.id) ?? []
   const [rows, setRows] = useState<Record<string, Row>>(() =>
-    Object.fromEntries(active.map((r) => [r.id, { checked: !already.has(r.id), amount: String(r.amount), note: r.note }])),
+    Object.fromEntries(active.map((r) => [r.id, { checked: planOf(r).length > 0, amount: String(r.amount), note: r.note }])),
   )
   const row = (r: Recurring): Row => rows[r.id] ?? { checked: false, amount: String(r.amount), note: r.note }
   const setRow = (id: string, patch: Partial<Row>) => setRows((all) => ({ ...all, [id]: { ...(all[id] ?? { checked: false, amount: '', note: '' }), ...patch } }))
-  const available = active.filter((r) => !already.has(r.id))
+  const available = active.filter((r) => planOf(r).length > 0)
   const picked = available.filter((r) => row(r).checked)
+  const recordCount = picked.reduce((n, r) => n + planOf(r).length, 0)
   const allChecked = available.length > 0 && picked.length === available.length
 
   const submit = (e: FormEvent) => {
     e.preventDefault()
-    const count = importRecurring(
+    const { count, completed } = importRecurring(
       picked.map((r) => ({ id: r.id, amount: Number(row(r).amount) || 0, note: row(r).note })),
       todayISO,
     )
-    onImported(count)
+    onImported(count, completed)
     onClose()
   }
 
@@ -101,9 +111,12 @@ export function RecurringImportDialog({
           <ul className="grid gap-2.5">
             {active.map((r) => {
               const st = EXPENSE_STYLE[r.cat]
-              const added = already.has(r.id)
+              const plan = planOf(r)
+              const added = plan.length === 0
+              const months = batchMonthsOf(r)
               const v = row(r)
-              const inst = installmentOf(r)
+              const prog = progressOf(r)
+              const range = rangeOf(plan)
               const sym = currencySymbol(r.currency, lng)
               return (
                 <li key={r.id} className={`rounded-xl border border-l-4 border-line p-3 ${added ? 'opacity-60' : ''}`} style={{ background: st.bg, borderLeftColor: st.fg }}>
@@ -120,19 +133,27 @@ export function RecurringImportDialog({
                         <strong className="text-sm" style={{ color: st.fg }}>
                           {r.name}
                         </strong>
-                        {inst && <span className={`${pill} bg-paper text-[#55645d]`}>{t('recurring.installment', inst)}</span>}
-                        {added && <span className={`${pill} bg-sage text-white`}>{t('recurring.added')}</span>}
+                        {prog && <span className={`${pill} bg-paper text-[#55645d]`}>{t('recurring.progress', prog)}</span>}
+                        {months > 1 && <span className={`${pill} bg-paper text-[#55645d]`}>{t('recurring.batchPill', { count: months })}</span>}
+                        {added && <span className={`${pill} bg-sage text-white`}>{t(months > 1 ? 'recurring.addedBatch' : 'recurring.added')}</span>}
                       </span>
                       <small className="mt-0.5 block text-[length:calc(11px*var(--fs))] text-[#55645d]">
-                        <Icon name={st.icon} className="size-[1.5em]" /> {catLabelOf(t, r)} · {t('recurring.due', { date: dueDateInPeriod(r.day, period) })}
+                        <Icon name={st.icon} className="size-[1.5em]" /> {catLabelOf(t, r)} · {t('recurring.dayLabel', { day: r.day })}
                         {(added || !v.checked) && ` · ${formatMoney(r.amount, lng, r.currency)}`}
                       </small>
+                      {!added && (
+                        <small className="mt-1 block text-[length:calc(11px*var(--fs))] text-sage-dark" data-testid={`plan-${r.id}`}>
+                          {plan.length === 1 ? t('recurring.due', { date: plan[0]!.date }) : t('recurring.dueMany', { count: plan.length, dates: plan.map((m) => m.date.slice(5).replace('-', '/')).join('、') })}
+                          {range && ` · ${range.from === range.to ? t('recurring.willAddOne', { n: range.from }) : t('recurring.willAddRange', range)}`}
+                          {range && prog && range.to === prog.total && ` · ${t('recurring.willFinish')}`}
+                        </small>
+                      )}
                     </span>
                   </label>
                   {!added && v.checked && (
                     <div className="mt-2.5 grid grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-2 pl-6.5">
                       <Field
-                        label={t('common.withCurrency', { label: t('recurring.amount'), sym })}
+                        label={t('common.withCurrency', { label: t(plan.length > 1 ? 'recurring.amountEach' : 'recurring.amount'), sym })}
                         type="number"
                         inputMode="decimal"
                         min={0}
@@ -151,8 +172,8 @@ export function RecurringImportDialog({
             <Button variant="ghost" className="ml-auto" onClick={onClose}>
               {t('common.cancel')}
             </Button>
-            <Button type="submit" disabled={picked.length === 0}>
-              {t('recurring.confirm', { count: picked.length })}
+            <Button type="submit" disabled={recordCount === 0}>
+              {t('recurring.confirm', { count: recordCount })}
             </Button>
           </div>
         </form>
@@ -176,7 +197,8 @@ export function RecurringListDialog({ onEdit, onBack, onClose }: { onEdit: (r: R
           <ul className="grid gap-2">
             {sorted.map((r) => {
               const st = EXPENSE_STYLE[r.cat]
-              const inst = installmentOf(r)
+              const prog = progressOf(r)
+              const months = batchMonthsOf(r)
               return (
                 <li key={r.id}>
                   <button
@@ -189,8 +211,9 @@ export function RecurringListDialog({ onEdit, onBack, onClose }: { onEdit: (r: R
                       <strong className="text-sm">{r.name}</strong>
                       <small className="mt-0.5 block text-[length:calc(11px*var(--fs))] opacity-80">
                         <Icon name={st.icon} className="size-[1.5em]" /> {catLabelOf(t, r)} · {t('recurring.dayLabel', { day: r.day })}
-                        {inst && !r.done && ` · ${t('recurring.installment', inst)}`}
-                        {r.done && ` · ${t('recurring.done')}`}
+                        {months > 1 && ` · ${t('recurring.batchPill', { count: months })}`}
+                        {prog && ` · ${t('recurring.progress', prog)}`}
+                        {r.done && ` · ${t(prog && prog.paid >= prog.total ? 'recurring.paidOff' : 'recurring.done')}`}
                       </small>
                     </span>
                     <span className="shrink-0 font-bold">{formatMoney(r.amount, lng, r.currency)}</span>
@@ -236,7 +259,9 @@ export function RecurringFormDialog({ item, onDone }: { item: Recurring | null; 
   const [note, setNote] = useState(item?.note ?? '')
   const [hasInst, setHasInst] = useState(Boolean(item?.installments))
   const [total, setTotal] = useState(String(item?.installments?.total ?? 6))
-  const [next, setNext] = useState(String(item?.installments?.next ?? 1))
+  // 表單上填「已付到第幾期」（0 起），存回去是 next = 已付 + 1
+  const [paid, setPaid] = useState(String(item?.installments ? item.installments.next - 1 : 0))
+  const [months, setMonths] = useState(String(item ? batchMonthsOf(item) : 1))
   const [done, setDone] = useState(item?.done ?? false)
   const [error, setError] = useState('')
 
@@ -247,10 +272,14 @@ export function RecurringFormDialog({ item, onDone }: { item: Recurring | null; 
     if (!cur) return setError(t('currency.customRequired'))
     const d = Number(day)
     if (!Number.isInteger(d) || d < 1 || d > 31) return setError(t('recurring.form.dayInvalid'))
+    const bm = Number(months)
+    if (!Number.isInteger(bm) || bm < 1 || bm > BATCH_MONTHS_MAX) return setError(t('recurring.form.batchInvalid', { max: BATCH_MONTHS_MAX }))
     const tot = Number(total)
-    const nx = Number(next)
-    // 下一期可以是 total+1（代表已繳清），其餘要介於 1..total
-    if (hasInst && (!Number.isInteger(tot) || tot < 1 || !Number.isInteger(nx) || nx < 1 || nx > tot + 1)) return setError(t('recurring.form.installmentInvalid'))
+    const pd = Number(paid)
+    if (hasInst && (!Number.isInteger(tot) || tot < 1)) return setError(t('recurring.form.totalInvalid'))
+    // 已付到第幾期可以是 0（還沒開始付）到總期數（已付清）
+    if (hasInst && (!Number.isInteger(pd) || pd < 0 || pd > tot)) return setError(t('recurring.form.paidInvalid'))
+    const nx = pd + 1
     const data: RecurringInput = {
       name: n,
       cat,
@@ -258,6 +287,7 @@ export function RecurringFormDialog({ item, onDone }: { item: Recurring | null; 
       amount: Math.max(0, Number(amount) || 0),
       currency: cur,
       day: d,
+      batchMonths: bm,
       note: note.trim(),
       installments: hasInst ? { total: tot, next: nx } : undefined,
       // 分期已經全部帶入完就算完成；手動勾選也可以
@@ -288,6 +318,19 @@ export function RecurringFormDialog({ item, onDone }: { item: Recurring | null; 
           <Field label={t('recurring.form.day')} type="number" inputMode="numeric" min={1} max={31} step={1} value={day} onChange={(e) => setDay(e.target.value)} />
           <p className="text-[length:calc(11px*var(--fs))] text-muted">{t('recurring.form.dayHint')}</p>
         </div>
+        <div className="grid gap-1.5">
+          <Field
+            label={t('recurring.form.batchMonths')}
+            type="number"
+            inputMode="numeric"
+            min={1}
+            max={BATCH_MONTHS_MAX}
+            step={1}
+            value={months}
+            onChange={(e) => setMonths(e.target.value)}
+          />
+          <p className="text-[length:calc(11px*var(--fs))] text-muted">{t('recurring.form.batchHint', { max: BATCH_MONTHS_MAX })}</p>
+        </div>
         <Field label={t('recurring.form.note')} placeholder={t('recurring.form.notePlaceholder')} value={note} onChange={(e) => setNote(e.target.value)} />
         <fieldset className="grid gap-3 rounded-xl border border-line p-3">
           <label className="flex items-center gap-2 text-sm font-semibold">
@@ -298,8 +341,9 @@ export function RecurringFormDialog({ item, onDone }: { item: Recurring | null; 
             <>
               <div className="grid grid-cols-2 gap-3">
                 <Field label={t('recurring.form.total')} type="number" inputMode="numeric" min={1} step={1} value={total} onChange={(e) => setTotal(e.target.value)} />
-                <Field label={t('recurring.form.next')} type="number" inputMode="numeric" min={1} step={1} value={next} onChange={(e) => setNext(e.target.value)} />
+                <Field label={t('recurring.form.paid')} type="number" inputMode="numeric" min={0} max={Number(total) || undefined} step={1} value={paid} onChange={(e) => setPaid(e.target.value)} />
               </div>
+              <InstallmentStatus total={total} paid={paid} />
               <p className="text-[length:calc(11px*var(--fs))] text-muted">{t('recurring.form.installmentHint')}</p>
             </>
           )}
@@ -327,5 +371,19 @@ export function RecurringFormDialog({ item, onDone }: { item: Recurring | null; 
         </div>
       </form>
     </Dialog>
+  )
+}
+
+/** 表單裡即時顯示的分期進度；填錯時不顯示（送出時再提示），付清時提醒會標記完成 */
+function InstallmentStatus({ total, paid }: { total: string; paid: string }) {
+  const { t } = useTranslation()
+  const tot = Number(total)
+  const pd = Number(paid)
+  if (!Number.isInteger(tot) || tot < 1 || !Number.isInteger(pd) || pd < 0 || pd > tot) return null
+  const left = tot - pd
+  return (
+    <p className="rounded-xl bg-sage-light px-3 py-2 text-[length:calc(12px*var(--fs))] text-sage-dark" data-testid="installment-status">
+      {t('recurring.progress', { paid: pd, total: tot })} · {left === 0 ? t('recurring.form.paidOffHint') : t('recurring.form.leftHint', { count: left })}
+    </p>
   )
 }

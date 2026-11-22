@@ -167,7 +167,7 @@ describe('searchAll：固定支出範本', () => {
       shopping: [],
       archives: [],
       places: [],
-      recurring: [{ id: 'r1', name: '中華電信月費', cat: 'other', amount: 599, currency: 'TWD', day: 5, note: '國泰扣款', done: false }],
+      recurring: [{ id: 'r1', name: '中華電信月費', cat: 'other', amount: 599, currency: 'TWD', day: 5, batchMonths: 1, note: '國泰扣款', done: false }],
     }
     const hits = searchAll(d, '中華', 'all', fmt)
     expect(hits).toHaveLength(1)
