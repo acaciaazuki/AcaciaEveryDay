@@ -318,6 +318,26 @@ const ART: Record<IconName, ReactNode> = {
       <path d="M13.2 6.8l4 4M5 15l4 4" />
     </>
   ),
+  fridge: (
+    <>
+      <rect x="6" y="2.8" width="12" height="18.4" rx="2.6" fill="#d6eff6" />
+      <path d="M6 9.4h12M9.2 5.2v2M9.2 12.2v2.6" />
+      <path d="M14.4 13.4v4.4M12.5 14.5l3.8 2.2M12.5 16.7l3.8-2.2" />
+    </>
+  ),
+  jar: (
+    <>
+      <rect x="7.6" y="3" width="8.8" height="3.2" rx="1.2" fill="#f4cf8e" />
+      <path d="M8.2 6.2C6.6 7.4 6 8.8 6 10.6v7.4a2.6 2.6 0 0 0 2.6 2.6h6.8A2.6 2.6 0 0 0 18 18v-7.4c0-1.8-.6-3.2-2.2-4.4z" fill="#fff4dc" />
+      <rect x="8.8" y="11.4" width="6.4" height="4.6" rx="1.2" fill="#fbe1ae" />
+    </>
+  ),
+  tag: (
+    <>
+      <path d="M3.6 12.4V4.8a1.2 1.2 0 0 1 1.2-1.2h7.6l8 8a1.6 1.6 0 0 1 0 2.3l-6.3 6.3a1.6 1.6 0 0 1-2.3 0z" fill="#e3f1e8" />
+      <circle cx="8.2" cy="8.2" r="1.6" fill="#fff" />
+    </>
+  ),
 
   // ---- 地點分類（餐廳＝meal、衣著＝clothing、其他＝pin 共用上面的圖） ----
   dessert: (

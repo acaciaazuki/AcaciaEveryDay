@@ -5,6 +5,7 @@ import { Button } from '../components/Button'
 import { Dialog } from '../components/Dialog'
 import { Field } from '../components/Field'
 import { IconSelect } from '../components/IconSelect'
+import { CustomCatEditor, InvCategoryDialog } from '../components/InvCategoryManager'
 import { PageHead } from '../components/PageHead'
 import { Toast } from '../components/Toast'
 import { toLocalISO } from '../core/date'
@@ -13,7 +14,6 @@ import {
   dueDates,
   dueTone,
   INV_FILTERS,
-  INV_STYLE,
   isDue,
   isLow,
   matchesFilter,
@@ -27,8 +27,10 @@ import {
   type InvFilter,
   type SampleKey,
 } from '../core/inventory'
-import { INV_CATEGORIES, type InventoryItem } from '../core/schema'
+import { isCustomInvCat } from '../core/invCategories'
+import type { InventoryItem } from '../core/schema'
 import { daysBetween } from '../core/subscriptions'
+import { useInvCategories } from '../hooks/useInvCategories'
 import { useNow } from '../hooks/useNow'
 import { useOpenFromUrl } from '../hooks/useOpenFromUrl'
 import { useAppStore, type InventoryInput } from '../store/useAppStore'
@@ -59,6 +61,9 @@ export function InventoryPage() {
   const [editing, setEditing] = useState<InventoryItem | 'new' | null>(null)
   const [filter, setFilter] = useState<InvFilter>('all')
   const [query, setQuery] = useState('')
+  const [catFilter, setCatFilter] = useState('all')
+  const [managing, setManaging] = useState(false)
+  const cats = useInvCategories()
   const [toast, setToast] = useState<string | null>(null)
   const clearToast = useCallback(() => setToast(null), [])
   useOpenFromUrl(items, setEditing)
@@ -73,11 +78,19 @@ export function InventoryPage() {
     if (!seeded && items.length === 0) seedInventory(sampleInventory(todayISO, (k: SampleKey, f) => t(`inv.sample.${k}.${f}`)))
   }, [seeded, items.length, seedInventory, todayISO, t])
 
-  const catLabel = (x: InventoryItem) => t(`inv.cat.${x.cat}`)
+  const catLabel = (x: InventoryItem) => cats.labelOf(x.cat)
+  // 分類篩選：依使用者排序，只列出有用品的分類；選的分類被刪掉或清空時回到全部
+  const catCounts = new Map<string, number>()
+  for (const x of items) {
+    const k = cats.of(x.cat).key
+    catCounts.set(k, (catCounts.get(k) ?? 0) + 1)
+  }
+  const catChips = cats.list.filter((c) => catCounts.has(c.key))
+  const activeCat = catFilter !== 'all' && catCounts.has(catFilter) ? catFilter : 'all'
   const dueCount = items.filter((x) => isDue(x, todayISO)).length
   const lowCount = items.filter(isLow).length
   const countOf = (f: InvFilter) => items.filter((x) => matchesFilter(x, f, todayISO)).length
-  const shown = sortInventory(items, todayISO).filter((x) => matchesFilter(x, filter, todayISO) && matchesQuery(x, query, catLabel(x)))
+  const shown = sortInventory(items, todayISO).filter((x) => matchesFilter(x, filter, todayISO) && (activeCat === 'all' || cats.of(x.cat).key === activeCat) && matchesQuery(x, query, catLabel(x)))
   const dateLabel = (iso: string) => new Intl.DateTimeFormat(lng, { month: 'short', day: 'numeric' }).format(new Date(`${iso}T00:00`))
 
   return (
@@ -99,7 +112,13 @@ export function InventoryPage() {
       <section className={card}>
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <h2 className="font-bold">{t('inv.list.title')}</h2>
-          <span className="text-xs text-muted">{t('inv.list.count', { count: items.length })}</span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted">{t('inv.list.count', { count: items.length })}</span>
+            <Button variant="ghost" className="inline-flex items-center gap-1 px-3! py-1.5!" onClick={() => setManaging(true)}>
+              <Icon name="tag" className="size-[1.3em]" />
+              {t('inv.cats.manage')}
+            </Button>
+          </div>
         </div>
         <div className="mb-4 flex flex-wrap items-center gap-3">
           <div role="group" aria-label={t('inv.list.filter')} className="flex w-fit flex-wrap rounded-full bg-oat p-0.5">
@@ -123,6 +142,28 @@ export function InventoryPage() {
           </label>
         </div>
 
+        {catChips.length > 1 && (
+          <div role="group" aria-label={t('inv.list.catFilter')} className="-mx-1 mb-4 flex gap-1.5 overflow-x-auto px-1 pb-1">
+            <button type="button" aria-pressed={activeCat === 'all'} onClick={() => setCatFilter('all')} className={catChip(activeCat === 'all')}>
+              {t('inv.list.allCats')}
+            </button>
+            {catChips.map((c) => (
+              <button
+                key={c.key}
+                type="button"
+                aria-pressed={activeCat === c.key}
+                onClick={() => setCatFilter(c.key)}
+                className={catChip(activeCat === c.key)}
+                style={activeCat === c.key ? { background: c.bg, color: c.fg, borderColor: c.fg } : undefined}
+              >
+                <Icon name={c.icon} className="size-[1.3em]" />
+                {c.label}
+                <span className="opacity-60">{catCounts.get(c.key)}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
         {items.length === 0 ? (
           <div className="grid justify-items-center gap-3 py-6 text-center text-muted">
             <p>{t('inv.list.empty')}</p>
@@ -142,10 +183,14 @@ export function InventoryPage() {
       </section>
 
       {editing && <ItemDialog key={editing === 'new' ? 'new' : editing.id} item={editing === 'new' ? null : editing} todayISO={todayISO} onClose={() => setEditing(null)} />}
+      {managing && <InvCategoryDialog onClose={() => setManaging(false)} />}
       {toast && <Toast message={toast} onDone={clearToast} />}
     </>
   )
 }
+
+const catChip = (on: boolean) =>
+  `inline-flex shrink-0 items-center gap-1 rounded-full border px-3 py-1 text-xs font-bold whitespace-nowrap transition ${on ? 'border-sage bg-sage-light text-sage-dark' : 'border-line bg-paper text-muted hover:text-ink'}`
 
 function Stat({ icon, bg, label, value, onClick, alert }: { icon: IconName; bg: string; label: string; value: ReactNode; onClick: () => void; alert?: boolean }) {
   return (
@@ -187,7 +232,7 @@ function ItemCard({
   const markReplaced = useAppStore((s) => s.markReplaced)
   const addToShopping = useAppStore((s) => s.addInventoryToShopping)
   const restockFromShopping = useAppStore((s) => s.restockFromShopping)
-  const st = INV_STYLE[x.cat]
+  const st = useInvCategories().of(x.cat)
   const low = isLow(x)
   const dues = dueDates(x, todayISO)
   const unit = x.unit || t('inv.defaultUnit')
@@ -199,7 +244,7 @@ function ItemCard({
         <IconBadge name={st.icon} bg={st.bg} />
         <button type="button" className="min-w-0 flex-1 text-left" onClick={onEdit}>
           <strong className="block truncate text-sm">{x.name}</strong>
-          <small className="mt-0.5 block text-[length:calc(11px*var(--fs))] text-muted">{[t(`inv.cat.${x.cat}`), x.note].filter(Boolean).join(' · ')}</small>
+          <small className="mt-0.5 block text-[length:calc(11px*var(--fs))] text-muted">{[st.label, x.note].filter(Boolean).join(' · ')}</small>
         </button>
         <div className="flex shrink-0 flex-wrap justify-end gap-1">
           {dues[0] && dues[0].daysLeft <= 7 && <DueBadge d={dues[0]} />}
@@ -317,9 +362,11 @@ function ItemDialog({ item, todayISO, onClose }: { item: InventoryItem | null; t
   const addInventory = useAppStore((s) => s.addInventory)
   const updateInventory = useAppStore((s) => s.updateInventory)
   const removeInventory = useAppStore((s) => s.removeInventory)
+  const cats = useInvCategories()
+  const [managing, setManaging] = useState(false)
   const uid = useId()
   const [draft, setDraft] = useState<InventoryInput>(
-    () => item ?? { name: '', cat: 'home', unit: '', stock: 1, minStock: 1, lastReplaced: todayISO, cycleDays: 0, expiry: '', openedDate: '', paoMonths: 0, note: '' },
+    () => (item ? { ...item, cat: cats.of(item.cat).key } : null) ?? { name: '', cat: 'home', unit: '', stock: 1, minStock: 1, lastReplaced: todayISO, cycleDays: 0, expiry: '', openedDate: '', paoMonths: 0, note: '' },
   )
   // 數字欄位用字串存，輸入時才不會被打斷
   const [nums, setNums] = useState(() => ({
@@ -339,6 +386,8 @@ function ItemDialog({ item, todayISO, onClose }: { item: InventoryItem | null; t
     const data: InventoryInput = {
       ...draft,
       name,
+      // 編輯中分類被刪掉時改存「其他」
+      cat: cats.of(draft.cat).key,
       unit: draft.unit.trim(),
       note: draft.note.trim(),
       stock: num(nums.stock),
@@ -356,12 +405,16 @@ function ItemDialog({ item, todayISO, onClose }: { item: InventoryItem | null; t
       <form onSubmit={submit} className="grid gap-4">
         <Field label={t('inv.form.name')} placeholder={t('inv.form.namePlaceholder')} value={draft.name} onChange={(e) => set({ name: e.target.value })} autoFocus />
         {error && <p className="-mt-2 text-xs text-[#c2583d]">{error}</p>}
-        <IconSelect
-          label={t('inv.form.cat')}
-          value={draft.cat}
-          options={INV_CATEGORIES.map((c) => ({ value: c, label: t(`inv.cat.${c}`), icon: INV_STYLE[c].icon, bg: INV_STYLE[c].bg }))}
-          onChange={(cat) => set({ cat })}
-        />
+        <div className="grid gap-2">
+          <IconSelect label={t('inv.form.cat')} value={cats.of(draft.cat).key} options={cats.list.map((c) => ({ value: c.key, label: c.label, icon: c.icon, bg: c.bg }))} onChange={(cat) => set({ cat })} />
+          {/* 選「其他」（或自訂分類）時可以自己新增、刪除分類 */}
+          {(draft.cat === 'other' || isCustomInvCat(draft.cat)) && (
+            <CustomCatEditor onAdded={(cat) => set({ cat })} onRemoved={(id) => setDraft((d) => (d.cat === id ? { ...d, cat: 'other' } : d))} />
+          )}
+          <button type="button" onClick={() => setManaging(true)} className="w-fit text-[length:calc(12px*var(--fs))] font-semibold text-sage-dark underline-offset-2 hover:underline">
+            {t('inv.cats.manageLink')}
+          </button>
+        </div>
 
         <fieldset className="grid gap-3 rounded-(--radius-control) border border-line p-3">
           <legend className="px-1 text-xs font-bold text-sage-dark">{t('inv.form.stockSection')}</legend>
@@ -425,6 +478,7 @@ function ItemDialog({ item, todayISO, onClose }: { item: InventoryItem | null; t
           <Button type="submit">{t('common.save')}</Button>
         </div>
       </form>
+      {managing && <InvCategoryDialog onClose={() => setManaging(false)} />}
     </Dialog>
   )
 }

@@ -611,7 +611,9 @@
       "searchPlaceholder": "Search by name, category or note…",
       "empty": "No items yet. Add one, or load the samples to take a look.",
       "loadSamples": "Load sample data",
-      "noMatch": "No items match"
+      "noMatch": "No items match",
+      "catFilter": "Filter by category",
+      "allCats": "All categories"
     },
     "filter": {
       "all": "All",
@@ -658,6 +660,8 @@
       "personal": "Personal care",
       "home": "Household",
       "kitchen": "Kitchen",
+      "chilled": "Chilled & frozen food",
+      "pantry": "Pantry food",
       "health": "Health",
       "skincare": "Skincare",
       "stationery": "Stationery",
@@ -704,6 +708,28 @@
         "name": "Body wash",
         "unit": "bottle"
       }
+    },
+    "cats": {
+      "manage": "Categories",
+      "manageLink": "Manage & reorder categories",
+      "title": "Categories",
+      "orderTitle": "Category order",
+      "orderHint": "Drag the handle on the left, or use the up/down buttons. The category menu and filters follow this order.",
+      "reset": "Reset to default order",
+      "customTitle": "Custom categories",
+      "customList": "Your custom categories",
+      "namePlaceholder": "e.g. Pet supplies",
+      "add": "Add",
+      "hint": "Type a name and press Add (up to {{max}} characters). Built-in categories can’t be deleted.",
+      "error": {
+        "empty": "Enter a category name",
+        "tooLong": "Category names can be up to {{max}} characters",
+        "duplicate": "A category with this name already exists"
+      },
+      "deleteAria": "Delete category “{{name}}”",
+      "deleteConfirm": "Delete the category “{{name}}”?",
+      "deleteConfirmMove": "Delete the category “{{name}}”? {{count}} item(s) in it will move to “{{other}}”.",
+      "done": "Done"
     }
   },
   "licenses": {

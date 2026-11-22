@@ -15,6 +15,8 @@ export const INV_STYLE: Record<InvCategory, { bg: string; fg: string; icon: Icon
   personal: { bg: '#e0f2fe', fg: '#1565c0', icon: 'toothbrush' },
   home: { bg: '#e8f5e9', fg: '#2e7d32', icon: 'housing' },
   kitchen: { bg: '#fff3e0', fg: '#ef6c00', icon: 'meal' },
+  chilled: { bg: '#e0f4f8', fg: '#00838f', icon: 'fridge' },
+  pantry: { bg: '#fdf3d8', fg: '#9a6b12', icon: 'jar' },
   health: { bg: '#ffebee', fg: '#c62828', icon: 'health' },
   skincare: { bg: '#fce4ec', fg: '#ad1457', icon: 'lotion' },
   stationery: { bg: '#f3e5f5', fg: '#6a1b9a', icon: 'pencil' },
@@ -26,11 +28,39 @@ export const INV_TO_EXPENSE: Record<InvCategory, ExpenseCategory> = {
   personal: 'housing',
   home: 'housing',
   kitchen: 'housing',
+  chilled: 'food',
+  pantry: 'food',
   health: 'other',
   skincare: 'housing',
   stationery: 'education',
   other: 'other',
 }
+
+/** 自訂分類的配色：依 id 固定挑一組低彩度粉彩，圖示統一用標籤 */
+const CUSTOM_STYLES = [
+  { bg: '#eef6e4', fg: '#558b2f' },
+  { bg: '#ede7f6', fg: '#5e35b1' },
+  { bg: '#fbe9e7', fg: '#bf360c' },
+  { bg: '#e8eaf6', fg: '#3949ab' },
+  { bg: '#f7f3dc', fg: '#827717' },
+  { bg: '#e0f2f1', fg: '#00695c' },
+] as const
+
+/**
+ * 任何分類（內建或自訂）的配色與圖示；未知的分類用「其他」。
+ * 自訂分類傳入它在自訂清單中的位置時依序輪流配色（相鄰的不會同色），沒傳就依 id 固定挑一組
+ */
+export function invCatStyle(cat: string, customIndex?: number): { bg: string; fg: string; icon: IconName } {
+  if (cat in INV_STYLE) return INV_STYLE[cat as InvCategory]
+  if (!cat.startsWith('c_')) return INV_STYLE.other
+  if (customIndex != null && customIndex >= 0) return { ...CUSTOM_STYLES[customIndex % CUSTOM_STYLES.length], icon: 'tag' }
+  let h = 0
+  for (const ch of cat) h = (h * 31 + ch.charCodeAt(0)) >>> 0
+  return { ...CUSTOM_STYLES[h % CUSTOM_STYLES.length], icon: 'tag' }
+}
+
+/** 用品分類對應的記帳分類；自訂分類一律歸「其他」 */
+export const invToExpense = (cat: string): ExpenseCategory => (cat in INV_TO_EXPENSE ? INV_TO_EXPENSE[cat as InvCategory] : 'other')
 
 export type DueKind = 'replace' | 'expiry' | 'pao'
 export interface DueInfo {

@@ -611,7 +611,9 @@
       "searchPlaceholder": "名前・カテゴリ・メモで検索…",
       "empty": "まだアイテムがありません。追加するか、サンプルを読み込んでみてください。",
       "loadSamples": "サンプルを読み込む",
-      "noMatch": "条件に合うアイテムがありません"
+      "noMatch": "条件に合うアイテムがありません",
+      "catFilter": "カテゴリで絞り込み",
+      "allCats": "すべてのカテゴリ"
     },
     "filter": {
       "all": "すべて",
@@ -658,6 +660,8 @@
       "personal": "パーソナルケア",
       "home": "日用品",
       "kitchen": "キッチン消耗品",
+      "chilled": "冷蔵・冷凍食品",
+      "pantry": "常温食品",
       "health": "健康・医療",
       "skincare": "スキンケア",
       "stationery": "文房具",
@@ -704,6 +708,28 @@
         "name": "ボディソープ",
         "unit": "本"
       }
+    },
+    "cats": {
+      "manage": "カテゴリ設定",
+      "manageLink": "カテゴリの管理と並べ替え",
+      "title": "カテゴリ設定",
+      "orderTitle": "カテゴリの並び順",
+      "orderHint": "左のハンドルをドラッグするか、上下ボタンで並べ替えます。用品追加のカテゴリ選択と絞り込みはこの順番で表示されます。",
+      "reset": "初期の並び順に戻す",
+      "customTitle": "カスタムカテゴリ",
+      "customList": "追加したカスタムカテゴリ",
+      "namePlaceholder": "例：ペット用品",
+      "add": "追加",
+      "hint": "名前を入力して「追加」を押します（{{max}} 文字まで）。標準カテゴリは削除できません。",
+      "error": {
+        "empty": "カテゴリ名を入力してください",
+        "tooLong": "カテゴリ名は {{max}} 文字までです",
+        "duplicate": "同じ名前のカテゴリがすでにあります"
+      },
+      "deleteAria": "カテゴリ「{{name}}」を削除",
+      "deleteConfirm": "カテゴリ「{{name}}」を削除しますか？",
+      "deleteConfirmMove": "カテゴリ「{{name}}」を削除しますか？このカテゴリの用品 {{count}} 件は「{{other}}」に移動します。",
+      "done": "完了"
     }
   },
   "licenses": {

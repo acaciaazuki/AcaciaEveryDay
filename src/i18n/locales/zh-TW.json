@@ -611,7 +611,9 @@
       "searchPlaceholder": "搜尋名稱、分類或備註…",
       "empty": "還沒有用品。新增一項，或先載入範例看看。",
       "loadSamples": "載入範例資料",
-      "noMatch": "沒有符合條件的用品"
+      "noMatch": "沒有符合條件的用品",
+      "catFilter": "依分類篩選",
+      "allCats": "所有分類"
     },
     "filter": {
       "all": "全部",
@@ -658,6 +660,8 @@
       "personal": "個人護理",
       "home": "居家日用",
       "kitchen": "廚房耗材",
+      "chilled": "低溫食材",
+      "pantry": "常溫食材",
       "health": "健康醫療",
       "skincare": "保養護膚",
       "stationery": "文具用品",
@@ -704,6 +708,28 @@
         "name": "沐浴乳",
         "unit": "瓶"
       }
+    },
+    "cats": {
+      "manage": "分類設定",
+      "manageLink": "管理與排序分類",
+      "title": "分類設定",
+      "orderTitle": "分類排序",
+      "orderHint": "拖曳左邊的把手，或用上下按鈕調整順序；新增用品的分類選單與分類篩選都會照這個順序。",
+      "reset": "恢復預設順序",
+      "customTitle": "自訂分類",
+      "customList": "已新增的自訂分類",
+      "namePlaceholder": "例如：寵物用品",
+      "add": "新增",
+      "hint": "輸入名稱後按「新增」，最多 {{max}} 個字。內建分類不能刪除。",
+      "error": {
+        "empty": "請輸入分類名稱",
+        "tooLong": "分類名稱最多 {{max}} 個字",
+        "duplicate": "已經有同名的分類了"
+      },
+      "deleteAria": "刪除分類「{{name}}」",
+      "deleteConfirm": "要刪除分類「{{name}}」嗎？",
+      "deleteConfirmMove": "要刪除分類「{{name}}」嗎？目前有 {{count}} 個用品屬於這個分類，刪除後會改歸「{{other}}」。",
+      "done": "完成"
     }
   },
   "licenses": {

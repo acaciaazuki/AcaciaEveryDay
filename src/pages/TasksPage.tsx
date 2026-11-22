@@ -9,7 +9,8 @@ import { Field } from '../components/Field'
 import { TimeField } from '../components/TimeField'
 import { PageHead } from '../components/PageHead'
 import { Toast } from '../components/Toast'
-import { INV_STYLE, lowStockReminders } from '../core/inventory'
+import { lowStockReminders } from '../core/inventory'
+import { useInvCategories } from '../hooks/useInvCategories'
 import { toLocalISO } from '../core/date'
 import { useNow } from '../hooks/useNow'
 import { DEFAULT_TEXT_COLOR } from '../core/categories'
@@ -106,6 +107,7 @@ function LowStockSection() {
   const inventory = useAppStore((s) => s.inventory)
   const shopping = useAppStore((s) => s.shopping)
   const addToShopping = useAppStore((s) => s.addInventoryToShopping)
+  const cats = useInvCategories()
   const now = useNow()
   const [toast, setToast] = useState<string | null>(null)
   const clearToast = useCallback(() => setToast(null), [])
@@ -122,7 +124,7 @@ function LowStockSection() {
       <p className="mt-1 text-[length:calc(11px*var(--fs))] text-muted">{t('tasks.lowStock.hint')}</p>
       <ul className="mt-3 grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-3">
         {list.map(({ item, need, pending }) => {
-          const st = INV_STYLE[item.cat]
+          const st = cats.of(item.cat)
           const unit = item.unit || t('inv.defaultUnit')
           return (
             <li key={item.id} className="grid content-start gap-2.5 rounded-xl border border-l-4 border-line bg-paper p-3.5" style={{ borderLeftColor: st.fg }}>
