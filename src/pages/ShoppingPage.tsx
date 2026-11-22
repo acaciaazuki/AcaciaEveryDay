@@ -5,6 +5,7 @@ import { Button } from '../components/Button'
 import { ColorSwatches, TextColorSwatches } from '../components/ColorSwatches'
 import { Dialog } from '../components/Dialog'
 import { Field } from '../components/Field'
+import { TimeField } from '../components/TimeField'
 import { CurrencyPicker } from '../components/CurrencyPicker'
 import { IconSelect } from '../components/IconSelect'
 import { LedgerBook } from '../components/LedgerBook'
@@ -16,6 +17,7 @@ import { billingPeriod, expenseCurrency, formatQty, lineTotal, DEFAULT_BUDGET, E
 import { currencyOptions, currencySymbol, CUSTOM_CURRENCY, formatMoney } from '../core/format'
 import { useCurrency } from '../hooks/useCurrency'
 import type { Expense } from '../core/schema'
+import { formatTime } from '../core/time'
 import { useNow } from '../hooks/useNow'
 import { useOpenFromUrl } from '../hooks/useOpenFromUrl'
 import { useAppStore } from '../store/useAppStore'
@@ -127,7 +129,7 @@ export function ShoppingPage() {
                         {s.title}
                       </strong>
                       <small className="mt-1 block text-[length:calc(11px*var(--fs))] opacity-80">
-                        {s.store || t('shopping.noStore')} · <Icon name={st.icon} className="size-[1.5em]" /> {catLabel(s)} · {s.date} {s.time}
+                        {s.store || t('shopping.noStore')} · <Icon name={st.icon} className="size-[1.5em]" /> {catLabel(s)} · {s.date} {formatTime(s.time, lng)}
                         {s.unitPrice != null && ` · ${formatQty(s.quantity)} × ${money(s.unitPrice, cur)}`}
                         {s.unitPrice == null && s.quantity != null && s.quantity !== 1 && ` · ${t('shopping.qtyOnly', { count: s.quantity })}`}
                       </small>
@@ -262,9 +264,9 @@ function ExpenseDialog({ expense, onClose }: { expense: Expense | null; onClose:
         {draft.cat === 'other' && (
           <Field label={t('shopping.form.customCat')} placeholder={t('shopping.form.customCatPlaceholder')} value={draft.customCat ?? ''} onChange={(e) => set({ customCat: e.target.value })} />
         )}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid gap-3 min-[30rem]:grid-cols-2">
           <Field label={t('shopping.form.date')} type="date" value={draft.date} onChange={(e) => set({ date: e.target.value })} />
-          <Field label={t('shopping.form.time')} type="time" value={draft.time} onChange={(e) => set({ time: e.target.value })} />
+          <TimeField optional label={t('shopping.form.time')} value={draft.time} onChange={(time) => set({ time })} />
         </div>
         <div className="grid gap-1.5 text-xs font-semibold text-muted">
           {t('shopping.form.color')}

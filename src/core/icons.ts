@@ -4,7 +4,7 @@
  */
 export const ICON_NAMES = [
   // 時間軸生活插畫
-  'wake', 'sleep', 'study', 'work', 'rest', 'meal', 'shopping', 'exercise', 'health', 'default',
+  'wake', 'sleep', 'study', 'work', 'rest', 'meal', 'shopping', 'exercise', 'health', 'vacation', 'train', 'flight', 'book', 'default',
   // 導覽
   'today', 'calendar', 'pin', 'tasks', 'settings', 'reminders', 'search', 'subscription', 'inventory',
   // 通用

@@ -462,6 +462,10 @@
     "shopping": "買い物",
     "exercise": "運動",
     "health": "通院・美容",
+    "vacation": "旅行・バカンス",
+    "train": "電車",
+    "flight": "飛行機",
+    "book": "読書・教科書",
     "default": "その他"
   },
   "subs": {
@@ -709,5 +713,15 @@
     "customPlaceholder": "例：฿、RM、₫、pt",
     "customHelp": "8 文字まで。3 文字の大文字コード（例：THB）はその通貨の表示形式になります。",
     "customRequired": "カスタム通貨記号を入力してください"
+  },
+  "time": {
+    "hour": "時",
+    "minute": "分",
+    "period": "午前／午後",
+    "pick": "{{label}}を選ぶ",
+    "clear": "{{label}}をクリア",
+    "done": "完了",
+    "hourInvalid": "時は 1–12 で入力してください（0–23 の 24 時間表記も可）",
+    "minuteInvalid": "分は 00–59 で入力してください"
   }
 }

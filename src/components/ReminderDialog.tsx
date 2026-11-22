@@ -8,6 +8,7 @@ import { useAppStore } from '../store/useAppStore'
 import { Button } from './Button'
 import { Dialog } from './Dialog'
 import { Field } from './Field'
+import { TimeField } from './TimeField'
 import { reminderPreview, weekdayLabels } from './reminderText'
 
 type Draft = Omit<Reminder, 'id'>
@@ -172,9 +173,9 @@ export function ReminderDialog({ reminder, onClose }: { reminder: Reminder | nul
         </div>
 
         <div className="grid gap-1.5">
-          <div className="grid grid-cols-2 gap-3">
-            <Field label={t('reminders.form.start')} type="time" value={draft.start} onChange={(e) => set({ start: e.target.value })} />
-            <Field label={t('reminders.form.end')} type="time" value={draft.end} onChange={(e) => set({ end: e.target.value })} />
+          <div className="grid gap-3 min-[30rem]:grid-cols-2">
+            <TimeField optional label={t('reminders.form.start')} value={draft.start} onChange={(start) => set({ start })} />
+            <TimeField optional label={t('reminders.form.end')} value={draft.end} onChange={(end) => set({ end })} />
           </div>
           <p className="text-[length:calc(11px*var(--fs))] text-muted">{t('reminders.form.timeHint')}</p>
         </div>

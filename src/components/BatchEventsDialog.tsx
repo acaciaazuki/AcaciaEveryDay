@@ -6,6 +6,7 @@ import { Button } from './Button'
 import { ColorSwatches } from './ColorSwatches'
 import { Dialog } from './Dialog'
 import { Field } from './Field'
+import { TimeField } from './TimeField'
 import { MonthNav } from './MonthNav'
 
 /** 選多個日期，一次建立相同的行程（舊版「任務批次輸入」） */
@@ -43,9 +44,9 @@ export function BatchEventsDialog({ initialYear, initialMonth, onClose }: { init
     <Dialog open onOpenChange={(o) => !o && onClose()} title={t('calendar.batchForm.title')}>
       <form onSubmit={submit} className="grid gap-4">
         <Field label={t('calendar.batchForm.name')} placeholder={t('calendar.batchForm.namePlaceholder')} value={title} onChange={(e) => setTitle(e.target.value)} autoFocus />
-        <div className="grid grid-cols-2 gap-3">
-          <Field label={t('calendar.batchForm.start')} type="time" value={start} onChange={(e) => setStart(e.target.value)} />
-          <Field label={t('calendar.batchForm.end')} type="time" value={end} onChange={(e) => setEnd(e.target.value)} />
+        <div className="grid gap-3 min-[30rem]:grid-cols-2">
+          <TimeField label={t('calendar.batchForm.start')} value={start} onChange={setStart} />
+          <TimeField label={t('calendar.batchForm.end')} value={end} onChange={setEnd} />
         </div>
         <div className="grid gap-1.5 text-xs font-semibold text-muted">
           {t('calendar.batchForm.color')}

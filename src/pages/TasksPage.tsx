@@ -5,17 +5,19 @@ import { Button } from '../components/Button'
 import { ColorSwatches, TextColorSwatches } from '../components/ColorSwatches'
 import { Dialog } from '../components/Dialog'
 import { Field } from '../components/Field'
+import { TimeField } from '../components/TimeField'
 import { PageHead } from '../components/PageHead'
 import { DEFAULT_TEXT_COLOR } from '../core/categories'
 import type { Task } from '../core/schema'
 import { useOpenFromUrl } from '../hooks/useOpenFromUrl'
+import { formatTime } from '../core/time'
 import { useAppStore } from '../store/useAppStore'
 
 type Draft = Omit<Task, 'id' | 'done'>
 const blank: Draft = { title: '', loc: '', date: '', time: '', titleColor: DEFAULT_TEXT_COLOR, bgColor: '#ffffff' }
 
 export function TasksPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const tasks = useAppStore((s) => s.tasks)
   const toggleTask = useAppStore((s) => s.toggleTask)
   const [editing, setEditing] = useState<Task | 'new' | null>(null)
@@ -69,7 +71,7 @@ export function TasksPage() {
                             )}
                             {(task.date || task.time) && (
                               <span className="inline-flex items-center gap-1">
-                                <Icon name="calendar" className="size-[1.5em]" /> {task.date} {task.time}
+                                <Icon name="calendar" className="size-[1.5em]" /> {task.date} {formatTime(task.time, i18n.resolvedLanguage)}
                               </span>
                             )}
                           </p>
@@ -113,9 +115,9 @@ function TaskDialog({ task, onClose }: { task: Task | null; onClose: () => void 
         <Field label={t('tasks.form.title')} placeholder={t('tasks.form.titlePlaceholder')} value={draft.title} onChange={(e) => set({ title: e.target.value })} autoFocus />
         {error && <p className="-mt-2 text-xs text-[#c2583d]">{error}</p>}
         <Field label={t('tasks.form.loc')} value={draft.loc} onChange={(e) => set({ loc: e.target.value })} />
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid gap-3 min-[30rem]:grid-cols-2">
           <Field label={t('tasks.form.date')} type="date" value={draft.date} onChange={(e) => set({ date: e.target.value })} />
-          <Field label={t('tasks.form.time')} type="time" value={draft.time} onChange={(e) => set({ time: e.target.value })} />
+          <TimeField optional label={t('tasks.form.time')} value={draft.time} onChange={(time) => set({ time })} />
         </div>
         <div className="grid gap-1.5 text-xs font-semibold text-muted">
           {t('tasks.form.color')}

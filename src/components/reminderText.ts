@@ -1,5 +1,6 @@
 import type { TFunction } from 'i18next'
 import type { Reminder } from '../core/schema'
+import { formatTime } from '../core/time'
 
 type Rule = Pick<Reminder, 'place' | 'trigger' | 'days' | 'customDays' | 'start' | 'end' | 'items'>
 
@@ -13,9 +14,9 @@ export function weekdayLabels(lng: string | undefined) {
 export function whenText(t: TFunction, lng: string | undefined, r: Pick<Rule, 'days' | 'customDays' | 'start' | 'end'>): string {
   const names = weekdayLabels(lng)
   const days = r.days === 'custom' ? [...r.customDays].sort((a, b) => ((a + 6) % 7) - ((b + 6) % 7)).map((d) => names[d]).join(t('reminders.itemSep')) || t('reminders.days.custom') : t(`reminders.days.${r.days}`)
-  if (r.start && r.end) return t('reminders.preview.range', { days, start: r.start, end: r.end })
-  if (r.start) return t('reminders.preview.fromOnly', { days, start: r.start })
-  if (r.end) return t('reminders.preview.untilOnly', { days, end: r.end })
+  if (r.start && r.end) return t('reminders.preview.range', { days, start: formatTime(r.start, lng), end: formatTime(r.end, lng) })
+  if (r.start) return t('reminders.preview.fromOnly', { days, start: formatTime(r.start, lng) })
+  if (r.end) return t('reminders.preview.untilOnly', { days, end: formatTime(r.end, lng) })
   return days
 }
 

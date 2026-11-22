@@ -8,6 +8,7 @@ import { PageHead } from '../components/PageHead'
 import { monthCells, shiftMonth, weekdayNames } from '../core/calendar'
 import { toLocalISO } from '../core/date'
 import type { CalendarEvent } from '../core/schema'
+import { formatTime, formatTimeRange } from '../core/time'
 import { eventsOn } from '../core/today'
 import { useNow } from '../hooks/useNow'
 import { useOpenFromUrl } from '../hooks/useOpenFromUrl'
@@ -19,6 +20,7 @@ const MAX_CHIPS = 6
 export function CalendarPage() {
   const { t, i18n } = useTranslation()
   const events = useAppStore((s) => s.events)
+  const lng = i18n.resolvedLanguage
   const now = useNow()
   const todayISO = toLocalISO(now)
   const [ym, setYm] = useState(() => ({ year: now.getFullYear(), month: now.getMonth() }))
@@ -106,7 +108,7 @@ export function CalendarPage() {
                         className="truncate rounded px-1.5 py-px text-left text-[length:calc(10px*var(--fs))] leading-4 font-semibold"
                         style={{ background: e.bgColor || '#eaf6ef', color: e.titleColor || '#263633' }}
                       >
-                        {e.start} {e.title}
+                        {formatTime(e.start, lng)} {e.title}
                       </button>
                     ))}
                     {evs.length > MAX_CHIPS && <span className="px-1.5 text-[length:calc(10px*var(--fs))] text-muted">{t('calendar.more', { count: evs.length - MAX_CHIPS })}</span>}
@@ -135,7 +137,7 @@ export function CalendarPage() {
                       {e.title}
                     </strong>
                     <small className="text-[length:calc(11px*var(--fs))] text-muted">
-                      {e.start}–{e.end} {e.note && `· ${e.note}`}
+                      {formatTimeRange(e.start, e.end, lng)} {e.note && `· ${e.note}`}
                     </small>
                   </button>
                 </li>

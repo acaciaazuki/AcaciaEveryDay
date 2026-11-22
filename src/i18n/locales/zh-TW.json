@@ -462,6 +462,10 @@
     "shopping": "購物",
     "exercise": "運動",
     "health": "看診美容",
+    "vacation": "度假旅行",
+    "train": "火車",
+    "flight": "飛機",
+    "book": "課本閱讀",
     "default": "一般"
   },
   "subs": {
@@ -709,5 +713,15 @@
     "customPlaceholder": "例如 ฿、RM、₫、點",
     "customHelp": "最多 8 個字。輸入三碼大寫代碼（例如 THB）會自動套用該幣別的格式。",
     "customRequired": "請輸入自訂幣別符號"
+  },
+  "time": {
+    "hour": "小時",
+    "minute": "分鐘",
+    "period": "AM／PM",
+    "pick": "點選{{label}}",
+    "clear": "清除{{label}}",
+    "done": "完成",
+    "hourInvalid": "小時請輸入 1–12（也可以打 0–23 的 24 小時制）",
+    "minuteInvalid": "分鐘請輸入 00–59"
   }
 }
