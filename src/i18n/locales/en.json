@@ -665,9 +665,9 @@
     }
   },
   "licenses": {
-    "link": "Open-source licenses",
-    "title": "Open-source licenses",
-    "intro": "ACACIA is built with the open-source packages below. Thanks to their authors and communities. Each entry lists its license and copyright notice, and you can read the full license text.",
+    "link": "Third-party licenses",
+    "title": "Third-party licenses",
+    "intro": "ACACIA is built with the third-party packages below. Thanks to their authors and communities. Each entry lists its license and copyright notice, and you can read the full license text.",
     "loading": "Loading…",
     "loadFail": "Couldn't load the license list. Please try again later.",
     "summary": "{{total}} packages: {{runtime}} ship with the site, {{dev}} are used only for development and builds.",

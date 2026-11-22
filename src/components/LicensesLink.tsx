@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 // 授權清單（含套件資料）只有點開時才下載，不影響首頁載入
 const LicensesDialog = lazy(() => import('./LicensesDialog'))
 
-/** 低調的「開源授權」小文字連結，點開授權清單面板 */
+/** 低調的「第三方授權清單」小文字連結，點開授權清單面板 */
 export function LicensesLink({ className = '' }: { className?: string }) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
