@@ -17,7 +17,7 @@ export async function requestNotify(): Promise<NotifyState> {
 export function showNotification(title: string, body: string, tag: string) {
   if (notifyState() !== 'granted') return
   try {
-    new Notification(title, { body, tag, icon: '/favicon.svg' })
+    new Notification(title, { body, tag, icon: '/icon-192.png?v=2' })
   } catch {
     // 部分行動瀏覽器只允許從 Service Worker 發通知，失敗時還有頁面內的提醒橫幅
   }

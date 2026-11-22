@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { Link, NavLink, Outlet, useLocation } from 'react-router'
 import { Icon } from '../components/AcaciaIcons'
 import type { IconName } from '../core/icons'
-import { BrandMark } from '../components/BrandMark'
+import { BootSplash, BrandLogo } from '../components/BrandMark'
 import { CommandPalette } from '../components/CommandPalette'
 import { ReminderBanner } from '../components/ReminderBanner'
 import { LicensesLink } from '../components/LicensesLink'
@@ -39,14 +39,16 @@ const linkClass = ({ isActive }: { isActive: boolean }) =>
  */
 export function Layout() {
   const status = useConsentStore((s) => s.status)
+  const { t } = useTranslation()
   if (status === 'accepted') return <AppShell />
+  // 讀取同意紀錄、或同意面板還在下載時，顯示相思樹載入畫面（和 index.html 的 #boot-splash 同一張圖）
+  const splash = <BootSplash label={t('app.loading')} />
+  if (status === 'loading') return splash
   return (
     <div className="min-h-dvh bg-oat">
-      {status === 'required' && (
-        <Suspense fallback={null}>
-          <ConsentGate />
-        </Suspense>
-      )}
+      <Suspense fallback={splash}>
+        <ConsentGate />
+      </Suspense>
     </div>
   )
 }
@@ -68,10 +70,7 @@ function AppShell() {
   return (
     <div className="min-h-dvh">
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-60 flex-col border-r border-line bg-paper px-4 py-6 min-[681px]:flex">
-        <div className="flex items-center gap-3 px-2.5 pb-7 text-lg font-extrabold tracking-tight">
-          <BrandMark />
-          {t('app.name')}
-        </div>
+        <BrandLogo name={t('app.name')} className="px-2.5 pb-7" />
         <button
           type="button"
           onClick={() => setSearchOpen(true)}

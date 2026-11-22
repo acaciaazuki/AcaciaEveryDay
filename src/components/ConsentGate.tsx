@@ -49,7 +49,7 @@ export default function ConsentGate() {
         <header className="grid gap-2 border-b border-line px-5 pt-[calc(14px+env(safe-area-inset-top))] pb-3 min-[681px]:px-6 min-[681px]:pt-5">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <span className="flex items-center gap-2 font-extrabold tracking-tight">
-              <BrandMark className="size-7" />
+              <BrandMark className="size-8" />
               {t('app.name')}
             </span>
             <div role="radiogroup" aria-label={t('consent.language')} className="ml-auto flex gap-1">

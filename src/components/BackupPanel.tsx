@@ -4,6 +4,7 @@ import { MAX_SNAPSHOTS } from '../core/backup'
 import { formatStamp } from '../core/time'
 import { useBackupStore } from '../store/useBackupStore'
 import { useSyncStore } from '../store/useSyncStore'
+import { AcaciaBranch } from './BrandMark'
 import { Button } from './Button'
 
 /** 設定頁「資料備份與搬家」裡的自動備份：狀態、開關、立即備份與歷史快照還原 */
@@ -52,7 +53,11 @@ export function BackupPanel() {
     <div className="mt-5 grid gap-3 border-t border-line pt-5">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="text-sm font-bold">{t('backup.title')}</h3>
+          <h3 className="flex items-center gap-2 text-sm font-bold">
+            {/* 備份標誌：備份或上傳雲端時輕輕擺動 */}
+            <AcaciaBranch className="w-12 shrink-0" active={busy || (signedIn && cloudStatus === 'uploading')} />
+            {t('backup.title')}
+          </h3>
           <p className="mt-0.5 text-xs leading-relaxed text-muted">{t('backup.help', { count: MAX_SNAPSHOTS })}</p>
         </div>
         <button
