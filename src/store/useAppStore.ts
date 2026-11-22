@@ -71,6 +71,8 @@ interface Actions {
   setFontSize: (size: FontSize) => void
   /** 預設貨幣（三碼 ISO，例如 TWD、USD）。只影響顯示與新增時的預設值，不改動已存的資料 */
   setCurrency: (currency: string) => void
+  /** 側邊欄某個區塊的自訂順序；傳 null 恢復預設順序 */
+  setNavOrder: (section: string, keys: string[] | null) => void
   /** 歸檔記帳：'ended' 把已結束週期的記帳收進年度記帳本，'current' 立即封存本期。回傳歸檔的筆數 */
   archiveShopping: (mode: 'ended' | 'current', todayISO: string) => number
   /** 把某個歸檔還原回記帳清單 */
@@ -205,6 +207,15 @@ export const useAppStore = create<AppState>()(
 
       setFontSize: (fontSize) => setState((s) => ({ settings: { ...s.settings, fontSize }, ...touch() })),
       setCurrency: (currency) => setState((s) => ({ settings: { ...s.settings, currency }, ...touch() })),
+      setNavOrder: (section, keys) =>
+        setState((s) => {
+          const { [section]: _old, ...rest } = s.settings.navOrder ?? {}
+          void _old
+          const navOrder = keys ? { ...rest, [section]: keys } : rest
+          const { navOrder: _prev, ...base } = s.settings
+          void _prev
+          return { settings: Object.keys(navOrder).length ? { ...base, navOrder } : base, ...touch() }
+        }),
 
       archiveShopping: (mode, todayISO) => {
         const { shopping, archives } = getState()

@@ -1,10 +1,11 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Icon } from '../components/AcaciaIcons'
-import { Link } from 'react-router'
+import { Link, useLocation } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { BackupPanel } from '../components/BackupPanel'
 import { Button } from '../components/Button'
 import { DeleteDataPanel } from '../components/DeleteDataPanel'
+import { NavOrderPanel } from '../components/NavOrderPanel'
 import { LicensesLink } from '../components/LicensesLink'
 import { PageHead } from '../components/PageHead'
 import { PrivacyLink } from '../components/PrivacyLink'
@@ -26,6 +27,13 @@ export function SettingsPage() {
   const lng = i18n.resolvedLanguage ?? 'zh-TW'
   const fileRef = useRef<HTMLInputElement>(null)
   const [msg, setMsg] = useState('')
+  const { hash } = useLocation()
+  const navOrderRef = useRef<HTMLElement>(null)
+
+  // 側邊欄「編輯排序」連到 /settings#nav-order，捲到排序區塊
+  useEffect(() => {
+    if (hash === '#nav-order') navOrderRef.current?.scrollIntoView?.({ block: 'start' })
+  }, [hash])
 
   const download = () => {
     const blob = new Blob([JSON.stringify(exportData(), null, 2)], { type: 'application/json' })
@@ -120,6 +128,11 @@ export function SettingsPage() {
               )
             })}
           </div>
+        </section>
+        <section id="nav-order" ref={navOrderRef} className="scroll-mt-4 rounded-(--radius-card) bg-paper p-6 shadow-card">
+          <h2 className="mb-1 font-bold">{t('settings.navOrder.title')}</h2>
+          <p className="mb-3 text-xs leading-relaxed text-muted">{t('settings.navOrder.help')}</p>
+          <NavOrderPanel section="collect" title={t('nav.sectionCollect')} />
         </section>
         <section className="rounded-(--radius-card) bg-paper p-6 shadow-card">
           <h2 className="mb-1 flex items-center gap-1.5 font-bold">
