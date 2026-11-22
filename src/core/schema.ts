@@ -1,6 +1,7 @@
 import { EVENT_ICON_KEYS } from './eventIcons'
 import { z } from 'zod'
 import { EXPENSE_CATEGORIES, PLACE_CATEGORY_KEYS } from './categories'
+import { PLACE_SORTS } from './placeSort'
 
 export const SCHEMA_VERSION = 2
 
@@ -109,6 +110,12 @@ export const placeSchema = z.object({
   note: z.string().default(''),
   url: z.string().default(''),
   bgColor: color,
+  /**
+   * 座標（選填），給「依距離排序」用。來源：使用者在地點表單貼上的座標或地圖連結，
+   * 或地點搜尋結果有附座標時一起帶入。舊資料沒有這兩個欄位，會試著從 url 抓，抓不到就當距離未知
+   */
+  lat: z.number().min(-90).max(90).optional(),
+  lng: z.number().min(-180).max(180).optional(),
 })
 
 export const FONT_SIZES = ['sm', 'md', 'lg', 'xl'] as const
@@ -132,6 +139,12 @@ export const settingsSchema = z.object({
   navOrder: z.record(z.string(), z.array(z.string())).optional(),
   /** 匯入國定假日時選的國家（ISO 3166 兩碼，例如 TW、JP）。沒有時依瀏覽器時區與語言推測，不會用到位置 */
   holidayCountry: z.string().regex(/^[A-Z]{2}$/).optional(),
+  /**
+   * 最愛地點的排序方式（自訂／種類／距離／今日營業）。沒有時是自訂順序。
+   * 自訂順序本身就是 places 陣列的順序，不另外存。
+   * 不認得的值（例如之後新版加的排序方式同步回舊版）當作沒設定，不讓整份資料讀取失敗
+   */
+  placeSort: z.enum(PLACE_SORTS).optional().catch(undefined),
 })
 
 export const REMINDER_RADII = [100, 300, 500] as const

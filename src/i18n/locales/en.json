@@ -147,7 +147,11 @@
       "note": "Notes (dishes to try, reminders)",
       "color": "Card background",
       "nameRequired": "Please enter a name",
-      "deleteConfirm": "Delete this place?"
+      "deleteConfirm": "Delete this place?",
+      "coords": "Coordinates (optional, for distance sorting)",
+      "coordsPlaceholder": "e.g. 40.7580, -73.9855",
+      "coordsHint": "Paste coordinates copied from Google Maps, or a map link containing @latitude,longitude. Places without coordinates are listed last when sorting by distance.",
+      "coordsInvalid": "Couldn’t read these coordinates. Paste “latitude, longitude” or a map link that contains them"
     },
     "note": {
       "closedDays": "Closed: {{days}}",
@@ -160,6 +164,43 @@
       "intro": "About: {{text}}",
       "highlights": "Highlights: {{text}}",
       "reviews": "From reviews:"
+    },
+    "sort": {
+      "label": "Sort",
+      "custom": "My order",
+      "category": "Category",
+      "distance": "Distance",
+      "open": "Open today",
+      "reorder": "Reorder",
+      "reorderTitle": "Reorder my places",
+      "reorderHint": "Drag the handle on the left, or use the up and down buttons. With a keyboard, use the arrow keys. The order saves automatically and is included in backups and sync.",
+      "done": "Done",
+      "needLocation": "Sorting by distance needs your current location. It is only used on this device to calculate distances and is never uploaded or saved. Until then, places stay in your order.",
+      "useLocation": "Use current location",
+      "locating": "Getting your current location… (showing your order for now)",
+      "located": "Sorted from nearest to farthest (your location is used only on this device and is never uploaded or saved).",
+      "relocate": "Update location",
+      "retry": "Try again",
+      "noCoords": "Places without coordinates: {{count}}. They are listed last; paste coordinates or a Google Maps link when editing a place.",
+      "distanceUnknown": "Distance unknown",
+      "m": "{{value}} m",
+      "km": "{{value}} km",
+      "openHint": "Uses this device’s current time to read today’s hours from each place’s “Hours & closed days”. Places with no hours, or hours that can’t be read, are listed last as unknown. Temporary closures and holidays are not reflected.",
+      "status": {
+        "open": "Open now",
+        "later": "Opens later today",
+        "laterAt": "Opens at {{time}}",
+        "ended": "Closed for today",
+        "closed": "Closed today",
+        "unknown": "Hours unknown"
+      },
+      "error": {
+        "denied": "Location permission is off, so places can’t be sorted by distance. Showing your order instead. Allow location in your browser or system settings, then try again.",
+        "unavailable": "Couldn’t get your current location. Showing your order instead.",
+        "timeout": "Getting your location timed out. Showing your order instead.",
+        "unsupported": "This browser doesn’t support location, so places can’t be sorted by distance. Showing your order instead.",
+        "consent": "Location can be used after you accept the privacy policy. Showing your order instead."
+      }
     }
   },
   "tasks": {
