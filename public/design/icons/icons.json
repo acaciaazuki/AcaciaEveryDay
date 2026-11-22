@@ -1,0 +1,103 @@
+[
+  {
+    "dir": "01-blue-magpie",
+    "slug": "blue-magpie",
+    "zh": "台灣藍鵲",
+    "en": "Formosan Blue Magpie",
+    "latin": "Urocissa caerulea",
+    "status": "台灣特有種（2007 年網路票選國鳥）",
+    "concept": "寶藍身體、黑頭、紅嘴，配一條長長的白端尾羽。長尾巴往右下延伸，像在畫面裡劃出一道「往前走」的弧線，呼應每天整理生活的節奏。",
+    "bg": "#e3f2ea"
+  },
+  {
+    "dir": "02-black-bear",
+    "slug": "black-bear",
+    "zh": "台灣黑熊",
+    "en": "Formosan Black Bear",
+    "latin": "Ursus thibetanus formosanus",
+    "status": "台灣特有亞種，胸前白色 V 字是招牌",
+    "concept": "圓頭圓耳的正面黑熊，胸口一道奶油色 V 字月牙。用圓潤幾何造型而不是卡通吉祥物，避免和既有的黑熊角色相像。",
+    "bg": "#f8efd4"
+  },
+  {
+    "dir": "03-formosan-salmon",
+    "slug": "formosan-salmon",
+    "zh": "櫻花鉤吻鮭",
+    "en": "Formosan Landlocked Salmon",
+    "latin": "Oncorhynchus masou formosanus",
+    "status": "台灣特有亞種，冰河孑遺生物、國寶魚",
+    "concept": "溪流裡的國寶魚：橄欖綠背、櫻花粉的側線與一排橢圓幼魚斑，下方一道淺藍水波。粉＋綠剛好是網站的配色。",
+    "bg": "#e2eff7",
+    "smallScale": 1.12
+  },
+  {
+    "dir": "04-muntjac",
+    "slug": "muntjac",
+    "zh": "山羌",
+    "en": "Formosan Reeves’s Muntjac",
+    "latin": "Muntiacus reevesi micrurus",
+    "status": "台灣特有亞種，中低海拔山林最常見的鹿科動物",
+    "concept": "大耳朵、小短角，額頭兩道深色 V 字稜線是山羌最好認的特徵。暖棕色臉在薄荷綠底上很跳，小尺寸也一眼看得出是鹿。",
+    "bg": "#dff2e9"
+  },
+  {
+    "dir": "05-macaque",
+    "slug": "macaque",
+    "zh": "台灣獼猴",
+    "en": "Formosan Rock Macaque",
+    "latin": "Macaca cyclopis",
+    "status": "台灣特有種，也是台灣唯一的原生靈長類",
+    "concept": "灰褐毛圓臉、粉橘色心形臉蛋與招牌的短眉骨，表情溫和帶點笑意，給人「每天一起生活」的親切感。",
+    "bg": "#f8efd4"
+  },
+  {
+    "dir": "06-taiwan-barbet",
+    "slug": "taiwan-barbet",
+    "zh": "五色鳥",
+    "en": "Taiwan Barbet",
+    "latin": "Psilopogon nuchalis",
+    "status": "台灣特有種，「森林裡的花和尚」",
+    "concept": "綠身體、藍臉、黃喉、紅斑、黑眉，一隻鳥就有五種顏色。圓滾滾的身形像在樹洞口探頭，代表一天裡大大小小、五顏六色的事。",
+    "bg": "#faf1d2"
+  },
+  {
+    "dir": "07-taiwania",
+    "slug": "taiwania",
+    "zh": "台灣杉",
+    "en": "Taiwania",
+    "latin": "Taiwania cryptomerioides",
+    "status": "以台灣命名、首次在台灣發現的巨木（亞洲大陸也有零星分布，非嚴格特有）",
+    "concept": "台灣最高的樹之一，層層下垂的枝葉像一座寶塔。後方是淡綠色的中央山脈，寓意穩穩向上長、慢慢累積的日常。",
+    "bg": "#dff2e9"
+  },
+  {
+    "dir": "08-golden-rain-tree",
+    "slug": "golden-rain-tree",
+    "zh": "台灣欒樹",
+    "en": "Taiwan Golden-rain Tree",
+    "latin": "Koelreuteria elegans subsp. formosana",
+    "status": "台灣特有亞種，秋天黃花、紅果、綠葉同時出現，被稱為「四色樹」",
+    "concept": "秋天的台灣欒樹：一串串粉紅色紙燈籠般的蒴果，加上點點金黃小花。粉、黃、綠三色很柔和，最貼近網站的粉彩感。",
+    "bg": "#dff2e9"
+  },
+  {
+    "dir": "09-yushan-rhododendron",
+    "slug": "yushan-rhododendron",
+    "zh": "玉山杜鵑",
+    "en": "Yushan Rhododendron",
+    "latin": "Rhododendron pseudochrysanthum",
+    "status": "台灣特有種，盛開於玉山等高山地區",
+    "concept": "高山上的粉白杜鵑花團，背景是戴著雪頂的玉山。花團像一束捧花，象徵把每天的小事整理成一束好看的生活。",
+    "bg": "#e2eff7"
+  },
+  {
+    "dir": "10-formosa-lily",
+    "slug": "formosa-lily",
+    "zh": "台灣百合",
+    "en": "Formosa Lily",
+    "latin": "Lilium formosanum",
+    "status": "台灣特有種，從海邊到高山都能生長，象徵堅韌",
+    "concept": "在鼠尾草綠底上的一朵白色喇叭花，花瓣外側帶淡紫紅條紋。十款裡唯一的深底設計，在淺色瀏覽器分頁最醒目。",
+    "bg": "#4a987b"
+  }
+]

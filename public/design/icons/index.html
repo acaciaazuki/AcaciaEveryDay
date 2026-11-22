@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>網站圖示候選</title>
+<link rel="icon" href="data:,">
+<style>
+:root{--ink:#263633;--muted:#6f7f7a;--sage:#3d876c;--mint:#dff2e9;--line:#e3ebe6;--paper:#fff;--oat:#f7faf8}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--ink:#e6efeb;--muted:#9fb0aa;--sage:#7cc7a6;--mint:#1f3a30;--line:#2c3a35;--paper:#18211e;--oat:#111816}}
+:root[data-theme=dark]{--ink:#e6efeb;--muted:#9fb0aa;--sage:#7cc7a6;--mint:#1f3a30;--line:#2c3a35;--paper:#18211e;--oat:#111816}
+*{box-sizing:border-box}
+body{margin:0;background:var(--oat);color:var(--ink);font:15px/1.6 'DM Sans','Noto Sans TC',system-ui,sans-serif}
+main{max-width:1080px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:26px;margin:0 0 4px}
+.lead{color:var(--muted);margin:0 0 20px}
+.toggle{float:right;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:10px;padding:6px 12px;font:inherit;cursor:pointer}
+h2{font-size:19px;margin:0}
+h2 small{font-weight:500;color:var(--muted);font-size:13px;margin-left:6px}
+.no{display:inline-block;background:var(--mint);color:var(--sage);border-radius:8px;padding:0 8px;margin-right:8px;font-size:14px}
+.panel,.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px;margin:0 0 18px;box-shadow:0 12px 36px #29483a0b}
+.panel h3{margin:0 0 10px;font-size:16px}
+.card header{display:flex;gap:14px;align-items:center}
+.latin{margin:2px 0 0;color:var(--muted);font-size:13px}
+.concept{margin:12px 0}
+.bg{border-radius:12px;padding:14px;margin:8px 0;overflow-x:auto}
+.bg.light{background:#ffffff;border:1px solid #e8eeea}
+.bg.dark{background:#1f2124}
+.sizes{display:flex;gap:18px;align-items:flex-end;min-width:max-content}
+.sizes figure{margin:0;text-align:center}
+.sizes .px{display:flex;align-items:center;justify-content:center;min-height:128px}
+.sizes figcaption{font-size:12px;color:#8a9893;margin-top:4px}
+.zoom{image-rendering:pixelated}
+.ios{border-radius:22.5%}
+.mask-circle{border-radius:50%}
+.mask-squircle{border-radius:30%}
+.mocks{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:8px}
+.tabbar{display:flex;gap:2px;padding:8px 8px 0;border-radius:10px 10px 0 0;overflow-x:auto;max-width:100%}
+.tabbar.light{background:#dee1e6}.tabbar.dark{background:#202124}
+.tab{display:flex;align-items:center;gap:8px;width:200px;flex:none;padding:8px 10px;border-radius:8px 8px 0 0;font:12px system-ui,sans-serif}
+.tabbar.light .tab{background:#fff;color:#202124}.tabbar.dark .tab{background:#35363a;color:#e8eaed}
+.tab span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tab i{font-style:normal;opacity:.6}
+.tabbar.multi .tab{width:150px}
+.mini-home{background:linear-gradient(160deg,#a8c9e0,#e8c7d3);border-radius:14px;padding:12px 18px}
+.app{margin:0;text-align:center;width:72px}
+.app img{border-radius:22.5%;display:block;margin:0 auto;box-shadow:0 1px 3px #0003}
+.app figcaption{font:11px/1.3 -apple-system,system-ui,sans-serif;color:#fff;margin-top:5px;text-shadow:0 1px 2px #0006;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.phone{max-width:360px;border-radius:36px;padding:28px 18px;background:linear-gradient(160deg,#9cc3dd,#d9b8c9 60%,#f0d9b5);display:grid;grid-template-columns:repeat(4,1fr);gap:18px 6px;justify-items:center}
+.phone.dark{background:linear-gradient(160deg,#1d2b3a,#3a2635 60%,#2c2a22)}
+.phones{display:flex;flex-wrap:wrap;gap:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.grid a{display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:inherit;padding:10px;border-radius:12px;border:1px solid var(--line)}
+.grid a:hover{border-color:var(--sage)}
+.files{font-size:13px;color:var(--muted);margin:10px 0 0}
+a{color:var(--sage)}
+.howto ol{padding-left:20px;margin:0}.howto li{margin:6px 0}
+code{background:var(--mint);border-radius:6px;padding:1px 6px;font-size:13px}
+</style>
+</head>
+<body>
+<main>
+<button class="toggle" type="button" onclick="var r=document.documentElement;r.dataset.theme=r.dataset.theme==='dark'?'light':'dark'">切換頁面深淺色</button>
+<h1>網站圖示候選・台灣動植物十款</h1>
+<p class="lead">ACACIA Everyday 的 favicon／apple-touch-icon／PWA 圖示候選，目前還沒套用到正式網站。挑好喜歡的編號後再套用。</p>
+
+<section class="panel">
+<h3>十款總覽</h3>
+<div class="grid"><a href="#blue-magpie"><img src="01-blue-magpie/source.svg" width="96" height="96" alt=""><span><b>01</b> 台灣藍鵲</span></a><a href="#black-bear"><img src="02-black-bear/source.svg" width="96" height="96" alt=""><span><b>02</b> 台灣黑熊</span></a><a href="#formosan-salmon"><img src="03-formosan-salmon/source.svg" width="96" height="96" alt=""><span><b>03</b> 櫻花鉤吻鮭</span></a><a href="#muntjac"><img src="04-muntjac/source.svg" width="96" height="96" alt=""><span><b>04</b> 山羌</span></a><a href="#macaque"><img src="05-macaque/source.svg" width="96" height="96" alt=""><span><b>05</b> 台灣獼猴</span></a><a href="#taiwan-barbet"><img src="06-taiwan-barbet/source.svg" width="96" height="96" alt=""><span><b>06</b> 五色鳥</span></a><a href="#taiwania"><img src="07-taiwania/source.svg" width="96" height="96" alt=""><span><b>07</b> 台灣杉</span></a><a href="#golden-rain-tree"><img src="08-golden-rain-tree/source.svg" width="96" height="96" alt=""><span><b>08</b> 台灣欒樹</span></a><a href="#yushan-rhododendron"><img src="09-yushan-rhododendron/source.svg" width="96" height="96" alt=""><span><b>09</b> 玉山杜鵑</span></a><a href="#formosa-lily"><img src="10-formosa-lily/source.svg" width="96" height="96" alt=""><span><b>10</b> 台灣百合</span></a></div>
+</section>
+
+<section class="panel">
+<h3>瀏覽器分頁（實際 16px，高解析螢幕用 32px）</h3>
+<div class="tabbar light multi"><div class="tab"><img src="01-blue-magpie/favicon-16.png" srcset="01-blue-magpie/favicon-32.png 2x" width="16" height="16" alt=""><span>01 台灣藍鵲</span><i>×</i></div><div class="tab"><img src="02-black-bear/favicon-16.png" srcset="02-black-bear/favicon-32.png 2x" width="16" height="16" alt=""><span>02 台灣黑熊</span><i>×</i></div><div class="tab"><img src="03-formosan-salmon/favicon-16.png" srcset="03-formosan-salmon/favicon-32.png 2x" width="16" height="16" alt=""><span>03 櫻花鉤吻鮭</span><i>×</i></div><div class="tab"><img src="04-muntjac/favicon-16.png" srcset="04-muntjac/favicon-32.png 2x" width="16" height="16" alt=""><span>04 山羌</span><i>×</i></div><div class="tab"><img src="05-macaque/favicon-16.png" srcset="05-macaque/favicon-32.png 2x" width="16" height="16" alt=""><span>05 台灣獼猴</span><i>×</i></div></div>
+<div class="tabbar light multi" style="border-radius:0"><div class="tab"><img src="06-taiwan-barbet/favicon-16.png" srcset="06-taiwan-barbet/favicon-32.png 2x" width="16" height="16" alt=""><span>06 五色鳥</span><i>×</i></div><div class="tab"><img src="07-taiwania/favicon-16.png" srcset="07-taiwania/favicon-32.png 2x" width="16" height="16" alt=""><span>07 台灣杉</span><i>×</i></div><div class="tab"><img src="08-golden-rain-tree/favicon-16.png" srcset="08-golden-rain-tree/favicon-32.png 2x" width="16" height="16" alt=""><span>08 台灣欒樹</span><i>×</i></div><div class="tab"><img src="09-yushan-rhododendron/favicon-16.png" srcset="09-yushan-rhododendron/favicon-32.png 2x" width="16" height="16" alt=""><span>09 玉山杜鵑</span><i>×</i></div><div class="tab"><img src="10-formosa-lily/favicon-16.png" srcset="10-formosa-lily/favicon-32.png 2x" width="16" height="16" alt=""><span>10 台灣百合</span><i>×</i></div></div>
+<div style="height:10px"></div>
+<div class="tabbar dark multi"><div class="tab"><img src="01-blue-magpie/favicon-16.png" srcset="01-blue-magpie/favicon-32.png 2x" width="16" height="16" alt=""><span>01 台灣藍鵲</span><i>×</i></div><div class="tab"><img src="02-black-bear/favicon-16.png" srcset="02-black-bear/favicon-32.png 2x" width="16" height="16" alt=""><span>02 台灣黑熊</span><i>×</i></div><div class="tab"><img src="03-formosan-salmon/favicon-16.png" srcset="03-formosan-salmon/favicon-32.png 2x" width="16" height="16" alt=""><span>03 櫻花鉤吻鮭</span><i>×</i></div><div class="tab"><img src="04-muntjac/favicon-16.png" srcset="04-muntjac/favicon-32.png 2x" width="16" height="16" alt=""><span>04 山羌</span><i>×</i></div><div class="tab"><img src="05-macaque/favicon-16.png" srcset="05-macaque/favicon-32.png 2x" width="16" height="16" alt=""><span>05 台灣獼猴</span><i>×</i></div></div>
+<div class="tabbar dark multi" style="border-radius:0"><div class="tab"><img src="06-taiwan-barbet/favicon-16.png" srcset="06-taiwan-barbet/favicon-32.png 2x" width="16" height="16" alt=""><span>06 五色鳥</span><i>×</i></div><div class="tab"><img src="07-taiwania/favicon-16.png" srcset="07-taiwania/favicon-32.png 2x" width="16" height="16" alt=""><span>07 台灣杉</span><i>×</i></div><div class="tab"><img src="08-golden-rain-tree/favicon-16.png" srcset="08-golden-rain-tree/favicon-32.png 2x" width="16" height="16" alt=""><span>08 台灣欒樹</span><i>×</i></div><div class="tab"><img src="09-yushan-rhododendron/favicon-16.png" srcset="09-yushan-rhododendron/favicon-32.png 2x" width="16" height="16" alt=""><span>09 玉山杜鵑</span><i>×</i></div><div class="tab"><img src="10-formosa-lily/favicon-16.png" srcset="10-formosa-lily/favicon-32.png 2x" width="16" height="16" alt=""><span>10 台灣百合</span><i>×</i></div></div>
+</section>
+
+<section class="panel">
+<h3>iOS 主畫面（加入主畫面後的樣子）</h3>
+<div class="phones">
+<div class="phone"><figure class="app"><img src="01-blue-magpie/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>01 台灣藍鵲</figcaption></figure><figure class="app"><img src="02-black-bear/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>02 台灣黑熊</figcaption></figure><figure class="app"><img src="03-formosan-salmon/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>03 櫻花鉤吻鮭</figcaption></figure><figure class="app"><img src="04-muntjac/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>04 山羌</figcaption></figure><figure class="app"><img src="05-macaque/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>05 台灣獼猴</figcaption></figure><figure class="app"><img src="06-taiwan-barbet/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>06 五色鳥</figcaption></figure><figure class="app"><img src="07-taiwania/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>07 台灣杉</figcaption></figure><figure class="app"><img src="08-golden-rain-tree/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>08 台灣欒樹</figcaption></figure><figure class="app"><img src="09-yushan-rhododendron/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>09 玉山杜鵑</figcaption></figure><figure class="app"><img src="10-formosa-lily/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>10 台灣百合</figcaption></figure></div>
+<div class="phone dark"><figure class="app"><img src="01-blue-magpie/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>01 台灣藍鵲</figcaption></figure><figure class="app"><img src="02-black-bear/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>02 台灣黑熊</figcaption></figure><figure class="app"><img src="03-formosan-salmon/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>03 櫻花鉤吻鮭</figcaption></figure><figure class="app"><img src="04-muntjac/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>04 山羌</figcaption></figure><figure class="app"><img src="05-macaque/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>05 台灣獼猴</figcaption></figure><figure class="app"><img src="06-taiwan-barbet/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>06 五色鳥</figcaption></figure><figure class="app"><img src="07-taiwania/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>07 台灣杉</figcaption></figure><figure class="app"><img src="08-golden-rain-tree/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>08 台灣欒樹</figcaption></figure><figure class="app"><img src="09-yushan-rhododendron/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>09 玉山杜鵑</figcaption></figure><figure class="app"><img src="10-formosa-lily/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>10 台灣百合</figcaption></figure></div>
+</div>
+</section>
+
+
+<section class="card" id="blue-magpie">
+  <header>
+    <img src="01-blue-magpie/source.svg" width="72" height="72" alt="">
+    <div>
+      <h2><span class="no">01</span>台灣藍鵲 <small>Formosan Blue Magpie</small></h2>
+      <p class="latin"><i>Urocissa caerulea</i>・台灣特有種（2007 年網路票選國鳥）</p>
+    </div>
+  </header>
+  <p class="concept">寶藍身體、黑頭、紅嘴，配一條長長的白端尾羽。長尾巴往右下延伸，像在畫面裡劃出一道「往前走」的弧線，呼應每天整理生活的節奏。</p>
+  <div class="bg light">
+  <div class="sizes">
+    <figure><div class="px"><img src="01-blue-magpie/favicon-16.png" width="16" height="16" alt=""></div><figcaption>16</figcaption></figure>
+    <figure><div class="px"><img src="01-blue-magpie/favicon-32.png" width="32" height="32" alt=""></div><figcaption>32</figcaption></figure>
+    <figure><div class="px"><img class="zoom" src="01-blue-magpie/favicon-16.png" width="64" height="64" alt=""></div><figcaption>16 放大 4 倍</figcaption></figure>
+    <figure><div class="px"><img class="ios" src="01-blue-magpie/apple-touch-icon.png" width="90" height="90" alt=""></div><figcaption>180 apple</figcaption></figure>
+    <figure><div class="px"><img src="01-blue-magpie/icon-512.png" width="128" height="128" alt=""></div><figcaption>512 PWA</figcaption></figure>
+    <figure><div class="px"><img class="mask-circle" src="01-blue-magpie/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓形</figcaption></figure>
+    <figure><div class="px"><img class="mask-squircle" src="01-blue-magpie/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓角</figcaption></figure>
+  </div></div>
+  <div class="bg dark">
+  <div class="sizes">
+    <figure><div class="px"><img src="01-blue-magpie/favicon-16.png" width="16" height="16" alt=""></div><figcaption>16</figcaption></figure>
+    <figure><div class="px"><img src="01-blue-magpie/favicon-32.png" width="32" height="32" alt=""></div><figcaption>32</figcaption></figure>
+    <figure><div class="px"><img class="zoom" src="01-blue-magpie/favicon-16.png" width="64" height="64" alt=""></div><figcaption>16 放大 4 倍</figcaption></figure>
+    <figure><div class="px"><img class="ios" src="01-blue-magpie/apple-touch-icon.png" width="90" height="90" alt=""></div><figcaption>180 apple</figcaption></figure>
+    <figure><div class="px"><img src="01-blue-magpie/icon-512.png" width="128" height="128" alt=""></div><figcaption>512 PWA</figcaption></figure>
+    <figure><div class="px"><img class="mask-circle" src="01-blue-magpie/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓形</figcaption></figure>
+    <figure><div class="px"><img class="mask-squircle" src="01-blue-magpie/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓角</figcaption></figure>
+  </div></div>
+  <div class="mocks">
+    <div class="tabbar light"><div class="tab"><img src="01-blue-magpie/favicon-16.png" srcset="01-blue-magpie/favicon-32.png 2x" width="16" height="16" alt=""><span>ACACIA Everyday</span><i>×</i></div></div>
+    <div class="tabbar dark"><div class="tab"><img src="01-blue-magpie/favicon-16.png" srcset="01-blue-magpie/favicon-32.png 2x" width="16" height="16" alt=""><span>ACACIA Everyday</span><i>×</i></div></div>
+    <div class="mini-home"><figure class="app"><img src="01-blue-magpie/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>ACACIA</figcaption></figure></div>
+  </div>
+  <p class="files">檔案：<a href="01-blue-magpie/source.svg">source.svg</a> · <a href="01-blue-magpie/favicon.svg">favicon.svg</a> · <a href="01-blue-magpie/favicon.ico">favicon.ico</a> · <a href="01-blue-magpie/apple-touch-icon.png">apple-touch-icon.png</a> · <a href="01-blue-magpie/icon-192.png">icon-192</a> · <a href="01-blue-magpie/icon-512.png">icon-512</a> · <a href="01-blue-magpie/icon-maskable-512.png">maskable-512</a></p>
+</section>
+<section class="card" id="black-bear">
+  <header>
+    <img src="02-black-bear/source.svg" width="72" height="72" alt="">
+    <div>
+      <h2><span class="no">02</span>台灣黑熊 <small>Formosan Black Bear</small></h2>
+      <p class="latin"><i>Ursus thibetanus formosanus</i>・台灣特有亞種，胸前白色 V 字是招牌</p>
+    </div>
+  </header>
+  <p class="concept">圓頭圓耳的正面黑熊，胸口一道奶油色 V 字月牙。用圓潤幾何造型而不是卡通吉祥物，避免和既有的黑熊角色相像。</p>
+  <div class="bg light">
+  <div class="sizes">
+    <figure><div class="px"><img src="02-black-bear/favicon-16.png" width="16" height="16" alt=""></div><figcaption>16</figcaption></figure>
+    <figure><div class="px"><img src="02-black-bear/favicon-32.png" width="32" height="32" alt=""></div><figcaption>32</figcaption></figure>
+    <figure><div class="px"><img class="zoom" src="02-black-bear/favicon-16.png" width="64" height="64" alt=""></div><figcaption>16 放大 4 倍</figcaption></figure>
+    <figure><div class="px"><img class="ios" src="02-black-bear/apple-touch-icon.png" width="90" height="90" alt=""></div><figcaption>180 apple</figcaption></figure>
+    <figure><div class="px"><img src="02-black-bear/icon-512.png" width="128" height="128" alt=""></div><figcaption>512 PWA</figcaption></figure>
+    <figure><div class="px"><img class="mask-circle" src="02-black-bear/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓形</figcaption></figure>
+    <figure><div class="px"><img class="mask-squircle" src="02-black-bear/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓角</figcaption></figure>
+  </div></div>
+  <div class="bg dark">
+  <div class="sizes">
+    <figure><div class="px"><img src="02-black-bear/favicon-16.png" width="16" height="16" alt=""></div><figcaption>16</figcaption></figure>
+    <figure><div class="px"><img src="02-black-bear/favicon-32.png" width="32" height="32" alt=""></div><figcaption>32</figcaption></figure>
+    <figure><div class="px"><img class="zoom" src="02-black-bear/favicon-16.png" width="64" height="64" alt=""></div><figcaption>16 放大 4 倍</figcaption></figure>
+    <figure><div class="px"><img class="ios" src="02-black-bear/apple-touch-icon.png" width="90" height="90" alt=""></div><figcaption>180 apple</figcaption></figure>
+    <figure><div class="px"><img src="02-black-bear/icon-512.png" width="128" height="128" alt=""></div><figcaption>512 PWA</figcaption></figure>
+    <figure><div class="px"><img class="mask-circle" src="02-black-bear/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓形</figcaption></figure>
+    <figure><div class="px"><img class="mask-squircle" src="02-black-bear/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓角</figcaption></figure>
+  </div></div>
+  <div class="mocks">
+    <div class="tabbar light"><div class="tab"><img src="02-black-bear/favicon-16.png" srcset="02-black-bear/favicon-32.png 2x" width="16" height="16" alt=""><span>ACACIA Everyday</span><i>×</i></div></div>
+    <div class="tabbar dark"><div class="tab"><img src="02-black-bear/favicon-16.png" srcset="02-black-bear/favicon-32.png 2x" width="16" height="16" alt=""><span>ACACIA Everyday</span><i>×</i></div></div>
+    <div class="mini-home"><figure class="app"><img src="02-black-bear/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>ACACIA</figcaption></figure></div>
+  </div>
+  <p class="files">檔案：<a href="02-black-bear/source.svg">source.svg</a> · <a href="02-black-bear/favicon.svg">favicon.svg</a> · <a href="02-black-bear/favicon.ico">favicon.ico</a> · <a href="02-black-bear/apple-touch-icon.png">apple-touch-icon.png</a> · <a href="02-black-bear/icon-192.png">icon-192</a> · <a href="02-black-bear/icon-512.png">icon-512</a> · <a href="02-black-bear/icon-maskable-512.png">maskable-512</a></p>
+</section>
+<section class="card" id="formosan-salmon">
+  <header>
+    <img src="03-formosan-salmon/source.svg" width="72" height="72" alt="">
+    <div>
+      <h2><span class="no">03</span>櫻花鉤吻鮭 <small>Formosan Landlocked Salmon</small></h2>
+      <p class="latin"><i>Oncorhynchus masou formosanus</i>・台灣特有亞種，冰河孑遺生物、國寶魚</p>
+    </div>
+  </header>
+  <p class="concept">溪流裡的國寶魚：橄欖綠背、櫻花粉的側線與一排橢圓幼魚斑，下方一道淺藍水波。粉＋綠剛好是網站的配色。</p>
+  <div class="bg light">
+  <div class="sizes">
+    <figure><div class="px"><img src="03-formosan-salmon/favicon-16.png" width="16" height="16" alt=""></div><figcaption>16</figcaption></figure>
+    <figure><div class="px"><img src="03-formosan-salmon/favicon-32.png" width="32" height="32" alt=""></div><figcaption>32</figcaption></figure>
+    <figure><div class="px"><img class="zoom" src="03-formosan-salmon/favicon-16.png" width="64" height="64" alt=""></div><figcaption>16 放大 4 倍</figcaption></figure>
+    <figure><div class="px"><img class="ios" src="03-formosan-salmon/apple-touch-icon.png" width="90" height="90" alt=""></div><figcaption>180 apple</figcaption></figure>
+    <figure><div class="px"><img src="03-formosan-salmon/icon-512.png" width="128" height="128" alt=""></div><figcaption>512 PWA</figcaption></figure>
+    <figure><div class="px"><img class="mask-circle" src="03-formosan-salmon/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓形</figcaption></figure>
+    <figure><div class="px"><img class="mask-squircle" src="03-formosan-salmon/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓角</figcaption></figure>
+  </div></div>
+  <div class="bg dark">
+  <div class="sizes">
+    <figure><div class="px"><img src="03-formosan-salmon/favicon-16.png" width="16" height="16" alt=""></div><figcaption>16</figcaption></figure>
+    <figure><div class="px"><img src="03-formosan-salmon/favicon-32.png" width="32" height="32" alt=""></div><figcaption>32</figcaption></figure>
+    <figure><div class="px"><img class="zoom" src="03-formosan-salmon/favicon-16.png" width="64" height="64" alt=""></div><figcaption>16 放大 4 倍</figcaption></figure>
+    <figure><div class="px"><img class="ios" src="03-formosan-salmon/apple-touch-icon.png" width="90" height="90" alt=""></div><figcaption>180 apple</figcaption></figure>
+    <figure><div class="px"><img src="03-formosan-salmon/icon-512.png" width="128" height="128" alt=""></div><figcaption>512 PWA</figcaption></figure>
+    <figure><div class="px"><img class="mask-circle" src="03-formosan-salmon/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓形</figcaption></figure>
+    <figure><div class="px"><img class="mask-squircle" src="03-formosan-salmon/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓角</figcaption></figure>
+  </div></div>
+  <div class="mocks">
+    <div class="tabbar light"><div class="tab"><img src="03-formosan-salmon/favicon-16.png" srcset="03-formosan-salmon/favicon-32.png 2x" width="16" height="16" alt=""><span>ACACIA Everyday</span><i>×</i></div></div>
+    <div class="tabbar dark"><div class="tab"><img src="03-formosan-salmon/favicon-16.png" srcset="03-formosan-salmon/favicon-32.png 2x" width="16" height="16" alt=""><span>ACACIA Everyday</span><i>×</i></div></div>
+    <div class="mini-home"><figure class="app"><img src="03-formosan-salmon/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>ACACIA</figcaption></figure></div>
+  </div>
+  <p class="files">檔案：<a href="03-formosan-salmon/source.svg">source.svg</a> · <a href="03-formosan-salmon/favicon.svg">favicon.svg</a> · <a href="03-formosan-salmon/favicon.ico">favicon.ico</a> · <a href="03-formosan-salmon/apple-touch-icon.png">apple-touch-icon.png</a> · <a href="03-formosan-salmon/icon-192.png">icon-192</a> · <a href="03-formosan-salmon/icon-512.png">icon-512</a> · <a href="03-formosan-salmon/icon-maskable-512.png">maskable-512</a></p>
+</section>
+<section class="card" id="muntjac">
+  <header>
+    <img src="04-muntjac/source.svg" width="72" height="72" alt="">
+    <div>
+      <h2><span class="no">04</span>山羌 <small>Formosan Reeves’s Muntjac</small></h2>
+      <p class="latin"><i>Muntiacus reevesi micrurus</i>・台灣特有亞種，中低海拔山林最常見的鹿科動物</p>
+    </div>
+  </header>
+  <p class="concept">大耳朵、小短角，額頭兩道深色 V 字稜線是山羌最好認的特徵。暖棕色臉在薄荷綠底上很跳，小尺寸也一眼看得出是鹿。</p>
+  <div class="bg light">
+  <div class="sizes">
+    <figure><div class="px"><img src="04-muntjac/favicon-16.png" width="16" height="16" alt=""></div><figcaption>16</figcaption></figure>
+    <figure><div class="px"><img src="04-muntjac/favicon-32.png" width="32" height="32" alt=""></div><figcaption>32</figcaption></figure>
+    <figure><div class="px"><img class="zoom" src="04-muntjac/favicon-16.png" width="64" height="64" alt=""></div><figcaption>16 放大 4 倍</figcaption></figure>
+    <figure><div class="px"><img class="ios" src="04-muntjac/apple-touch-icon.png" width="90" height="90" alt=""></div><figcaption>180 apple</figcaption></figure>
+    <figure><div class="px"><img src="04-muntjac/icon-512.png" width="128" height="128" alt=""></div><figcaption>512 PWA</figcaption></figure>
+    <figure><div class="px"><img class="mask-circle" src="04-muntjac/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓形</figcaption></figure>
+    <figure><div class="px"><img class="mask-squircle" src="04-muntjac/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓角</figcaption></figure>
+  </div></div>
+  <div class="bg dark">
+  <div class="sizes">
+    <figure><div class="px"><img src="04-muntjac/favicon-16.png" width="16" height="16" alt=""></div><figcaption>16</figcaption></figure>
+    <figure><div class="px"><img src="04-muntjac/favicon-32.png" width="32" height="32" alt=""></div><figcaption>32</figcaption></figure>
+    <figure><div class="px"><img class="zoom" src="04-muntjac/favicon-16.png" width="64" height="64" alt=""></div><figcaption>16 放大 4 倍</figcaption></figure>
+    <figure><div class="px"><img class="ios" src="04-muntjac/apple-touch-icon.png" width="90" height="90" alt=""></div><figcaption>180 apple</figcaption></figure>
+    <figure><div class="px"><img src="04-muntjac/icon-512.png" width="128" height="128" alt=""></div><figcaption>512 PWA</figcaption></figure>
+    <figure><div class="px"><img class="mask-circle" src="04-muntjac/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓形</figcaption></figure>
+    <figure><div class="px"><img class="mask-squircle" src="04-muntjac/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓角</figcaption></figure>
+  </div></div>
+  <div class="mocks">
+    <div class="tabbar light"><div class="tab"><img src="04-muntjac/favicon-16.png" srcset="04-muntjac/favicon-32.png 2x" width="16" height="16" alt=""><span>ACACIA Everyday</span><i>×</i></div></div>
+    <div class="tabbar dark"><div class="tab"><img src="04-muntjac/favicon-16.png" srcset="04-muntjac/favicon-32.png 2x" width="16" height="16" alt=""><span>ACACIA Everyday</span><i>×</i></div></div>
+    <div class="mini-home"><figure class="app"><img src="04-muntjac/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>ACACIA</figcaption></figure></div>
+  </div>
+  <p class="files">檔案：<a href="04-muntjac/source.svg">source.svg</a> · <a href="04-muntjac/favicon.svg">favicon.svg</a> · <a href="04-muntjac/favicon.ico">favicon.ico</a> · <a href="04-muntjac/apple-touch-icon.png">apple-touch-icon.png</a> · <a href="04-muntjac/icon-192.png">icon-192</a> · <a href="04-muntjac/icon-512.png">icon-512</a> · <a href="04-muntjac/icon-maskable-512.png">maskable-512</a></p>
+</section>
+<section class="card" id="macaque">
+  <header>
+    <img src="05-macaque/source.svg" width="72" height="72" alt="">
+    <div>
+      <h2><span class="no">05</span>台灣獼猴 <small>Formosan Rock Macaque</small></h2>
+      <p class="latin"><i>Macaca cyclopis</i>・台灣特有種，也是台灣唯一的原生靈長類</p>
+    </div>
+  </header>
+  <p class="concept">灰褐毛圓臉、粉橘色心形臉蛋與招牌的短眉骨，表情溫和帶點笑意，給人「每天一起生活」的親切感。</p>
+  <div class="bg light">
+  <div class="sizes">
+    <figure><div class="px"><img src="05-macaque/favicon-16.png" width="16" height="16" alt=""></div><figcaption>16</figcaption></figure>
+    <figure><div class="px"><img src="05-macaque/favicon-32.png" width="32" height="32" alt=""></div><figcaption>32</figcaption></figure>
+    <figure><div class="px"><img class="zoom" src="05-macaque/favicon-16.png" width="64" height="64" alt=""></div><figcaption>16 放大 4 倍</figcaption></figure>
+    <figure><div class="px"><img class="ios" src="05-macaque/apple-touch-icon.png" width="90" height="90" alt=""></div><figcaption>180 apple</figcaption></figure>
+    <figure><div class="px"><img src="05-macaque/icon-512.png" width="128" height="128" alt=""></div><figcaption>512 PWA</figcaption></figure>
+    <figure><div class="px"><img class="mask-circle" src="05-macaque/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓形</figcaption></figure>
+    <figure><div class="px"><img class="mask-squircle" src="05-macaque/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓角</figcaption></figure>
+  </div></div>
+  <div class="bg dark">
+  <div class="sizes">
+    <figure><div class="px"><img src="05-macaque/favicon-16.png" width="16" height="16" alt=""></div><figcaption>16</figcaption></figure>
+    <figure><div class="px"><img src="05-macaque/favicon-32.png" width="32" height="32" alt=""></div><figcaption>32</figcaption></figure>
+    <figure><div class="px"><img class="zoom" src="05-macaque/favicon-16.png" width="64" height="64" alt=""></div><figcaption>16 放大 4 倍</figcaption></figure>
+    <figure><div class="px"><img class="ios" src="05-macaque/apple-touch-icon.png" width="90" height="90" alt=""></div><figcaption>180 apple</figcaption></figure>
+    <figure><div class="px"><img src="05-macaque/icon-512.png" width="128" height="128" alt=""></div><figcaption>512 PWA</figcaption></figure>
+    <figure><div class="px"><img class="mask-circle" src="05-macaque/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓形</figcaption></figure>
+    <figure><div class="px"><img class="mask-squircle" src="05-macaque/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓角</figcaption></figure>
+  </div></div>
+  <div class="mocks">
+    <div class="tabbar light"><div class="tab"><img src="05-macaque/favicon-16.png" srcset="05-macaque/favicon-32.png 2x" width="16" height="16" alt=""><span>ACACIA Everyday</span><i>×</i></div></div>
+    <div class="tabbar dark"><div class="tab"><img src="05-macaque/favicon-16.png" srcset="05-macaque/favicon-32.png 2x" width="16" height="16" alt=""><span>ACACIA Everyday</span><i>×</i></div></div>
+    <div class="mini-home"><figure class="app"><img src="05-macaque/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>ACACIA</figcaption></figure></div>
+  </div>
+  <p class="files">檔案：<a href="05-macaque/source.svg">source.svg</a> · <a href="05-macaque/favicon.svg">favicon.svg</a> · <a href="05-macaque/favicon.ico">favicon.ico</a> · <a href="05-macaque/apple-touch-icon.png">apple-touch-icon.png</a> · <a href="05-macaque/icon-192.png">icon-192</a> · <a href="05-macaque/icon-512.png">icon-512</a> · <a href="05-macaque/icon-maskable-512.png">maskable-512</a></p>
+</section>
+<section class="card" id="taiwan-barbet">
+  <header>
+    <img src="06-taiwan-barbet/source.svg" width="72" height="72" alt="">
+    <div>
+      <h2><span class="no">06</span>五色鳥 <small>Taiwan Barbet</small></h2>
+      <p class="latin"><i>Psilopogon nuchalis</i>・台灣特有種，「森林裡的花和尚」</p>
+    </div>
+  </header>
+  <p class="concept">綠身體、藍臉、黃喉、紅斑、黑眉，一隻鳥就有五種顏色。圓滾滾的身形像在樹洞口探頭，代表一天裡大大小小、五顏六色的事。</p>
+  <div class="bg light">
+  <div class="sizes">
+    <figure><div class="px"><img src="06-taiwan-barbet/favicon-16.png" width="16" height="16" alt=""></div><figcaption>16</figcaption></figure>
+    <figure><div class="px"><img src="06-taiwan-barbet/favicon-32.png" width="32" height="32" alt=""></div><figcaption>32</figcaption></figure>
+    <figure><div class="px"><img class="zoom" src="06-taiwan-barbet/favicon-16.png" width="64" height="64" alt=""></div><figcaption>16 放大 4 倍</figcaption></figure>
+    <figure><div class="px"><img class="ios" src="06-taiwan-barbet/apple-touch-icon.png" width="90" height="90" alt=""></div><figcaption>180 apple</figcaption></figure>
+    <figure><div class="px"><img src="06-taiwan-barbet/icon-512.png" width="128" height="128" alt=""></div><figcaption>512 PWA</figcaption></figure>
+    <figure><div class="px"><img class="mask-circle" src="06-taiwan-barbet/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓形</figcaption></figure>
+    <figure><div class="px"><img class="mask-squircle" src="06-taiwan-barbet/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓角</figcaption></figure>
+  </div></div>
+  <div class="bg dark">
+  <div class="sizes">
+    <figure><div class="px"><img src="06-taiwan-barbet/favicon-16.png" width="16" height="16" alt=""></div><figcaption>16</figcaption></figure>
+    <figure><div class="px"><img src="06-taiwan-barbet/favicon-32.png" width="32" height="32" alt=""></div><figcaption>32</figcaption></figure>
+    <figure><div class="px"><img class="zoom" src="06-taiwan-barbet/favicon-16.png" width="64" height="64" alt=""></div><figcaption>16 放大 4 倍</figcaption></figure>
+    <figure><div class="px"><img class="ios" src="06-taiwan-barbet/apple-touch-icon.png" width="90" height="90" alt=""></div><figcaption>180 apple</figcaption></figure>
+    <figure><div class="px"><img src="06-taiwan-barbet/icon-512.png" width="128" height="128" alt=""></div><figcaption>512 PWA</figcaption></figure>
+    <figure><div class="px"><img class="mask-circle" src="06-taiwan-barbet/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓形</figcaption></figure>
+    <figure><div class="px"><img class="mask-squircle" src="06-taiwan-barbet/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓角</figcaption></figure>
+  </div></div>
+  <div class="mocks">
+    <div class="tabbar light"><div class="tab"><img src="06-taiwan-barbet/favicon-16.png" srcset="06-taiwan-barbet/favicon-32.png 2x" width="16" height="16" alt=""><span>ACACIA Everyday</span><i>×</i></div></div>
+    <div class="tabbar dark"><div class="tab"><img src="06-taiwan-barbet/favicon-16.png" srcset="06-taiwan-barbet/favicon-32.png 2x" width="16" height="16" alt=""><span>ACACIA Everyday</span><i>×</i></div></div>
+    <div class="mini-home"><figure class="app"><img src="06-taiwan-barbet/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>ACACIA</figcaption></figure></div>
+  </div>
+  <p class="files">檔案：<a href="06-taiwan-barbet/source.svg">source.svg</a> · <a href="06-taiwan-barbet/favicon.svg">favicon.svg</a> · <a href="06-taiwan-barbet/favicon.ico">favicon.ico</a> · <a href="06-taiwan-barbet/apple-touch-icon.png">apple-touch-icon.png</a> · <a href="06-taiwan-barbet/icon-192.png">icon-192</a> · <a href="06-taiwan-barbet/icon-512.png">icon-512</a> · <a href="06-taiwan-barbet/icon-maskable-512.png">maskable-512</a></p>
+</section>
+<section class="card" id="taiwania">
+  <header>
+    <img src="07-taiwania/source.svg" width="72" height="72" alt="">
+    <div>
+      <h2><span class="no">07</span>台灣杉 <small>Taiwania</small></h2>
+      <p class="latin"><i>Taiwania cryptomerioides</i>・以台灣命名、首次在台灣發現的巨木（亞洲大陸也有零星分布，非嚴格特有）</p>
+    </div>
+  </header>
+  <p class="concept">台灣最高的樹之一，層層下垂的枝葉像一座寶塔。後方是淡綠色的中央山脈，寓意穩穩向上長、慢慢累積的日常。</p>
+  <div class="bg light">
+  <div class="sizes">
+    <figure><div class="px"><img src="07-taiwania/favicon-16.png" width="16" height="16" alt=""></div><figcaption>16</figcaption></figure>
+    <figure><div class="px"><img src="07-taiwania/favicon-32.png" width="32" height="32" alt=""></div><figcaption>32</figcaption></figure>
+    <figure><div class="px"><img class="zoom" src="07-taiwania/favicon-16.png" width="64" height="64" alt=""></div><figcaption>16 放大 4 倍</figcaption></figure>
+    <figure><div class="px"><img class="ios" src="07-taiwania/apple-touch-icon.png" width="90" height="90" alt=""></div><figcaption>180 apple</figcaption></figure>
+    <figure><div class="px"><img src="07-taiwania/icon-512.png" width="128" height="128" alt=""></div><figcaption>512 PWA</figcaption></figure>
+    <figure><div class="px"><img class="mask-circle" src="07-taiwania/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓形</figcaption></figure>
+    <figure><div class="px"><img class="mask-squircle" src="07-taiwania/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓角</figcaption></figure>
+  </div></div>
+  <div class="bg dark">
+  <div class="sizes">
+    <figure><div class="px"><img src="07-taiwania/favicon-16.png" width="16" height="16" alt=""></div><figcaption>16</figcaption></figure>
+    <figure><div class="px"><img src="07-taiwania/favicon-32.png" width="32" height="32" alt=""></div><figcaption>32</figcaption></figure>
+    <figure><div class="px"><img class="zoom" src="07-taiwania/favicon-16.png" width="64" height="64" alt=""></div><figcaption>16 放大 4 倍</figcaption></figure>
+    <figure><div class="px"><img class="ios" src="07-taiwania/apple-touch-icon.png" width="90" height="90" alt=""></div><figcaption>180 apple</figcaption></figure>
+    <figure><div class="px"><img src="07-taiwania/icon-512.png" width="128" height="128" alt=""></div><figcaption>512 PWA</figcaption></figure>
+    <figure><div class="px"><img class="mask-circle" src="07-taiwania/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓形</figcaption></figure>
+    <figure><div class="px"><img class="mask-squircle" src="07-taiwania/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓角</figcaption></figure>
+  </div></div>
+  <div class="mocks">
+    <div class="tabbar light"><div class="tab"><img src="07-taiwania/favicon-16.png" srcset="07-taiwania/favicon-32.png 2x" width="16" height="16" alt=""><span>ACACIA Everyday</span><i>×</i></div></div>
+    <div class="tabbar dark"><div class="tab"><img src="07-taiwania/favicon-16.png" srcset="07-taiwania/favicon-32.png 2x" width="16" height="16" alt=""><span>ACACIA Everyday</span><i>×</i></div></div>
+    <div class="mini-home"><figure class="app"><img src="07-taiwania/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>ACACIA</figcaption></figure></div>
+  </div>
+  <p class="files">檔案：<a href="07-taiwania/source.svg">source.svg</a> · <a href="07-taiwania/favicon.svg">favicon.svg</a> · <a href="07-taiwania/favicon.ico">favicon.ico</a> · <a href="07-taiwania/apple-touch-icon.png">apple-touch-icon.png</a> · <a href="07-taiwania/icon-192.png">icon-192</a> · <a href="07-taiwania/icon-512.png">icon-512</a> · <a href="07-taiwania/icon-maskable-512.png">maskable-512</a></p>
+</section>
+<section class="card" id="golden-rain-tree">
+  <header>
+    <img src="08-golden-rain-tree/source.svg" width="72" height="72" alt="">
+    <div>
+      <h2><span class="no">08</span>台灣欒樹 <small>Taiwan Golden-rain Tree</small></h2>
+      <p class="latin"><i>Koelreuteria elegans subsp. formosana</i>・台灣特有亞種，秋天黃花、紅果、綠葉同時出現，被稱為「四色樹」</p>
+    </div>
+  </header>
+  <p class="concept">秋天的台灣欒樹：一串串粉紅色紙燈籠般的蒴果，加上點點金黃小花。粉、黃、綠三色很柔和，最貼近網站的粉彩感。</p>
+  <div class="bg light">
+  <div class="sizes">
+    <figure><div class="px"><img src="08-golden-rain-tree/favicon-16.png" width="16" height="16" alt=""></div><figcaption>16</figcaption></figure>
+    <figure><div class="px"><img src="08-golden-rain-tree/favicon-32.png" width="32" height="32" alt=""></div><figcaption>32</figcaption></figure>
+    <figure><div class="px"><img class="zoom" src="08-golden-rain-tree/favicon-16.png" width="64" height="64" alt=""></div><figcaption>16 放大 4 倍</figcaption></figure>
+    <figure><div class="px"><img class="ios" src="08-golden-rain-tree/apple-touch-icon.png" width="90" height="90" alt=""></div><figcaption>180 apple</figcaption></figure>
+    <figure><div class="px"><img src="08-golden-rain-tree/icon-512.png" width="128" height="128" alt=""></div><figcaption>512 PWA</figcaption></figure>
+    <figure><div class="px"><img class="mask-circle" src="08-golden-rain-tree/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓形</figcaption></figure>
+    <figure><div class="px"><img class="mask-squircle" src="08-golden-rain-tree/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓角</figcaption></figure>
+  </div></div>
+  <div class="bg dark">
+  <div class="sizes">
+    <figure><div class="px"><img src="08-golden-rain-tree/favicon-16.png" width="16" height="16" alt=""></div><figcaption>16</figcaption></figure>
+    <figure><div class="px"><img src="08-golden-rain-tree/favicon-32.png" width="32" height="32" alt=""></div><figcaption>32</figcaption></figure>
+    <figure><div class="px"><img class="zoom" src="08-golden-rain-tree/favicon-16.png" width="64" height="64" alt=""></div><figcaption>16 放大 4 倍</figcaption></figure>
+    <figure><div class="px"><img class="ios" src="08-golden-rain-tree/apple-touch-icon.png" width="90" height="90" alt=""></div><figcaption>180 apple</figcaption></figure>
+    <figure><div class="px"><img src="08-golden-rain-tree/icon-512.png" width="128" height="128" alt=""></div><figcaption>512 PWA</figcaption></figure>
+    <figure><div class="px"><img class="mask-circle" src="08-golden-rain-tree/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓形</figcaption></figure>
+    <figure><div class="px"><img class="mask-squircle" src="08-golden-rain-tree/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓角</figcaption></figure>
+  </div></div>
+  <div class="mocks">
+    <div class="tabbar light"><div class="tab"><img src="08-golden-rain-tree/favicon-16.png" srcset="08-golden-rain-tree/favicon-32.png 2x" width="16" height="16" alt=""><span>ACACIA Everyday</span><i>×</i></div></div>
+    <div class="tabbar dark"><div class="tab"><img src="08-golden-rain-tree/favicon-16.png" srcset="08-golden-rain-tree/favicon-32.png 2x" width="16" height="16" alt=""><span>ACACIA Everyday</span><i>×</i></div></div>
+    <div class="mini-home"><figure class="app"><img src="08-golden-rain-tree/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>ACACIA</figcaption></figure></div>
+  </div>
+  <p class="files">檔案：<a href="08-golden-rain-tree/source.svg">source.svg</a> · <a href="08-golden-rain-tree/favicon.svg">favicon.svg</a> · <a href="08-golden-rain-tree/favicon.ico">favicon.ico</a> · <a href="08-golden-rain-tree/apple-touch-icon.png">apple-touch-icon.png</a> · <a href="08-golden-rain-tree/icon-192.png">icon-192</a> · <a href="08-golden-rain-tree/icon-512.png">icon-512</a> · <a href="08-golden-rain-tree/icon-maskable-512.png">maskable-512</a></p>
+</section>
+<section class="card" id="yushan-rhododendron">
+  <header>
+    <img src="09-yushan-rhododendron/source.svg" width="72" height="72" alt="">
+    <div>
+      <h2><span class="no">09</span>玉山杜鵑 <small>Yushan Rhododendron</small></h2>
+      <p class="latin"><i>Rhododendron pseudochrysanthum</i>・台灣特有種，盛開於玉山等高山地區</p>
+    </div>
+  </header>
+  <p class="concept">高山上的粉白杜鵑花團，背景是戴著雪頂的玉山。花團像一束捧花，象徵把每天的小事整理成一束好看的生活。</p>
+  <div class="bg light">
+  <div class="sizes">
+    <figure><div class="px"><img src="09-yushan-rhododendron/favicon-16.png" width="16" height="16" alt=""></div><figcaption>16</figcaption></figure>
+    <figure><div class="px"><img src="09-yushan-rhododendron/favicon-32.png" width="32" height="32" alt=""></div><figcaption>32</figcaption></figure>
+    <figure><div class="px"><img class="zoom" src="09-yushan-rhododendron/favicon-16.png" width="64" height="64" alt=""></div><figcaption>16 放大 4 倍</figcaption></figure>
+    <figure><div class="px"><img class="ios" src="09-yushan-rhododendron/apple-touch-icon.png" width="90" height="90" alt=""></div><figcaption>180 apple</figcaption></figure>
+    <figure><div class="px"><img src="09-yushan-rhododendron/icon-512.png" width="128" height="128" alt=""></div><figcaption>512 PWA</figcaption></figure>
+    <figure><div class="px"><img class="mask-circle" src="09-yushan-rhododendron/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓形</figcaption></figure>
+    <figure><div class="px"><img class="mask-squircle" src="09-yushan-rhododendron/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓角</figcaption></figure>
+  </div></div>
+  <div class="bg dark">
+  <div class="sizes">
+    <figure><div class="px"><img src="09-yushan-rhododendron/favicon-16.png" width="16" height="16" alt=""></div><figcaption>16</figcaption></figure>
+    <figure><div class="px"><img src="09-yushan-rhododendron/favicon-32.png" width="32" height="32" alt=""></div><figcaption>32</figcaption></figure>
+    <figure><div class="px"><img class="zoom" src="09-yushan-rhododendron/favicon-16.png" width="64" height="64" alt=""></div><figcaption>16 放大 4 倍</figcaption></figure>
+    <figure><div class="px"><img class="ios" src="09-yushan-rhododendron/apple-touch-icon.png" width="90" height="90" alt=""></div><figcaption>180 apple</figcaption></figure>
+    <figure><div class="px"><img src="09-yushan-rhododendron/icon-512.png" width="128" height="128" alt=""></div><figcaption>512 PWA</figcaption></figure>
+    <figure><div class="px"><img class="mask-circle" src="09-yushan-rhododendron/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓形</figcaption></figure>
+    <figure><div class="px"><img class="mask-squircle" src="09-yushan-rhododendron/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓角</figcaption></figure>
+  </div></div>
+  <div class="mocks">
+    <div class="tabbar light"><div class="tab"><img src="09-yushan-rhododendron/favicon-16.png" srcset="09-yushan-rhododendron/favicon-32.png 2x" width="16" height="16" alt=""><span>ACACIA Everyday</span><i>×</i></div></div>
+    <div class="tabbar dark"><div class="tab"><img src="09-yushan-rhododendron/favicon-16.png" srcset="09-yushan-rhododendron/favicon-32.png 2x" width="16" height="16" alt=""><span>ACACIA Everyday</span><i>×</i></div></div>
+    <div class="mini-home"><figure class="app"><img src="09-yushan-rhododendron/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>ACACIA</figcaption></figure></div>
+  </div>
+  <p class="files">檔案：<a href="09-yushan-rhododendron/source.svg">source.svg</a> · <a href="09-yushan-rhododendron/favicon.svg">favicon.svg</a> · <a href="09-yushan-rhododendron/favicon.ico">favicon.ico</a> · <a href="09-yushan-rhododendron/apple-touch-icon.png">apple-touch-icon.png</a> · <a href="09-yushan-rhododendron/icon-192.png">icon-192</a> · <a href="09-yushan-rhododendron/icon-512.png">icon-512</a> · <a href="09-yushan-rhododendron/icon-maskable-512.png">maskable-512</a></p>
+</section>
+<section class="card" id="formosa-lily">
+  <header>
+    <img src="10-formosa-lily/source.svg" width="72" height="72" alt="">
+    <div>
+      <h2><span class="no">10</span>台灣百合 <small>Formosa Lily</small></h2>
+      <p class="latin"><i>Lilium formosanum</i>・台灣特有種，從海邊到高山都能生長，象徵堅韌</p>
+    </div>
+  </header>
+  <p class="concept">在鼠尾草綠底上的一朵白色喇叭花，花瓣外側帶淡紫紅條紋。十款裡唯一的深底設計，在淺色瀏覽器分頁最醒目。</p>
+  <div class="bg light">
+  <div class="sizes">
+    <figure><div class="px"><img src="10-formosa-lily/favicon-16.png" width="16" height="16" alt=""></div><figcaption>16</figcaption></figure>
+    <figure><div class="px"><img src="10-formosa-lily/favicon-32.png" width="32" height="32" alt=""></div><figcaption>32</figcaption></figure>
+    <figure><div class="px"><img class="zoom" src="10-formosa-lily/favicon-16.png" width="64" height="64" alt=""></div><figcaption>16 放大 4 倍</figcaption></figure>
+    <figure><div class="px"><img class="ios" src="10-formosa-lily/apple-touch-icon.png" width="90" height="90" alt=""></div><figcaption>180 apple</figcaption></figure>
+    <figure><div class="px"><img src="10-formosa-lily/icon-512.png" width="128" height="128" alt=""></div><figcaption>512 PWA</figcaption></figure>
+    <figure><div class="px"><img class="mask-circle" src="10-formosa-lily/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓形</figcaption></figure>
+    <figure><div class="px"><img class="mask-squircle" src="10-formosa-lily/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓角</figcaption></figure>
+  </div></div>
+  <div class="bg dark">
+  <div class="sizes">
+    <figure><div class="px"><img src="10-formosa-lily/favicon-16.png" width="16" height="16" alt=""></div><figcaption>16</figcaption></figure>
+    <figure><div class="px"><img src="10-formosa-lily/favicon-32.png" width="32" height="32" alt=""></div><figcaption>32</figcaption></figure>
+    <figure><div class="px"><img class="zoom" src="10-formosa-lily/favicon-16.png" width="64" height="64" alt=""></div><figcaption>16 放大 4 倍</figcaption></figure>
+    <figure><div class="px"><img class="ios" src="10-formosa-lily/apple-touch-icon.png" width="90" height="90" alt=""></div><figcaption>180 apple</figcaption></figure>
+    <figure><div class="px"><img src="10-formosa-lily/icon-512.png" width="128" height="128" alt=""></div><figcaption>512 PWA</figcaption></figure>
+    <figure><div class="px"><img class="mask-circle" src="10-formosa-lily/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓形</figcaption></figure>
+    <figure><div class="px"><img class="mask-squircle" src="10-formosa-lily/icon-maskable-512.png" width="96" height="96" alt=""></div><figcaption>maskable 圓角</figcaption></figure>
+  </div></div>
+  <div class="mocks">
+    <div class="tabbar light"><div class="tab"><img src="10-formosa-lily/favicon-16.png" srcset="10-formosa-lily/favicon-32.png 2x" width="16" height="16" alt=""><span>ACACIA Everyday</span><i>×</i></div></div>
+    <div class="tabbar dark"><div class="tab"><img src="10-formosa-lily/favicon-16.png" srcset="10-formosa-lily/favicon-32.png 2x" width="16" height="16" alt=""><span>ACACIA Everyday</span><i>×</i></div></div>
+    <div class="mini-home"><figure class="app"><img src="10-formosa-lily/apple-touch-icon.png" width="60" height="60" alt=""><figcaption>ACACIA</figcaption></figure></div>
+  </div>
+  <p class="files">檔案：<a href="10-formosa-lily/source.svg">source.svg</a> · <a href="10-formosa-lily/favicon.svg">favicon.svg</a> · <a href="10-formosa-lily/favicon.ico">favicon.ico</a> · <a href="10-formosa-lily/apple-touch-icon.png">apple-touch-icon.png</a> · <a href="10-formosa-lily/icon-192.png">icon-192</a> · <a href="10-formosa-lily/icon-512.png">icon-512</a> · <a href="10-formosa-lily/icon-maskable-512.png">maskable-512</a></p>
+</section>
+
+<section class="panel howto" id="apply">
+<h3>選定後如何套用（例如選了 03）</h3>
+<ol>
+<li>把 <code>03-xxx/</code> 裡的檔案複製到 <code>public/</code>，覆蓋同名檔：<code>favicon.svg</code>、<code>favicon.ico</code>、<code>apple-touch-icon.png</code>、<code>icon-192.png</code>、<code>icon-512.png</code>，再新增 <code>icon-maskable-192.png</code>、覆蓋 <code>icon-maskable-512.png</code>。</li>
+<li><code>index.html</code>：保留 <code>&lt;link rel="icon" type="image/svg+xml" href="/favicon.svg"&gt;</code>，前面加一行 <code>&lt;link rel="icon" href="/favicon.ico" sizes="48x48"&gt;</code> 給不支援 SVG 的瀏覽器；apple-touch-icon 那行不用改。</li>
+<li><code>public/manifest.webmanifest</code>：<code>icons</code> 換成該資料夾 <code>manifest-icons.json</code> 裡的清單（多了 maskable 192）；想讓 PWA 標題列配色一致，可以把 <code>theme_color</code> 改成同檔案裡的底色。</li>
+<li><code>src/components/BrandMark.tsx</code>（側邊欄左上角的標誌）和 <code>public/favicon.svg</code> 是同一張圖，要一起換成 <code>source.svg</code> 的內容。</li>
+<li>套用後刪掉 <code>public/design/icons/</code> 和 <code>scripts/icon-candidates/</code>，候選圖就不會留在正式網站上。</li>
+</ol>
+</section>
+</main>
+</body>
+</html>
