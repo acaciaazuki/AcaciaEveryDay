@@ -1020,5 +1020,18 @@
       "updated": "updated {{years}} (no duplicates added)",
       "skipped": "no data for {{years}}, skipped"
     }
+  },
+  "rhythm": {
+    "edit": "Adjust wake and bedtime",
+    "editShort": "Adjust",
+    "title": "Adjust today's rhythm",
+    "intro": "Set when you usually wake up and go to bed. Your rhythm and free time on the Today page are counted within these hours.",
+    "wake": "Wake up",
+    "sleep": "Bedtime",
+    "length": "{{h}} hours in total",
+    "overnight": "bedtime is after midnight",
+    "reset": "Reset to default ({{range}})",
+    "required": "Enter both wake and bedtime",
+    "same": "Wake and bedtime can't be the same"
   }
 }

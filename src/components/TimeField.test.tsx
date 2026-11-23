@@ -24,6 +24,16 @@ describe('TimeField', () => {
     await i18n.changeLanguage('zh-TW')
   })
 
+  it('逐字打兩位數小時、自動跳到分鐘後，畫面保留剛打的數字', () => {
+    render(<Demo initial="09:00" />)
+    hour().focus()
+    fireEvent.change(hour(), { target: { value: '0' } })
+    fireEvent.change(hour(), { target: { value: '06' } })
+    expect(document.activeElement).toBe(minute())
+    expect(hour().value).toBe('06')
+    expect(value()).toBe('06:00')
+  })
+
   it('顯示 HH、mm 與 AM／PM，不出現上午／下午', () => {
     render(<Demo initial="21:30" />)
     expect(hour().value).toBe('09')

@@ -7,12 +7,13 @@ import { EventIconBadge } from '../components/EventIcon'
 import { EventDialog } from '../components/EventDialog'
 import { HolidayCard } from '../components/HolidayAgenda'
 import { PageHead } from '../components/PageHead'
+import { RhythmDialog } from '../components/RhythmDialog'
 import { ShoppingBadge, ShoppingCard, ShoppingDetailDialog } from '../components/ShoppingAgenda'
 import { addDays, dateRange, toLocalISO } from '../core/date'
 import { eventIconOf } from '../core/eventIcons'
 import type { CalendarEvent } from '../core/schema'
 import { agendaOn, type AgendaItem, type ShoppingEntry } from '../core/shoppingAgenda'
-import { dayRhythm, eventsOn, greetingKey, hours } from '../core/today'
+import { dayRhythm, eventsOn, greetingKey, hours, rhythmTimes } from '../core/today'
 import { isLow } from '../core/inventory'
 import { formatTime, formatTimeRange, periodFirst, timeParts } from '../core/time'
 import { useNow } from '../hooks/useNow'
@@ -27,9 +28,6 @@ const VIEWS: View[] = ['day', 'week', 'two']
 // 相對今天的天數 → 翻譯 key（昨天、明天、後天、大後天）
 const RELATIVE: Record<number, string> = { [-1]: 'yesterday', 1: 'tomorrow', 2: 'dayAfter', 3: 'threeDays' }
 
-const WAKE = '07:00'
-const SLEEP = '23:00'
-
 const card = 'rounded-(--radius-card) bg-paper p-5 shadow-card'
 const linkBtn = 'text-xs font-semibold text-sage hover:text-sage-dark'
 
@@ -37,6 +35,9 @@ export function TodayPage() {
   const { t, i18n } = useTranslation()
   const allEvents = useAppStore((s) => s.events)
   const tasks = useAppStore((s) => s.tasks)
+  const settings = useAppStore((s) => s.settings)
+  const { wake, sleep } = rhythmTimes(settings)
+  const [editingRhythm, setEditingRhythm] = useState(false)
   const [editing, setEditing] = useState<CalendarEvent | 'new' | null>(null)
   const [offset, setOffset] = useState(0) // 目前看的日期，相對今天的天數
   const [view, setView] = useState<View>('day')
@@ -57,8 +58,8 @@ export function TodayPage() {
   // 行程數包含購物；節奏與自由時間只看一般行程（購物記帳只有時間點，沒有結束時間）
   const rangeCount = days.reduce((n, d) => n + agendaOn(allEvents, shopByDate, d).length, 0)
   const openTasks = tasks.filter((x) => !x.done)
-  const rhythm = dayRhythm(events, WAKE, SLEEP)
-  const freeMinutes = days.reduce((sum, d) => sum + dayRhythm(eventsOn(allEvents, d), WAKE, SLEEP).freeMinutes, 0)
+  const rhythm = dayRhythm(events, wake, sleep)
+  const freeMinutes = days.reduce((sum, d) => sum + dayRhythm(eventsOn(allEvents, d), wake, sleep).freeMinutes, 0)
   const lng = i18n.resolvedLanguage
   const dateLabel = new Intl.DateTimeFormat(lng, { dateStyle: 'full' }).format(viewDate)
   const shortDate = new Intl.DateTimeFormat(lng, { month: 'long', day: 'numeric' }).format(viewDate)
@@ -215,11 +216,16 @@ export function TodayPage() {
 
         <div className="grid content-start gap-5">
           <section className={card}>
-            <h2 className="mb-3 font-bold">{offset === 0 ? t('today.rhythm') : t('today.rhythmOn', { date: shortDate })}</h2>
+            <div className="mb-3 flex items-center justify-between gap-2">
+              <h2 className="font-bold">{offset === 0 ? t('today.rhythm') : t('today.rhythmOn', { date: shortDate })}</h2>
+              <button type="button" onClick={() => setEditingRhythm(true)} aria-label={t('rhythm.edit')} className={linkBtn}>
+                {t('rhythm.editShort')}
+              </button>
+            </div>
             <div className="mb-3 flex items-center justify-between">
               <div>
                 <strong>
-                  {formatTime(WAKE, lng)} <span className="text-xs text-[#a8b1ac]">—</span> {formatTime(SLEEP, lng)}
+                  {formatTime(wake, lng)} <span className="text-xs text-[#a8b1ac]">—</span> {formatTime(sleep, lng)}
                 </strong>
                 <small className="block text-[length:calc(11px*var(--fs))] text-muted">{t('today.rhythmRange')}</small>
               </div>
@@ -241,6 +247,7 @@ export function TodayPage() {
       </div>
 
       {editing && <EventDialog key={editing === 'new' ? 'new' : editing.id} event={editing === 'new' ? null : editing} date={viewISO} onClose={() => setEditing(null)} />}
+      {editingRhythm && <RhythmDialog onClose={() => setEditingRhythm(false)} />}
       {viewingShop && <ShoppingDetailDialog entry={viewingShop} onClose={() => setViewingShop(null)} />}
     </>
   )

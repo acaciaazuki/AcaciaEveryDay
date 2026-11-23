@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
+import { useEffect, useId, useRef, useState, type FocusEvent, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { from12, parseHourInput, parseMinuteInput, periodFirst, periodLabel, to12, type Period } from '../core/time'
 import { Icon } from './AcaciaIcons'
@@ -96,7 +96,10 @@ export function TimeField({ label, value, onChange, optional = false }: { label:
   }
 
   /** 離開格子時：不合法或沒填完就還原成目前的值，合法的補零（9 → 09、21 → 09 PM） */
-  const onBlurField = () => {
+  const onBlurField = (e: FocusEvent<HTMLInputElement>) => {
+    // 只是在小時、分鐘兩格之間移動（例如打滿兩位數自動跳到分鐘）就先不整理：
+    // 自動跳格時這裡拿到的還是上一次畫面的內容，整理會把剛打的字蓋回舊值
+    if (e.relatedTarget === hourRef.current || e.relatedTarget === minuteRef.current) return
     const h = parseHourInput(hh, period)
     const m = parseMinuteInput(mm)
     if (optional && !hh && !mm) {

@@ -1,6 +1,22 @@
-import type { CalendarEvent } from './schema'
+import type { CalendarEvent, Settings } from './schema'
 
-const toMin = (hhmm: string) => {
+/** 沒有自訂時的作息：07:00 起床、23:00 就寢 */
+export const DEFAULT_WAKE = '07:00'
+export const DEFAULT_SLEEP = '23:00'
+
+/** 從設定取出起床與就寢時間，沒設定就用預設值 */
+export const rhythmTimes = (settings: Pick<Settings, 'rhythm'>) => ({
+  wake: settings.rhythm?.wake ?? DEFAULT_WAKE,
+  sleep: settings.rhythm?.sleep ?? DEFAULT_SLEEP,
+})
+
+/** 作息總長（分鐘）；就寢早於或等於起床時當作睡到隔天 */
+export function rhythmLength(wake: string, sleep: string) {
+  const d = toMin(sleep) - toMin(wake)
+  return d > 0 ? d : d + 24 * 60
+}
+
+function toMin(hhmm: string) {
   const [h, m] = hhmm.split(':').map(Number)
   return h * 60 + m
 }
@@ -8,10 +24,12 @@ const toMin = (hhmm: string) => {
 /**
  * 計算一天的節奏：作息區間內，行程實際佔用的分鐘數（重疊的行程只算一次）。
  * 舊版用「行程數 × 1.5 小時」估算，這裡改成依起訖時間計算。
+ * 就寢時間早於或等於起床時間（例如 01:00）代表睡到隔天：區間延伸到隔天凌晨，
+ * 但只計算這一天的行程（隔天凌晨的行程屬於隔天）。
  */
-export function dayRhythm(events: CalendarEvent[], wake = '07:00', sleep = '23:00') {
+export function dayRhythm(events: CalendarEvent[], wake = DEFAULT_WAKE, sleep = DEFAULT_SLEEP) {
   const lo = toMin(wake)
-  const hi = toMin(sleep)
+  const hi = lo + rhythmLength(wake, sleep)
   const spans = events
     .filter((e) => e.start && e.end)
     .map((e) => [Math.max(lo, toMin(e.start)), Math.min(hi, toMin(e.end))] as const)
