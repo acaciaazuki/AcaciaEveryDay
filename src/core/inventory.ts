@@ -252,3 +252,26 @@ export function sampleInventory(todayISO: string, label: (key: SampleKey, field:
     item('bodywash', { cat: 'personal', stock: 2, minStock: 1, openedDate: addDays(addMonths(todayISO, -6), 3), paoMonths: 6, expiry: addMonths(todayISO, 18) }),
   ]
 }
+
+/** 自訂單位最多幾個字 */
+export const UNIT_MAX = 8
+
+/**
+ * 單位選單的選項：先列內建建議，再列使用者在用品上自行輸入過的單位。
+ * 自訂單位直接存在用品的 unit 欄位，所以會跟著同步與備份，不需要另外存一份清單。
+ */
+export function unitOptions(presets: readonly string[], items: readonly Pick<InventoryItem, 'unit'>[], current = ''): string[] {
+  const out: string[] = []
+  const seen = new Set<string>()
+  const push = (u: string) => {
+    const v = u.trim()
+    if (v && !seen.has(v)) {
+      seen.add(v)
+      out.push(v)
+    }
+  }
+  presets.forEach(push)
+  const custom = [...items.map((x) => x.unit), current].map((u) => u.trim()).filter((u) => u && !presets.includes(u))
+  ;[...new Set(custom)].sort((a, b) => a.localeCompare(b)).forEach(push)
+  return out
+}

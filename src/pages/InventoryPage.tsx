@@ -4,7 +4,7 @@ import { Icon, IconBadge } from '../components/AcaciaIcons'
 import { Button } from '../components/Button'
 import { Dialog } from '../components/Dialog'
 import { Field } from '../components/Field'
-import { IconSelect } from '../components/IconSelect'
+import { IconSelect, type IconOption } from '../components/IconSelect'
 import { CustomCatEditor, InvCategoryDialog } from '../components/InvCategoryManager'
 import { PageHead } from '../components/PageHead'
 import { Toast } from '../components/Toast'
@@ -26,6 +26,8 @@ import {
   type DueTone,
   type InvFilter,
   type SampleKey,
+  UNIT_MAX,
+  unitOptions,
 } from '../core/inventory'
 import { isCustomInvCat } from '../core/invCategories'
 import type { InventoryItem } from '../core/schema'
@@ -79,14 +81,17 @@ export function InventoryPage() {
   }, [seeded, items.length, seedInventory, todayISO, t])
 
   const catLabel = (x: InventoryItem) => cats.labelOf(x.cat)
-  // 分類篩選：依使用者排序，只列出有用品的分類；選的分類被刪掉或清空時回到全部
+  // 分類篩選：下拉選單列出所有分類（含自訂、依使用者排序）與各分類的用品數；選的分類被刪掉時回到全部
   const catCounts = new Map<string, number>()
   for (const x of items) {
     const k = cats.of(x.cat).key
     catCounts.set(k, (catCounts.get(k) ?? 0) + 1)
   }
-  const catChips = cats.list.filter((c) => catCounts.has(c.key))
-  const activeCat = catFilter !== 'all' && catCounts.has(catFilter) ? catFilter : 'all'
+  const activeCat = catFilter !== 'all' && cats.list.some((c) => c.key === catFilter) ? catFilter : 'all'
+  const catOptions: IconOption<string>[] = [
+    { value: 'all', label: t('inv.list.allCats'), icon: 'tag', bg: '#eaf6ef', meta: String(items.length) },
+    ...cats.list.map((c) => ({ value: c.key, label: c.label, icon: c.icon, bg: c.bg, meta: String(catCounts.get(c.key) ?? 0) })),
+  ]
   const dueCount = items.filter((x) => isDue(x, todayISO)).length
   const lowCount = items.filter(isLow).length
   const countOf = (f: InvFilter) => items.filter((x) => matchesFilter(x, f, todayISO)).length
@@ -129,6 +134,9 @@ export function InventoryPage() {
               </button>
             ))}
           </div>
+          <div className="w-full min-[481px]:w-56">
+            <IconSelect compact hideLabel label={t('inv.list.catFilter')} value={activeCat} options={catOptions} onChange={setCatFilter} />
+          </div>
           <label className="flex min-w-[200px] flex-1 items-center gap-2 rounded-full border border-line bg-oat px-3 py-1.5 focus-within:border-sage">
             <Icon name="search" className="text-sage" />
             <input
@@ -141,28 +149,6 @@ export function InventoryPage() {
             />
           </label>
         </div>
-
-        {catChips.length > 1 && (
-          <div role="group" aria-label={t('inv.list.catFilter')} className="-mx-1 mb-4 flex gap-1.5 overflow-x-auto px-1 pb-1">
-            <button type="button" aria-pressed={activeCat === 'all'} onClick={() => setCatFilter('all')} className={catChip(activeCat === 'all')}>
-              {t('inv.list.allCats')}
-            </button>
-            {catChips.map((c) => (
-              <button
-                key={c.key}
-                type="button"
-                aria-pressed={activeCat === c.key}
-                onClick={() => setCatFilter(c.key)}
-                className={catChip(activeCat === c.key)}
-                style={activeCat === c.key ? { background: c.bg, color: c.fg, borderColor: c.fg } : undefined}
-              >
-                <Icon name={c.icon} className="size-[1.3em]" />
-                {c.label}
-                <span className="opacity-60">{catCounts.get(c.key)}</span>
-              </button>
-            ))}
-          </div>
-        )}
 
         {items.length === 0 ? (
           <div className="grid justify-items-center gap-3 py-6 text-center text-muted">
@@ -188,9 +174,6 @@ export function InventoryPage() {
     </>
   )
 }
-
-const catChip = (on: boolean) =>
-  `inline-flex shrink-0 items-center gap-1 rounded-full border px-3 py-1 text-xs font-bold whitespace-nowrap transition ${on ? 'border-sage bg-sage-light text-sage-dark' : 'border-line bg-paper text-muted hover:text-ink'}`
 
 function Stat({ icon, bg, label, value, onClick, alert }: { icon: IconName; bg: string; label: string; value: ReactNode; onClick: () => void; alert?: boolean }) {
   return (
@@ -375,6 +358,10 @@ function ItemDialog({ item, todayISO, onClose }: { item: InventoryItem | null; t
     cycleDays: draft.cycleDays ? String(draft.cycleDays) : '',
     paoMonths: draft.paoMonths ? String(draft.paoMonths) : '',
   }))
+  // 單位：內建建議＋用過的自訂單位；選「其他…」時出現輸入框
+  const allItems = useAppStore((s) => s.inventory)
+  const [units] = useState(() => unitOptions(t('inv.unitSuggest').split('|'), allItems, item?.unit))
+  const [customUnit, setCustomUnit] = useState(false)
   const [error, setError] = useState('')
   const set = (patch: Partial<InventoryInput>) => setDraft((d) => ({ ...d, ...patch }))
   const setNum = (k: keyof typeof nums, v: string) => setNums((n) => ({ ...n, [k]: v }))
@@ -421,14 +408,12 @@ function ItemDialog({ item, todayISO, onClose }: { item: InventoryItem | null; t
           <div className="grid grid-cols-3 gap-3">
             <Field label={t('inv.form.stock')} type="number" inputMode="numeric" min={0} step="any" value={nums.stock} onChange={(e) => setNum('stock', e.target.value)} />
             <Field label={t('inv.form.minStock')} type="number" inputMode="numeric" min={0} step="any" value={nums.minStock} onChange={(e) => setNum('minStock', e.target.value)} />
-            <Field label={t('inv.form.unit')} placeholder={t('inv.defaultUnit')} list={`${uid}-unit`} value={draft.unit} onChange={(e) => set({ unit: e.target.value })} />
+            <UnitSelect value={draft.unit} custom={customUnit} options={units} onPick={(unit) => (setCustomUnit(false), set({ unit }))} onCustom={() => (setCustomUnit(true), set({ unit: '' }))} />
           </div>
+          {customUnit && (
+            <Field label={t('inv.form.customUnit')} placeholder={t('inv.form.customUnitPlaceholder')} maxLength={UNIT_MAX} value={draft.unit} onChange={(e) => set({ unit: e.target.value })} autoFocus />
+          )}
           <p className="-mt-1 text-[length:calc(11px*var(--fs))] text-muted">{t('inv.form.minStockHint')}</p>
-          <datalist id={`${uid}-unit`}>
-            {t('inv.unitSuggest').split('|').map((u) => (
-              <option key={u} value={u} />
-            ))}
-          </datalist>
         </fieldset>
 
         <fieldset className="grid gap-3 rounded-(--radius-control) border border-line p-3">
@@ -480,5 +465,28 @@ function ItemDialog({ item, todayISO, onClose }: { item: InventoryItem | null; t
       </form>
       {managing && <InvCategoryDialog onClose={() => setManaging(false)} />}
     </Dialog>
+  )
+}
+
+const CUSTOM_UNIT = '__custom__'
+const selectClass = 'w-full min-w-0 rounded-(--radius-control) border border-line bg-oat px-3 py-2.5 text-sm font-normal text-ink outline-none focus:border-sage'
+
+/** 單位下拉選單：常用單位、用過的自訂單位，最後一項「其他…」（自行輸入） */
+function UnitSelect({ value, custom, options, onPick, onCustom }: { value: string; custom: boolean; options: string[]; onPick: (unit: string) => void; onCustom: () => void }) {
+  const { t } = useTranslation()
+  const shown = custom ? CUSTOM_UNIT : value.trim() || t('inv.defaultUnit')
+  const list = options.includes(shown) || shown === CUSTOM_UNIT ? options : [...options, shown]
+  return (
+    <label className="grid min-w-0 gap-1.5 text-xs font-semibold text-muted">
+      {t('inv.form.unit')}
+      <select className={selectClass} value={shown} onChange={(e) => (e.target.value === CUSTOM_UNIT ? onCustom() : onPick(e.target.value))}>
+        {list.map((u) => (
+          <option key={u} value={u}>
+            {u}
+          </option>
+        ))}
+        <option value={CUSTOM_UNIT}>{t('inv.form.customUnitOption')}</option>
+      </select>
+    </label>
   )
 }

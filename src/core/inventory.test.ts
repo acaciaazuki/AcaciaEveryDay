@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { dueDates, dueTone, inventoryFor, isDue, isLow, lowStockReminders, matchesFilter, nextReplace, paoDate, restockQty, sampleInventory, shoppingLink, sortInventory, toggleShoppingStock } from './inventory'
+import { dueDates, dueTone, inventoryFor, isDue, isLow, lowStockReminders, matchesFilter, nextReplace, paoDate, restockQty, sampleInventory, shoppingLink, sortInventory, toggleShoppingStock, unitOptions } from './inventory'
 import type { Expense, InventoryItem } from './schema'
 
 const today = '2026-11-22'
@@ -147,5 +147,11 @@ describe('庫存不足提醒與購物清單自動入庫', () => {
     const r = toggleShoppingStock([exp({ done: true, quantity: 3 })], [item({ id: 'a', stock: 5, shoppingId: 'e1' })], 'e1')
     expect(r.inventory[0].stock).toBe(5)
     expect(r.change).toBeUndefined()
+  })
+})
+
+describe('unitOptions', () => {
+  it('先列內建，再列用過的自訂單位（去重、去空白），內建不重複', () => {
+    expect(unitOptions(['個', '包'], [{ unit: '罐' }, { unit: ' 包 ' }, { unit: '' }, { unit: '罐' }, { unit: '公斤' }], '袋')).toEqual(['個', '包', '公斤', '罐', '袋'])
   })
 })

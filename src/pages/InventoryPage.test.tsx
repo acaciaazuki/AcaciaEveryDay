@@ -193,16 +193,78 @@ describe('庫存分類：新增、刪除、排序', () => {
     expect(useAppStore.getState().invCats.order).toEqual([])
   })
 
-  it('依分類篩選用品清單', () => {
+  it('依分類篩選：下拉選單列出所有分類（含自訂、空的分類）與數量，依使用者排序', () => {
     const base = { unit: '', stock: 5, minStock: 1, lastReplaced: '', cycleDays: 0, expiry: '', openedDate: '', paoMonths: 0, note: '' }
+    useAppStore.setState({ inventorySeeded: true })
+    const pet = useAppStore.getState().addInvCategory('寵物用品')
     useAppStore.getState().addInventory({ ...base, name: '冷凍水餃', cat: 'chilled' })
     useAppStore.getState().addInventory({ ...base, name: '米', cat: 'pantry' })
+    useAppStore.getState().addInventory({ ...base, name: '貓砂', cat: pet })
     renderPage()
-    const group = screen.getByRole('group', { name: '依分類篩選' })
-    fireEvent.click(within(group).getByRole('button', { name: /低溫食材/ }))
+    const box = screen.getByRole('combobox', { name: '依分類篩選' })
+    expect(box).toHaveTextContent('所有分類')
+    fireEvent.click(box)
+    const opts = within(screen.getByRole('listbox')).getAllByRole('option').map((o) => o.textContent)
+    expect(opts[0]).toBe('所有分類3')
+    expect(opts).toContain('低溫食材1')
+    expect(opts).toContain('廚房耗材0')
+    expect(opts).toContain('寵物用品1')
+    fireEvent.click(within(screen.getByRole('listbox')).getByRole('option', { name: /低溫食材/ }))
     expect(within(list()).getByText('冷凍水餃')).toBeInTheDocument()
     expect(within(list()).queryByText('米')).toBeNull()
-    fireEvent.click(within(group).getByRole('button', { name: '所有分類' }))
+    fireEvent.click(box)
+    fireEvent.click(within(screen.getByRole('listbox')).getByRole('option', { name: /寵物用品/ }))
+    expect(within(list()).getByText('貓砂')).toBeInTheDocument()
+    expect(within(list()).queryByText('冷凍水餃')).toBeNull()
+    fireEvent.click(box)
+    fireEvent.click(within(screen.getByRole('listbox')).getByRole('option', { name: /所有分類/ }))
     expect(within(list()).getByText('米')).toBeInTheDocument()
+  })
+})
+
+describe('用品單位', () => {
+  beforeEach(async () => {
+    await i18n.changeLanguage('zh-TW')
+    useAppStore.setState({ ...emptyAppData(), inventorySeeded: true })
+  })
+
+  const openNew = () => {
+    renderPage()
+    fireEvent.click(screen.getByRole('button', { name: '＋ 新增用品' }))
+    return screen.getByRole('dialog')
+  }
+
+  it('從選單挑常用單位', () => {
+    const d = openNew()
+    fireEvent.change(within(d).getByLabelText('用品名稱'), { target: { value: '洗碗精' } })
+    fireEvent.change(within(d).getByRole('combobox', { name: '單位' }), { target: { value: '瓶' } })
+    expect(within(d).queryByLabelText('自訂單位')).toBeNull()
+    fireEvent.click(within(d).getByRole('button', { name: '儲存' }))
+    expect(useAppStore.getState().inventory[0]).toMatchObject({ name: '洗碗精', unit: '瓶' })
+  })
+
+  it('選「其他…」可以自己輸入單位，之後會出現在選單裡', () => {
+    const d = openNew()
+    fireEvent.change(within(d).getByLabelText('用品名稱'), { target: { value: '鮪魚罐頭' } })
+    fireEvent.change(within(d).getByRole('combobox', { name: '單位' }), { target: { value: '__custom__' } })
+    const input = within(d).getByLabelText('自訂單位')
+    fireEvent.change(input, { target: { value: ' 罐 ' } })
+    fireEvent.click(within(d).getByRole('button', { name: '儲存' }))
+    expect(useAppStore.getState().inventory[0]).toMatchObject({ name: '鮪魚罐頭', unit: '罐' })
+    expect(within(cardOf('鮪魚罐頭')).getByText(/罐 · 安全庫存/)).toBeInTheDocument()
+
+    // 再新增一項：用過的自訂單位直接在選單裡
+    fireEvent.click(screen.getByRole('button', { name: '＋ 新增用品' }))
+    const d2 = screen.getByRole('dialog')
+    const select = within(d2).getByRole('combobox', { name: '單位' })
+    expect(within(select).getByRole('option', { name: '罐' })).toBeInTheDocument()
+    expect(within(select).getAllByRole('option').at(-1)).toHaveTextContent('其他…')
+  })
+
+  it('編輯自訂單位的用品時，選單顯示原本的單位', () => {
+    useAppStore.getState().addInventory({ name: '麵粉', cat: 'pantry', unit: '公斤', stock: 1, minStock: 1, lastReplaced: '', cycleDays: 0, expiry: '', openedDate: '', paoMonths: 0, note: '' })
+    renderPage()
+    fireEvent.click(within(list()).getByText('麵粉'))
+    expect(within(screen.getByRole('dialog')).getByRole('combobox', { name: '單位' })).toHaveValue('公斤')
   })
 })
