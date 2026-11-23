@@ -98,7 +98,6 @@
       "namePlaceholder": "例如：上班",
       "start": "開始",
       "end": "結束",
-      "color": "顏色",
       "pickDates": "選擇日期（可多選）",
       "selected": "已選 {{count}} 天",
       "submit": "加入 {{count}} 天",
@@ -364,7 +363,8 @@
     "endBeforeStart": "結束時間要晚於開始時間",
     "textColor": "文字顏色",
     "icon": "圖示",
-    "iconAuto": "自動"
+    "iconAuto": "自動",
+    "allDay": "整天"
   },
   "search": {
     "title": "搜尋",
@@ -432,7 +432,9 @@
       "navy": "海軍藍",
       "plum": "梅紫",
       "slate": "灰藍",
-      "olive": "橄欖棕"
+      "olive": "橄欖棕",
+      "teal": "青碧",
+      "caramel": "焦糖棕"
     }
   },
   "reminders": {

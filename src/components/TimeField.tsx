@@ -97,9 +97,12 @@ export function TimeField({ label, value, onChange, optional = false }: { label:
 
   /** 離開格子時：不合法或沒填完就還原成目前的值，合法的補零（9 → 09、21 → 09 PM） */
   const onBlurField = () => {
-    const h = parseHourInput(hh, period)
-    const m = parseMinuteInput(mm)
-    if (optional && !hh && !mm) {
+    // 打滿兩位數自動跳到分鐘時，blur 在重新渲染前就觸發，state 還是舊的；直接讀輸入格的內容
+    const hText = hourRef.current?.value ?? hh
+    const mText = minuteRef.current?.value ?? mm
+    const h = parseHourInput(hText, period)
+    const m = parseMinuteInput(mText)
+    if (optional && !hText && !mText) {
       setInvalid(null)
       if (value) emit('')
       return

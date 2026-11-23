@@ -192,7 +192,7 @@ export function TodayPage() {
                         {e.title}
                       </h3>
                       <small className="text-[length:calc(11px*var(--fs))] text-muted">
-                        {formatTimeRange(e.start, e.end, lng)} {e.note && `· ${e.note}`}
+                        {formatTimeRange(e.start, e.end, lng) || t('event.allDay')} {e.note && `· ${e.note}`}
                       </small>
                     </button>
                     {gap >= 30 && (
@@ -322,7 +322,7 @@ function RangeList({
                         {e.title}
                       </strong>
                       <small className="text-[length:calc(11px*var(--fs))] text-muted">
-                        {formatTimeRange(e.start, e.end, lng)} {e.note && `· ${e.note}`}
+                        {formatTimeRange(e.start, e.end, lng) || t('event.allDay')} {e.note && `· ${e.note}`}
                       </small>
                     </button>
                   </li>

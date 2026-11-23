@@ -98,7 +98,6 @@
       "namePlaceholder": "e.g. Work",
       "start": "Start",
       "end": "End",
-      "color": "Color",
       "pickDates": "Pick dates (multiple)",
       "selected": "{{count}} days selected",
       "submit": "Add to {{count}} days",
@@ -364,7 +363,8 @@
     "endBeforeStart": "End time must be after start time",
     "textColor": "Text color",
     "icon": "Icon",
-    "iconAuto": "Auto"
+    "iconAuto": "Auto",
+    "allDay": "All day"
   },
   "search": {
     "title": "Search",
@@ -432,7 +432,9 @@
       "navy": "Navy",
       "plum": "Plum",
       "slate": "Slate blue",
-      "olive": "Olive brown"
+      "olive": "Olive brown",
+      "teal": "Teal",
+      "caramel": "Caramel"
     }
   },
   "reminders": {

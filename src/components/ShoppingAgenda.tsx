@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import { shoppingPath, type ShoppingEntry } from '../core/shoppingAgenda'
-import { formatTime } from '../core/time'
+import { formatTime, formatTime24 } from '../core/time'
 import { SHOP_STYLE, useEntryMoney, useShoppingLabel } from '../hooks/useShoppingAgenda'
 import { Icon, IconBadge } from './AcaciaIcons'
 import { Button } from './Button'
@@ -40,7 +40,8 @@ export function ShoppingChip({ entry, onOpen }: { entry: ShoppingEntry; onOpen: 
 }
 
 /** 日期清單、一週兩週檢視、今天時間軸共用的卡片 */
-export function ShoppingCard({ entry, onOpen, compact = false }: { entry: ShoppingEntry; onOpen: (x: ShoppingEntry) => void; compact?: boolean }) {
+/** clock24：行事曆版面用 24 小時制顯示時間 */
+export function ShoppingCard({ entry, onOpen, compact = false, clock24 = false }: { entry: ShoppingEntry; onOpen: (x: ShoppingEntry) => void; compact?: boolean; clock24?: boolean }) {
   const { t, i18n } = useTranslation()
   const label = useShoppingLabel()
   const done = entry.expense.done
@@ -59,7 +60,7 @@ export function ShoppingCard({ entry, onOpen, compact = false }: { entry: Shoppi
         </strong>
       </span>
       <small className="mt-0.5 block text-[length:calc(11px*var(--fs))] text-muted">
-        {entry.expense.time ? formatTime(entry.expense.time, i18n.resolvedLanguage) : t('calendar.shopping.allDay')}
+        {entry.expense.time ? (clock24 ? formatTime24(entry.expense.time) : formatTime(entry.expense.time, i18n.resolvedLanguage)) : t('calendar.shopping.allDay')}
         {done && ` · ${t('calendar.shopping.done')}`}
         {entry.archived && ` · ${t('calendar.shopping.archived')}`}
       </small>
