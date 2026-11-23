@@ -8,13 +8,31 @@ export interface IconOption<V extends string> {
   icon: IconName
   /** 圖示的粉彩底色 */
   bg?: string
+  /** 選項右側的淡色補充文字（例如數量） */
+  meta?: string
 }
 
 /**
  * 支援 SVG 圖示的自訂下拉選單（原生 <select> 的 option 放不了 SVG）。
  * 觸發按鈕與展開的每個選項都會顯示圖示＋名稱；支援鍵盤（↑↓ Home End Enter Esc）與螢幕閱讀器（combobox + listbox）。
  */
-export function IconSelect<V extends string>({ label, value, options, onChange }: { label: string; value: V; options: readonly IconOption<V>[]; onChange: (v: V) => void }) {
+export function IconSelect<V extends string>({
+  label,
+  value,
+  options,
+  onChange,
+  hideLabel = false,
+  compact = false,
+}: {
+  label: string
+  value: V
+  options: readonly IconOption<V>[]
+  onChange: (v: V) => void
+  /** 標籤只給螢幕閱讀器（例如放在工具列時） */
+  hideLabel?: boolean
+  /** 小尺寸膠囊樣式，跟搜尋框同高 */
+  compact?: boolean
+}) {
   const uid = useId()
   const labelId = `${uid}-label`
   const listId = `${uid}-list`
@@ -88,15 +106,18 @@ export function IconSelect<V extends string>({ label, value, options, onChange }
     }
   }
 
-  const chip = (o: IconOption<V>) => (
-    <span className="grid size-[2.3em] shrink-0 place-items-center rounded-full text-[#4f6b60]" style={{ background: o.bg ?? '#eaf6ef' }}>
-      <Icon name={o.icon} className="size-[1.5em]" />
+  const chip = (o: IconOption<V>, small = false) => (
+    <span className={`grid ${small ? 'size-[1.8em]' : 'size-[2.3em]'} shrink-0 place-items-center rounded-full text-[#4f6b60]`} style={{ background: o.bg ?? '#eaf6ef' }}>
+      <Icon name={o.icon} className={small ? 'size-[1.25em]' : 'size-[1.5em]'} />
     </span>
   )
+  const meta = (o: IconOption<V>) => o.meta !== undefined && <span className="shrink-0 text-xs text-muted">{o.meta}</span>
 
   return (
     <div ref={root} className="grid gap-1.5 text-xs font-semibold text-muted">
-      <span id={labelId}>{label}</span>
+      <span id={labelId} className={hideLabel ? 'sr-only' : undefined}>
+        {label}
+      </span>
       <div className="relative">
         <button
           type="button"
@@ -108,10 +129,11 @@ export function IconSelect<V extends string>({ label, value, options, onChange }
           aria-activedescendant={open ? `${listId}-${active}` : undefined}
           onClick={() => (open ? setOpen(false) : show())}
           onKeyDown={onKeyDown}
-          className="flex w-full items-center gap-2.5 rounded-(--radius-control) border border-line bg-oat px-3 py-2 text-left text-sm font-normal text-ink outline-none focus:border-sage"
+          className={`flex w-full items-center text-left text-sm font-normal text-ink outline-none focus:border-sage ${compact ? 'gap-2 rounded-full border border-line bg-oat py-1 pr-3 pl-1' : 'gap-2.5 rounded-(--radius-control) border border-line bg-oat px-3 py-2'}`}
         >
-          {current && chip(current)}
+          {current && chip(current, compact)}
           <span className="min-w-0 flex-1 truncate">{current?.label}</span>
+          {current && meta(current)}
           <span aria-hidden className={`text-muted transition-transform ${open ? 'rotate-180' : ''}`}>
             <svg viewBox="0 0 24 24" className="size-[1.2em]" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
               <path d="M6 9.5l6 6 6-6" />
@@ -137,6 +159,7 @@ export function IconSelect<V extends string>({ label, value, options, onChange }
               >
                 {chip(o)}
                 <span className="flex-1">{o.label}</span>
+                {meta(o)}
                 {o.value === value && <Icon name="check" className="text-sage-dark" />}
               </li>
             ))}
