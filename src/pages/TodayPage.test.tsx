@@ -30,6 +30,31 @@ describe('TodayPage', () => {
     expect(screen.getByText(/留給自己的空檔 · 2h/)).toBeInTheDocument()
   })
 
+  it('可以調整起床與就寢時間，存進設定並重新計算', () => {
+    renderPage()
+    expect(screen.getByText('還有 16 小時空檔')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: '調整起床與就寢時間' }))
+    const dialog = screen.getByRole('dialog', { name: '調整今天的節奏' })
+    fireEvent.change(within(dialog).getByLabelText('起床 小時'), { target: { value: '06' } })
+    fireEvent.change(within(dialog).getByLabelText('就寢 小時'), { target: { value: '21' } })
+    fireEvent.click(within(dialog).getByText('儲存'))
+    expect(useAppStore.getState().settings.rhythm).toEqual({ wake: '06:00', sleep: '21:00' })
+    expect(screen.getByText('還有 15 小時空檔')).toBeInTheDocument()
+  })
+
+  it('起床與就寢相同時不能儲存；恢復預設會清掉設定', () => {
+    useAppStore.setState((s) => ({ settings: { ...s.settings, rhythm: { wake: '06:00', sleep: '21:00' } } }))
+    renderPage()
+    fireEvent.click(screen.getByRole('button', { name: '調整起床與就寢時間' }))
+    const dialog = screen.getByRole('dialog', { name: '調整今天的節奏' })
+    fireEvent.change(within(dialog).getByLabelText('起床 小時'), { target: { value: '21' } })
+    fireEvent.click(within(dialog).getByText('儲存'))
+    expect(within(dialog).getByRole('alert')).toHaveTextContent('起床與就寢時間不能相同')
+    fireEvent.click(within(dialog).getByText(/恢復預設/))
+    fireEvent.click(within(dialog).getByText('儲存'))
+    expect(useAppStore.getState().settings.rhythm).toBeUndefined()
+  })
+
   it('從今天頁新增行程', () => {
     renderPage()
     fireEvent.click(screen.getByText('今天還沒有安排，點擊新增 ＋'))

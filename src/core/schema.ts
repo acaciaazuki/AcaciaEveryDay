@@ -145,6 +145,15 @@ export const settingsSchema = z.object({
    * 不認得的值（例如之後新版加的排序方式同步回舊版）當作沒設定，不讓整份資料讀取失敗
    */
   placeSort: z.enum(PLACE_SORTS).optional().catch(undefined),
+  /**
+   * 今天頁「節奏」的起床與就寢時間（24 小時制 "HH:mm"）。沒有時用預設 07:00–23:00。
+   * 就寢早於或等於起床代表睡到隔天（例如 01:00）。格式不對的值當作沒設定
+   */
+  rhythm: z
+    .object({ wake: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/), sleep: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/) })
+    .refine((r) => r.wake !== r.sleep)
+    .optional()
+    .catch(undefined),
 })
 
 export const REMINDER_RADII = [100, 300, 500] as const

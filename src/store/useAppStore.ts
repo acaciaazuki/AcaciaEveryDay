@@ -91,6 +91,8 @@ interface Actions {
   setFontSize: (size: FontSize) => void
   /** 預設貨幣（三碼 ISO，例如 TWD、USD）。只影響顯示與新增時的預設值，不改動已存的資料 */
   setCurrency: (currency: string) => void
+  /** 今天頁節奏的起床與就寢時間；null 回到預設 07:00–23:00 */
+  setRhythm: (rhythm: { wake: string; sleep: string } | null) => void
   /** 側邊欄某個區塊的自訂順序；傳 null 恢復預設順序 */
   setNavOrder: (section: string, keys: string[] | null) => void
   /** 歸檔記帳：'ended' 把已結束週期的記帳收進年度記帳本，'current' 立即封存本期。回傳歸檔的筆數 */
@@ -276,6 +278,12 @@ export const useAppStore = create<AppState>()(
 
       setFontSize: (fontSize) => setState((s) => ({ settings: { ...s.settings, fontSize }, ...touch() })),
       setCurrency: (currency) => setState((s) => ({ settings: { ...s.settings, currency }, ...touch() })),
+      setRhythm: (rhythm) =>
+        setState((s) => {
+          const { rhythm: _prev, ...base } = s.settings
+          void _prev
+          return { settings: rhythm ? { ...base, rhythm } : base, ...touch() }
+        }),
       setNavOrder: (section, keys) =>
         setState((s) => {
           const { [section]: _old, ...rest } = s.settings.navOrder ?? {}
