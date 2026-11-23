@@ -84,7 +84,7 @@ export const THEME_COLORS = [
   { bg: '#f0e6d8', txt: '#7a5a38' }, // 暖沙
 ] as const
 
-/** 文字顏色：中等偏深、低飽和的莫蘭迪色，疊在上面任何一個卡片背景都清楚 */
+/** 文字顏色（十種）：中等偏深、低飽和的莫蘭迪色，疊在上面任何一個卡片背景都清楚（對比 ≥ 4.5，測試會檢查） */
 export const TEXT_COLORS = [
   { color: '#263633', key: 'ink' },
   { color: '#2f5d4a', key: 'forest' },
@@ -94,6 +94,8 @@ export const TEXT_COLORS = [
   { color: '#6b3f66', key: 'plum' },
   { color: '#4a5d73', key: 'slate' },
   { color: '#5b5530', key: 'olive' },
+  { color: '#2c5e66', key: 'teal' },
+  { color: '#7a4f1c', key: 'caramel' },
 ] as const
 
 export const DEFAULT_TEXT_COLOR = TEXT_COLORS[0].color

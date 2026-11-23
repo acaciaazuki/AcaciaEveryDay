@@ -32,6 +32,17 @@ describe('TimeField', () => {
     expect(document.body.textContent).not.toMatch(/上午|下午/)
   })
 
+  it('逐字打 1、9 自動跳到分鐘，再打 30 → 19:30（不會變成 13:30）', () => {
+    render(<Demo initial="09:00" />)
+    hour().focus()
+    fireEvent.change(hour(), { target: { value: '1' } })
+    fireEvent.change(hour(), { target: { value: '19' } })
+    expect(document.activeElement).toBe(minute())
+    fireEvent.change(minute(), { target: { value: '30' } })
+    expect(value()).toBe('19:30')
+    expect(hour().value).toBe('07')
+  })
+
   it('直接打 9 與 30、切換 PM → 21:30', () => {
     render(<Demo initial="08:00" />)
     fireEvent.change(hour(), { target: { value: '9' } })

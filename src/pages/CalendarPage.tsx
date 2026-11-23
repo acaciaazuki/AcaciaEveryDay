@@ -10,7 +10,7 @@ import { ShoppingCard, ShoppingChip, ShoppingDetailDialog } from '../components/
 import { monthCells, shiftMonth, weekdayNames } from '../core/calendar'
 import { toLocalISO } from '../core/date'
 import type { CalendarEvent } from '../core/schema'
-import { formatTime, formatTimeRange } from '../core/time'
+import { formatTime24, formatTimeRange24 } from '../core/time'
 import { agendaOn, type ShoppingEntry } from '../core/shoppingAgenda'
 import { useNow } from '../hooks/useNow'
 import { SHOP_STYLE, useShoppingByDate } from '../hooks/useShoppingAgenda'
@@ -24,7 +24,6 @@ const MAX_CHIPS = 6
 export function CalendarPage() {
   const { t, i18n } = useTranslation()
   const events = useAppStore((s) => s.events)
-  const lng = i18n.resolvedLanguage
   const now = useNow()
   const todayISO = toLocalISO(now)
   const [ym, setYm] = useState(() => ({ year: now.getFullYear(), month: now.getMonth() }))
@@ -140,7 +139,9 @@ export function CalendarPage() {
                         className="truncate rounded px-1.5 py-px text-left text-[length:calc(10px*var(--fs))] leading-4 font-semibold"
                         style={{ background: e.bgColor || '#eaf6ef', color: e.titleColor || '#263633' }}
                       >
-                        {formatTime(e.start, lng)} {e.title}
+                        {/* 行事曆版面一律 24 小時制；整天的行程不加時間，讓名稱多露一點 */}
+                        {e.start && `${formatTime24(e.start)} `}
+                        {e.title}
                       </button>
                       )
                     })}
@@ -171,7 +172,7 @@ export function CalendarPage() {
                 if (it.kind === 'shopping')
                   return (
                     <li key={it.id}>
-                      <ShoppingCard compact entry={it.entry} onOpen={setViewingShop} />
+                      <ShoppingCard compact clock24 entry={it.entry} onOpen={setViewingShop} />
                     </li>
                   )
                 const e = it.event
@@ -187,7 +188,7 @@ export function CalendarPage() {
                       {e.title}
                     </strong>
                     <small className="text-[length:calc(11px*var(--fs))] text-muted">
-                      {formatTimeRange(e.start, e.end, lng)} {e.note && `· ${e.note}`}
+                      {formatTimeRange24(e.start, e.end) || t('event.allDay')} {e.note && `· ${e.note}`}
                     </small>
                   </button>
                 </li>

@@ -30,6 +30,53 @@ describe('CalendarPage', () => {
     expect(ev[0].dateISO < ev[1].dateISO).toBe(true)
   })
 
+  it('批次新增可選十種文字顏色與整天', () => {
+    render(<MemoryRouter><CalendarPage /></MemoryRouter>)
+    fireEvent.click(screen.getByText('批次新增'))
+    const dialog = screen.getByRole('dialog')
+    fireEvent.change(within(dialog).getByLabelText('行程名稱'), { target: { value: '旅行' } })
+    const textColors = within(dialog).getByRole('radiogroup', { name: '文字顏色' })
+    expect(within(textColors).getAllByRole('radio')).toHaveLength(10)
+    fireEvent.click(within(textColors).getByRole('radio', { name: '青碧' }))
+    fireEvent.click(within(dialog).getByRole('switch', { name: '整天' }))
+    expect(within(dialog).queryByText('開始')).not.toBeInTheDocument()
+    fireEvent.click(within(dialog).getAllByRole('button', { pressed: false })[4])
+    fireEvent.click(within(dialog).getByText('加入 1 天'))
+    expect(useAppStore.getState().events[0]).toMatchObject({ title: '旅行', start: '', end: '', titleColor: '#2c5e66', bgColor: '#eaf6ef' })
+  })
+
+  it('新增事件可設整天，取消整天會還原時間', () => {
+    render(<MemoryRouter><CalendarPage /></MemoryRouter>)
+    fireEvent.click(screen.getByText('＋ 新增事件'))
+    const dialog = screen.getByRole('dialog')
+    fireEvent.change(within(dialog).getByLabelText(/要做什麼/), { target: { value: '連假' } })
+    const sw = within(dialog).getByRole('switch', { name: '整天' })
+    fireEvent.click(sw)
+    expect(sw).toHaveAttribute('aria-checked', 'true')
+    fireEvent.click(sw)
+    expect(within(dialog).getByLabelText('開始 小時')).toHaveValue('09')
+    fireEvent.click(sw)
+    fireEvent.click(within(dialog).getByText('儲存'))
+    expect(useAppStore.getState().events[0]).toMatchObject({ title: '連假', start: '', end: '' })
+  })
+
+  it('行事曆版面用 24 小時制，整天的行程標示「整天」', () => {
+    const d = toLocalISO()
+    useAppStore.setState({
+      events: [
+        { id: 'a', title: '晚餐', dateISO: d, start: '19:30', end: '21:05', note: '' },
+        { id: 'b', title: '露營', dateISO: d, start: '', end: '', note: '' },
+      ],
+    })
+    render(<MemoryRouter><CalendarPage /></MemoryRouter>)
+    const cell = screen.getAllByRole('gridcell').find((c) => c.getAttribute('aria-selected') === 'true')!
+    expect(within(cell).getByRole('button', { name: '19:30 晚餐' })).toBeInTheDocument()
+    expect(within(cell).getByRole('button', { name: '露營' })).toBeInTheDocument()
+    expect(screen.getByText(/19:30–21:05/)).toBeInTheDocument()
+    expect(screen.queryByText(/PM/)).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /露營.*整天/ })).toBeInTheDocument()
+  })
+
   it('沒選日期時提示', () => {
     render(<MemoryRouter><CalendarPage /></MemoryRouter>)
     fireEvent.click(screen.getByText('批次新增'))
@@ -55,7 +102,7 @@ describe('CalendarPage', () => {
     fireEvent.click(screen.getByText('＋ 新增事件'))
     const dialog = screen.getByRole('dialog')
     fireEvent.change(within(dialog).getByLabelText(/要做什麼/), { target: { value: '看展' } })
-    expect(within(dialog).getAllByRole('radio', { name: /^(深灰黑|森林綠|暖棕咖|磚紅|海軍藍|梅紫|灰藍|橄欖棕)$/ })).toHaveLength(8)
+    expect(within(dialog).getAllByRole('radio', { name: /^(深灰黑|森林綠|暖棕咖|磚紅|海軍藍|梅紫|灰藍|橄欖棕|青碧|焦糖棕)$/ })).toHaveLength(10)
     fireEvent.click(within(dialog).getByRole('radio', { name: '#ebe6f6' }))
     fireEvent.click(within(dialog).getByRole('radio', { name: '磚紅' }))
     expect(within(dialog).getByText('看展', { selector: 'div' })).toHaveStyle({ background: '#ebe6f6', color: '#8f3f3a' })
