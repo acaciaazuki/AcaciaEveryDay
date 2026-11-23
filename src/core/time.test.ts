@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatTime, formatTimeRange, from12, parseHourInput, parseMinuteInput, to12 } from './time'
+import { formatTime, formatTime24, formatTimeRange, formatTimeRange24, from12, isAllDay, parseHourInput, parseMinuteInput, to12 } from './time'
 
 describe('12 小時制換算', () => {
   it.each([
@@ -55,5 +55,21 @@ describe('直接輸入的驗證', () => {
     expect(parseMinuteInput('30')).toBe(30)
     expect(parseMinuteInput('59')).toBe(59)
     for (const s of ['60', '75', '', 'x']) expect(parseMinuteInput(s), s).toBeNull()
+  })
+})
+
+describe('24 小時制顯示（行事曆版面）', () => {
+  it('補零並保留 24 小時', () => {
+    expect(formatTime24('05:00')).toBe('05:00')
+    expect(formatTime24('9:05')).toBe('09:05')
+    expect(formatTime24('23:55')).toBe('23:55')
+    expect(formatTime24('')).toBe('')
+  })
+  it('起訖與整天', () => {
+    expect(formatTimeRange24('01:00', '23:00')).toBe('01:00–23:00')
+    expect(formatTimeRange24('13:00', '')).toBe('13:00')
+    expect(formatTimeRange24('', '')).toBe('')
+    expect(isAllDay({ start: '', end: '' })).toBe(true)
+    expect(isAllDay({ start: '09:00', end: '' })).toBe(false)
   })
 })

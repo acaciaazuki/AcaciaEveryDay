@@ -51,6 +51,20 @@ export function formatTimeRange(start: string, end: string, lng?: string): strin
   return [start, end].filter(Boolean).map((x) => formatTime(x, lng)).join('–')
 }
 
+/** 24 小時制顯示（行事曆版面用）："9:05" → "09:05"；空字串或格式不對就原樣回傳 */
+export function formatTime24(hhmm: string): string {
+  const p = parseHHMM(hhmm)
+  return p ? `${pad(p.h)}:${pad(p.m)}` : hhmm
+}
+
+/** 24 小時制起訖時間：「09:00–17:30」；兩個都沒有（整天）回傳空字串 */
+export function formatTimeRange24(start: string, end: string): string {
+  return [start, end].filter(Boolean).map(formatTime24).join('–')
+}
+
+/** 行程沒有開始與結束時間就是「整天」 */
+export const isAllDay = (e: { start: string; end: string }) => !e.start && !e.end
+
 /**
  * 小時輸入格的內容 → 12 小時制的小時與（可能要切換的）上下午。
  * 1–12 照目前的 AM／PM；0 視為 12 AM；13–23 當成 24 小時制自動換成 PM（例如打 21 → 09 PM）；其他（24 以上、非數字）回傳 null。

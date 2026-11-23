@@ -1,9 +1,11 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { monthCells, shiftMonth, weekdayNames } from '../core/calendar'
+import { TEXT_COLORS } from '../core/categories'
 import { useAppStore } from '../store/useAppStore'
+import { AllDayToggle } from './AllDayToggle'
 import { Button } from './Button'
-import { ColorSwatches } from './ColorSwatches'
+import { ColorSwatches, TextColorSwatches } from './ColorSwatches'
 import { Dialog } from './Dialog'
 import { Field } from './Field'
 import { TimeField } from './TimeField'
@@ -17,7 +19,10 @@ export function BatchEventsDialog({ initialYear, initialMonth, onClose }: { init
   const [title, setTitle] = useState('')
   const [start, setStart] = useState('09:00')
   const [end, setEnd] = useState('17:00')
-  const [color, setColor] = useState({ bg: '#eaf6ef', txt: '#3d876c' })
+  const [allDay, setAllDay] = useState(false)
+  const [bgColor, setBgColor] = useState('#eaf6ef')
+  // 文字顏色和卡片背景分開選，十種莫蘭迪色；預設森林綠
+  const [titleColor, setTitleColor] = useState<string>(TEXT_COLORS[1].color)
   const [dates, setDates] = useState<Set<string>>(() => new Set())
   const [error, setError] = useState('')
 
@@ -33,24 +38,35 @@ export function BatchEventsDialog({ initialYear, initialMonth, onClose }: { init
     e.preventDefault()
     if (!title.trim()) return setError(t('calendar.batchForm.nameRequired'))
     if (dates.size === 0) return setError(t('calendar.batchForm.datesRequired'))
-    if (end <= start) return setError(t('event.endBeforeStart'))
-    addEvents(
-      [...dates].sort().map((dateISO) => ({ title: title.trim(), dateISO, start, end, note: t('calendar.batchForm.note'), titleColor: color.txt, bgColor: color.bg })),
-    )
+    if (!allDay && end <= start) return setError(t('event.endBeforeStart'))
+    const times = allDay ? { start: '', end: '' } : { start, end }
+    addEvents([...dates].sort().map((dateISO) => ({ title: title.trim(), dateISO, ...times, note: t('calendar.batchForm.note'), titleColor, bgColor })))
     onClose()
   }
 
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()} title={t('calendar.batchForm.title')}>
       <form onSubmit={submit} className="grid gap-4">
+        <div className="rounded-(--radius-control) border-l-4 px-4 py-3 text-sm font-bold" style={{ background: bgColor, color: titleColor, borderLeftColor: titleColor }}>
+          {title.trim() || t('event.preview')}
+        </div>
         <Field label={t('calendar.batchForm.name')} placeholder={t('calendar.batchForm.namePlaceholder')} value={title} onChange={(e) => setTitle(e.target.value)} autoFocus />
-        <div className="grid gap-3 min-[30rem]:grid-cols-2">
-          <TimeField label={t('calendar.batchForm.start')} value={start} onChange={setStart} />
-          <TimeField label={t('calendar.batchForm.end')} value={end} onChange={setEnd} />
+        <div className="grid gap-2">
+          <AllDayToggle checked={allDay} onChange={setAllDay} />
+          {!allDay && (
+            <div className="grid gap-3 min-[30rem]:grid-cols-2">
+              <TimeField label={t('calendar.batchForm.start')} value={start} onChange={setStart} />
+              <TimeField label={t('calendar.batchForm.end')} value={end} onChange={setEnd} />
+            </div>
+          )}
         </div>
         <div className="grid gap-1.5 text-xs font-semibold text-muted">
-          {t('calendar.batchForm.color')}
-          <ColorSwatches label={t('calendar.batchForm.color')} value={color.bg} onChange={setColor} />
+          {t('event.color')}
+          <ColorSwatches label={t('event.color')} value={bgColor} onChange={(c) => setBgColor(c.bg)} />
+        </div>
+        <div className="grid gap-1.5 text-xs font-semibold text-muted">
+          {t('event.textColor')}
+          <TextColorSwatches label={t('event.textColor')} value={titleColor} onChange={setTitleColor} />
         </div>
         <fieldset className="grid gap-2 rounded-xl border border-line p-3">
           <legend className="px-1 text-xs font-semibold text-muted">{t('calendar.batchForm.pickDates')}</legend>

@@ -4,6 +4,8 @@ import { toLocalISO } from '../core/date'
 import { EVENT_ICON_KEYS, eventIconOf, ICON_BG } from '../core/eventIcons'
 import type { CalendarEvent } from '../core/schema'
 import { useAppStore } from '../store/useAppStore'
+import { isAllDay } from '../core/time'
+import { AllDayToggle } from './AllDayToggle'
 import { Button } from './Button'
 import { ColorSwatches, TextColorSwatches } from './ColorSwatches'
 import { Dialog } from './Dialog'
@@ -22,6 +24,9 @@ export function EventDialog({ event, date, onClose }: { event: CalendarEvent | n
   const [draft, setDraft] = useState<Draft>(
     event ?? { title: '', dateISO: date ?? toLocalISO(), start: '09:00', end: '10:00', note: '', titleColor: '#3d876c', bgColor: '#eaf6ef' },
   )
+  // 整天：不存時間；切回來時還原原本填的時間
+  const [allDay, setAllDay] = useState(() => !!event && isAllDay(event))
+  const [times, setTimes] = useState(() => (event && !isAllDay(event) ? { start: event.start, end: event.end } : { start: '09:00', end: '10:00' }))
   const [error, setError] = useState('')
   const set = (patch: Partial<Draft>) => setDraft((d) => ({ ...d, ...patch }))
 
@@ -29,8 +34,9 @@ export function EventDialog({ event, date, onClose }: { event: CalendarEvent | n
     e.preventDefault()
     const title = draft.title.trim()
     if (!title) return setError(t('event.titleRequired'))
-    if (draft.start && draft.end && draft.end <= draft.start) return setError(t('event.endBeforeStart'))
-    const data = { ...draft, title, note: draft.note.trim() }
+    const { start, end } = allDay ? { start: '', end: '' } : times
+    if (start && end && end <= start) return setError(t('event.endBeforeStart'))
+    const data = { ...draft, title, start, end, note: draft.note.trim() }
     if (event) updateEvent(event.id, data)
     else addEvent(data)
     onClose()
@@ -47,9 +53,14 @@ export function EventDialog({ event, date, onClose }: { event: CalendarEvent | n
         </div>
         <Field label={t('event.title')} placeholder={t('event.titlePlaceholder')} value={draft.title} onChange={(e) => set({ title: e.target.value })} autoFocus />
         <Field label={t('event.date')} type="date" value={draft.dateISO} onChange={(e) => set({ dateISO: e.target.value })} />
-        <div className="grid gap-3 min-[30rem]:grid-cols-2">
-          <TimeField label={t('event.start')} value={draft.start} onChange={(start) => set({ start })} />
-          <TimeField label={t('event.end')} value={draft.end} onChange={(end) => set({ end })} />
+        <div className="grid gap-2">
+          <AllDayToggle checked={allDay} onChange={setAllDay} />
+          {!allDay && (
+            <div className="grid gap-3 min-[30rem]:grid-cols-2">
+              <TimeField label={t('event.start')} value={times.start} onChange={(start) => setTimes((x) => ({ ...x, start }))} />
+              <TimeField label={t('event.end')} value={times.end} onChange={(end) => setTimes((x) => ({ ...x, end }))} />
+            </div>
+          )}
         </div>
         {error && <p className="-mt-2 text-xs text-[#c2583d]">{error}</p>}
         <div className="grid gap-1.5 text-xs font-semibold text-muted">

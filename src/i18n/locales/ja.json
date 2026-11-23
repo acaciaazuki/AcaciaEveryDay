@@ -98,7 +98,6 @@
       "namePlaceholder": "例：仕事",
       "start": "開始",
       "end": "終了",
-      "color": "色",
       "pickDates": "日付を選択（複数可）",
       "selected": "{{count}} 日選択中",
       "submit": "{{count}} 日に追加",
@@ -364,7 +363,8 @@
     "endBeforeStart": "終了時刻は開始より後にしてください",
     "textColor": "文字色",
     "icon": "アイコン",
-    "iconAuto": "自動"
+    "iconAuto": "自動",
+    "allDay": "終日"
   },
   "search": {
     "title": "検索",
@@ -432,7 +432,9 @@
       "navy": "ネイビー",
       "plum": "梅紫",
       "slate": "グレーブルー",
-      "olive": "オリーブ"
+      "olive": "オリーブ",
+      "teal": "ティール",
+      "caramel": "キャラメル"
     }
   },
   "reminders": {
