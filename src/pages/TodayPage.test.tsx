@@ -195,4 +195,21 @@ describe('TodayPage', () => {
     fireEvent.click(within(dialog).getByText('儲存'))
     expect(useAppStore.getState().events[0]).toMatchObject({ title: '小聚', icon: 'celebrate' })
   })
+
+  it('字級：問候與橫幅標題跟說明文字一樣大（13px）；日期、按鈕、摘要、檢視切換與小連結放大到 14px', () => {
+    useAppStore.setState({ events: [{ id: 'x', title: '散步', dateISO: toLocalISO(), start: '18:00', end: '18:30', note: '' }] })
+    renderPage()
+    const t13 = 'text-[length:calc(13px*var(--fs))]'
+    const t14 = 'text-[length:calc(14px*var(--fs))]'
+    expect(screen.getByRole('heading', { level: 1 })).toHaveClass(t13)
+    expect(screen.getByRole('heading', { name: '慢慢來，一切都會剛剛好。' })).toHaveClass(t13)
+    expect(screen.getByText('你有幾件重要的事，還有足夠的空檔好好呼吸。')).toHaveClass(t13)
+    expect(screen.getByRole('heading', { level: 1 }).previousElementSibling).toHaveClass(t14)
+    expect(screen.getByRole('link', { name: /查看月曆/ })).toHaveClass(t14)
+    expect(screen.getByRole('button', { name: '＋ 新增安排' })).toHaveClass(`${t14}!`)
+    expect(screen.getByText('個行程').closest('span')).toHaveClass(t14)
+    for (const b of within(screen.getByRole('group', { name: '檢視範圍' })).getAllByRole('button')) expect(b).toHaveClass(t14)
+    for (const name of ['查看完整日程 →', '全部 →']) expect(screen.getByRole('link', { name })).toHaveClass(t14)
+    for (const name of ['調整起床與就寢時間', '＋ 新增待辦', '＋ 加一個行程']) expect(screen.getByRole('button', { name })).toHaveClass(t14)
+  })
 })
