@@ -102,7 +102,12 @@
       "submit": "Ajouter à {{count}} jour(s)",
       "nameRequired": "Veuillez saisir un nom",
       "datesRequired": "Choisissez au moins un jour",
-      "note": "Ajouté en groupe"
+      "note": "Ajouté en groupe",
+      "selectedList": "Dates choisies",
+      "removeDate": "Retirer {{date}}",
+      "created": "« {{title}} » ajouté sur {{count}} jours",
+      "undo": "Annuler",
+      "undone": "Annulé : {{count}} événements supprimés"
     },
     "shopping": {
       "tag": "Achats",

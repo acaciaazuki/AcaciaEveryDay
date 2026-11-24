@@ -102,7 +102,12 @@
       "submit": "{{count}}일에 추가",
       "nameRequired": "일정 이름을 입력해 주세요",
       "datesRequired": "하루 이상 선택해 주세요",
-      "note": "일괄 생성"
+      "note": "일괄 생성",
+      "selectedList": "선택한 날짜",
+      "removeDate": "{{date}} 제거",
+      "created": "\"{{title}}\"을(를) {{count}}일에 추가했습니다",
+      "undo": "실행 취소",
+      "undone": "실행 취소됨: 일정 {{count}}개 삭제"
     },
     "shopping": {
       "tag": "쇼핑",

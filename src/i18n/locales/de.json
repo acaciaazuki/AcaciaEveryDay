@@ -102,7 +102,12 @@
       "submit": "Zu {{count}} Tag(en) hinzufügen",
       "nameRequired": "Bitte gib einen Namen ein",
       "datesRequired": "Wähle mindestens einen Tag",
-      "note": "Gesammelt hinzugefügt"
+      "note": "Gesammelt hinzugefügt",
+      "selectedList": "Ausgewählte Tage",
+      "removeDate": "{{date}} entfernen",
+      "created": "„{{title}}“ an {{count}} Tagen hinzugefügt",
+      "undo": "Rückgängig",
+      "undone": "Rückgängig gemacht – {{count}} Termine entfernt"
     },
     "shopping": {
       "tag": "Einkauf",

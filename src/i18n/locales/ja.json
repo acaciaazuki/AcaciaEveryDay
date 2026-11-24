@@ -102,7 +102,12 @@
       "submit": "{{count}} 日に追加",
       "nameRequired": "予定名を入力してください",
       "datesRequired": "日付を 1 日以上選んでください",
-      "note": "まとめて作成"
+      "note": "まとめて作成",
+      "selectedList": "選択した日付",
+      "removeDate": "{{date}} を外す",
+      "created": "「{{title}}」を {{count}} 日分追加しました",
+      "undo": "元に戻す",
+      "undone": "元に戻しました（{{count}} 件削除）"
     },
     "shopping": {
       "tag": "買い物",

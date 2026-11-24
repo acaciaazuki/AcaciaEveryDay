@@ -21,9 +21,12 @@ export type RecurringInput = Omit<Recurring, 'id'>
 
 interface Actions {
   addEvent: (input: EventInput) => void
-  addEvents: (inputs: EventInput[]) => void
+  /** 一次新增多筆（批次建立）；回傳新行程的 id，給「復原」使用 */
+  addEvents: (inputs: EventInput[]) => string[]
   updateEvent: (id: string, patch: Partial<EventInput>) => void
   removeEvent: (id: string) => void
+  /** 一次刪除多筆（批次建立的復原） */
+  removeEvents: (ids: readonly string[]) => void
   addPlace: (input: PlaceInput) => void
   updatePlace: (id: string, patch: Partial<PlaceInput>) => void
   removePlace: (id: string) => void
@@ -114,11 +117,18 @@ export const useAppStore = create<AppState>()(
       ...emptyAppData(),
 
       addEvent: (input) => setState((s) => ({ events: [...s.events, { id: newId(), ...input }], ...touch() })),
-      addEvents: (inputs) =>
-        setState((s) => ({ events: [...s.events, ...inputs.map((i) => ({ id: newId(), ...i }))], ...touch() })),
+      addEvents: (inputs) => {
+        const created = inputs.map((i) => ({ id: newId(), ...i }))
+        setState((s) => ({ events: [...s.events, ...created], ...touch() }))
+        return created.map((e) => e.id)
+      },
       updateEvent: (id, patch) =>
         setState((s) => ({ events: s.events.map((x) => (x.id === id ? { ...x, ...patch } : x)), ...touch() })),
       removeEvent: (id) => setState((s) => ({ events: s.events.filter((x) => x.id !== id), ...touch() })),
+      removeEvents: (ids) => {
+        const drop = new Set(ids)
+        setState((s) => ({ events: s.events.filter((x) => !drop.has(x.id)), ...touch() }))
+      },
 
       addPlace: (input) => setState((s) => ({ places: [{ id: newId(), ...input }, ...s.places], ...touch() })),
       updatePlace: (id, patch) =>

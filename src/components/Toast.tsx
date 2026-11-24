@@ -1,8 +1,21 @@
 import { useEffect } from 'react'
 import { Icon } from './AcaciaIcons'
 
-/** 輕量提示：畫面下方淡淡出現，幾秒後自動消失。手機版會避開底部導覽列 */
-export function Toast({ message, onDone, duration = 2600 }: { message: string; onDone: () => void; duration?: number }) {
+/**
+ * 輕量提示：畫面下方淡淡出現，幾秒後自動消失。手機版會避開底部導覽列。
+ * action：提示旁的操作按鈕（例如批次建立後的「復原」），按下後提示關閉。
+ */
+export function Toast({
+  message,
+  onDone,
+  duration = 2600,
+  action,
+}: {
+  message: string
+  onDone: () => void
+  duration?: number
+  action?: { label: string; onClick: () => void }
+}) {
   useEffect(() => {
     const id = setTimeout(onDone, duration)
     return () => clearTimeout(id)
@@ -15,6 +28,18 @@ export function Toast({ message, onDone, duration = 2600 }: { message: string; o
           <Icon name="check" className="size-[1.2em]" />
         </span>
         {message}
+        {action && (
+          <button
+            type="button"
+            onClick={() => {
+              action.onClick()
+              onDone()
+            }}
+            className="-mr-1.5 ml-1 rounded-full bg-sage-light px-3 py-1 text-[length:calc(12px*var(--fs))] font-bold text-sage-dark hover:bg-mint"
+          >
+            {action.label}
+          </button>
+        )}
       </div>
     </div>
   )
