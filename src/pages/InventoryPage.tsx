@@ -36,6 +36,7 @@ import { useInvCategories } from '../hooks/useInvCategories'
 import { useNow } from '../hooks/useNow'
 import { useOpenFromUrl } from '../hooks/useOpenFromUrl'
 import { useAppStore, type InventoryInput } from '../store/useAppStore'
+import { CARD_FRAME, CARD_GRID } from '../components/cardGrid'
 
 const card = 'rounded-(--radius-card) bg-paper p-5 shadow-card'
 const segBtn = (on: boolean) => `rounded-full px-3 py-1 text-xs font-bold whitespace-nowrap transition ${on ? 'bg-paper text-sage-dark shadow-soft' : 'text-muted hover:text-ink'}`
@@ -160,7 +161,7 @@ export function InventoryPage() {
         ) : shown.length === 0 ? (
           <p className="rounded-xl border border-dashed border-line py-8 text-center text-[length:calc(13px*var(--fs))] text-muted">{t('inv.list.noMatch')}</p>
         ) : (
-          <ul className="grid gap-3 min-[1001px]:grid-cols-2" aria-label={t('inv.list.title')}>
+          <ul className={CARD_GRID} aria-label={t('inv.list.title')}>
             {shown.map((x) => (
               <ItemCard key={x.id} item={x} todayISO={todayISO} time={hhmm(now)} link={shoppingLink(x, shopping)} dateLabel={dateLabel} onEdit={() => setEditing(x)} onToast={setToast} />
             ))}
@@ -222,7 +223,7 @@ function ItemCard({
   const label = (d: DueInfo) => t(`inv.due.${d.kind}`)
 
   return (
-    <li className="grid content-start gap-3 rounded-xl border border-l-4 border-line bg-paper p-4 transition hover:-translate-y-px" style={{ borderLeftColor: st.fg }}>
+    <li className={`grid content-start gap-3 bg-paper ${CARD_FRAME}`} style={{ borderLeftColor: st.fg }}>
       <div className="flex items-start gap-3">
         <IconBadge name={st.icon} bg={st.bg} />
         <button type="button" className="min-w-0 flex-1 text-left" onClick={onEdit}>

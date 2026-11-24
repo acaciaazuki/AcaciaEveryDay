@@ -23,6 +23,7 @@ import { formatTime } from '../core/time'
 import { useNow } from '../hooks/useNow'
 import { useOpenFromUrl } from '../hooks/useOpenFromUrl'
 import { useAppStore } from '../store/useAppStore'
+import { CARD_FRAME, CARD_GRID } from '../components/cardGrid'
 
 type Draft = Omit<Expense, 'id' | 'done'>
 /** 固定支出的彈窗：批次帶入、範本清單、編輯範本（back 是存檔後回到哪一個） */
@@ -122,8 +123,8 @@ export function ShoppingPage() {
         {shopping.length === 0 ? (
           <p className="py-4 text-center text-muted">{t('shopping.empty')}</p>
         ) : (
-          // 跟「庫存與提醒」的用品清單一樣：寬螢幕兩欄、手機單欄
-          <ul className="grid gap-3 min-[1001px]:grid-cols-2" aria-label={t('shopping.list')}>
+          // 跟「庫存與提醒」的用品清單共用網格：手機 1 欄、一般筆電 2 欄、寬螢幕 3 欄
+          <ul className={CARD_GRID} aria-label={t('shopping.list')}>
             {shopping.map((s) => {
               const st = EXPENSE_STYLE[s.cat]
               const cur = expenseCurrency(s, currency)
@@ -133,7 +134,7 @@ export function ShoppingPage() {
               return (
                 <li
                   key={s.id}
-                  className={`flex min-w-0 items-center justify-between gap-3 rounded-xl border border-l-4 border-line p-4 transition hover:-translate-y-px ${s.done ? 'opacity-60 grayscale' : ''}`}
+                  className={`flex items-center justify-between gap-3 ${CARD_FRAME} ${s.done ? 'opacity-60 grayscale' : ''}`}
                   style={{ background: custom ? s.bgColor : st.bg, color: textColor, borderLeftColor: st.fg }}
                 >
                   <div className="flex min-w-0 items-center gap-2.5">
