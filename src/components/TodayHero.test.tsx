@@ -41,15 +41,27 @@ describe('今天頁的問候與概覽橫幅', () => {
     expect(within(hero).getByRole('button', { name: '＋ 新增安排' })).toBeInTheDocument()
   })
 
-  it('寬螢幕一列三塊（日期與問候｜摘要｜按鈕）；平板與一般筆電兩列；手機直向堆疊', () => {
+  it('寬螢幕一列三塊；平板與一般筆電可換行（按鈕放不下時換到下一列），摘要在最下面；手機直向堆疊', () => {
     setup()
     const hero = screen.getByRole('region', { name: '晚安' })
-    expect(hero).toHaveClass('grid', 'min-[681px]:grid-cols-[minmax(0,1fr)_auto]', 'min-[1280px]:grid-cols-[auto_minmax(0,1fr)_auto]')
+    expect(hero).toHaveClass('grid', 'min-[681px]:flex', 'min-[681px]:flex-wrap', 'min-[1280px]:grid', 'min-[1280px]:grid-cols-[auto_minmax(0,1fr)_auto]')
     expect(hero.children).toHaveLength(3)
     const [, summary, actions] = [...hero.children]
-    // 兩列時：摘要在第二列佔滿；一列時回到中間欄
-    expect(summary).toHaveClass('min-[681px]:col-span-2', 'min-[681px]:row-start-2', 'min-[1280px]:col-start-2', 'min-[1280px]:row-start-1')
-    expect(actions).toHaveClass('min-[681px]:col-start-2', 'min-[681px]:row-start-1', 'min-[1280px]:col-start-3', 'min-[681px]:justify-end')
+    expect(summary).toHaveClass('min-[681px]:order-3', 'min-[681px]:basis-full', 'min-[1280px]:col-start-2', 'min-[1280px]:border-l')
+    expect(actions).toHaveClass('min-[681px]:order-2', 'min-[681px]:ml-auto', 'min-[1280px]:col-start-3')
+  })
+
+  it('‹ 日期 › 是不換行的一組；天氣圖示跟日期、問候放在一起', () => {
+    setup()
+    const nav = screen.getByRole('group', { name: '切換日期' })
+    const trio = screen.getByRole('button', { name: '往前' }).parentElement!
+    expect(trio).toHaveClass('whitespace-nowrap')
+    expect(trio).toHaveTextContent('2026年11月24日 星期二')
+    expect(within(trio).getByRole('button', { name: '往後' })).toBeInTheDocument()
+    // 日期列 → 日期與問候 → 左側一組（含天氣圖示）
+    const left = nav.parentElement!.parentElement!
+    expect(left.querySelector('[aria-hidden] svg')).not.toBeNull()
+    expect(within(left as HTMLElement).getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 
   it('前後切換日期；不在今天時才顯示「回到今天」', () => {
