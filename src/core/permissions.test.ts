@@ -127,7 +127,9 @@ describe('工作／學校與私生活的忙閒隔離', () => {
     const forKid = resolveCalendarItemForViewer(block, U.kid, { space: family })!
     expect(forKid.access).toBe('busy')
     expect(forKid.item.visibility.busyLabel).toBe('上班中')
-    expect(forKid.item.projection).toBeUndefined()
+    // 只保留「是投射」的標記，規則 id 換成區塊自己的 id，不會透露規則
+    expect(forKid.item.projection).toEqual({ ruleId: block.id })
+    expect(JSON.stringify(forKid.item)).not.toContain('r-work')
     // 爸爸自己看到的是自動產生的區塊：不能直接編輯
     const forDad = resolveCalendarItemForViewer(block, U.dad, { space: family })!
     expect(forDad.canEdit).toBe(false)

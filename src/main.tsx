@@ -9,6 +9,7 @@ import { startAutoBackup } from './store/useBackupStore'
 import { useConsentStore, whenConsented } from './store/useConsentStore'
 import { startSpacesAutoBackup } from './store/useSpacesBackupStore'
 import { startSpacesSync } from './store/useSpacesSyncStore'
+import { startPersonalBusyMirror } from './store/personalBusyMirror'
 import { useSyncStore } from './store/useSyncStore'
 
 // 讀取使用條款同意紀錄；同意之前不碰 Google 登入、自動備份與同步
@@ -21,6 +22,8 @@ whenConsented(() => {
   // 共享空間：本機自動快照；使用者開啟雲端同步時才會讀寫 acacia_spaces_v1.json
   startSpacesAutoBackup()
   startSpacesSync()
+  // 個人行程變動時更新「我的行事曆」的忙碌影子（有以它為來源的投射規則時才會動作）
+  startPersonalBusyMirror()
 })
 
 // 網頁版：請瀏覽器把本站資料標記為「持續保存」，空間不足時不要自動清除（不會跳出詢問）。

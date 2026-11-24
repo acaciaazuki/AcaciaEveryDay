@@ -248,6 +248,23 @@ export function ruleTargets(rule: BusyProjectionRule, spaces: readonly Pick<Spac
   return [...new Set(wanted)].filter((t) => t !== rule.sourceId && (t === PERSONAL_CALENDAR_ID || member.has(t)))
 }
 
+/**
+ * 「我的行事曆」的忙碌影子：個人行程（AppData.events）只留下佔用的時間，給以「我的行事曆」為來源的投射規則使用。
+ * - 不含標題、備註、顏色等任何內容；id 是個人行程的 id（投射出去的區塊 id 會再經過雜湊，看不出來）
+ * - 個人行程沒有版本與刪除時間，所以由這裡補上：內容有變就更新版本，行程刪除時留下刪除標記，
+ *   其他成員手上的忙碌區塊才會跟著更新或移除
+ * - 版本用秒數遞增（同一秒內至少 +1）：自己的多台裝置各自產生影子時，最晚看到的變更會勝出，內容最後一致
+ */
+export const personalBusySlotSchema = z.object({
+  id,
+  dateISO: isoDate,
+  start: hhmm.default(''),
+  end: hhmm.default(''),
+  version: z.number().int().nonnegative(),
+  updatedAt: timestamp,
+  deletedAt: timestamp.nullable().default(null),
+})
+
 export const sharedCalendarDataSchema = z.object({
   /** 讀取時接受 v1（規則格式較舊，由 busyProjectionRuleSchema 自動轉換），輸出一律是目前版本 */
   schemaVersion: z.union([z.literal(1), z.literal(SHARING_SCHEMA_VERSION)]).transform(() => SHARING_SCHEMA_VERSION),
@@ -256,6 +273,8 @@ export const sharedCalendarDataSchema = z.object({
   spaces: z.array(spaceSchema).default([]),
   items: z.array(sharedCalendarItemSchema).default([]),
   busyProjectionRules: z.array(busyProjectionRuleSchema).default([]),
+  /** 只存在本機與自己的備份；同步給其他成員的只有由它算出來的忙碌區塊 */
+  personalBusySlots: z.array(personalBusySlotSchema).default([]),
   updatedAt: timestamp.default(0),
 })
 
@@ -266,6 +285,7 @@ export type SharedCalendarItem = z.infer<typeof sharedCalendarItemSchema>
 export type SharedCalendarItemInput = z.input<typeof sharedCalendarItemSchema>
 export type BusyProjectionRule = z.infer<typeof busyProjectionRuleSchema>
 export type SharedCalendarData = z.infer<typeof sharedCalendarDataSchema>
+export type PersonalBusySlot = z.infer<typeof personalBusySlotSchema>
 
 export const emptySharedCalendarData = (ownerId: string): SharedCalendarData => ({
   schemaVersion: SHARING_SCHEMA_VERSION,
@@ -273,6 +293,7 @@ export const emptySharedCalendarData = (ownerId: string): SharedCalendarData => 
   spaces: [],
   items: [],
   busyProjectionRules: [],
+  personalBusySlots: [],
   updatedAt: 0,
 })
 

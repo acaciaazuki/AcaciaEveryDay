@@ -20,6 +20,7 @@ import {
   spaceSchema,
   upsertMember,
   type BusyProjectionRule,
+  type PersonalBusySlot,
   type MemberRole,
   type SharedCalendarData,
   type SharedCalendarItemInput,
@@ -80,6 +81,8 @@ interface SpacesState {
   addRule: (input: RuleInput) => string
   updateRule: (id: string, patch: Partial<RuleInput>) => void
   removeRule: (id: string) => void
+  /** 由鏡像程序（personalBusyMirror）呼叫：更新「我的行事曆」的忙碌影子；不受預覽模式限制（不是使用者的操作） */
+  setPersonalBusySlots: (slots: PersonalBusySlot[]) => void
 
   /** 匯出／匯入接口（Drive 同步與快照使用） */
   exportSpaces: () => SharedCalendarData
@@ -233,6 +236,8 @@ export const useSpacesStore = create<SpacesState>()(
           const now = Date.now()
           commit({ busyProjectionRules: get().data.busyProjectionRules.map((r) => (r.id === id ? { ...r, deletedAt: now, updatedAt: now } : r)) })
         },
+
+        setPersonalBusySlots: (slots) => commit({ personalBusySlots: slots }),
 
         exportSpaces: () => get().data,
         importSpaces: (raw) => {
