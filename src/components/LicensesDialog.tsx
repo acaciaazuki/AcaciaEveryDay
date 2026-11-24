@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { groupByLicense, filterPackages, summarize, type LicenseCategory, type LicensePackage, type ScopeFilter } from '../core/licenses'
 import packagesData from '../licenses/packages.json'
 import { Icon } from './AcaciaIcons'
+import { AppLicense } from './AppLicense'
 import { Button } from './Button'
 import { Dialog } from './Dialog'
 
@@ -49,6 +50,9 @@ export function LicensesContent() {
 
   return (
     <>
+      <AppLicense />
+
+      <h3 className="mb-1.5 text-sm font-bold">{t('licenses.app.thirdParty')}</h3>
       <p className="mb-3 text-xs leading-relaxed text-muted">{t('licenses.intro')}</p>
 
       <div className="mb-4 grid gap-2 text-xs leading-relaxed">

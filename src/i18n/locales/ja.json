@@ -812,7 +812,15 @@
     "empty": "該当するパッケージがありません",
     "update": "この一覧は npm run licenses で package-lock.json から生成しています。パッケージを追加・更新したら再実行してください。",
     "close": "閉じる",
-    "scopeLabel": "表示範囲"
+    "scopeLabel": "表示範囲",
+    "app": {
+      "heading": "ACACIA Everyday 本体のライセンス",
+      "notice": "Copyright © 2026 acaciaazuki。本アプリは GNU Affero 一般公衆利用許諾書 バージョン 3 またはそれ以降（AGPL-3.0-or-later）のもとで公開されています。",
+      "plain": "本アプリは自由にお使いいただけます。コードを改変して再配布する場合や、改変版をウェブサービスとして公開する場合は、原作者の著作権表示を残し、変更箇所を明記したうえで、同じ AGPL ライセンスで完全なソースコードを公開する必要があります。",
+      "warranty": "本プログラムは無保証です。詳しい条件はライセンス全文をご確認ください。",
+      "source": "ソースコード",
+      "thirdParty": "サードパーティパッケージ"
+    }
   },
   "currency": {
     "label": "通貨",

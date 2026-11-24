@@ -25,6 +25,18 @@ npm run lint     # oxlint
 npm run build    # 正式建置，輸出到 dist/
 ```
 
+## 授權
+
+Copyright © 2026 acaciaazuki
+
+ACACIA Everyday 以 [GNU Affero General Public License v3.0 或更新版本](LICENSE)（`AGPL-3.0-or-later`）釋出，完整聲明見 [`NOTICE`](NOTICE)。
+
+- 任何人都可以使用、研究、修改這份程式碼。
+- 修改後再散布，或把修改後的版本架成網站／服務讓別人使用，必須：保留原作者的版權聲明、註明修改的地方、以同樣的 AGPL 授權公開完整原始碼。
+- 本程式不提供任何擔保。
+
+App 內「第三方授權清單」面板最上方也會顯示本 App 的授權、原始碼連結與 AGPL 全文（`src/components/AppLicense.tsx`）。`npm test` 會檢查 `package.json` 的 `license`、`LICENSE` 與畫面上的授權是否一致。使用的第三方套件各自保有原本的授權，見下一節。
+
 ## 第三方授權清單
 
 側邊欄「設定」下方（手機在設定頁最底部）有「第三方授權清單」小連結，列出所有套件的授權、版權聲明與授權全文。資料放在 `src/licenses/`，由腳本依 `package-lock.json` 與 `node_modules` 產生：

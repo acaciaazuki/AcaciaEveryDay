@@ -812,7 +812,15 @@
     "empty": "找不到符合的套件",
     "update": "這份清單由 npm run licenses 依 package-lock.json 產生；新增或升級套件後重新執行即可更新。",
     "close": "關閉",
-    "scopeLabel": "篩選範圍"
+    "scopeLabel": "篩選範圍",
+    "app": {
+      "heading": "ACACIA Everyday 本身的授權",
+      "notice": "Copyright © 2026 acaciaazuki。本 App 以 GNU Affero 通用公共授權條款第 3 版或更新版本（AGPL-3.0-or-later）釋出。",
+      "plain": "你可以自由使用本 App。若修改程式碼並轉散布，或把修改後的版本架成網站讓別人使用，就必須保留原作者的版權聲明、註明修改的地方，並以同樣的 AGPL 授權公開完整原始碼。",
+      "warranty": "本程式不提供任何擔保，詳細條件以授權全文為準。",
+      "source": "原始碼",
+      "thirdParty": "第三方套件"
+    }
   },
   "currency": {
     "label": "幣別",
