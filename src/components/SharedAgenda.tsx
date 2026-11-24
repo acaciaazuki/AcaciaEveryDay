@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { SharedEntry } from '../core/calendarView'
+import { detailEntries, safeLink } from '../core/itemDetails'
 import { useSharedTitle } from '../hooks/useSharedTitle'
 import { formatTimeRange } from '../core/time'
 import { Icon } from './AcaciaIcons'
@@ -119,8 +120,28 @@ export function SharedDetailDialog({ entry, previewing, onClose }: { entry: Shar
         {entry.access !== 'busy' && (
           <>
             {row(t('sharing.kind'), t(`sharing.itemKind.${entry.kind}`), hidden('kind'))}
-            {(entry.item.location || hidden('location')) && row(t('sharing.location'), entry.item.location, hidden('location'))}
+            {(entry.item.location || hidden('location')) && row(t('sharing.place'), entry.item.location, hidden('location'))}
             {(entry.item.note || hidden('note')) && row(t('sharing.note'), entry.item.note, hidden('note'))}
+            {hidden('details')
+              ? row(t('sharing.detailsTitle'), '', true)
+              : detailEntries(entry.kind, entry.item.details).map(([key, value]) => {
+                  // 會議連結只有 http(s) 才做成連結，其他一律純文字
+                  const href = key === 'meetingLink' ? safeLink(value) : null
+                  return (
+                    <div key={key} className="grid grid-cols-[6em_1fr] gap-2 text-[length:calc(13px*var(--fs))]">
+                      <dt className="text-muted">{t(`sharing.detail.${key}`)}</dt>
+                      <dd className="min-w-0 break-words">
+                        {href ? (
+                          <a href={href} target="_blank" rel="noopener noreferrer" className="text-sage-dark underline">
+                            {value}
+                          </a>
+                        ) : (
+                          value
+                        )}
+                      </dd>
+                    </div>
+                  )
+                })}
           </>
         )}
         {entry.projected && <p className="text-xs text-muted">{t('sharing.projectedHint')}</p>}

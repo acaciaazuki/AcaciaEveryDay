@@ -82,4 +82,25 @@ describe('⌘K 搜尋：共享行程的權限邊界', () => {
     expect(within(dialog).queryByText('儲存')).not.toBeInTheDocument()
     expect(document.body.textContent).not.toMatch(leakRe)
   })
+
+  it('預覽其他成員時，自己的待辦、記帳、地點、訂閱、庫存、固定支出都不會出現在搜尋結果', () => {
+    useAppStore.setState({
+      tasks: [{ id: 't', title: '私房待辦', loc: '', date: '', time: '', done: false }],
+      shopping: [{ id: 's', title: '私房購物', amt: 1, store: '', cat: 'food', date: '2026-12-01', time: '', done: false }],
+      places: [{ id: 'p', name: '私房地點', cat: 'other', address: '', hours: '', note: '', url: '' }],
+    })
+    renderPalette()
+    search('私房')
+    expect(results().length).toBe(3)
+
+    act(() => {
+      useSpacesStore.getState().setViewer(U.kid)
+    })
+    search('私房 ')
+    expect(results()).toEqual([])
+    expect(screen.getByRole('note')).toHaveTextContent('只搜尋這位成員看得到的共享行程')
+    // 共享行程仍然可以搜
+    search('驚喜')
+    expect(results()[0]).toContain(SEEN.surprise)
+  })
 })

@@ -47,7 +47,7 @@ describe('useSpacesStore：空間與成員', () => {
     expect(useSpacesStore.getState().data.spaces[0]!.name).toBe('登山社')
   })
 
-  it('刪除空間：軟刪除並移除相關的投射規則', () => {
+  it('刪除空間：軟刪除，相關的投射規則也標記刪除（才會同步到其他裝置）', () => {
     const st = useSpacesStore.getState()
     const a = st.createSpace({ name: '家', kind: 'family' })
     const b = st.createSpace({ name: '公司', kind: 'work' })
@@ -56,7 +56,8 @@ describe('useSpacesStore：空間與成員', () => {
     st.deleteSpace(b)
     const s = useSpacesStore.getState()
     expect(s.data.spaces.find((x) => x.id === b)?.deletedAt).not.toBeNull()
-    expect(s.data.busyProjectionRules).toEqual([])
+    expect(s.data.busyProjectionRules).toHaveLength(1)
+    expect(s.data.busyProjectionRules[0]!.deletedAt).not.toBeNull()
     expect(s.filter).toBe('all')
   })
 })
@@ -130,12 +131,13 @@ describe('useSpacesStore：持久化與資料邊界', () => {
     loadSeed()
   })
 
-  it('存進 IndexedDB 的 acacia-spaces，只存身份與資料，不存檢視身份與篩選', async () => {
+  it('存進 IndexedDB 的 acacia-spaces，只存身份、資料與雲端同步開關，不存檢視身份與篩選', async () => {
     useSpacesStore.getState().setViewer(U.kid)
     useSpacesStore.getState().setFilter('sp-work')
     await flush()
     const s = await stored()
-    expect(Object.keys(s!).sort()).toEqual(['data', 'selfId'])
+    expect(Object.keys(s!).sort()).toEqual(['cloudSync', 'data', 'selfId'])
+    expect(s!.cloudSync).toBe(false)
     expect(s!.selfId).toBe(U.dad)
   })
 

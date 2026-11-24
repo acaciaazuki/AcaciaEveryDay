@@ -219,4 +219,72 @@ describe('行事曆：共享空間', () => {
     expect(within(dialog).queryByText('儲存')).not.toBeInTheDocument()
     expect(dialog.textContent).not.toMatch(leakRe)
   })
+
+  it('細節欄位：依類型填寫，會議連結只有 http(s) 才是連結；忙閒與遮罩細節時其他成員看不到', () => {
+    renderPage()
+    fireEvent.click(screen.getByText('＋ 新增事件'))
+    let dialog = screen.getByRole('dialog')
+    fireEvent.change(within(dialog).getByLabelText('放在哪裡'), { target: { value: 'sp-family' } })
+    fireEvent.change(within(dialog).getByLabelText(/要做什麼/), { target: { value: '家庭會議' } })
+    fireEvent.change(within(dialog).getByLabelText('行程類型'), { target: { value: 'meeting' } })
+    const details = within(dialog).getByRole('group', { name: '細節' })
+    fireEvent.change(within(details).getByLabelText('會議連結'), { target: { value: ' https://meet.example/family ' } })
+    fireEvent.change(within(details).getByLabelText('專案名稱'), { target: { value: '換房子' } })
+    // 換到別的類型再換回來：只存當下類型的欄位
+    fireEvent.change(within(dialog).getByLabelText('行程類型'), { target: { value: 'class_session' } })
+    fireEvent.change(within(within(dialog).getByRole('group', { name: '細節' })).getByLabelText('老師'), { target: { value: '不該留下' } })
+    fireEvent.change(within(dialog).getByLabelText('行程類型'), { target: { value: 'meeting' } })
+    fireEvent.click(within(dialog).getByText('儲存'))
+    const item = useSpacesStore.getState().data.items.at(-1)!
+    expect(item.details).toEqual({ meetingLink: 'https://meet.example/family', project: '換房子' })
+
+    // 媽媽看得到細節，連結可以點
+    act(() => {
+      useSpacesStore.getState().setViewer(U.mom)
+    })
+    fireEvent.click(chip(item.id))
+    dialog = screen.getByRole('dialog')
+    const link = within(dialog).getByRole('link', { name: 'https://meet.example/family' })
+    expect(link).toHaveAttribute('href', 'https://meet.example/family')
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer')
+    expect(within(dialog).getByText('換房子')).toBeInTheDocument()
+  })
+
+  it('不安全的會議連結只顯示文字；遮罩細節、只顯示忙碌時細節不會出現', () => {
+    const data = useSpacesStore.getState().data
+    const at = { dateISO: today, spaceId: 'sp-family', createdBy: U.dad, kind: 'meeting' as const }
+    const items = [
+      makeItem({ ...at, id: 'evil', title: '可疑會議', start: '07:00', end: '07:30', details: { meetingLink: 'javascript:alert(1)', project: '公開專案' } }),
+      makeItem({ ...at, id: 'masked-d', title: '遮細節', start: '08:00', end: '08:30', details: { project: '祕密專案甲' }, visibility: { mode: 'group_full', maskedFields: ['details'] } }),
+      makeItem({ ...at, id: 'busy-d', title: '忙', start: '10:00', end: '10:30', details: { project: '祕密專案乙' }, visibility: { mode: 'busy_only' } }),
+    ]
+    useSpacesStore.setState({ data: { ...data, items: [...data.items, ...items] }, viewerId: U.mom })
+    renderPage()
+    fireEvent.click(chip('evil'))
+    let dialog = screen.getByRole('dialog')
+    expect(within(dialog).getByText('javascript:alert(1)').closest('a')).toBeNull()
+    expect(within(dialog).queryByRole('link')).not.toBeInTheDocument()
+    fireEvent.keyDown(dialog, { key: 'Escape' })
+
+    fireEvent.click(chip('masked-d'))
+    dialog = screen.getByRole('dialog')
+    expect(dialog.textContent).not.toContain('祕密專案甲')
+    expect(within(dialog).getByText('細節')).toBeInTheDocument()
+    fireEvent.keyDown(dialog, { key: 'Escape' })
+
+    fireEvent.click(chip('busy-d'))
+    expect(screen.getByRole('dialog').textContent).not.toContain('祕密專案乙')
+    expect(document.body.textContent).not.toMatch(/祕密專案/)
+  })
+
+  it('欄位遮罩可以選「細節」', () => {
+    renderPage()
+    fireEvent.click(screen.getByText('＋ 新增事件'))
+    const dialog = screen.getByRole('dialog')
+    fireEvent.change(within(dialog).getByLabelText('放在哪裡'), { target: { value: 'sp-family' } })
+    fireEvent.change(within(dialog).getByLabelText(/要做什麼/), { target: { value: '看診' } })
+    fireEvent.click(within(within(dialog).getByRole('group', { name: '對其他成員隱藏這些欄位' })).getByLabelText('細節'))
+    fireEvent.click(within(dialog).getByText('儲存'))
+    expect(useSpacesStore.getState().data.items.at(-1)!.visibility.maskedFields).toEqual(['details'])
+  })
 })

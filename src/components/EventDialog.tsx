@@ -4,6 +4,7 @@ import type { SharedEntry } from '../core/calendarView'
 import { toLocalISO } from '../core/date'
 import { EVENT_ICON_KEYS, eventIconOf, ICON_BG } from '../core/eventIcons'
 import type { CalendarEvent } from '../core/schema'
+import { cleanDetails } from '../core/itemDetails'
 import { defaultVisibility, orderedKinds, roleOf } from '../core/sharing'
 import { useAppStore } from '../store/useAppStore'
 import { useSpacesStore } from '../store/useSpacesStore'
@@ -54,8 +55,8 @@ export function EventDialog({ event, shared, date, onClose }: { event: CalendarE
   const space = allSpaces.find((s) => s.id === target)
   const [sharedDraft, setSharedDraft] = useState<SharedDraft>(() =>
     shared
-      ? { kind: shared.item.kind, location: shared.item.location, visibility: shared.item.visibility }
-      : { kind: 'event', location: '', visibility: defaultVisibility() },
+      ? { kind: shared.item.kind, location: shared.item.location, details: shared.item.details, visibility: shared.item.visibility }
+      : { kind: 'event', location: '', details: {}, visibility: defaultVisibility() },
   )
   const [draft, setDraft] = useState<Draft>(
     event ?? (shared && draftOfShared(shared)) ?? { title: '', dateISO: date ?? toLocalISO(), start: '09:00', end: '10:00', note: '', titleColor: '#3d876c', bgColor: '#eaf6ef' },
@@ -84,7 +85,7 @@ export function EventDialog({ event, shared, date, onClose }: { event: CalendarE
     // 只留這個空間現有成員，避免殘留已移除成員的 id
     const members = new Set(space.members.map((m) => m.userId))
     const visibility = { ...vis, allowedUserIds: vis.allowedUserIds.filter((id) => members.has(id)), hiddenUserIds: vis.hiddenUserIds.filter((id) => members.has(id)), busyLabel: vis.busyLabel.trim() }
-    const content = { ...data, kind: sharedDraft.kind, location: sharedDraft.location.trim() }
+    const content = { ...data, kind: sharedDraft.kind, location: sharedDraft.location.trim(), details: cleanDetails(sharedDraft.kind, sharedDraft.details) }
     try {
       if (shared) updateItem(shared.id, shared.canManageVisibility ? { ...content, visibility } : content)
       else addItem(space.id, { ...content, visibility })

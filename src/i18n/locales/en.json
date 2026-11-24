@@ -406,7 +406,8 @@
       "cat": "Category",
       "address": "Address",
       "plan": "Plan",
-      "payment": "Payment"
+      "payment": "Payment",
+      "detail": "Details"
     }
   },
   "sync": {
@@ -1151,6 +1152,65 @@
       "to": "Show in",
       "addRule": "Add rule",
       "sameSpace": "Choose two different spaces"
-    }
+    },
+    "detailsTitle": "Details",
+    "searchPreviewHint": "Previewing another member: only the shared events they can see are searched. Your tasks, expenses, places and other personal data are not shown.",
+    "detail": {
+      "classroom": "Classroom",
+      "teacher": "Teacher",
+      "subject": "Subject",
+      "submitMethod": "How to submit",
+      "examRoom": "Exam room",
+      "hospital": "Hospital",
+      "department": "Department",
+      "driver": "Driver",
+      "meetingLink": "Meeting link",
+      "project": "Project"
+    },
+    "detailPlaceholder": {
+      "classroom": "e.g. A203",
+      "teacher": "e.g. Ms. Lee",
+      "subject": "e.g. Math",
+      "submitMethod": "e.g. Online, paper in class",
+      "examRoom": "e.g. Main hall",
+      "hospital": "e.g. City Hospital",
+      "department": "e.g. Family medicine",
+      "driver": "e.g. Dad",
+      "meetingLink": "https://…",
+      "project": "e.g. Website redesign"
+    },
+    "sync": {
+      "title": "Cloud sync for shared spaces",
+      "help": "When on, shared spaces sync to the app-specific folder of your own Google Drive (acacia_spaces_v1.json). It contains only the events you created and what you are allowed to see.",
+      "off": "Off. Shared spaces are stored on this device only",
+      "needSignIn": "Sign in with Google above first",
+      "waiting": "Waiting to sync…",
+      "syncedAt": "Synced at {{time}}",
+      "failed": "Sync failed: {{reason}}",
+      "now": "Sync now",
+      "stopTitle": "Turn off cloud sync for shared spaces",
+      "stopText": "Shared spaces stay on this device. What should happen to the sync file in Drive?",
+      "stopKeep": "Just stop syncing (keep the file in Drive)",
+      "stopDelete": "Stop syncing and delete the file in Drive…",
+      "deleteConfirm": "Delete acacia_spaces_v1.json from your Google Drive? Other devices will no longer get shared spaces from the cloud. This cannot be undone (data on this device is kept).",
+      "deleteForever": "Delete cloud file",
+      "stopped": "Sync stopped. The file in Drive was kept",
+      "deleted": "Sync stopped and the file in Drive was deleted",
+      "stopFailed": "Couldn’t turn it off. Please try again later"
+    },
+    "backup": {
+      "title": "Shared space snapshots",
+      "help": "A snapshot is kept on this device every 12 hours when something changed (up to 7), separate from the main backups. Restoring also syncs to your other devices.",
+      "now": "Take snapshot now",
+      "done": "Snapshot taken",
+      "same": "Nothing changed since the latest snapshot",
+      "empty": "No snapshots yet",
+      "counts": "{{spaces}} spaces, {{items}} events",
+      "restore": "Restore",
+      "restoreConfirm": "Restore shared spaces to the snapshot from {{time}}? A snapshot of the current data is taken first.",
+      "restored": "Restored",
+      "restoreFailed": "Couldn’t restore: {{reason}}"
+    },
+    "place": "Location"
   }
 }

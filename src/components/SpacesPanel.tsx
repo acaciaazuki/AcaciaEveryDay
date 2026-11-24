@@ -4,6 +4,7 @@ import { canManageSpace, MEMBER_ROLES, roleOf, SPACE_KINDS, type MemberRole, typ
 import { useSpacesStore } from '../store/useSpacesStore'
 import { Button } from './Button'
 import { Field } from './Field'
+import { SpacesSnapshots, SpacesSyncPanel } from './SpacesSyncPanel'
 
 const select = 'rounded-(--radius-control) border border-line bg-oat px-3 py-2 text-sm font-normal text-ink outline-none focus:border-sage'
 
@@ -42,6 +43,7 @@ export function SpacesPanel() {
       <h2 className="mb-1 font-bold">{t('sharing.panel.title')}</h2>
       <p className="mb-4 text-xs leading-relaxed text-muted">{t('sharing.panel.help')}</p>
       {previewing && <p className="mb-3 text-xs text-sage-dark">{t('sharing.readOnlyPreview')}</p>}
+      <SpacesSyncPanel readOnly={previewing} />
 
       <form onSubmit={submit} className="mb-5 grid gap-3 min-[30rem]:grid-cols-[1fr_auto_auto] min-[30rem]:items-end">
         <Field label={t('sharing.spaceName')} placeholder={t('sharing.panel.namePlaceholder')} value={name} maxLength={40} onChange={(e) => setName(e.target.value)} disabled={previewing} />
@@ -78,6 +80,7 @@ export function SpacesPanel() {
       )}
 
       {spaces.length >= 2 && <RulesEditor spaces={spaces} readOnly={previewing} onError={setError} />}
+      <SpacesSnapshots readOnly={previewing} />
     </section>
   )
 }
@@ -180,7 +183,7 @@ function SpaceCard({ space, selfId, readOnly, onError }: { space: Space; selfId:
 function RulesEditor({ spaces, readOnly, onError }: { spaces: Space[]; readOnly: boolean; onError: (m: string) => void }) {
   const { t } = useTranslation()
   const selfId = useSpacesStore((s) => s.selfId)
-  const rules = useSpacesStore((s) => s.data.busyProjectionRules).filter((r) => r.userId === selfId)
+  const rules = useSpacesStore((s) => s.data.busyProjectionRules).filter((r) => r.userId === selfId && r.deletedAt === null)
   const addRule = useSpacesStore((s) => s.addRule)
   const updateRule = useSpacesStore((s) => s.updateRule)
   const removeRule = useSpacesStore((s) => s.removeRule)

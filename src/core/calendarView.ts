@@ -97,6 +97,8 @@ export interface SearchableShared {
   title: string
   note: string
   location: string
+  /** 依類型填寫的細節（沒被遮罩的才有值），用空白串起來給搜尋 */
+  details: string
   dateISO: string
   start: string
   spaceName: string
@@ -105,4 +107,4 @@ export interface SearchableShared {
 export const searchableShared = (entries: readonly SharedEntry[]): SearchableShared[] =>
   entries
     .filter((e) => e.access !== 'busy')
-    .map((e) => ({ id: e.id, title: e.item.title, note: e.item.note, location: e.item.location, dateISO: e.dateISO, start: e.start, spaceName: e.space.name }))
+    .map((e) => ({ id: e.id, title: e.item.title, note: e.item.note, location: e.item.location, details: Object.values(e.item.details).join(' '), dateISO: e.dateISO, start: e.start, spaceName: e.space.name }))

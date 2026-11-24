@@ -3,12 +3,15 @@ import { createJSONStorage, persist } from 'zustand/middleware'
 import { webStorage } from '../adapters/storage'
 import type { CalendarFilter } from '../core/calendarView'
 import { applyItemEdit, PermissionError, softDeleteItem, type ItemPatch } from '../core/permissions'
+import { prepareSpacesRestore } from '../core/spacesBackup'
+import { applyPulled as mergePulled, type PulledData, type SyncConflict } from '../core/syncEnvelope'
 import {
   busyProjectionRuleSchema,
   canManageSpace,
   createSpace as makeSpace,
   emptySharedCalendarData,
   migrateSharedCalendarData,
+  rekeyOwner,
   removeMember as dropMember,
   roleOf,
   sharedCalendarItemSchema,
@@ -50,6 +53,8 @@ interface SpacesState {
   viewerId: string
   /** 行事曆篩選（不存檔） */
   filter: CalendarFilter
+  /** 這台裝置是否開啟共享空間雲端同步（acacia_spaces_v1.json）；只存在本機，不會同步出去 */
+  cloudSync: boolean
 
   setViewer: (userId: string) => void
   setFilter: (filter: CalendarFilter) => void
@@ -70,16 +75,27 @@ interface SpacesState {
   updateRule: (id: string, patch: Partial<RuleInput>) => void
   removeRule: (id: string) => void
 
-  /** 匯出／匯入接口（第三階段給 Drive 同步與備份使用） */
+  /** 匯出／匯入接口（Drive 同步與快照使用） */
   exportSpaces: () => SharedCalendarData
   importSpaces: (raw: unknown) => void
+
+  setCloudSync: (on: boolean) => void
+  /**
+   * 套用從雲端拉下來、已依自己過濾過的資料（同步用，不是使用者的修改，預覽中也可以套用）。
+   * 回傳自動解決的衝突。
+   */
+  applyPulled: (pulled: PulledData) => SyncConflict[]
+  /** 對齊身分：改用雲端檔案的 id，本機資料裡自己的 id 一併換掉 */
+  adoptIdentity: (id: string) => void
+  /** 還原快照（先由呼叫端替目前資料留一份快照） */
+  restoreSnapshot: (raw: unknown) => void
   /** 刪除所有資料：清空並換一個新的 selfId，跟第一次使用一樣 */
   reset: () => void
 }
 
 const initial = () => {
   const selfId = newSelfId()
-  return { selfId, data: emptySharedCalendarData(selfId), viewerId: selfId, filter: 'all' as CalendarFilter }
+  return { selfId, data: emptySharedCalendarData(selfId), viewerId: selfId, filter: 'all' as CalendarFilter, cloudSync: false }
 }
 
 export const useSpacesStore = create<SpacesState>()(
@@ -131,8 +147,12 @@ export const useSpacesStore = create<SpacesState>()(
           const { space } = ownerOnly(spaceId)
           const now = Date.now()
           replaceSpace({ ...space, deletedAt: now, updatedAt: now, version: space.version + 1 })
-          // 跟這個空間有關的投射規則一起移除；篩選停在這個空間時回到全部
-          commit({ busyProjectionRules: get().data.busyProjectionRules.filter((r) => r.sourceSpaceId !== spaceId && r.targetSpaceId !== spaceId) })
+          // 跟這個空間有關的投射規則一起標記刪除（軟刪除才會同步到其他裝置）；篩選停在這個空間時回到全部
+          commit({
+            busyProjectionRules: get().data.busyProjectionRules.map((r) =>
+              r.deletedAt === null && (r.sourceSpaceId === spaceId || r.targetSpaceId === spaceId) ? { ...r, deletedAt: now, updatedAt: now } : r,
+            ),
+          })
           if (get().filter === spaceId) set({ filter: 'all' })
         },
         addMember: (spaceId, { displayName, role }) => {
@@ -186,7 +206,8 @@ export const useSpacesStore = create<SpacesState>()(
         },
         removeRule: (id) => {
           guard()
-          commit({ busyProjectionRules: get().data.busyProjectionRules.filter((r) => r.id !== id) })
+          const now = Date.now()
+          commit({ busyProjectionRules: get().data.busyProjectionRules.map((r) => (r.id === id ? { ...r, deletedAt: now, updatedAt: now } : r)) })
         },
 
         exportSpaces: () => get().data,
@@ -197,20 +218,36 @@ export const useSpacesStore = create<SpacesState>()(
           set({ data })
         },
         reset: () => set(initial()),
+
+        setCloudSync: (on) => set({ cloudSync: on }),
+        applyPulled: (pulled) => {
+          const r = mergePulled(get().data, pulled, get().selfId)
+          if (r.changed) set({ data: r.data })
+          return r.conflicts
+        },
+        adoptIdentity: (id) => {
+          const { selfId, viewerId, data } = get()
+          if (id === selfId) return
+          set({ selfId: id, viewerId: viewerId === selfId ? id : viewerId, data: rekeyOwner(data, selfId, id) })
+        },
+        restoreSnapshot: (raw) => {
+          guard()
+          set({ data: prepareSpacesRestore(raw, get().data, Date.now()) })
+        },
       }
     },
     {
       name: SPACES_STORAGE_KEY,
       storage: createJSONStorage(() => webStorage),
       // 只存身份與資料；檢視身份與篩選不存，重新開啟一律回到自己的視角
-      partialize: (s) => ({ selfId: s.selfId, data: s.data }),
+      partialize: (s) => ({ selfId: s.selfId, data: s.data, cloudSync: s.cloudSync }),
       merge: (persisted, current) => {
-        const p = (persisted ?? {}) as Partial<Pick<SpacesState, 'selfId' | 'data'>>
+        const p = (persisted ?? {}) as Partial<Pick<SpacesState, 'selfId' | 'data' | 'cloudSync'>>
         if (!p.selfId || !p.data) return current
         try {
           const data = migrateSharedCalendarData(p.data)
           if (data.ownerId !== p.selfId) throw new Error('ownerId 與 selfId 不符')
-          return { ...current, selfId: p.selfId, data, viewerId: p.selfId, filter: 'all' }
+          return { ...current, selfId: p.selfId, data, viewerId: p.selfId, filter: 'all', cloudSync: p.cloudSync === true }
         } catch (e) {
           // 資料壞掉時不要拿來用；保留在 IndexedDB 的原始內容要等下一次寫入才會被覆蓋
           console.error('共享行事曆資料讀取失敗', e)

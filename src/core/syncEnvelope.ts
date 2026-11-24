@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { projectBusyBlocks, resolveCalendarItemForViewer } from './permissions'
-import { roleOf, sharedCalendarItemSchema, spaceSchema, type SharedCalendarData, type SharedCalendarItem, type Space } from './sharing'
+import { roleOf, sharedCalendarItemSchema, spaceSchema, type BusyProjectionRule, type SharedCalendarData, type SharedCalendarItem, type Space } from './sharing'
 
 /**
  * 共享空間的同步封包（Space Sync Payload）。
@@ -265,4 +265,62 @@ export function selectPushableChanges(data: SharedCalendarData, viewerId: string
     const r = resolveCalendarItemForViewer(item, viewerId, { space, includeDeleted: true })
     return !!r && (r.isOwnItem || r.canEdit)
   })
+}
+
+// ---------- 套用拉下來的資料 ----------
+
+/** 同一個空間取較新的版本（版本號優先，再看更新時間） */
+export const newerSpace = (a: Space, b: Space) => (b.version > a.version || (b.version === a.version && b.updatedAt > a.updatedAt) ? b : a)
+
+/** 投射規則以 updatedAt 較新的為準；刪除也是一次更新（deletedAt），所以會跟著同步 */
+export function mergeRuleLists(base: readonly BusyProjectionRule[], incoming: readonly BusyProjectionRule[]): BusyProjectionRule[] {
+  const byId = new Map(base.map((r) => [r.id, r]))
+  for (const r of incoming) {
+    const cur = byId.get(r.id)
+    if (!cur || r.updatedAt > cur.updatedAt || (r.updatedAt === cur.updatedAt && r.deletedAt !== null && cur.deletedAt === null)) byId.set(r.id, r)
+  }
+  return [...byId.values()]
+}
+
+export interface PulledData {
+  payloads: SpaceSyncPayload[]
+  rules: BusyProjectionRule[]
+}
+
+/**
+ * 把從雲端拉下來、已依自己過濾過的封包併進本機資料：
+ * - 空間：取版本較新的（刪除、成員異動都會跟著來）
+ * - 行程：mergeSyncEntries（版本 → 時間戳記 → 刪除優先；自己的完整資料不被遮罩副本蓋掉）
+ * - 投射規則：只收自己的，以 updatedAt 較新的為準
+ * 封包不是給 viewerId 的就整包略過。
+ */
+export function applyPulled(data: SharedCalendarData, pulled: PulledData, viewerId: string): { data: SharedCalendarData; conflicts: SyncConflict[]; changed: boolean } {
+  const payloads = pulled.payloads.filter((p) => p.viewerId === viewerId)
+  const spaces = new Map(data.spaces.map((s) => [s.id, s]))
+  let changed = false
+  for (const p of payloads) {
+    const cur = spaces.get(p.space.id)
+    const next = cur ? newerSpace(cur, p.space) : p.space
+    if (next !== cur) {
+      spaces.set(p.space.id, next)
+      changed = true
+    }
+  }
+  const merged = mergeSyncEntries(
+    data.items,
+    payloads.flatMap((p) => p.entries.filter((e) => e.spaceId === p.spaceId)),
+    { viewerId },
+  )
+  const rules = mergeRuleLists(
+    data.busyProjectionRules,
+    pulled.rules.filter((r) => r.userId === viewerId),
+  )
+  const rulesChanged = rules.length !== data.busyProjectionRules.length || rules.some((r, i) => r !== data.busyProjectionRules[i])
+  changed ||= merged.applied > 0 || rulesChanged
+  if (!changed) return { data, conflicts: merged.conflicts, changed: false }
+  return {
+    data: { ...data, spaces: [...spaces.values()], items: merged.items, busyProjectionRules: rules, updatedAt: Math.max(data.updatedAt, ...payloads.map((p) => p.generatedAt)) },
+    conflicts: merged.conflicts,
+    changed: true,
+  }
 }

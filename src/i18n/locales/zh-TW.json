@@ -406,7 +406,8 @@
       "cat": "分類",
       "address": "地址",
       "plan": "方案",
-      "payment": "付款方式"
+      "payment": "付款方式",
+      "detail": "細節"
     }
   },
   "sync": {
@@ -1151,6 +1152,65 @@
       "to": "顯示在",
       "addRule": "新增規則",
       "sameSpace": "來源與顯示的空間不能相同"
-    }
+    },
+    "detailsTitle": "細節",
+    "searchPreviewHint": "預覽其他成員的視角中：只搜尋這位成員看得到的共享行程，不會出現你的待辦、記帳、地點等個人資料。",
+    "detail": {
+      "classroom": "教室",
+      "teacher": "老師",
+      "subject": "科目",
+      "submitMethod": "繳交方式",
+      "examRoom": "考場",
+      "hospital": "醫院",
+      "department": "科別",
+      "driver": "接送人",
+      "meetingLink": "會議連結",
+      "project": "專案名稱"
+    },
+    "detailPlaceholder": {
+      "classroom": "例如：A203",
+      "teacher": "例如：王老師",
+      "subject": "例如：數學",
+      "submitMethod": "例如：線上繳交、課堂交紙本",
+      "examRoom": "例如：大禮堂",
+      "hospital": "例如：台大醫院",
+      "department": "例如：家醫科",
+      "driver": "例如：爸爸",
+      "meetingLink": "https://…",
+      "project": "例如：官網改版"
+    },
+    "sync": {
+      "title": "共享空間雲端同步",
+      "help": "開啟後，共享空間會同步到你自己 Google Drive 的應用程式專用資料夾（acacia_spaces_v1.json），只包含你建立的行程與你有權看到的內容。",
+      "off": "未開啟，共享空間只存在這台裝置",
+      "needSignIn": "請先在上方用 Google 登入同步",
+      "waiting": "等待同步…",
+      "syncedAt": "已同步 {{time}}",
+      "failed": "同步失敗：{{reason}}",
+      "now": "立即同步",
+      "stopTitle": "關閉共享空間雲端同步",
+      "stopText": "這台裝置的共享空間資料會保留。要怎麼處理 Drive 上的同步檔？",
+      "stopKeep": "只停止同步（保留 Drive 上的檔案）",
+      "stopDelete": "停止同步並刪除 Drive 上的檔案…",
+      "deleteConfirm": "確定要刪除 Google Drive 上的 acacia_spaces_v1.json 嗎？其他裝置將無法再從雲端取得共享空間，刪除後無法復原（這台裝置的資料會保留）。",
+      "deleteForever": "刪除雲端檔案",
+      "stopped": "已停止同步，Drive 上的檔案保留",
+      "deleted": "已停止同步，並刪除 Drive 上的檔案",
+      "stopFailed": "關閉失敗，請稍後再試"
+    },
+    "backup": {
+      "title": "共享空間快照",
+      "help": "每 12 小時、資料有變時自動在這台裝置留一份快照（最多 7 份），跟主資料的備份分開。還原後會同步到其他裝置。",
+      "now": "立即建立快照",
+      "done": "已建立快照",
+      "same": "資料跟最新一份快照相同，不用重複建立",
+      "empty": "還沒有快照",
+      "counts": "{{spaces}} 個空間、{{items}} 筆行程",
+      "restore": "還原",
+      "restoreConfirm": "要把共享空間還原成 {{time}} 的快照嗎？還原前會先替目前的資料留一份快照。",
+      "restored": "已還原",
+      "restoreFailed": "還原失敗：{{reason}}"
+    },
+    "place": "地點"
   }
 }
