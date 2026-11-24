@@ -107,7 +107,7 @@ export const useBackupStore = create<BackupState>()((set, get) => {
         // 先驗證快照，失敗就不動目前資料
         const data = migrate(raw)
         await snapshot('beforeRestore')
-        useAppStore.setState(prepareRestore(data, Date.now()))
+        useAppStore.setState(prepareRestore(data, Date.now(), useAppStore.getState().exportData()))
       }),
 
     reset: () => {

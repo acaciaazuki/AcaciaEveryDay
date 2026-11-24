@@ -1,4 +1,5 @@
 import type { AppData } from './schema'
+import { trackChanges } from './appMerge'
 
 /** 自動備份的間隔：距離上次備份超過 12 小時才會再備份 */
 export const BACKUP_INTERVAL_MS = 12 * 60 * 60 * 1000
@@ -65,7 +66,12 @@ export function addSnapshot<T extends { id: string; createdAt: number }>(snapsho
 }
 
 /**
- * 還原快照時把 updatedAt 改成現在：快照裡的時間比較舊，
- * 不改的話其他裝置登入同步時會以為雲端（或那台裝置）的資料比較新，把還原結果蓋掉。
+ * 還原快照：當成「現在做的修改」。
+ * - updatedAt 改成現在
+ * - 有目前資料（current）時，跟目前資料比對產生逐筆的修改紀錄：還原回來、被改回去、被移除的紀錄都記成現在，
+ *   同步時才會以還原結果為準；不這樣做的話，快照裡較舊的修改時間會讓雲端的版本勝出，把還原結果蓋掉
  */
-export const prepareRestore = (data: AppData, now: number): AppData => ({ ...data, updatedAt: now })
+export const prepareRestore = (data: AppData, now: number, current?: AppData): AppData => {
+  const restored = { ...data, updatedAt: now }
+  return current ? { ...restored, syncMeta: trackChanges(current, restored, now) } : restored
+}

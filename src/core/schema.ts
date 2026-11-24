@@ -277,6 +277,19 @@ export const archiveSchema = z.object({
   expenses: z.array(expenseSchema),
 })
 
+/**
+ * 逐筆同步用的修改紀錄（見 core/appMerge.ts）。可省略：舊版 App 讀到會忽略、寫回時不帶，
+ * 新版讀到沒有這個欄位的資料時，以整份的 updatedAt 當作每一筆的時間（跟舊版行為一樣）。
+ * - base：開始記錄之前的資料，一律當作這個時間修改的
+ * - t：每筆紀錄／每個設定欄位最後修改的時間，key 例如 `events:<id>`、`places:$order`、`settings:currency`、`field:invCats`
+ * - del：刪除標記，key 同上，值是刪除時間；太舊的會清掉（見 TOMBSTONE_TTL）
+ */
+export const syncMetaSchema = z.object({
+  base: z.number().default(0),
+  t: z.record(z.string(), z.number()).default({}),
+  del: z.record(z.string(), z.number()).default({}),
+})
+
 export const appDataSchema = z.object({
   schemaVersion: z.literal(SCHEMA_VERSION),
   /** 使用者設定（字體大小…），舊資料沒有時補預設值 */
@@ -304,6 +317,8 @@ export const appDataSchema = z.object({
   /** 匯入的國定假日；舊資料沒有這個欄位，讀進來時補空陣列 */
   holidays: z.array(holidaySetSchema).default([]),
   updatedAt: z.number(),
+  /** 逐筆同步的修改紀錄；舊資料沒有 */
+  syncMeta: syncMetaSchema.optional(),
 })
 
 export type CalendarEvent = z.infer<typeof eventSchema>
@@ -325,6 +340,7 @@ export type HolidaySet = z.infer<typeof holidaySetSchema>
 export type Archive = z.infer<typeof archiveSchema>
 export type Place = z.infer<typeof placeSchema>
 export type AppData = z.infer<typeof appDataSchema>
+export type SyncMeta = z.infer<typeof syncMetaSchema>
 
 export const emptyAppData = (): AppData => ({
   schemaVersion: SCHEMA_VERSION,

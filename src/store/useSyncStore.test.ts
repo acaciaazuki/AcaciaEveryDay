@@ -45,12 +45,12 @@ describe('Drive 同步', () => {
     expect((files['acacia_data.json'] as { shopping: { cat: string }[] }).shopping[0].cat).toBe('食')
   })
 
-  it('本機較新時上傳本機資料', async () => {
+  it('登入時逐筆合併：本機與雲端各自的待辦都保留，合併結果上傳（不再整份覆蓋）', async () => {
     files['acacia_data_v2.json'] = { ...emptyAppData(), updatedAt: 100, tasks: [{ id: 'c', title: '雲端', loc: '', date: '', time: '', done: false }] }
     useAppStore.setState({ updatedAt: 200, tasks: [{ id: 'l', title: '本機', loc: '', date: '', time: '', done: false }] })
     await useSyncStore.getState().connect(true)
-    expect(useAppStore.getState().tasks[0].title).toBe('本機')
-    expect((files['acacia_data_v2.json'] as { tasks: { title: string }[] }).tasks[0].title).toBe('本機')
+    expect(useAppStore.getState().tasks.map((x) => x.title)).toEqual(['本機', '雲端'])
+    expect((files['acacia_data_v2.json'] as { tasks: { title: string }[] }).tasks.map((x) => x.title)).toEqual(['本機', '雲端'])
   })
 
   it('登入後修改資料會自動上傳', async () => {
