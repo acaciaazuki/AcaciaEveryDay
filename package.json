@@ -2,6 +2,13 @@
   "name": "acacia-everyday",
   "private": true,
   "version": "0.0.0",
+  "description": "ACACIA Everyday：生活節奏、行程、記帳與庫存管理",
+  "license": "AGPL-3.0-or-later",
+  "author": "acaciaazuki",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/acaciaazuki/AcaciaEveryDay.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",

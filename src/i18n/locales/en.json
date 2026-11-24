@@ -812,7 +812,15 @@
     "empty": "No matching packages",
     "update": "Generated from package-lock.json with npm run licenses. Run it again after adding or upgrading packages.",
     "close": "Close",
-    "scopeLabel": "Filter by scope"
+    "scopeLabel": "Filter by scope",
+    "app": {
+      "heading": "License for ACACIA Everyday",
+      "notice": "Copyright © 2026 acaciaazuki. This app is released under the GNU Affero General Public License, version 3 or (at your option) any later version (AGPL-3.0-or-later).",
+      "plain": "You are free to use this app. If you modify the code and distribute it, or run a modified version as a website for others, you must keep the original copyright notice, mark your changes, and publish the complete source code under the same AGPL license.",
+      "warranty": "This program comes with no warranty. See the full license text for the exact terms.",
+      "source": "Source code",
+      "thirdParty": "Third-party packages"
+    }
   },
   "currency": {
     "label": "Currency",
