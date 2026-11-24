@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { visibleCalendar, type VisibleCalendar } from '../core/calendarView'
+import { busyConflicts, visibleCalendar, type SharedEntry, type VisibleCalendar } from '../core/calendarView'
 import { useSpacesStore } from '../store/useSpacesStore'
 
 /**
@@ -12,4 +12,15 @@ export function useVisibleCalendar(): VisibleCalendar & { selfId: string } {
   const viewerId = useSpacesStore((s) => s.viewerId)
   const filter = useSpacesStore((s) => s.filter)
   return useMemo(() => ({ ...visibleCalendar(data, selfId, viewerId, filter), selfId }), [data, selfId, viewerId, filter])
+}
+
+/**
+ * 新增／修改行程時的重疊提醒：要放進的行事曆（target：空間 id 或「我的行事曆」）在這段時間有哪些忙碌區塊。
+ * 一律用自己的視角計算（新增行程的人就是自己），結果同樣經過權限引擎過濾，只有忙碌區塊、不含任何內容。
+ */
+export function useBusyConflicts(target: string, dateISO: string, start: string, end: string): SharedEntry[] {
+  const data = useSpacesStore((s) => s.data)
+  const selfId = useSpacesStore((s) => s.selfId)
+  const entries = useMemo(() => visibleCalendar(data, selfId, selfId, target).shared, [data, selfId, target])
+  return useMemo(() => busyConflicts(entries, dateISO, start, end), [entries, dateISO, start, end])
 }

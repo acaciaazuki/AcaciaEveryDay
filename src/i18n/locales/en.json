@@ -1228,6 +1228,10 @@
       "timeOnlyNote": "Only the occupied time is shown",
       "shortcut": "Sync busy times…"
     },
+    "overlap": {
+      "title": "This time overlaps a busy time",
+      "hint": "You can still save — this is just a heads-up."
+    },
     "blockedBanner": "The shared calendar data on this device comes from a newer version of ACACIA. To avoid overwriting it, editing and sync are paused. Please update the app — your data is kept intact."
   }
 }
