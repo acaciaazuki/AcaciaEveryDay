@@ -247,6 +247,14 @@ export interface ProjectBusyBlocksOptions {
   range?: { from: string; to: string }
   /** 同步用：來源行程已刪除、規則已停用或目標已移除時，產生對應的墓碑讓其他成員移除忙碌區塊 */
   includeDeleted?: boolean
+  /**
+   * 本機顯示用：帶入來源行程的真實標題（只給規則擁有者本人看自己投射出去的區塊）。
+   * 同步一律不開（預設 false），送給其他成員的區塊仍然不含標題；就算開了，
+   * 其他成員的視角也會經過 toBusyView 把標題清空。
+   */
+  withTitles?: boolean
+  /** withTitles 時「我的行事曆」來源用的標題（個人行程 id → 標題）；忙碌影子本身不存標題 */
+  personalTitles?: ReadonlyMap<string, string>
 }
 
 /**
@@ -256,13 +264,14 @@ export interface ProjectBusyBlocksOptions {
  * - 只投射規則擁有者本人建立的行程（不能把別人的行程投射出去）
  * - 規則擁有者必須同時是來源與目標空間的成員（「我的行事曆」只屬於自己）
  * - 產生的區塊只有時間與規則的 label／顯示方式，不帶標題、地點、備註、細節、類型、來源空間或來源行程 id
+ *   （例外：withTitles 時帶入來源標題，只供規則擁有者本人在本機顯示）
  * - 來源行程的 hiddenUserIds 會沿用：被隱藏的人連忙碌區塊也看不到
  * - 沒有時間的整天行程只在規則開啟 includeAllDay 時投射
  * - 來源是「我的行事曆」的規則：用 personalSlots（個人行程的忙碌影子）產生區塊；個人行程沒有隱私等級與類型，
  *   kinds、includePrivate 不適用
  */
 export function projectBusyBlocks(options: ProjectBusyBlocksOptions): SharedCalendarItem[] {
-  const { rules, spaces, items, personalSlots = [], targetSpaceId, range, includeDeleted = false } = options
+  const { rules, spaces, items, personalSlots = [], targetSpaceId, range, includeDeleted = false, withTitles = false, personalTitles } = options
   const spaceById = new Map(spaces.map((s) => [s.id, s]))
   const targetIsPersonal = targetSpaceId === PERSONAL_CALENDAR_ID
   if (!targetIsPersonal && !spaceById.get(targetSpaceId)) return []
@@ -286,7 +295,7 @@ export function projectBusyBlocks(options: ProjectBusyBlocksOptions): SharedCale
           id: blockIdFor(rule, `${PERSONAL_CALENDAR_ID}:${slot.id}`, targetSpaceId),
           spaceId: targetSpaceId,
           kind: 'event',
-          title: '',
+          title: withTitles ? (personalTitles?.get(slot.id) ?? '') : '',
           dateISO: slot.dateISO,
           endDateISO: '',
           start: slot.start,
@@ -324,7 +333,7 @@ export function projectBusyBlocks(options: ProjectBusyBlocksOptions): SharedCale
         id: blockIdFor(rule, item.id, targetSpaceId),
         spaceId: targetSpaceId,
         kind: 'event',
-        title: '',
+        title: withTitles ? item.title : '',
         dateISO: item.dateISO,
         endDateISO: item.endDateISO,
         start: item.start,

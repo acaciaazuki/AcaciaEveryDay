@@ -1132,6 +1132,7 @@
     "readOnlyMasked": "Le créateur a masqué certains détails",
     "readOnlyPreview": "Lecture seule pendant l’aperçu d’un autre membre",
     "projectedHint": "Ce créneau occupé a été ajouté automatiquement par une règle d’occupation",
+    "goToSource": "Voir/modifier dans le calendrier source",
     "createdBy": "Créé par",
     "space": "Espace",
     "time": "Heure",

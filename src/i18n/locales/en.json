@@ -1132,6 +1132,7 @@
     "readOnlyMasked": "The creator has hidden some details",
     "readOnlyPreview": "View only while previewing another member",
     "projectedHint": "This busy time was added automatically by a busy-time rule",
+    "goToSource": "View/edit in source calendar",
     "createdBy": "Created by",
     "space": "Space",
     "time": "Time",

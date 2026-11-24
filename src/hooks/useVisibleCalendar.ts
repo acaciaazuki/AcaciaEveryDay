@@ -1,6 +1,13 @@
 import { useMemo } from 'react'
 import { busyConflicts, visibleCalendar, type SharedEntry, type VisibleCalendar } from '../core/calendarView'
+import { useAppStore } from '../store/useAppStore'
 import { useSpacesStore } from '../store/useSpacesStore'
+
+/** 個人行程 id → 標題：自己從「我的行事曆」投射出去的區塊用來顯示真實標題（只在本機使用） */
+function usePersonalTitles(): ReadonlyMap<string, string> {
+  const events = useAppStore((s) => s.events)
+  return useMemo(() => new Map(events.map((e) => [e.id, e.title])), [events])
+}
 
 /**
  * 畫面取得共享行程的唯一入口：依目前的檢視身份與篩選，經過權限引擎過濾。
@@ -11,7 +18,8 @@ export function useVisibleCalendar(): VisibleCalendar & { selfId: string } {
   const selfId = useSpacesStore((s) => s.selfId)
   const viewerId = useSpacesStore((s) => s.viewerId)
   const filter = useSpacesStore((s) => s.filter)
-  return useMemo(() => ({ ...visibleCalendar(data, selfId, viewerId, filter), selfId }), [data, selfId, viewerId, filter])
+  const personalTitles = usePersonalTitles()
+  return useMemo(() => ({ ...visibleCalendar(data, selfId, viewerId, filter, { personalTitles }), selfId }), [data, selfId, viewerId, filter, personalTitles])
 }
 
 /**

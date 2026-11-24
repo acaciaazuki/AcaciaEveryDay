@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BATCH_NOTES as ALL_BATCH_NOTES } from '../i18n/cross'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { Button } from '../components/Button'
 import { Icon } from '../components/AcaciaIcons'
 import { EventIconBadge } from '../components/EventIcon'
@@ -56,6 +56,7 @@ export function TodayPage() {
   const personalEvents = useAppStore((s) => s.events)
   // 共享行程經過權限過濾；預覽其他成員時不顯示個人行程與購物
   const vis = useVisibleCalendar()
+  const navigate = useNavigate()
   const allEvents = vis.showPersonal ? personalEvents : NO_EVENTS
   const tasks = useAppStore((s) => s.tasks)
   const settings = useAppStore((s) => s.settings)
@@ -280,7 +281,7 @@ export function TodayPage() {
           onClose={() => setEditing(null)}
         />
       )}
-      {viewingShared && <SharedDetailDialog entry={viewingShared} previewing={!vis.isSelf} onClose={() => setViewingShared(null)} />}
+      {viewingShared && <SharedDetailDialog entry={viewingShared} previewing={!vis.isSelf} onClose={() => setViewingShared(null)} onGoToSource={() => void navigate('/calendar')} />}
       {editingRhythm && <RhythmDialog onClose={() => setEditingRhythm(false)} />}
       {viewingShop && <ShoppingDetailDialog entry={viewingShop} onClose={() => setViewingShop(null)} />}
     </div>

@@ -115,14 +115,43 @@ describe('忙碌時段同步：行事曆上的呈現', () => {
     useSpacesStore.getState().reset()
   })
 
-  function ownEntry(display: 'busy' | 'time_only') {
+  function ownEntry(display: 'busy' | 'time_only', personalTitles?: ReadonlyMap<string, string>) {
     const st = useSpacesStore.getState()
     const family = st.createSpace({ name: '陳家', kind: 'family' })
     st.addRule({ sourceId: PERSONAL_CALENDAR_ID, targetIds: [family], display, label: '有事' })
     useSpacesStore.getState().setPersonalBusySlots([{ id: 'e1', dateISO: '2026-12-01', start: '14:00', end: '16:00', version: 1, updatedAt: 1, deletedAt: null }])
     const s = useSpacesStore.getState()
-    return visibleCalendar(s.data, s.selfId, s.selfId, family).shared.find((e) => e.projected)!
+    return visibleCalendar(s.data, s.selfId, s.selfId, family, { personalTitles }).shared.find((e) => e.projected)!
   }
+
+  it('自己投射過去的區塊有原始標題：卡片與彈窗顯示真實標題，保留斜紋與唯讀提示，可前往來源分頁', () => {
+    const entry = ownEntry('busy', new Map([['e1', '看牙醫']]))
+    render(<SharedCard entry={entry} onOpen={() => {}} />)
+    const card = screen.getByRole('button')
+    // 仍是忙碌區塊的外觀（斜紋），標題改成真實標題
+    expect(card).toHaveAttribute('data-access', 'busy')
+    expect(card.getAttribute('style')).toContain('repeating-linear-gradient')
+    expect(card.querySelector('strong')).toHaveTextContent('看牙醫')
+    expect(card).not.toHaveTextContent('（已隱藏）')
+
+    let jumped = false
+    render(<SharedDetailDialog entry={entry} previewing={false} onClose={() => {}} onGoToSource={() => (jumped = true)} />)
+    const d = within(screen.getByRole('dialog'))
+    expect(d.getByRole('heading', { name: '看牙醫' })).toBeInTheDocument()
+    expect(d.getByRole('note')).toHaveTextContent('這筆行程你只能查看')
+    expect(d.getByText('這是由忙閒投射規則自動產生的忙碌時段')).toBeInTheDocument()
+    // 只讀：沒有編輯或刪除按鈕
+    expect(d.queryByRole('button', { name: /^(刪除|編輯)$/ })).toBeNull()
+    fireEvent.click(d.getByRole('button', { name: '前往原始空間查看/編輯' }))
+    expect(useSpacesStore.getState().filter).toBe(PERSONAL_CALENDAR_ID)
+    expect(jumped).toBe(true)
+  })
+
+  it('預覽其他成員視角時沒有「前往原始空間」按鈕', () => {
+    const entry = ownEntry('busy', new Map([['e1', '看牙醫']]))
+    render(<SharedDetailDialog entry={entry} previewing onClose={() => {}} />)
+    expect(within(screen.getByRole('dialog')).queryByRole('button', { name: '前往原始空間查看/編輯' })).toBeNull()
+  })
 
   it('自己投射過去的區塊：顯示文字與「來自我的行事曆」，詳情有來源', () => {
     const entry = ownEntry('busy')

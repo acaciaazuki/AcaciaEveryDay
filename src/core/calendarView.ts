@@ -48,28 +48,39 @@ export interface VisibleCalendar {
   shared: SharedEntry[]
 }
 
+export interface VisibleCalendarOptions {
+  /**
+   * 個人行程 id → 標題：來源是「我的行事曆」的投射區塊要顯示真實標題時使用。
+   * 只在本機顯示用，不會寫入共享資料或同步出去。
+   */
+  personalTitles?: ReadonlyMap<string, string>
+}
+
 /**
  * 算出某位檢視者在目前篩選下看得到的共享行程。
  * - 已刪除的空間、檢視者不是成員的空間：全部略過
  * - 忙閒投射：其他成員看到忙碌區塊（不知道來源）
  * - 自己投射出去的區塊：「全部」不顯示（原始行程已經看得到，避免重複）；
- *   切到某個空間或「我的行事曆」時顯示，唯讀，並帶上來源（projectedFrom），方便確認同步結果
+ *   切到某個空間或「我的行事曆」時顯示，唯讀，並帶上來源（projectedFrom）與來源行程的真實標題，方便確認同步結果
  * - 模擬其他成員的視角時，一律唯讀
  */
-export function visibleCalendar(data: SharedCalendarData, selfId: string, viewerId: string, filter: CalendarFilter): VisibleCalendar {
+export function visibleCalendar(data: SharedCalendarData, selfId: string, viewerId: string, filter: CalendarFilter, options: VisibleCalendarOptions = {}): VisibleCalendar {
   const isSelf = viewerId === selfId
   const showPersonal = isSelf && (filter === 'all' || filter === 'personal')
   const ownProjection = ownProjectionEntry(data, viewerId)
+  // 本人看自己投射出去的區塊時帶入來源的真實標題；模擬其他成員視角時不帶
+  const titles = { withTitles: isSelf, personalTitles: options.personalTitles }
   if (filter === 'personal') {
     // 「我的行事曆」只屬於本人：只有投射到這裡的自己的忙碌區塊
-    const blocks = isSelf ? projectBusyBlocks({ rules: data.busyProjectionRules.filter((r) => r.userId === viewerId), spaces: data.spaces, items: data.items, personalSlots: data.personalBusySlots, targetSpaceId: PERSONAL_CALENDAR_ID }) : []
+    const blocks = isSelf ? projectBusyBlocks({ rules: data.busyProjectionRules.filter((r) => r.userId === viewerId), spaces: data.spaces, items: data.items, personalSlots: data.personalBusySlots, targetSpaceId: PERSONAL_CALENDAR_ID, ...titles }) : []
     const space = { id: PERSONAL_CALENDAR_ID, name: '', kind: 'personal' as const }
     return { viewerId, isSelf, showPersonal, shared: sortEntries(blocks.map((b) => ownProjection(b, space))) }
   }
 
   const spaces = data.spaces.filter((s) => roleOf(s, viewerId) && (filter === 'all' || s.id === filter))
-  const projected = spaces.flatMap((s) => projectBusyBlocks({ rules: data.busyProjectionRules, spaces: data.spaces, items: data.items, personalSlots: data.personalBusySlots, targetSpaceId: s.id }))
-  const candidates = [...data.items, ...projected.filter((b) => b.createdBy !== viewerId)]
+  const projected = spaces.flatMap((s) => projectBusyBlocks({ rules: data.busyProjectionRules, spaces: data.spaces, items: data.items, personalSlots: data.personalBusySlots, targetSpaceId: s.id, ...titles }))
+  // 別人投射過來的區塊一律不帶標題（權限解析的 toBusyView 也會清空，這裡再保險一次）
+  const candidates = [...data.items, ...projected.filter((b) => b.createdBy !== viewerId).map((b) => ({ ...b, title: '' }))]
   const own = filter === 'all' ? [] : projected.filter((b) => b.createdBy === viewerId)
 
   const shared: SharedEntry[] = []
