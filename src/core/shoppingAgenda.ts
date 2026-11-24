@@ -1,3 +1,4 @@
+import { sharedOn, type SharedEntry } from './calendarView'
 import type { Archive, CalendarEvent, Expense } from './schema'
 
 /**
@@ -15,8 +16,11 @@ export interface ShoppingEntry {
   archived: boolean
 }
 
-/** 行事曆上的一列：一般行程或連動的購物記帳 */
-export type AgendaItem = { kind: 'event'; id: string; start: string; event: CalendarEvent } | { kind: 'shopping'; id: string; start: string; entry: ShoppingEntry }
+/** 行事曆上的一列：一般行程、共享空間行程（已經過權限過濾）或連動的購物記帳 */
+export type AgendaItem =
+  | { kind: 'event'; id: string; start: string; event: CalendarEvent }
+  | { kind: 'shared'; id: string; start: string; shared: SharedEntry }
+  | { kind: 'shopping'; id: string; start: string; entry: ShoppingEntry }
 
 /** 目前的購物清單加上所有歸檔裡的記帳；沒有日期的記帳無法放進行事曆，略過 */
 export function shoppingEntries(shopping: Expense[], archives: Archive[]): ShoppingEntry[] {
@@ -40,14 +44,16 @@ export function indexByDate(entries: ShoppingEntry[]): Map<string, ShoppingEntry
 /**
  * 某天要顯示的行程與購物記帳，依開始時間排序。
  * 沒有時間的記帳（舊資料或沒填）當作「整天」，跟沒有開始時間的行程一樣排在最前面；
- * 同一時間時一般行程排在購物前面。
+ * 同一時間時依序是一般行程、共享行程、購物。
  */
-export function agendaOn(events: CalendarEvent[], byDate: Map<string, ShoppingEntry[]>, iso: string): AgendaItem[] {
+export function agendaOn(events: CalendarEvent[], byDate: Map<string, ShoppingEntry[]>, iso: string, shared: readonly SharedEntry[] = []): AgendaItem[] {
   const items: AgendaItem[] = [
     ...events.filter((e) => e.dateISO === iso).map((e): AgendaItem => ({ kind: 'event', id: e.id, start: e.start, event: e })),
+    ...sharedOn(shared, iso).map((x): AgendaItem => ({ kind: 'shared', id: `shared-${x.id}`, start: x.start, shared: x })),
     ...(byDate.get(iso) ?? []).map((x): AgendaItem => ({ kind: 'shopping', id: `shop-${x.id}`, start: x.expense.time, entry: x })),
   ]
-  const rank = (i: AgendaItem) => (i.kind === 'event' ? 0 : 1)
+  const RANK = { event: 0, shared: 1, shopping: 2 } as const
+  const rank = (i: AgendaItem) => RANK[i.kind]
   return items.sort((a, b) => a.start.localeCompare(b.start) || rank(a) - rank(b))
 }
 

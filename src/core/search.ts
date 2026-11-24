@@ -1,3 +1,4 @@
+import type { SearchableShared } from './calendarView'
 import type { Archive, CalendarEvent, Expense, InventoryItem, Place, Recurring, Subscription, Task } from './schema'
 
 export const SEARCH_SCOPES = ['all', 'events', 'tasks', 'shopping', 'places', 'subscriptions', 'inventory', 'recurring'] as const
@@ -32,6 +33,11 @@ export interface SearchData {
   inventory?: InventoryItem[]
   /** 週期固定支出範本 */
   recurring?: Recurring[]
+  /**
+   * 共享空間行程：只能傳 searchableShared(useVisibleCalendar().shared) 的結果，
+   * 也就是已經依檢視者過濾、忙碌區塊已排除、遮罩欄位已清空的資料
+   */
+  shared?: SearchableShared[]
 }
 
 export interface SearchFormat {
@@ -47,6 +53,8 @@ export interface SearchFormat {
   invMeta?: (x: InventoryItem) => string
   /** 固定支出範本的摘要（例如「每月 10 日 · NT$599」）；沒傳時退回簡單格式 */
   recurringMeta?: (x: Recurring) => string
+  /** 共享行程標題被遮罩時顯示的文字 */
+  hiddenTitle?: string
 }
 
 /** 以空白切成多個關鍵字，每個關鍵字都要命中（任一欄位）才算符合 */
@@ -98,6 +106,30 @@ export function searchAll(data: SearchData, query: string, scope: SearchScope, f
         meta: `${e.dateISO} ${e.start}`.trim(),
         snippet: m === 'title' ? undefined : m,
         path: `/calendar?open=${e.id}`,
+      })
+    }
+
+  if (want('events'))
+    for (const x of data.shared ?? []) {
+      const m = matches(
+        {
+          fields: [
+            ['title', x.title],
+            ['note', x.note],
+            ['loc', x.location],
+          ],
+        },
+        tokens,
+      )
+      if (!m) continue
+      out.push({
+        key: `shared-${x.id}`,
+        kind: 'events',
+        id: x.id,
+        title: x.title || fmt.hiddenTitle || '',
+        meta: [`${x.dateISO} ${x.start}`.trim(), x.spaceName].join(' · '),
+        snippet: m === 'title' ? undefined : m,
+        path: `/calendar?open=${encodeURIComponent(x.id)}`,
       })
     }
 

@@ -7,11 +7,14 @@ import { useNavigate } from 'react-router'
 import { PLACE_CATEGORIES, type PlaceCategory } from '../core/categories'
 import { formatCurrency, formatMoney } from '../core/format'
 import { useCurrency } from '../hooks/useCurrency'
-import { SEARCH_SCOPES, excerpt, searchAll, splitHighlight, tokenize, type SearchHit, type SearchKind, type SearchScope } from '../core/search'
+import { searchableShared } from '../core/calendarView'
+import { SEARCH_SCOPES, excerpt, searchAll, splitHighlight, tokenize, type SearchFormat, type SearchHit, type SearchKind, type SearchScope } from '../core/search'
+import { useVisibleCalendar } from '../hooks/useVisibleCalendar'
 import { invCatLabel } from '../hooks/useInvCategories'
 import { useAppStore } from '../store/useAppStore'
 
 const RECENT_KEY = 'acacia_recent_search'
+const NO_EVENTS: never[] = []
 const RECENT_MAX = 8
 
 function loadRecent(): string[] {
@@ -82,7 +85,11 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
 function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
-  const { events, tasks, shopping, archives, places, subscriptions, inventory, invCats, recurring } = useAppStore()
+  const { events: personalEvents, tasks, shopping, archives, places, subscriptions, inventory, invCats, recurring } = useAppStore()
+  // 行程跟行事曆畫面用同一份權限過濾：預覽其他成員時不搜個人行程，共享行程只搜看得到的欄位
+  const vis = useVisibleCalendar()
+  const events = vis.showPersonal ? personalEvents : NO_EVENTS
+  const shared = useMemo(() => searchableShared(vis.shared), [vis.shared])
   const [query, setQuery] = useState('')
   const [scope, setScope] = useState<SearchScope>('all')
   const [recent, setRecent] = useState<string[]>(loadRecent)
@@ -90,24 +97,8 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
   const currency = useCurrency()
 
   const tokens = useMemo(() => tokenize(query), [query])
-  const hits = useMemo(
-    () =>
-      searchAll({ events, tasks, shopping, archives, places, subscriptions, inventory, recurring }, query, scope, {
-        money: (n, cur) => formatMoney(n, lng, cur || currency),
-        expenseCat: (e) => (e.cat === 'other' && e.customCat ? e.customCat : t(`expenseCat.${e.cat}`)),
-        placeCat: (c) => t(`placeCat.${c}`),
-        subMoney: (x) => formatCurrency(x.amount, x.currency, lng),
-        subCat: (c) => t(`subs.cat.${c}`),
-        invCat: (c) => invCatLabel(c, invCats, t),
-        invMeta: (x) => t('inv.searchMeta', { count: x.stock, unit: x.unit || t('inv.defaultUnit') }),
-        recurringMeta: (x) => t('recurring.searchMeta', { day: x.day, amount: formatMoney(x.amount, lng, x.currency) }),
-      }),
-    // eslint 無法追 t 的穩定性；語系變了就重算
-    [events, tasks, shopping, archives, places, subscriptions, inventory, invCats, recurring, query, scope, lng, currency, t],
-  )
-
-  const counts = useMemo(() => {
-    const all = searchAll({ events, tasks, shopping, archives, places, subscriptions, inventory, recurring }, query, 'all', {
+  const fmt = useMemo<SearchFormat>(
+    () => ({
       money: (n, cur) => formatMoney(n, lng, cur || currency),
       expenseCat: (e) => (e.cat === 'other' && e.customCat ? e.customCat : t(`expenseCat.${e.cat}`)),
       placeCat: (c) => t(`placeCat.${c}`),
@@ -116,7 +107,19 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
       invCat: (c) => invCatLabel(c, invCats, t),
       invMeta: (x) => t('inv.searchMeta', { count: x.stock, unit: x.unit || t('inv.defaultUnit') }),
       recurringMeta: (x) => t('recurring.searchMeta', { day: x.day, amount: formatMoney(x.amount, lng, x.currency) }),
-    })
+      hiddenTitle: t('sharing.hiddenTitle'),
+    }),
+    // eslint 無法追 t 的穩定性；語系變了就重算
+    [invCats, lng, currency, t],
+  )
+  const data = useMemo(
+    () => ({ events, tasks, shopping, archives, places, subscriptions, inventory, recurring, shared }),
+    [events, tasks, shopping, archives, places, subscriptions, inventory, recurring, shared],
+  )
+  const hits = useMemo(() => searchAll(data, query, scope, fmt), [data, query, scope, fmt])
+
+  const counts = useMemo(() => {
+    const all = searchAll(data, query, 'all', fmt)
     const c: Record<SearchScope, number> = {
       all: all.length,
       events: 0,
@@ -129,7 +132,7 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
     }
     for (const h of all) c[h.kind]++
     return c
-  }, [events, tasks, shopping, archives, places, subscriptions, inventory, invCats, recurring, query, lng, currency, t])
+  }, [data, query, fmt])
 
   const remember = () => {
     const q = query.trim()

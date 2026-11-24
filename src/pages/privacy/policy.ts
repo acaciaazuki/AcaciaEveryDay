@@ -7,7 +7,7 @@
 /** 支援信箱（也可以用環境變數 VITE_SUPPORT_EMAIL 覆寫） */
 export const CONTACT_EMAIL: string = import.meta.env.VITE_SUPPORT_EMAIL ?? 'acacia.qiqi@gmail.com'
 export const EFFECTIVE_DATE = '2026-11-22'
-export const UPDATED_DATE = '2026-11-22'
+export const UPDATED_DATE = '2026-11-24'
 
 export type PolicyBlock = string | { list: string[] } | { sub: string }
 export interface PolicySection {
@@ -98,6 +98,7 @@ const zhTW: PolicyDoc = {
         {
           list: [
             '主要資料存在你瀏覽器的 IndexedDB（資料庫名稱 acacia-next）。',
+            '共享行事曆空間（家人、學校、工作等空間、成員名稱與角色、空間內的行程與隱私設定、忙閒投射規則）存在同一個 IndexedDB 的 acacia-spaces，跟主資料分開保存，不會放進主資料的同步檔與自動備份。目前成員是你在這台裝置上建立的模擬成員，資料不會傳給他們。',
             '自動備份快照存在另一個 IndexedDB 資料庫（acacia-backups），最多保留最近 7 份，較舊的自動刪除。',
             '小型偏好設定存在 localStorage；Google 存取權杖存在 sessionStorage（見 2.1）。',
           ],
@@ -108,7 +109,7 @@ const zhTW: PolicyDoc = {
           list: [
             'acacia_data_v2.json：同步用的完整資料。',
             'acacia_backup_v2.json：最新一份自動備份（每次自動備份時覆寫，不影響同步檔）。',
-            'acacia_spaces_v1.json：共享行事曆空間（家人、學校、工作等）的同步檔。只包含你建立的行程，以及依各行程的可見性設定過濾後你有權看到的內容；不含本機的同意紀錄。',
+            'acacia_spaces_v1.json：共享行事曆空間（家人、學校、工作等）的同步檔，在你開啟共享空間的雲端同步後才會建立。只包含你建立的行程，以及依各行程的可見性設定過濾後你有權看到的內容；不含本機的同意紀錄。',
             'acacia_data.json：舊版 ACACIA 網站的同步檔。第一次登入時本服務會讀取它來搬移資料，但不會修改它。',
           ],
         },
@@ -274,6 +275,7 @@ const ja: PolicyDoc = {
         {
           list: [
             '主なデータはブラウザの IndexedDB（データベース名 acacia-next）に保存します。',
+            '共有カレンダーのスペース（家族・学校・仕事などのスペース、メンバー名と役割、スペース内の予定と公開範囲の設定、予定ありの反映ルール）は同じ IndexedDB の acacia-spaces に、主なデータとは分けて保存し、主なデータの同期ファイルや自動バックアップには含めません。現在のメンバーはこの端末で作成したお試しのメンバーで、データがその人たちに送られることはありません。',
             '自動バックアップのスナップショットは別の IndexedDB データベース（acacia-backups）に、最新 7 件まで保存し、古いものは自動的に削除します。',
             '小さな設定は localStorage に、Google のアクセストークンは sessionStorage に保存します（2.1 参照）。',
           ],
@@ -284,7 +286,7 @@ const ja: PolicyDoc = {
           list: [
             'acacia_data_v2.json：同期用の全データ。',
             'acacia_backup_v2.json：最新の自動バックアップ 1 件（自動バックアップのたびに上書きされ、同期ファイルには影響しません）。',
-            'acacia_spaces_v1.json：共有カレンダーのスペース（家族・学校・仕事など）の同期ファイル。あなたが作成した予定と、各予定の公開範囲の設定に従ってあなたが閲覧できる内容だけを含み、端末の同意記録は含みません。',
+            'acacia_spaces_v1.json：共有カレンダーのスペース（家族・学校・仕事など）の同期ファイル。共有スペースのクラウド同期を有効にしたときにだけ作成されます。あなたが作成した予定と、各予定の公開範囲の設定に従ってあなたが閲覧できる内容だけを含み、端末の同意記録は含みません。',
             'acacia_data.json：旧版 ACACIA サイトの同期ファイル。初回ログイン時にデータ移行のため読み込みますが、変更はしません。',
           ],
         },
@@ -450,6 +452,7 @@ const en: PolicyDoc = {
         {
           list: [
             'Your main data is stored in the browser’s IndexedDB (database name acacia-next).',
+            'Shared calendar spaces (family, school, work and other spaces, member names and roles, the events in each space with their visibility settings, and busy-time rules) are stored separately under acacia-spaces in the same IndexedDB. They are not included in the main sync file or automatic backups. Members are currently sample members you create on this device, and nothing is sent to them.',
             'Automatic backup snapshots are stored in a separate IndexedDB database (acacia-backups). Up to the 7 most recent are kept; older ones are deleted automatically.',
             'Small preferences are stored in localStorage, and the Google access token in sessionStorage (see 2.1).',
           ],
@@ -460,7 +463,7 @@ const en: PolicyDoc = {
           list: [
             'acacia_data_v2.json: your full data for sync.',
             'acacia_backup_v2.json: the latest automatic backup (overwritten on each automatic backup; it does not affect the sync file).',
-            'acacia_spaces_v1.json: the sync file for shared calendar spaces (family, school, work and so on). It contains only the entries you created and what each entry’s visibility settings allow you to see; it never includes the consent record stored on your device.',
+            'acacia_spaces_v1.json: the sync file for shared calendar spaces (family, school, work and so on), created only once you turn on cloud sync for shared spaces. It contains only the entries you created and what each entry’s visibility settings allow you to see; it never includes the consent record stored on your device.',
             'acacia_data.json: the sync file of the previous ACACIA website. The Service reads it once on first sign-in to migrate your data but never modifies it.',
           ],
         },

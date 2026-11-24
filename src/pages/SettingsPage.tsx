@@ -9,6 +9,7 @@ import { NavOrderPanel } from '../components/NavOrderPanel'
 import { LicensesLink } from '../components/LicensesLink'
 import { PageHead } from '../components/PageHead'
 import { PrivacyLink } from '../components/PrivacyLink'
+import { SpacesPanel } from '../components/SpacesPanel'
 import { SyncPanel } from '../components/SyncPanel'
 import { LANGUAGES } from '../i18n'
 import { currencyName, currencySymbol } from '../core/format'
@@ -161,6 +162,7 @@ export function SettingsPage() {
             {t('inv.openPage')}
           </Link>
         </section>
+        <SpacesPanel />
         <section className="rounded-(--radius-card) bg-paper p-6 shadow-card">
           <h2 className="mb-3 font-bold">{t('sync.title')}</h2>
           <SyncPanel showHelp />
