@@ -204,7 +204,8 @@ describe('TodayPage', () => {
     expect(screen.getByRole('heading', { name: '慢慢來，一切都會剛剛好。' }).parentElement).toHaveClass('text-[length:calc(15px*var(--fs))]')
     for (const name of ['今天的時間軸', '今天的節奏', '順手完成']) expect(screen.getByRole('heading', { level: 2, name })).toHaveClass('text-[length:calc(17px*var(--fs))]')
     expect(screen.getByRole('group', { name: '切換日期' })).toHaveClass(t14)
-    expect(screen.getByRole('link', { name: /查看月曆/ })).toHaveClass(t14)
+    // 橫幅不放「查看月曆」：手機從底部導覽列、平板以上從側邊欄進入行事曆
+    expect(screen.queryByRole('link', { name: /查看月曆/ })).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: '＋ 新增安排' })).toHaveClass(t14, 'whitespace-nowrap')
     // 摘要數字放大、說明文字在下方
     const stat = screen.getByText('個行程').closest('li')!

@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import appI18n, { LANGUAGES } from '../i18n'
 import { Link } from 'react-router'
-import { Button, PAGE_ACTION_SIZE } from '../components/Button'
+import { Button } from '../components/Button'
 import { Icon } from '../components/AcaciaIcons'
 import { EventIconBadge } from '../components/EventIcon'
 import { EventDialog } from '../components/EventDialog'
@@ -113,18 +113,13 @@ export function TodayPage() {
           { value: openTasks.length, label: t('today.statTasks') },
           { value: `${hours(freeMinutes)}h`, label: t('today.statFree') },
         ]}
+        // 只在手機顯示（681px 以上改用側邊欄）；行事曆從底部導覽列進入，不另放「查看月曆」
         actions={
-          <>
-            <Link to="/calendar" className={`inline-flex items-center gap-1.5 rounded-(--radius-control) border border-transparent bg-sage font-bold text-white shadow-[0_4px_12px_#527b6726] hover:bg-sage-dark ${PAGE_ACTION_SIZE}`}>
-              <Icon name="calendar" className="-my-1 size-[1.8em]" />
-              {t('today.seeCalendar')}
-            </Link>
-            {vis.isSelf && (
-              <Button size="page" onClick={() => setEditing('new')}>
-                {t('today.addEvent')}
-              </Button>
-            )}
-          </>
+          vis.isSelf && (
+            <Button size="page" onClick={() => setEditing('new')}>
+              {t('today.addEvent')}
+            </Button>
+          )
         }
       />
 
