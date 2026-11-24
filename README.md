@@ -64,12 +64,45 @@ npm run icons   # 需要 Playwright 的 Chromium（npx playwright install chromi
 
 ## 隱私權政策、自動備份與刪除資料
 
-- 隱私權政策（繁中／日文／英文）：側邊欄與設定頁底部的小連結點了跳出面板（`src/components/PrivacyDialog.tsx`）；公開網址 `/privacy` 打開時以今天頁為背景自動跳出同一個面板，全文在 `src/pages/privacy/policy.ts`。改到儲存、同步、定位或第三方服務時要一起更新，並改 `UPDATED_DATE`。支援信箱用環境變數 `VITE_SUPPORT_EMAIL` 覆寫（預設 acacia.qiqi@gmail.com）。
+- 隱私權政策（繁中／日文／英文）：側邊欄與設定頁底部的小連結點了跳出面板（`src/components/PrivacyDialog.tsx`）；公開網址 `/privacy` 打開時以今天頁為背景自動跳出同一個面板，全文在 `src/pages/privacy/policy.ts`。改到儲存、同步、定位或第三方服務時要一起更新，並改 `UPDATED_DATE`。支援信箱的正式地址是 **acacia.qiqi@gmail.com**（程式預設值，不設定環境變數也會使用它）；只有要換信箱時才需要設定 `VITE_SUPPORT_EMAIL`。
 - 使用前同意：第一次使用、或隱私權政策／第三方授權清單改版時，以全螢幕面板（`src/components/ConsentGate.tsx`）擋住整個 App，只能按「同意並開始使用」進入；沒有關閉鈕，Esc、點背景都關不掉，按「不同意」只會顯示說明、仍然擋住。同意前不啟動 Google 登入、定位、自動備份與同步。`/privacy` 網址在同意前一樣顯示政策全文。同意紀錄（版本、時間）存在本機 IndexedDB 的 `acacia-consent`，不跟 Drive 同步、不放進備份，清除瀏覽器資料或「刪除所有資料」後會再次詢問。
   - 隱私權政策改版：改 `src/pages/privacy/policy.ts` 的 `UPDATED_DATE` 時，同時把 `src/core/consent.ts` 的 `PRIVACY_VERSION` 改成相同日期（不一致時 `npm test` 會失敗）。
   - 第三方授權清單：套件升級不會自動要求重新同意；需要時把 `src/core/consent.ts` 的 `LICENSES_VERSION` 改成當天日期。
 - 自動備份：開啟網站與資料變動後，距上次超過 12 小時就在背景建立快照，存在 IndexedDB 的 `acacia-backups`（最多 7 份）；已登入時另外上傳到 Drive 的 `acacia_backup_v2.json`，不動同步檔。邏輯在 `src/core/backup.ts` 與 `src/store/useBackupStore.ts`。
 - 設定頁「刪除所有資料」：刪除 Drive 上的 ACACIA 檔案（已登入時）、登出，並清空本機資料與快照（`src/store/deleteAllData.ts`）。
+
+## 同步與衝突處理
+
+ACACIA 有兩種雲端同步，規則不同：
+
+### 主資料（`acacia_data_v2.json`）
+
+行事曆個人行程、稍後辦、購物記帳、地點、設定等，以**整份檔案**為單位同步（`src/core/sync.ts` 的 `decideSync`）：
+
+- 登入時比較本機與雲端的 `updatedAt`，**較新的整份勝出**；本機從沒改過資料時一律用雲端
+- 之後每次修改都會上傳整份
+- **限制：**兩台裝置都在離線時修改，之後較舊的那一台的修改會整份被蓋掉（不會逐筆合併）。需要回復時可以用「自動備份」的快照還原
+
+### 共享空間（`acacia_spaces_v1.json`）
+
+共享行事曆以**每一筆行程**為單位合併（`src/core/syncEnvelope.ts`）：
+
+- **合併規則（`pickWinner`）：**
+  1. 版本號（`version`，每次修改 +1）較大者勝
+  2. 版本相同但內容不同（兩台裝置各自從同一版修改）→ 記為衝突，`updatedAt` 較新者勝
+  3. 時間也相同 → 刪除優先（避免刪掉的行程復活），再依修改者 id 排序，確保每台裝置結果一致
+- **衝突提示：**發生衝突時同步狀態顯示「有行程在兩台裝置上同時被修改，已保留較新的版本」
+- **軟刪除：**刪除的行程、空間、忙碌同步規則都留下刪除標記（墓碑）並同步出去，其他裝置才不會把它帶回來
+- **離線編輯：**離線時照常修改，存在本機；恢復連線後先拉雲端合併、再把合併結果推回去，兩邊的修改都會保留（只有改到同一筆時依上面的規則取捨）
+- **權限：**送出的內容一律先經過權限過濾（`resolveCalendarItemForViewer`），別人只會收到自己看得到的部分；自己建立的完整資料不會被別人收到的遮罩副本蓋掉
+- **空間資訊：**空間名稱與成員依空間自己的版本號合併
+- **忙碌時段同步：**
+  - 規則以 `updatedAt` 合併
+  - 投射出去的忙碌區塊是即時算出來的；目標被移除或規則停用時，會送墓碑讓其他成員移除
+  - 「我的行事曆」當來源時，由個人行程的忙碌影子（只有時間）提供版本與刪除標記
+- **版本相容：**雲端檔案或本機資料來自較新版本的 App 時，停止同步並提示更新，不會覆寫（見 #67、#71）
+
+快照：主資料與共享空間各自有本機快照（`acacia-backups`、`acacia-spaces-backups`），可以在設定頁還原。
 
 ## 資料夾
 
@@ -97,12 +130,24 @@ src/
 
 `public/_redirects` 已設定 SPA 路由，直接開 `/tasks` 等網址也能正常載入。每個 PR 會自動產生預覽網址。
 
-部署後記得：
+### 上線檢查清單
 
-1. 在 Google Cloud Console 的 OAuth 用戶端「已授權的 JavaScript 來源」加入新網址（例如 `https://acaciaeveryday.pages.dev`），Google 登入同步才能用。預覽網址每次不同，Google 不支援萬用字元，所以預覽站無法登入，屬正常現象。
-2. 如果地點搜尋的 Cloudflare Worker 有限制來源網域，也把新網址加進去。
+新增或更換網域（例如正式網址 `https://acaciaeveryday.pages.dev`、自訂網域）時，逐項確認：
 
-可選的環境變數：`VITE_GOOGLE_CLIENT_ID`、`VITE_PLACES_PROXY_URL`。
+- [ ] **Google OAuth 來源：**到 Google Cloud Console → API 和服務 → 憑證 → OAuth 用戶端，在「已授權的 JavaScript 來源」加入新網址（不含結尾斜線）。沒加會出現登入錯誤 `origin_mismatch`，Drive 同步與雲端備份都無法使用
+  - PR 預覽網址每次不同，Google 不支援萬用字元，所以**預覽站無法登入，屬正常現象**；要測登入請用正式網址
+- [ ] **地點搜尋 Proxy：**`VITE_PLACES_PROXY_URL` 指向的 Cloudflare Worker 若有限制來源網域（CORS 白名單），把新網址加進去，否則地點搜尋會失敗
+- [ ] **環境變數**（Cloudflare Pages → Settings → Environment variables，Production 與 Preview 都要設）：
+
+  | 變數 | 用途 | 沒設定時 |
+  | --- | --- | --- |
+  | `NODE_VERSION` | 建置用的 Node 版本，設 `22` | 可能用到不相容的版本 |
+  | `VITE_GOOGLE_CLIENT_ID` | Google 登入的 OAuth 用戶端 ID | 使用程式內建的 ID |
+  | `VITE_PLACES_PROXY_URL` | 地點搜尋 Proxy 網址 | 使用程式內建的網址 |
+  | `VITE_SUPPORT_EMAIL` | 隱私權政策的支援信箱 | 使用 acacia.qiqi@gmail.com |
+
+- [ ] **上線後實測：**正式網址開啟 → Google 登入 → 設定頁看到「已同步」→ 最愛地點搜尋一個地點 → 開 `/privacy` 確認政策與信箱正確
+- [ ] **GitHub 儲存庫 About：**描述、網站（正式網址）與 Topics 已填寫
 
 ## iOS App（Capacitor）
 
@@ -143,7 +188,15 @@ npm run ios:sync
 npm run ios:open
 ```
 
-目前 iOS App 還不能用 Google 登入（Google 不允許在 App 內嵌的網頁做 OAuth，之後要改用原生登入外掛），所以 Drive 同步與雲端備份在 App 裡暫時無法使用；本機資料、快照與其他功能都正常。
+目前 iOS App 還不能用 Google 登入（Google 不允許在 App 內嵌的網頁做 OAuth，之後要改用原生登入外掛），所以 Drive 同步、共享空間雲端同步與雲端備份在 App 裡暫時無法使用；本機資料、快照與其他功能都正常。
+
+App 內的處理（`isNativeApp()` 判斷）：
+
+- 側邊欄與設定頁不顯示「Google 登入同步」按鈕，改成說明「只有本機資料與 iCloud 備份有效；需要 Google Drive 同步請改用網頁版」
+- 自動備份的「Google Drive 備份槽」、共享空間的雲端同步，也改成說明資料只存在這台 iPhone、隨 iCloud 備份
+- 啟動時不會嘗試 Google 登入
+
+之後若要支援：評估 Capacitor 的原生 Google Sign-In 外掛（需要 Google Cloud 的 iOS 用戶端 ID 與 Xcode 設定），登入後沿用現有的 Drive 同步程式。
 
 ## 從舊版搬資料
 

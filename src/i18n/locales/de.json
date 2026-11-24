@@ -419,7 +419,9 @@
     "error": "Synchronisierung fehlgeschlagen. Deine Daten sind auf diesem Gerät gespeichert",
     "retry": "Erneut versuchen",
     "help": "Nach der Anmeldung werden deine Daten im App-Bereich deines Google Drive gespeichert, sodass du auf jedem Gerät dieselben Daten siehst. Bei der ersten Anmeldung wird auch dein Backup aus dem alten ACACIA geladen.",
-    "user": "Google-Nutzer"
+    "user": "Google-Nutzer",
+    "nativeStatus": "Nur auf diesem iPhone gespeichert (im iCloud-Backup enthalten)",
+    "nativeNotice": "Die iOS-App unterstützt die Google-Anmeldung noch nicht. Es gelten nur die Daten auf dem Gerät und das iCloud-Backup; für die Google-Drive-Synchronisierung bitte die Webversion nutzen."
   },
   "colors": {
     "text": {
@@ -910,7 +912,8 @@
       "waiting": "Wird mit dem nächsten Backup hochgeladen",
       "uploading": "Wird hochgeladen…",
       "ok": "Hochgeladen ({{time}})",
-      "error": "Hochladen fehlgeschlagen – Snapshots auf diesem Gerät sind sicher"
+      "error": "Hochladen fehlgeschlagen – Snapshots auf diesem Gerät sind sicher",
+      "native": "In der iOS-App nicht verfügbar; Schnappschüsse bleiben auf diesem iPhone und sind im iCloud-Backup enthalten"
     },
     "now": "Jetzt sichern",
     "offNote": "Automatisches Backup ist aus. Du kannst weiterhin manuell sichern.",
@@ -1182,7 +1185,8 @@
       "deleteForever": "Cloud-Datei löschen",
       "stopped": "Synchronisierung beendet. Die Datei in Drive wurde behalten",
       "deleted": "Synchronisierung beendet und die Datei in Drive gelöscht",
-      "stopFailed": "Ausschalten fehlgeschlagen. Bitte versuch es später erneut"
+      "stopFailed": "Ausschalten fehlgeschlagen. Bitte versuch es später erneut",
+      "native": "Die iOS-App unterstützt die Google-Anmeldung noch nicht, daher bleiben geteilte Bereiche auf diesem iPhone (im iCloud-Backup enthalten)."
     },
     "backup": {
       "title": "Snapshots der geteilten Bereiche",
