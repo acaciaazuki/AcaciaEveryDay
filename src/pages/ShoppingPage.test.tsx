@@ -190,4 +190,25 @@ describe('ShoppingPage', () => {
       expect(screen.getByText(fullText('共 2 期 · NT$700+€25.5'))).toBeInTheDocument()
     })
   })
+  it('記帳清單跟用品清單一樣：寬螢幕兩欄，打勾、編輯、刪除照常', async () => {
+    const d = toLocalISO()
+    useAppStore.setState({ shopping: [ex('牛奶', d), ex('麵包', d), ex('雞蛋', d)] })
+    render(<MemoryRouter><ShoppingPage /></MemoryRouter>)
+    const list = screen.getByRole('list', { name: '記帳清單' })
+    expect(list).toHaveClass('grid', 'gap-3', 'min-[1001px]:grid-cols-2')
+    expect(within(list).getAllByRole('listitem')).toHaveLength(3)
+
+    // 庫存頁的用品清單使用同一組排版
+    const { InventoryPage } = await import('./InventoryPage')
+    const inv = render(<MemoryRouter><InventoryPage /></MemoryRouter>)
+    expect(within(inv.container).getByRole('list', { name: '用品清單' }).className).toBe(list.className)
+    inv.unmount()
+
+    fireEvent.click(within(list).getAllByRole('button', { name: '標記為已購' })[0]!)
+    expect(useAppStore.getState().shopping.find((x) => x.id === '牛奶')?.done).toBe(true)
+    fireEvent.click(within(list).getByText('麵包'))
+    const dialog = screen.getByRole('dialog')
+    fireEvent.click(within(dialog).getByText('刪除'))
+    expect(useAppStore.getState().shopping.map((x) => x.id)).toEqual(['牛奶', '雞蛋'])
+  })
 })
