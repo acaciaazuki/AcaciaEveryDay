@@ -204,7 +204,8 @@ describe('TodayPage', () => {
     expect(screen.getByRole('heading', { name: '慢慢來，一切都會剛剛好。' }).parentElement).toHaveClass('text-[length:calc(15px*var(--fs))]')
     for (const name of ['今天的時間軸', '今天的節奏', '順手完成']) expect(screen.getByRole('heading', { level: 2, name })).toHaveClass('text-[length:calc(17px*var(--fs))]')
     expect(screen.getByRole('group', { name: '切換日期' })).toHaveClass(t14)
-    expect(screen.getByRole('link', { name: /查看月曆/ })).toHaveClass(t14)
+    // 橫幅不放「查看月曆」：手機從底部導覽列、平板以上從側邊欄進入行事曆
+    expect(screen.queryByRole('link', { name: /查看月曆/ })).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: '＋ 新增安排' })).toHaveClass(t14, 'whitespace-nowrap')
     // 摘要數字放大、說明文字在下方
     const stat = screen.getByText('個行程').closest('li')!
@@ -214,10 +215,10 @@ describe('TodayPage', () => {
     for (const name of ['調整起床與就寢時間', '＋ 新增待辦', '＋ 加一個行程']) expect(screen.getByRole('button', { name })).toHaveClass(t14)
   })
 
-  it('卡片順序：手機先看節奏與順手完成，時間軸在後；1280px 以上時間軸移到左欄', () => {
+  it('卡片順序：手機與中屏先看時間軸，再看節奏與順手完成；1280px 以上時間軸在左欄', () => {
     renderPage()
     const titles = screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent).filter((x) => ['今天的時間軸', '今天的節奏', '順手完成'].includes(x ?? ''))
-    expect(titles).toEqual(['今天的節奏', '順手完成', '今天的時間軸'])
+    expect(titles).toEqual(['今天的時間軸', '今天的節奏', '順手完成'])
     const timeline = screen.getByRole('heading', { name: '今天的時間軸' }).closest('section')!
     expect(timeline).toHaveClass('min-[1280px]:col-[1]', 'min-[1280px]:row-[1/3]')
   })

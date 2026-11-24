@@ -19,12 +19,12 @@ export interface TodayStat {
  *
  * 桌機（1280px 以上）一列三區：
  *   [日期切換／天氣插畫＋大問候] │ [鼓勵文字] [三格白色數字卡]
- *   「查看月曆」「＋ 新增安排」收起來，新增改由側邊欄的主按鈕負責，月曆從側邊欄進入。
- * 中屏（681–1279px）左右兩欄：
- *   [日期切換／天氣插畫＋問候／鼓勵文字] [直向排列的兩顆按鈕]
- *   [三欄數字（中間細線分隔），橫跨整列]
+ *   跟中屏一樣不放按鈕，新增由側邊欄的主按鈕負責，月曆從側邊欄進入。
+ * 中屏（681–1279px）單欄：
+ *   日期切換 → [天氣插畫＋問候] → 鼓勵文字 → 三欄數字（中間細線分隔）
+ *   側邊欄已經有「＋ 新增安排」與「行事曆」，橫幅不再放按鈕，避免同一畫面出現兩顆新增按鈕。
  * 手機（680px 以下）直向堆疊：
- *   天氣插畫 → 日期切換 → 大問候 → 鼓勵文字 → 三欄數字 → 兩顆全寬按鈕
+ *   天氣插畫 → 日期切換 → 大問候 → 鼓勵文字 → 三欄數字 → 全寬「＋ 新增安排」（行事曆從底部導覽列進入）
  *
  * 問候是整頁的 h1；字級跟著「設定 → 字體大小」縮放。
  */
@@ -55,7 +55,7 @@ export function TodayHero({
       data-page-head
       aria-labelledby="today-greeting"
       // 手機排在右上角浮動的搜尋鈕下方（clear-right），寬度才會跟下面的卡片對齊
-      className={`mt-4 mb-6 clear-right grid gap-y-6 rounded-[24px] border border-[#d2ddd4]/70 bg-linear-to-br from-moss to-moss-deep px-6 py-7 shadow-soft min-[681px]:mb-7 min-[681px]:grid-cols-[minmax(0,1fr)_auto] min-[681px]:gap-x-10 min-[681px]:px-9 min-[681px]:py-8 min-[1280px]:grid-cols-[auto_1px_minmax(0,1fr)_auto] min-[1280px]:items-center min-[1280px]:gap-x-10 min-[1280px]:px-10 min-[1280px]:py-9`}
+      className={`mt-4 mb-6 clear-right grid gap-y-6 rounded-[24px] border border-[#d2ddd4]/70 bg-linear-to-br from-moss to-moss-deep px-6 py-7 shadow-soft min-[681px]:mb-7 min-[681px]:px-9 min-[681px]:py-8 min-[1280px]:grid-cols-[auto_1px_minmax(0,1fr)_auto] min-[1280px]:items-center min-[1280px]:gap-x-10 min-[1280px]:px-10 min-[1280px]:py-9`}
     >
       {/* 1. 日期切換＋天氣插畫＋大問候 */}
       <div data-hero-greet className={`grid grid-cols-1 gap-y-3 min-[681px]:col-[1] min-[681px]:row-[1] min-[681px]:grid-cols-[auto_minmax(0,1fr)] min-[681px]:items-center min-[681px]:gap-x-4`}>
@@ -107,8 +107,8 @@ export function TodayHero({
         ))}
       </ul>
 
-      {/* 4. 操作按鈕：手機全寬、中屏在右側直向排列；桌機收起（改用側邊欄） */}
-      <div data-hero-actions className={`grid gap-3 [&>*]:w-full [&>*]:justify-center min-[681px]:col-[2] min-[681px]:row-[1/3] min-[681px]:min-w-[calc(200px*var(--fs))] min-[681px]:self-center min-[1280px]:hidden`}>
+      {/* 4. 操作按鈕：只在手機（沒有側邊欄）顯示，全寬直向排列；681px 以上改用側邊欄 */}
+      <div data-hero-actions className={`grid gap-3 [&>*]:w-full [&>*]:justify-center min-[681px]:hidden`}>
         {actions}
       </div>
     </section>
