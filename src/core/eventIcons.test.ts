@@ -70,4 +70,14 @@ describe('eventIconOf / 資料相容', () => {
     expect(data.events[1].icon).toBeUndefined()
     expect(EVENT_ICON_KEYS).toContain('default')
   })
+  it('慶祝：生日、派對、紀念日、婚禮（三種語言）', () => {
+    for (const title of ['媽媽生日', '慶祝升遷', '週年紀念日', '朋友婚禮', '誕生日パーティー', 'お祝い', 'Birthday party', 'Anniversary dinner', 'wedding'])
+      expect(detectEventIcon(title), title).toBe('celebrate')
+    // 慶祝排在用餐前面；交通仍然優先
+    expect(detectEventIcon('慶生晚餐')).toBe('celebrate')
+    expect(detectEventIcon('搭高鐵去喝喜酒')).toBe('train')
+    // 英文整個字比對：third-party 以外的 party 才算；departure 不會誤判
+    expect(detectEventIcon('departure')).toBe('default')
+    expect(EVENT_ICON_KEYS).toContain('celebrate')
+  })
 })

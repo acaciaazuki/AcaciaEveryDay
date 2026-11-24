@@ -38,7 +38,9 @@ describe('購物記帳單向同步到行事曆', () => {
     renderAt(<CalendarPage />, '/calendar')
     const cell = screen.getAllByRole('gridcell').find((c) => c.getAttribute('aria-selected') === 'true')!
     expect(within(cell).getByRole('button', { name: /鳳梨 · 第五市場 · NT\$150/ })).toBeInTheDocument()
-    expect(screen.getAllByText(/鳳梨 · 第五市場/).length).toBeGreaterThanOrEqual(2)
+    // 點日期打開「這一天」也看得到
+    fireEvent.click(cell)
+    expect(within(screen.getByRole('dialog')).getByText(/鳳梨 · 第五市場/)).toBeInTheDocument()
     // 沒有寫進行程資料，維持單一資料來源
     expect(useAppStore.getState().events).toHaveLength(0)
   })
@@ -86,7 +88,8 @@ describe('購物記帳單向同步到行事曆', () => {
     })
     renderAt(<CalendarPage />, '/calendar')
     expect(screen.getAllByText(/飯糰 · 第五市場 · [¥￥]500/).length).toBeGreaterThan(0)
-    const card = screen.getAllByText(/舊帳/).at(-1)!.closest('button')!
+    fireEvent.click(screen.getAllByRole('gridcell').find((c) => c.getAttribute('aria-selected') === 'true')!)
+    const card = within(screen.getByRole('dialog')).getByText(/舊帳/).closest('button')!
     expect(card).toHaveTextContent('整天')
     fireEvent.click(card)
     fireEvent.click(within(screen.getByRole('dialog')).getByText('前往記帳本查看'))

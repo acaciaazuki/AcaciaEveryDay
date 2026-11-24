@@ -117,7 +117,8 @@
       "done": "已完成",
       "archived": "已歸檔",
       "status": "狀態"
-    }
+    },
+    "openDay": "{{date}}，查看這天的行程"
   },
   "places": {
     "eyebrow": "搜尋地點自動抓取資訊，並用可愛插圖分類",
@@ -544,6 +545,7 @@
     "train": "火車",
     "flight": "飛機",
     "book": "課本閱讀",
+    "celebrate": "慶祝",
     "default": "一般"
   },
   "subs": {

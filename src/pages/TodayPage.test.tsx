@@ -166,4 +166,33 @@ describe('TodayPage', () => {
     expect(screen.getByText(/07:00/)).toBeInTheDocument()
     expect(document.body.textContent).not.toMatch(/AM|PM|上午|下午/)
   })
+  it('時間軸不顯示批次新增自動加上的「批次建立」，自己寫的備註照常顯示', () => {
+    const d = toLocalISO()
+    useAppStore.setState({
+      events: [
+        { id: 'b1', title: '上班', dateISO: d, start: '09:00', end: '17:00', note: '批次建立' },
+        { id: 'b2', title: '値班', dateISO: d, start: '18:00', end: '19:00', note: 'Added in bulk' },
+        { id: 'n', title: '看牙醫', dateISO: d, start: '20:00', end: '20:30', note: '帶健保卡' },
+      ],
+    })
+    renderPage()
+    expect(document.body.textContent).not.toMatch(/批次建立|Added in bulk/)
+    expect(screen.getByText(/帶健保卡/)).toBeInTheDocument()
+    // 今天頁沒有批次新增的入口，資料也不變
+    expect(screen.queryByText('批次新增')).not.toBeInTheDocument()
+    expect(useAppStore.getState().events[0]!.note).toBe('批次建立')
+    fireEvent.click(screen.getByRole('button', { name: '一週' }))
+    expect(document.body.textContent).not.toMatch(/批次建立/)
+  })
+
+  it('選「慶祝」圖示存檔後，時間軸顯示慶祝圖示', () => {
+    renderPage()
+    fireEvent.click(screen.getByText('＋ 新增安排'))
+    const dialog = screen.getByRole('dialog')
+    fireEvent.change(within(dialog).getByLabelText(/要做什麼/), { target: { value: '小聚' } })
+    fireEvent.click(within(dialog).getByRole('radio', { name: '慶祝' }))
+    expect(within(dialog).getByRole('radio', { name: '慶祝' })).toHaveAttribute('aria-checked', 'true')
+    fireEvent.click(within(dialog).getByText('儲存'))
+    expect(useAppStore.getState().events[0]).toMatchObject({ title: '小聚', icon: 'celebrate' })
+  })
 })

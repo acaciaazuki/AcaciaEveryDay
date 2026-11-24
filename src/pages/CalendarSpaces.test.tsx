@@ -21,6 +21,13 @@ const renderPage = (path = '/calendar') =>
     </MemoryRouter>,
   )
 const today = toLocalISO()
+/** 月曆格子裡的行程標籤 */
+const chip = (id: string) => document.querySelector(`[role="gridcell"] [data-shared="${id}"]`)!
+/** 點今天的格子，打開「這一天」 */
+const openToday = () => {
+  fireEvent.click(screen.getAllByRole('gridcell').find((c) => c.getAttribute('aria-selected') === 'true')!)
+  return screen.getByRole('dialog')
+}
 
 describe('行事曆：共享空間', () => {
   beforeEach(async () => {
@@ -33,28 +40,28 @@ describe('行事曆：共享空間', () => {
     clearSpaces()
     renderPage()
     expect(screen.queryByRole('tablist', { name: '顯示哪些行程' })).not.toBeInTheDocument()
-    expect(screen.getAllByText('我的私人瑜珈').length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/我的私人瑜珈/).length).toBeGreaterThan(0)
   })
 
   it('全部：個人行程與共享行程一起顯示，並標出空間', () => {
     renderPage()
-    expect(screen.getAllByText('我的私人瑜珈').length).toBeGreaterThan(0)
-    expect(screen.getAllByText(SEEN.dinner).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/我的私人瑜珈/).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(new RegExp(SEEN.dinner)).length).toBeGreaterThan(0)
     expect(screen.getAllByText('陳家').length).toBeGreaterThan(0)
     // 媽媽只分享給小孩的驚喜，爸爸看不到
-    expect(screen.queryByText(SEEN.surprise)).not.toBeInTheDocument()
+    expect(screen.queryByText(new RegExp(SEEN.surprise))).not.toBeInTheDocument()
   })
 
   it('篩選某個空間：只顯示該空間，不顯示個人行程', () => {
     renderPage()
     const tabs = screen.getByRole('tablist', { name: '顯示哪些行程' })
     fireEvent.click(within(tabs).getByRole('tab', { name: /設計部/ }))
-    expect(screen.getAllByText(LEAK.merger).length).toBeGreaterThan(0)
-    expect(screen.queryByText('我的私人瑜珈')).not.toBeInTheDocument()
-    expect(screen.queryByText(SEEN.dinner)).not.toBeInTheDocument()
+    expect(screen.getAllByText(new RegExp(LEAK.merger)).length).toBeGreaterThan(0)
+    expect(screen.queryByText(/我的私人瑜珈/)).not.toBeInTheDocument()
+    expect(screen.queryByText(new RegExp(SEEN.dinner))).not.toBeInTheDocument()
     fireEvent.click(within(tabs).getByRole('tab', { name: '我的行事曆' }))
-    expect(screen.getAllByText('我的私人瑜珈').length).toBeGreaterThan(0)
-    expect(screen.queryByText(LEAK.merger)).not.toBeInTheDocument()
+    expect(screen.getAllByText(/我的私人瑜珈/).length).toBeGreaterThan(0)
+    expect(screen.queryByText(new RegExp(LEAK.merger))).not.toBeInTheDocument()
   })
 
   it('切換成小孩的視角：顯示唯讀提示，敏感內容不出現在畫面上', () => {
@@ -68,22 +75,27 @@ describe('行事曆：共享空間', () => {
     expect(screen.getAllByText(/外出/).length).toBeGreaterThan(0)
     expect(screen.getAllByText(/上班中/).length).toBeGreaterThan(0)
     expect(screen.getAllByText(/（已隱藏）/).length).toBeGreaterThan(0)
-    expect(screen.getAllByText('部分隱藏').length).toBeGreaterThan(0)
-    expect(screen.getAllByText(SEEN.surprise).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(new RegExp(SEEN.surprise)).length).toBeGreaterThan(0)
     // 預覽時沒有新增按鈕
     expect(screen.queryByText('＋ 新增事件')).not.toBeInTheDocument()
     // 忙閒區塊有明顯不同的樣式標記
     expect(document.querySelector('[data-shared="clinic"][data-access="busy"]')).not.toBeNull()
+    // 「這一天」的卡片標出部分隱藏，也不洩漏內容
+    const day = openToday()
+    expect(within(day).getByText('部分隱藏')).toBeInTheDocument()
+    expect(day.textContent).not.toMatch(leakRe)
+    fireEvent.keyDown(day, { key: 'Escape' })
 
     fireEvent.click(screen.getByRole('button', { name: '回到我的視角' }))
     expect(screen.queryByRole('status')).not.toBeInTheDocument()
-    expect(screen.getAllByText(LEAK.clinicTitle).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(new RegExp(LEAK.clinicTitle)).length).toBeGreaterThan(0)
   })
 
   it('預覽中點行程只開唯讀詳情，不會打開編輯表單', () => {
     useSpacesStore.getState().setViewer(U.kid)
     renderPage()
-    fireEvent.click(document.querySelector('ul [data-shared="dinner"]')!)
+    // 從「這一天」點進去：先收起這一天，只剩唯讀詳情
+    fireEvent.click(within(openToday()).getByText(SEEN.dinner).closest('button')!)
     const dialog = screen.getByRole('dialog')
     expect(within(dialog).getByRole('note')).toHaveTextContent('預覽其他成員的視角時只能查看')
     expect(within(dialog).queryByText('儲存')).not.toBeInTheDocument()
@@ -96,7 +108,7 @@ describe('行事曆：共享空間', () => {
     useSpacesStore.setState({ data: { ...data, items: [...data.items, momBusy] } })
     renderPage()
     expect(document.body.textContent).not.toMatch(/媽媽的私事|某某診所/)
-    fireEvent.click(document.querySelector('ul [data-shared="mom-busy"]')!)
+    fireEvent.click(chip('mom-busy'))
     const dialog = screen.getByRole('dialog')
     expect(within(dialog).getByRole('note')).toHaveTextContent('只顯示忙碌時段')
     expect(within(dialog).queryByText('儲存')).not.toBeInTheDocument()
@@ -151,7 +163,7 @@ describe('行事曆：共享空間', () => {
     act(() => {
       useSpacesStore.getState().setViewer(U.kid)
     })
-    expect(screen.getAllByText('準備媽媽的禮物').length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/準備媽媽的禮物/).length).toBeGreaterThan(0)
   })
 
   it('欄位遮罩：選了標題與備註，其他成員看到「已隱藏」', () => {
@@ -172,7 +184,7 @@ describe('行事曆：共享空間', () => {
 
   it('編輯自己的共享行程可以改隱私；編輯別人的行程時隱私設定鎖住', () => {
     renderPage()
-    fireEvent.click(document.querySelector('ul [data-shared="clinic"]')!)
+    fireEvent.click(chip('clinic'))
     let dialog = screen.getByRole('dialog')
     expect(within(dialog).getByText('共享空間：陳家')).toBeInTheDocument()
     expect(within(dialog).queryByLabelText('放在哪裡')).not.toBeInTheDocument()
@@ -181,7 +193,7 @@ describe('行事曆：共享空間', () => {
     fireEvent.click(within(dialog).getByText('儲存'))
     expect(useSpacesStore.getState().data.items.find((i) => i.id === 'clinic')!.visibility.mode).toBe('private')
 
-    fireEvent.click(document.querySelector('ul [data-shared="dinner"]')!)
+    fireEvent.click(chip('dinner'))
     dialog = screen.getByRole('dialog')
     expect(within(dialog).getByText('只有建立者可以變更誰看得到')).toBeInTheDocument()
     expect(within(dialog).getByRole('radio', { name: '只有自己' })).toBeDisabled()
@@ -193,10 +205,10 @@ describe('行事曆：共享空間', () => {
 
   it('刪除共享行程是軟刪除', () => {
     renderPage()
-    fireEvent.click(document.querySelector('ul [data-shared="clinic"]')!)
+    fireEvent.click(chip('clinic'))
     fireEvent.click(within(screen.getByRole('dialog')).getByText('刪除'))
     expect(useSpacesStore.getState().data.items.find((i) => i.id === 'clinic')!.deletedAt).not.toBeNull()
-    expect(screen.queryByText(LEAK.clinicTitle)).not.toBeInTheDocument()
+    expect(screen.queryByText(new RegExp(LEAK.clinicTitle))).not.toBeInTheDocument()
   })
 
   it('搜尋結果的連結 ?open=<id> 可以開啟共享行程；預覽中只開唯讀詳情', () => {
