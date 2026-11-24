@@ -122,7 +122,25 @@
       "archived": "已歸檔",
       "status": "狀態"
     },
-    "openDay": "{{date}}，查看這天的行程"
+    "openDay": "{{date}}，查看這天的行程",
+    "manage": {
+      "start": "批次管理",
+      "done": "完成",
+      "hint": "點行程或日期旁的勾選框來選取。忙碌投射、唯讀、購物連動與國定假日不能選取。",
+      "bar": "批次操作",
+      "selected": "已選 {{count}} 項",
+      "delete": "批次刪除",
+      "moveTo": "移至",
+      "confirmMove": "確認移動",
+      "clear": "清除選取",
+      "select": "選取「{{title}}」",
+      "selectDay": "全選 {{date}}",
+      "selectAllDay": "全選當天",
+      "deleted": "已刪除 {{count}} 項行程",
+      "moved": "已成功將 {{count}} 項行程移至【{{name}}】",
+      "alreadyThere": "選取的行程已經在【{{name}}】",
+      "undone": "已復原"
+    }
   },
   "places": {
     "title": "最愛地點",

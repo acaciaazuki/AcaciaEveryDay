@@ -122,7 +122,25 @@
       "archived": "Archivé",
       "status": "Statut"
     },
-    "openDay": "{{date}} : voir ce jour"
+    "openDay": "{{date}} : voir ce jour",
+    "manage": {
+      "start": "Gérer",
+      "done": "Terminé",
+      "hint": "Touchez un événement ou la case à côté d’une date pour sélectionner. Les créneaux occupés, éléments en lecture seule, achats liés et jours fériés ne sont pas sélectionnables.",
+      "bar": "Actions groupées",
+      "selected": "{{count}} sélectionné(s)",
+      "delete": "Supprimer",
+      "moveTo": "Déplacer vers",
+      "confirmMove": "Déplacer",
+      "clear": "Effacer",
+      "select": "Sélectionner « {{title}} »",
+      "selectDay": "Tout sélectionner le {{date}}",
+      "selectAllDay": "Toute la journée",
+      "deleted": "{{count}} événements supprimés",
+      "moved": "{{count}} événements déplacés vers [{{name}}]",
+      "alreadyThere": "Les événements choisis sont déjà dans [{{name}}]",
+      "undone": "Annulé"
+    }
   },
   "places": {
     "title": "Lieux favoris",

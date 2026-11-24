@@ -122,7 +122,25 @@
       "archived": "Archiviert",
       "status": "Status"
     },
-    "openDay": "{{date}}: diesen Tag ansehen"
+    "openDay": "{{date}}: diesen Tag ansehen",
+    "manage": {
+      "start": "Verwalten",
+      "done": "Fertig",
+      "hint": "Tippe auf Termine oder das Kästchen neben einem Datum. Belegt-Blöcke, schreibgeschützte, mit Einkäufen verknüpfte Termine und Feiertage sind nicht auswählbar.",
+      "bar": "Sammelaktionen",
+      "selected": "{{count}} ausgewählt",
+      "delete": "Löschen",
+      "moveTo": "Verschieben nach",
+      "confirmMove": "Verschieben",
+      "clear": "Auswahl aufheben",
+      "select": "„{{title}}“ auswählen",
+      "selectDay": "Alle am {{date}} auswählen",
+      "selectAllDay": "Ganzen Tag auswählen",
+      "deleted": "{{count}} Termine gelöscht",
+      "moved": "{{count}} Termine nach [{{name}}] verschoben",
+      "alreadyThere": "Die ausgewählten Termine sind bereits in [{{name}}]",
+      "undone": "Rückgängig gemacht"
+    }
   },
   "places": {
     "title": "Lieblingsorte",

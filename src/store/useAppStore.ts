@@ -28,6 +28,8 @@ interface Actions {
   removeEvent: (id: string) => void
   /** 一次刪除多筆（批次建立的復原） */
   removeEvents: (ids: readonly string[]) => void
+  /** 把刪掉的行程原樣放回（批次刪除、批次移動的復原）；已經存在的 id 略過 */
+  restoreEvents: (events: readonly CalendarEvent[]) => void
   addPlace: (input: PlaceInput) => void
   updatePlace: (id: string, patch: Partial<PlaceInput>) => void
   removePlace: (id: string) => void
@@ -137,6 +139,11 @@ export const useAppStore = create<AppState>()(
       updateEvent: (id, patch) =>
         setState((s) => ({ events: s.events.map((x) => (x.id === id ? { ...x, ...patch } : x)), ...touch() })),
       removeEvent: (id) => setState((s) => ({ events: s.events.filter((x) => x.id !== id), ...touch() })),
+      restoreEvents: (events) =>
+        setState((s) => {
+          const have = new Set(s.events.map((x) => x.id))
+          return { events: [...s.events, ...events.filter((x) => !have.has(x.id))], ...touch() }
+        }),
       removeEvents: (ids) => {
         const drop = new Set(ids)
         setState((s) => ({ events: s.events.filter((x) => !drop.has(x.id)), ...touch() }))
