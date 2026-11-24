@@ -43,7 +43,8 @@ describe('使用條款同意面板', () => {
   it('第一次使用：擋住整個 App，可切換閱讀兩份文件，Esc 關不掉', async () => {
     await load()
     renderApp()
-    const dialog = await screen.findByRole('dialog', { name: '使用前請先閱讀並同意' })
+    // 這個測試平常約 0.7 秒，整套平行執行時偶爾超過預設的 1 秒等待上限，放寬到 3 秒
+    const dialog = await screen.findByRole('dialog', { name: '使用前請先閱讀並同意' }, { timeout: 3000 })
     expect(screen.queryByText('今天頁內容')).not.toBeInTheDocument()
     // 預設先看隱私權政策
     expect(screen.getByRole('tab', { name: '隱私權政策' })).toHaveAttribute('aria-selected', 'true')

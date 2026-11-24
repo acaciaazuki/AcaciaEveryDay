@@ -104,6 +104,47 @@ src/
 
 可選的環境變數：`VITE_GOOGLE_CLIENT_ID`、`VITE_PLACES_PROXY_URL`。
 
+## iOS App（Capacitor）
+
+網頁版之外，同一份程式可以用 [Capacitor](https://capacitorjs.com/) 包成 iOS App（設定在 `capacitor.config.ts`）。
+
+### 資料存在哪裡
+
+| 資料 | 網頁版 | iOS App |
+|---|---|---|
+| 主資料、共享空間 | IndexedDB | `Library/acacia/state/` 的 JSON 檔 |
+| 主資料快照 | IndexedDB（acacia-backups） | `Library/acacia/backups/` |
+| 共享空間快照 | IndexedDB（acacia-spaces-backups） | `Library/acacia/spacesBackups/` |
+| 使用條款同意紀錄 | IndexedDB（acacia-consent） | Preferences（UserDefaults） |
+
+- iOS 不用 WebView 的 IndexedDB：系統空間不足時可能清掉 WebView 的網站資料
+- 寫入時先寫暫存檔再改名，寫到一半當機也不會留下半個檔案；檔案損毀時另存成 `.corrupt-<時間>` 備查
+- `Library/` 不會出現在「檔案」App，但會跟著 iPhone 的 iCloud 備份，換機時資料能跟著回來
+- 第一次開啟 App 時，若 WebView 的 IndexedDB 有舊資料（早期測試版），會自動搬到檔案並刪掉舊資料，只做一次
+- 程式只透過 `src/adapters/kv/` 與 `src/adapters/consentStorage.ts` 讀寫，store 與畫面不需要知道是哪一種
+
+### 在 Mac 上建置
+
+需要 Xcode。第一次：
+
+```bash
+npm install
+npm run build
+npx cap add ios
+```
+
+產生的 `ios/` 原生專案要 commit 進 repo。之後每次修改網頁程式：
+
+```bash
+npm run ios:sync
+```
+
+```bash
+npm run ios:open
+```
+
+目前 iOS App 還不能用 Google 登入（Google 不允許在 App 內嵌的網頁做 OAuth，之後要改用原生登入外掛），所以 Drive 同步與雲端備份在 App 裡暫時無法使用；本機資料、快照與其他功能都正常。
+
 ## 從舊版搬資料
 
 在新版「設定」頁匯入舊版匯出的 JSON。舊版分類（例如「食」「咖啡」）會自動轉成代碼，自訂的記帳類別會保留原文字。
