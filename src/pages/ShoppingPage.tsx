@@ -122,7 +122,8 @@ export function ShoppingPage() {
         {shopping.length === 0 ? (
           <p className="py-4 text-center text-muted">{t('shopping.empty')}</p>
         ) : (
-          <ul className="grid gap-2.5">
+          // 跟「庫存與提醒」的用品清單一樣：寬螢幕兩欄、手機單欄
+          <ul className="grid gap-3 min-[1001px]:grid-cols-2" aria-label={t('shopping.list')}>
             {shopping.map((s) => {
               const st = EXPENSE_STYLE[s.cat]
               const cur = expenseCurrency(s, currency)
@@ -132,7 +133,7 @@ export function ShoppingPage() {
               return (
                 <li
                   key={s.id}
-                  className={`flex items-center justify-between gap-3 rounded-xl border border-l-4 border-line p-3 transition hover:-translate-y-px ${s.done ? 'opacity-60 grayscale' : ''}`}
+                  className={`flex min-w-0 items-center justify-between gap-3 rounded-xl border border-l-4 border-line p-4 transition hover:-translate-y-px ${s.done ? 'opacity-60 grayscale' : ''}`}
                   style={{ background: custom ? s.bgColor : st.bg, color: textColor, borderLeftColor: st.fg }}
                 >
                   <div className="flex min-w-0 items-center gap-2.5">
