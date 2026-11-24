@@ -75,11 +75,11 @@ export function ShoppingPage() {
     <>
       <PageHead eyebrow={t('shopping.eyebrow')} title={t('shopping.title')} actions={
           <>
-            <Button variant="ghost" className="inline-flex items-center gap-1" onClick={() => setRecView('import')}>
-              <Icon name="recurring" className="size-[1.5em]" />
+            <Button variant="ghost" size="page" className="inline-flex items-center gap-1" onClick={() => setRecView('import')}>
+              <Icon name="recurring" className="-my-1 size-[1.5em]" />
               {t('recurring.button')}
             </Button>
-            <Button onClick={() => setEditing('new')}>{t('shopping.add')}</Button>
+            <Button size="page" onClick={() => setEditing('new')}>{t('shopping.add')}</Button>
           </>
         }
       />

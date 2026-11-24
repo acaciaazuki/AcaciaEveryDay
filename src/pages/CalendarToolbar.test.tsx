@@ -17,10 +17,10 @@ describe('行事曆頂部工具列', () => {
     loadSeed()
   })
 
-  it('頂部工具列放大：標題、按鈕、空間篩選、檢視身份都用較大的字級（跟著字體設定縮放）', () => {
+  it('頂部工具列：標題與其他頁 PageHead 主標題同字級，按鈕、空間篩選、檢視身份用較大的字級（跟著字體設定縮放）', () => {
     renderPage()
-    expect(screen.getByRole('heading', { level: 1, name: '行事曆' })).toHaveClass('text-[length:calc(30px*var(--fs))]')
-    for (const name of ['國定假日', '批次新增', '＋ 新增事件']) expect(screen.getByRole('button', { name })).toHaveClass('text-[length:calc(14px*var(--fs))]!')
+    expect(screen.getByRole('heading', { level: 1, name: '行事曆' })).toHaveClass('text-2xl')
+    for (const name of ['國定假日', '批次新增', '＋ 新增事件']) expect(screen.getByRole('button', { name })).toHaveClass('px-5', 'py-3', 'text-[length:calc(14px*var(--fs))]', 'whitespace-nowrap')
     const tabs = screen.getByRole('tablist', { name: '顯示哪些行程' })
     for (const tab of within(tabs).getAllByRole('tab')) expect(tab).toHaveClass('text-[length:calc(14px*var(--fs))]')
     expect(screen.getByLabelText('檢視身份')).toHaveClass('text-[length:calc(14px*var(--fs))]')

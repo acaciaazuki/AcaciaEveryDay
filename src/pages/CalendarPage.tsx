@@ -29,7 +29,6 @@ const MAX_CHIPS = 6
 const NO_SHOPPING = new Map()
 const NO_EVENTS: CalendarEvent[] = []
 /** 頂部工具列的按鈕：比預設大一級（跟著設定裡的字體大小縮放） */
-const TOOLBAR_BTN = 'px-5! py-3! text-[length:calc(14px*var(--fs))]!'
 const isShared = (x: CalendarEvent | SharedEntry): x is SharedEntry => 'access' in x
 
 export function CalendarPage() {
@@ -90,19 +89,18 @@ export function CalendarPage() {
       <PageHead
         eyebrow={t('calendar.eyebrow')}
         title={t('calendar.title')}
-        titleClassName="text-[length:calc(30px*var(--fs))]"
         eyebrowClassName="text-[length:calc(12px*var(--fs))]"
         actions={
           // 預覽其他成員的視角時只能看，不顯示新增按鈕
           vis.isSelf && (
             <>
-              <Button variant="ghost" className={TOOLBAR_BTN} onClick={() => setHolidayOpen(true)}>
+              <Button variant="ghost" size="page" onClick={() => setHolidayOpen(true)}>
                 {t('holidays.open')}
               </Button>
-              <Button variant="ghost" className={TOOLBAR_BTN} onClick={() => setBatchOpen(true)}>
+              <Button variant="ghost" size="page" onClick={() => setBatchOpen(true)}>
                 {t('calendar.batch')}
               </Button>
-              <Button className={TOOLBAR_BTN} onClick={() => setEditing('new')}>
+              <Button size="page" onClick={() => setEditing('new')}>
                 {t('calendar.add')}
               </Button>
             </>

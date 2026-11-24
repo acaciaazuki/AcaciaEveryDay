@@ -34,7 +34,7 @@ export function TasksPage() {
 
   return (
     <>
-      <PageHead eyebrow={t('tasks.eyebrow')} title={t('tasks.title')} actions={<Button onClick={() => setEditing('new')}>{t('tasks.add')}</Button>} />
+      <PageHead eyebrow={t('tasks.eyebrow')} title={t('tasks.title')} actions={<Button size="page" onClick={() => setEditing('new')}>{t('tasks.add')}</Button>} />
 
       <LowStockSection />
 
