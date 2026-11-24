@@ -84,3 +84,18 @@ export function ViewerBanner() {
     </div>
   )
 }
+
+/**
+ * 本機的共享行事曆資料來自較新版本的 App：所有頁面上方提醒「已暫停修改與同步，請先更新 App」。
+ * 資料原封不動留在這台裝置上，更新 App 後就能正常讀取。
+ */
+export function SpacesBlockedBanner() {
+  const { t } = useTranslation()
+  const blocked = useSpacesStore((s) => s.blockedReason !== null)
+  if (!blocked) return null
+  return (
+    <div role="alert" data-spaces-blocked className="mb-4 rounded-(--radius-card) border border-[#f0d4c8] bg-[#fff6f2] px-4 py-2.5 text-xs leading-relaxed text-[#a24f37]">
+      {t('sharing.blockedBanner')}
+    </div>
+  )
+}

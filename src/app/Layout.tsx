@@ -7,7 +7,7 @@ import type { IconName } from '../core/icons'
 import { BootSplash, BrandLogo } from '../components/BrandMark'
 import { CommandPalette } from '../components/CommandPalette'
 import { ReminderBanner } from '../components/ReminderBanner'
-import { ViewerBanner } from '../components/SpaceSwitcher'
+import { SpacesBlockedBanner, ViewerBanner } from '../components/SpaceSwitcher'
 import { LicensesLink } from '../components/LicensesLink'
 import { PrivacyLink } from '../components/PrivacyLink'
 import { SyncPanel } from '../components/SyncPanel'
@@ -161,6 +161,7 @@ function AppShell() {
           <Icon name="search" className="size-[1.7em]" />
         </button>
         {/* 預覽其他成員的視角時，每一頁上方都提醒目前是唯讀預覽 */}
+        <SpacesBlockedBanner />
         <ViewerBanner />
         <Outlet />
       </main>

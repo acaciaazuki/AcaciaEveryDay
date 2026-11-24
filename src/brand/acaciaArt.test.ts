@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { appleTouchArt, branchArt, countFlowers, faviconArt, maskableArt, splashSvg, sprigArt, toSvg, type Art } from './acaciaArt'
+import { appleTouchArt, branchArt, countFlowers, faviconArt, iconVersion, maskableArt, splashSvg, sprigArt, toSvg, type Art } from './acaciaArt'
 
 // 文字檔讀原始內容；圖檔讀成 base64 data URL 再解碼，檢查檔頭
 const texts = import.meta.glob(['../../public/*.{svg,webmanifest}', '../../index.html'], { query: '?raw', import: 'default', eager: true }) as Record<string, string>
@@ -127,5 +127,12 @@ describe('public/ 圖檔與設定', () => {
     const manifest = text('public/manifest.webmanifest')
     expect(manifest).toContain(`?v=${[...versions][0]}`)
     for (const h of hrefs) expect(exists(`public${h.split('?')[0]}`)).toBe(true)
+  })
+
+  it('圖示快取版本：index.html 與 manifest 的 ?v= 全部等於由向量內容算出的版本（改了形狀卻忘了跑 npm run icons 會失敗）', () => {
+    const versions = [texts['../../index.html'], texts['../../public/manifest.webmanifest']].flatMap((t) => [...t.matchAll(/\?v=([0-9a-z]+)/g)].map((m) => m[1]))
+    expect(versions.length).toBeGreaterThanOrEqual(9)
+    expect(new Set(versions)).toEqual(new Set([iconVersion()]))
+    expect(iconVersion()).toMatch(/^[0-9a-f]{8}$/)
   })
 })

@@ -45,6 +45,11 @@ const toInfo = (e: unknown): SyncErrorInfo =>
 export const useSpacesSyncStore = create<SpacesSyncState>()((set, get) => {
   const once = async () => {
     const spaces = useSpacesStore.getState()
+    // 本機資料來自較新版本：不拉也不推，提示更新 App
+    if (spaces.blockedReason) {
+      set({ state: 'error', error: { code: 'update_required', message: spaces.blockedReason, retryable: false } })
+      return
+    }
     if (!spaces.cloudSync || !useSyncStore.getState().token) return
     set({ state: 'syncing', error: null })
     try {

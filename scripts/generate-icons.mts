@@ -5,12 +5,13 @@
  *   public/icon-maskable-192.png、icon-maskable-512.png（淺色底，purpose maskable）
  *   public/apple-touch-icon.png（180，白底）
  *   index.html 的載入畫面（#boot-splash）
+ *   index.html 與 public/manifest.webmanifest 的 ?v=（圖示快取版本，由向量內容算出，不用手動加一）
  *
  * 執行：npm run icons（PNG 用 Playwright 的 Chromium 轉檔，需要先裝好 Playwright：npx playwright install chromium）
  */
 import { readFileSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
-import { appleTouchArt, faviconArt, maskableArt, splashSvg, sprigArt, toSvg, type Art } from '../src/brand/acaciaArt.ts'
+import { appleTouchArt, faviconArt, iconVersion, maskableArt, splashSvg, sprigArt, toSvg, type Art } from '../src/brand/acaciaArt.ts'
 
 const root = new URL('..', import.meta.url)
 const out = (p: string) => new URL(p, root)
@@ -78,5 +79,11 @@ const htmlPath = out('index.html')
 const html = readFileSync(htmlPath, 'utf8')
 const next = html.replace(/(<!-- boot-splash:start -->)[\s\S]*?(<!-- boot-splash:end -->)/, `$1${splashSvg()}$2`)
 if (next === html && !html.includes(splashSvg())) throw new Error('index.html 找不到 boot-splash 標記')
-writeFileSync(htmlPath, next)
-console.log('圖示已更新')
+
+// 圖示快取版本：index.html 與 manifest 裡所有 ?v= 換成由向量內容算出的版本
+const version = iconVersion()
+const withVersion = (text: string) => text.replace(/\?v=[0-9a-z]+/g, `?v=${version}`)
+writeFileSync(htmlPath, withVersion(next))
+const manifestPath = out('public/manifest.webmanifest')
+writeFileSync(manifestPath, withVersion(readFileSync(manifestPath, 'utf8')))
+console.log(`圖示已更新（快取版本 ?v=${version}）`)
