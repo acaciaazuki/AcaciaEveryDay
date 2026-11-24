@@ -62,13 +62,13 @@ export function visibleCalendar(data: SharedCalendarData, selfId: string, viewer
   const ownProjection = ownProjectionEntry(data, viewerId)
   if (filter === 'personal') {
     // 「我的行事曆」只屬於本人：只有投射到這裡的自己的忙碌區塊
-    const blocks = isSelf ? projectBusyBlocks({ rules: data.busyProjectionRules.filter((r) => r.userId === viewerId), spaces: data.spaces, items: data.items, targetSpaceId: PERSONAL_CALENDAR_ID }) : []
+    const blocks = isSelf ? projectBusyBlocks({ rules: data.busyProjectionRules.filter((r) => r.userId === viewerId), spaces: data.spaces, items: data.items, personalSlots: data.personalBusySlots, targetSpaceId: PERSONAL_CALENDAR_ID }) : []
     const space = { id: PERSONAL_CALENDAR_ID, name: '', kind: 'personal' as const }
     return { viewerId, isSelf, showPersonal, shared: sortEntries(blocks.map((b) => ownProjection(b, space))) }
   }
 
   const spaces = data.spaces.filter((s) => roleOf(s, viewerId) && (filter === 'all' || s.id === filter))
-  const projected = spaces.flatMap((s) => projectBusyBlocks({ rules: data.busyProjectionRules, spaces: data.spaces, items: data.items, targetSpaceId: s.id }))
+  const projected = spaces.flatMap((s) => projectBusyBlocks({ rules: data.busyProjectionRules, spaces: data.spaces, items: data.items, personalSlots: data.personalBusySlots, targetSpaceId: s.id }))
   const candidates = [...data.items, ...projected.filter((b) => b.createdBy !== viewerId)]
   const own = filter === 'all' ? [] : projected.filter((b) => b.createdBy === viewerId)
 

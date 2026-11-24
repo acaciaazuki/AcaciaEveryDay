@@ -102,6 +102,7 @@ function projectedInto(data: SharedCalendarData, spaceId: string) {
     rules: data.busyProjectionRules.filter((r) => r.userId === data.ownerId),
     spaces: data.spaces,
     items: data.items,
+    personalSlots: data.personalBusySlots,
     targetSpaceId: spaceId,
     includeDeleted: true,
   })

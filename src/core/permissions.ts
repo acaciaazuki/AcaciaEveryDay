@@ -7,6 +7,7 @@ import {
   type BusyProjectionRule,
   type MaskableField,
   type MemberRole,
+  type PersonalBusySlot,
   type SharedCalendarItem,
   type SharedCalendarItemInput,
   type Space,
@@ -79,7 +80,11 @@ function baseOf(item: SharedCalendarItem) {
   }
 }
 
-/** 忙閒檢視：只留下時間，標題／地點／備註／細節／類型／圖示／顏色全部移除 */
+/**
+ * 忙閒檢視：只留下時間，標題／地點／備註／細節／類型／圖示／顏色全部移除。
+ * 投射產生的忙碌區塊保留「是投射」與顯示方式（只顯示時間時畫面才知道不顯示文字）；
+ * 規則 id 換成區塊自己的 id，其他成員無法把不同空間裡的區塊串成同一條規則。
+ */
 export function toBusyView(item: SharedCalendarItem): SharedCalendarItem {
   return {
     ...baseOf(item),
@@ -90,6 +95,7 @@ export function toBusyView(item: SharedCalendarItem): SharedCalendarItem {
     details: {},
     visibility: viewerVisibility(item.visibility, { mode: 'busy_only' }),
     redaction: 'busy',
+    ...(item.projection && { projection: item.projection.display ? { ruleId: item.id, display: item.projection.display } : { ruleId: item.id } }),
   }
 }
 
@@ -233,6 +239,8 @@ export interface ProjectBusyBlocksOptions {
   rules: readonly BusyProjectionRule[]
   spaces: readonly Space[]
   items: readonly SharedCalendarItem[]
+  /** 「我的行事曆」的忙碌影子（SharedCalendarData.personalBusySlots）；來源是「我的行事曆」的規則用它產生區塊 */
+  personalSlots?: readonly PersonalBusySlot[]
   /** 目標行事曆：空間 id，或 PERSONAL_CALENDAR_ID（「我的行事曆」，只有規則擁有者自己看得到） */
   targetSpaceId: string
   /** 只投射這段日期（含頭尾，YYYY-MM-DD）內的行程 */
@@ -250,10 +258,11 @@ export interface ProjectBusyBlocksOptions {
  * - 產生的區塊只有時間與規則的 label／顯示方式，不帶標題、地點、備註、細節、類型、來源空間或來源行程 id
  * - 來源行程的 hiddenUserIds 會沿用：被隱藏的人連忙碌區塊也看不到
  * - 沒有時間的整天行程只在規則開啟 includeAllDay 時投射
- * - 來源是「我的行事曆」的規則，個人行程在第 2 階段才會接進來；目前不產生區塊
+ * - 來源是「我的行事曆」的規則：用 personalSlots（個人行程的忙碌影子）產生區塊；個人行程沒有隱私等級與類型，
+ *   kinds、includePrivate 不適用
  */
 export function projectBusyBlocks(options: ProjectBusyBlocksOptions): SharedCalendarItem[] {
-  const { rules, spaces, items, targetSpaceId, range, includeDeleted = false } = options
+  const { rules, spaces, items, personalSlots = [], targetSpaceId, range, includeDeleted = false } = options
   const spaceById = new Map(spaces.map((s) => [s.id, s]))
   const targetIsPersonal = targetSpaceId === PERSONAL_CALENDAR_ID
   if (!targetIsPersonal && !spaceById.get(targetSpaceId)) return []
@@ -266,7 +275,37 @@ export function projectBusyBlocks(options: ProjectBusyBlocksOptions): SharedCale
     if (!live && !(retired && includeDeleted)) continue
     const active = isRuleActive(rule) && live
     if (!active && !includeDeleted) continue
-    if (rule.sourceId === PERSONAL_CALENDAR_ID) continue
+    if (rule.sourceId === PERSONAL_CALENDAR_ID) {
+      for (const slot of personalSlots) {
+        if (!slot.start && !rule.includeAllDay) continue
+        if (range && (slot.dateISO > range.to || slot.dateISO < range.from)) continue
+        const removed = slot.deletedAt !== null || !active
+        if (removed && !includeDeleted) continue
+        const updatedAt = Math.max(slot.updatedAt, rule.updatedAt)
+        out.push({
+          id: blockIdFor(rule, `${PERSONAL_CALENDAR_ID}:${slot.id}`, targetSpaceId),
+          spaceId: targetSpaceId,
+          kind: 'event',
+          title: '',
+          dateISO: slot.dateISO,
+          endDateISO: '',
+          start: slot.start,
+          end: slot.end,
+          location: '',
+          note: '',
+          details: {},
+          visibility: { mode: 'busy_only', allowedUserIds: [], hiddenUserIds: [], busyLabel: rule.display === 'busy' ? rule.label : '', maskedFields: [] },
+          createdBy: rule.userId,
+          createdAt: slot.updatedAt,
+          version: slot.version + rule.revision + (active ? 0 : 1),
+          updatedAt,
+          updatedBy: rule.userId,
+          deletedAt: removed ? (slot.deletedAt ?? updatedAt) : null,
+          projection: rule.display === 'busy' ? { ruleId: rule.id } : { ruleId: rule.id, display: rule.display },
+        })
+      }
+      continue
+    }
     const source = spaceById.get(rule.sourceId)
     if (!source || !roleOf(source, rule.userId)) continue
 
