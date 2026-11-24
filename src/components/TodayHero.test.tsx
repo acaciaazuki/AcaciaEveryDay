@@ -41,27 +41,28 @@ describe('今天頁的問候與概覽橫幅', () => {
     expect(within(hero).getByRole('button', { name: '＋ 新增安排' })).toBeInTheDocument()
   })
 
-  it('寬螢幕一列三塊；平板與一般筆電可換行（按鈕放不下時換到下一列），摘要在最下面；手機直向堆疊', () => {
+  it('分成兩層：工具列（日期切換｜按鈕）與內容（天氣圖示｜問候、標語、摘要）', () => {
     setup()
     const hero = screen.getByRole('region', { name: '晚安' })
-    expect(hero).toHaveClass('grid', 'min-[681px]:flex', 'min-[681px]:flex-wrap', 'min-[1280px]:grid', 'min-[1280px]:grid-cols-[auto_minmax(0,1fr)_auto]')
-    expect(hero.children).toHaveLength(3)
-    const [, summary, actions] = [...hero.children]
-    expect(summary).toHaveClass('min-[681px]:order-3', 'min-[681px]:basis-full', 'min-[1280px]:col-start-2', 'min-[1280px]:border-l')
-    expect(actions).toHaveClass('min-[681px]:order-2', 'min-[681px]:ml-auto', 'min-[1280px]:col-start-3')
+    const toolbar = hero.querySelector('[data-hero-toolbar]') as HTMLElement
+    const body = hero.querySelector('[data-hero-body]') as HTMLElement
+    expect([...hero.children]).toEqual([toolbar, body])
+    // 工具列：日期在左、按鈕在右，窄螢幕可以換行
+    expect(toolbar).toHaveClass('flex', 'flex-wrap', 'justify-between')
+    expect(within(toolbar).getByRole('group', { name: '切換日期' })).toBeInTheDocument()
+    expect(within(toolbar).getByRole('button', { name: '＋ 新增安排' })).toBeInTheDocument()
+    // 內容：天氣圖示在左，右邊由上而下是問候、標語、說明、膠囊
+    expect(body.firstElementChild!.querySelector('svg')).not.toBeNull()
+    const order = [...body.lastElementChild!.children].map((el) => el.tagName)
+    expect(order).toEqual(['H1', 'H2', 'P', 'UL'])
   })
 
-  it('‹ 日期 › 是不換行的一組；天氣圖示跟日期、問候放在一起', () => {
+  it('‹ 日期 › 是不換行的一組', () => {
     setup()
-    const nav = screen.getByRole('group', { name: '切換日期' })
     const trio = screen.getByRole('button', { name: '往前' }).parentElement!
     expect(trio).toHaveClass('whitespace-nowrap')
     expect(trio).toHaveTextContent('2026年11月24日 星期二')
     expect(within(trio).getByRole('button', { name: '往後' })).toBeInTheDocument()
-    // 日期列 → 日期與問候 → 左側一組（含天氣圖示）
-    const left = nav.parentElement!.parentElement!
-    expect(left.querySelector('[aria-hidden] svg')).not.toBeNull()
-    expect(within(left as HTMLElement).getByRole('heading', { level: 1 })).toBeInTheDocument()
   })
 
   it('前後切換日期；不在今天時才顯示「回到今天」', () => {
