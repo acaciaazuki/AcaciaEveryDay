@@ -1,9 +1,10 @@
-import { del, get, set as idbSet } from 'idb-keyval'
 import { create } from 'zustand'
+import { CONSENT_KEY } from '../adapters/consentKey'
+import { clearConsent, loadConsent, saveConsent } from '../adapters/consentStorage'
 import { makeRecord, parseRecord, pendingDocs, type ConsentDoc, type ConsentRecord } from '../core/consent'
 
-/** IndexedDB 裡存同意紀錄的 key */
-export const CONSENT_KEY = 'acacia-consent'
+/** 同意紀錄的 key（網頁版 IndexedDB、iOS App Preferences，見 adapters/consentStorage） */
+export { CONSENT_KEY }
 
 export type ConsentStatus = 'loading' | 'required' | 'accepted'
 
@@ -31,7 +32,7 @@ export const useConsentStore = create<ConsentState>()((set) => ({
   load: async () => {
     let raw: unknown = null
     try {
-      raw = await get(CONSENT_KEY)
+      raw = await loadConsent()
     } catch {
       /* 讀不到（例如瀏覽器禁止 IndexedDB）就當作沒同意過 */
     }
@@ -42,14 +43,14 @@ export const useConsentStore = create<ConsentState>()((set) => ({
     // 先放行再寫入：寫入失敗（無痕模式等）這次仍可使用，下次開啟會再詢問
     set(fromRecord(record))
     try {
-      await idbSet(CONSENT_KEY, record)
+      await saveConsent(record)
     } catch (e) {
       console.error('同意紀錄寫入失敗', e)
     }
   },
   reset: async () => {
     try {
-      await del(CONSENT_KEY)
+      await clearConsent()
     } catch {
       /* 忽略 */
     }

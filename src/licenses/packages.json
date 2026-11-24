@@ -200,6 +200,65 @@
   "textId": "d9d8e8cbcb"
  },
  {
+  "name": "@capacitor/cli",
+  "version": "8.6.2",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2017-present Drifty Co.",
+  "repository": "https://github.com/ionic-team/capacitor",
+  "textId": "aae5baa9aa"
+ },
+ {
+  "name": "@capacitor/core",
+  "version": "8.6.2",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "runtime",
+  "copyright": "Copyright (c) 2017-present Drifty Co.",
+  "repository": "https://github.com/ionic-team/capacitor",
+  "textId": "aae5baa9aa"
+ },
+ {
+  "name": "@capacitor/filesystem",
+  "version": "8.1.5",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "runtime",
+  "copyright": "Copyright (c) 2025 Ionic",
+  "repository": "https://github.com/ionic-team/capacitor-filesystem",
+  "textId": "b095754311"
+ },
+ {
+  "name": "@capacitor/ios",
+  "version": "8.6.2",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "runtime",
+  "copyright": "Copyright (c) 2017-present Drifty Co.",
+  "repository": "https://github.com/ionic-team/capacitor",
+  "textId": "aae5baa9aa"
+ },
+ {
+  "name": "@capacitor/preferences",
+  "version": "8.0.1",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "runtime",
+  "copyright": "Copyright 2020-present Ionic",
+  "repository": "https://github.com/ionic-team/capacitor-plugins",
+  "textId": "823eb4573a"
+ },
+ {
+  "name": "@capacitor/synapse",
+  "version": "1.0.4",
+  "license": "ISC",
+  "category": "permissive",
+  "scope": "runtime",
+  "copyright": "Copyright (c) 2025 Ionic",
+  "textId": "b095754311"
+ },
+ {
   "name": "@emnapi/core",
   "version": "1.11.3",
   "license": "MIT",
@@ -285,6 +344,105 @@
   "copyright": "Copyright (c) 2023 Hyunbin Seo",
   "repository": "https://github.com/hyunbinseo/holidays-kr",
   "textId": "bbe95f0890"
+ },
+ {
+  "name": "@ionic/cli-framework-output",
+  "version": "2.2.8",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2019 Drifty Co",
+  "repository": "https://github.com/ionic-team/ionic-cli",
+  "textId": "e150f3f0e5"
+ },
+ {
+  "name": "@ionic/utils-array",
+  "version": "2.1.6",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2017 Drifty Co",
+  "repository": "https://github.com/ionic-team/ionic-cli",
+  "textId": "ee883f6fc4"
+ },
+ {
+  "name": "@ionic/utils-fs",
+  "version": "3.1.7",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2017 Drifty Co",
+  "repository": "https://github.com/ionic-team/ionic-cli",
+  "textId": "ee883f6fc4"
+ },
+ {
+  "name": "@ionic/utils-object",
+  "version": "2.1.6",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2017 Drifty Co",
+  "repository": "https://github.com/ionic-team/ionic-cli",
+  "textId": "ee883f6fc4"
+ },
+ {
+  "name": "@ionic/utils-process",
+  "version": "2.1.12",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2017 Drifty Co",
+  "repository": "https://github.com/ionic-team/ionic-cli",
+  "textId": "ee883f6fc4"
+ },
+ {
+  "name": "@ionic/utils-stream",
+  "version": "3.1.7",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2017 Drifty Co",
+  "repository": "https://github.com/ionic-team/ionic-cli",
+  "textId": "ee883f6fc4"
+ },
+ {
+  "name": "@ionic/utils-subprocess",
+  "version": "3.0.1",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2017 Drifty Co",
+  "repository": "https://github.com/ionic-team/ionic-cli",
+  "textId": "ee883f6fc4"
+ },
+ {
+  "name": "@ionic/utils-terminal",
+  "version": "2.3.5",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2017 Drifty Co",
+  "repository": "https://github.com/ionic-team/ionic-cli",
+  "textId": "ee883f6fc4"
+ },
+ {
+  "name": "@isaacs/fs-minipass",
+  "version": "4.0.1",
+  "license": "ISC",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Isaac Z. Schlueter and Contributors",
+  "repository": "https://github.com/npm/fs-minipass",
+  "textId": "8a920652f2"
+ },
+ {
+  "name": "@isaacs/nonrecursive-glob-match",
+  "version": "1.1.0",
+  "license": "BlueOak-1.0.0",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "copyright in it.",
+  "textId": "f578f231f0"
  },
  {
   "name": "@jridgewell/gen-mapping",
@@ -707,6 +865,16 @@
   "textId": "2b949ab5a6"
  },
  {
+  "name": "@types/fs-extra",
+  "version": "8.1.5",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Microsoft Corporation.",
+  "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+  "textId": "2b949ab5a6"
+ },
+ {
   "name": "@types/gensync",
   "version": "1.0.5",
   "license": "MIT",
@@ -757,6 +925,16 @@
   "textId": "2b949ab5a6"
  },
  {
+  "name": "@types/slice-ansi",
+  "version": "4.0.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Microsoft Corporation.",
+  "repository": "https://github.com/DefinitelyTyped/DefinitelyTyped",
+  "textId": "2b949ab5a6"
+ },
+ {
   "name": "@vitejs/plugin-react",
   "version": "6.3.0",
   "license": "MIT",
@@ -787,6 +965,16 @@
   "textId": "3fdaf49ccf"
  },
  {
+  "name": "@xmldom/xmldom",
+  "version": "0.9.12",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright 2019 - present Christopher J. Brody and other contributors, as listed in: https://github.com/xmldom/xmldom/graphs/contributors\nCopyright 2012 - 2017 @jindw <jindw@xidea.org> and other contributors, as listed in: https://github.com/jindw/xmldom/graphs/contributors",
+  "repository": "https://github.com/xmldom/xmldom",
+  "textId": "b014b2fa27"
+ },
+ {
   "name": "ansi-regex",
   "version": "5.0.1",
   "license": "MIT",
@@ -794,6 +982,16 @@
   "scope": "dev",
   "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)",
   "repository": "https://github.com/chalk/ansi-regex",
+  "textId": "52d8ac3fda"
+ },
+ {
+  "name": "ansi-styles",
+  "version": "4.3.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)",
+  "repository": "https://github.com/chalk/ansi-styles",
   "textId": "52d8ac3fda"
  },
  {
@@ -855,6 +1053,16 @@
   "textId": "655adc31f8"
  },
  {
+  "name": "astral-regex",
+  "version": "2.0.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Kevin Mårtensson <kevinmartensson@gmail.com> (github.com/kevva)",
+  "repository": "https://github.com/kevva/astral-regex",
+  "textId": "c246f624d3"
+ },
+ {
   "name": "astronomia",
   "version": "4.3.0",
   "license": "MIT",
@@ -865,6 +1073,16 @@
   "textId": "433d3e326f"
  },
  {
+  "name": "at-least-node",
+  "version": "1.0.0",
+  "license": "ISC",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2020 Ryan Zimmerman <opensrc@ryanzim.com>",
+  "repository": "https://github.com/RyanZim/at-least-node",
+  "textId": "9fc896dd19"
+ },
+ {
   "name": "babel-plugin-react-compiler",
   "version": "1.0.0",
   "license": "MIT",
@@ -873,6 +1091,25 @@
   "repository": "https://github.com/facebook/react",
   "textId": "0f9b55c420",
   "textGenerated": true
+ },
+ {
+  "name": "balanced-match",
+  "version": "4.0.4",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "repository": "https://github.com/juliangruber/balanced-match",
+  "textId": "ad80b62532"
+ },
+ {
+  "name": "base64-js",
+  "version": "1.5.1",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2014 Jameson Little",
+  "repository": "https://github.com/beatgammit/base64-js",
+  "textId": "4fc53fa46e"
  },
  {
   "name": "baseline-browser-mapping",
@@ -904,6 +1141,57 @@
   "textId": "7e8acb6760"
  },
  {
+  "name": "big-integer",
+  "version": "1.6.52",
+  "license": "Unlicense",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Peter Olson",
+  "textId": "8fdadb01c8"
+ },
+ {
+  "name": "bplist-creator",
+  "version": "0.1.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2012 Near Infinity Corporation",
+  "repository": "https://github.com/nearinfinity/node-bplist-creator",
+  "textId": "ccfa515242"
+ },
+ {
+  "name": "bplist-parser",
+  "version": "0.3.1",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Joe Ferner",
+  "repository": "https://github.com/nearinfinity/node-bplist-parser",
+  "textId": "955d2949bf",
+  "textGenerated": true
+ },
+ {
+  "name": "bplist-parser",
+  "version": "0.3.2",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Joe Ferner",
+  "repository": "https://github.com/nearinfinity/node-bplist-parser",
+  "textId": "955d2949bf",
+  "textGenerated": true
+ },
+ {
+  "name": "brace-expansion",
+  "version": "5.1.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright Julian Gruber <julian@juliangruber.com>",
+  "repository": "https://github.com/juliangruber/brace-expansion",
+  "textId": "5b4520b22a"
+ },
+ {
   "name": "browserslist",
   "version": "4.29.6",
   "license": "MIT",
@@ -912,6 +1200,16 @@
   "copyright": "Copyright 2014 Andrey Sitnik <andrey@sitnik.es> and other contributors",
   "repository": "https://github.com/browserslist/browserslist",
   "textId": "da4728b19c"
+ },
+ {
+  "name": "buffer-crc32",
+  "version": "0.2.13",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2013 Brian J. Brennan",
+  "repository": "https://github.com/brianloveswords/buffer-crc32",
+  "textId": "3b10c06e23"
  },
  {
   "name": "caldate",
@@ -944,6 +1242,16 @@
   "textId": "0a43881b1b"
  },
  {
+  "name": "chownr",
+  "version": "3.0.0",
+  "license": "BlueOak-1.0.0",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "copyright in it.",
+  "repository": "https://github.com/isaacs/chownr",
+  "textId": "3ff423675d"
+ },
+ {
   "name": "cmdk",
   "version": "1.1.1",
   "license": "MIT",
@@ -952,6 +1260,36 @@
   "copyright": "Copyright (c) 2022 Paco Coursey",
   "repository": "https://github.com/pacocoursey/cmdk",
   "textId": "58c5dfc976"
+ },
+ {
+  "name": "color-convert",
+  "version": "2.0.1",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2011-2016 Heather Arthur <fayearthur@gmail.com>",
+  "repository": "https://github.com/Qix-/color-convert",
+  "textId": "a267e3ec87"
+ },
+ {
+  "name": "color-name",
+  "version": "1.1.4",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2015 Dmitry Ivanov",
+  "repository": "https://github.com/colorjs/color-name",
+  "textId": "b0158b421c"
+ },
+ {
+  "name": "commander",
+  "version": "12.1.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2011 TJ Holowaychuk <tj@vision-media.ca>",
+  "repository": "https://github.com/tj/commander.js",
+  "textId": "35bb77423e"
  },
  {
   "name": "convert-source-map",
@@ -972,6 +1310,16 @@
   "copyright": "Copyright (c) 2012-2014 Roman Shtylman <shtylman@gmail.com>\nCopyright (c) 2015 Douglas Christopher Wilson <doug@somethingdoug.com>\nCopyright (c) 2015 Nathan Friedly <nathan@nfriedly.com> (http://nfriedly.com/)",
   "repository": "https://github.com/unjs/cookie-es",
   "textId": "aa8569d331"
+ },
+ {
+  "name": "cross-spawn",
+  "version": "7.0.6",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2018 Made With MOXY Lda <hello@moxy.studio>",
+  "repository": "https://github.com/moxystudio/node-cross-spawn",
+  "textId": "a7c3446a54"
  },
  {
   "name": "css.escape",
@@ -1064,6 +1412,16 @@
   "textId": "dc25c2251a"
  },
  {
+  "name": "debug",
+  "version": "4.4.3",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2014-2017 TJ Holowaychuk <tj@vision-media.ca>\nCopyright (c) 2018-2021 Josh Junon",
+  "repository": "https://github.com/debug-js/debug",
+  "textId": "8ca66b7877"
+ },
+ {
   "name": "decimal.js",
   "version": "10.6.0",
   "license": "MIT",
@@ -1082,6 +1440,16 @@
   "copyright": "Copyright (c) 2012 James Halliday, Josh Duff, and other contributors",
   "repository": "https://github.com/TehShrike/deepmerge",
   "textId": "9edad4e307"
+ },
+ {
+  "name": "define-lazy-prop",
+  "version": "2.0.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)",
+  "repository": "https://github.com/sindresorhus/define-lazy-prop",
+  "textId": "52d8ac3fda"
  },
  {
   "name": "dequal",
@@ -1144,6 +1512,26 @@
   "textId": "2772f108d2"
  },
  {
+  "name": "elementtree",
+  "version": "0.1.7",
+  "license": "Apache-2.0",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Rackspace US, Inc.",
+  "repository": "https://github.com/racker/node-elementtree",
+  "textId": "dfc9887d6c"
+ },
+ {
+  "name": "emoji-regex",
+  "version": "8.0.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright Mathias Bynens <https://mathiasbynens.be/>",
+  "repository": "https://github.com/mathiasbynens/emoji-regex",
+  "textId": "2981a83f8b"
+ },
+ {
   "name": "empathic",
   "version": "2.1.0",
   "license": "MIT",
@@ -1172,6 +1560,16 @@
   "copyright": "Copyright (c) Felix Böhm",
   "repository": "https://github.com/fb55/entities",
   "textId": "ef9230179d"
+ },
+ {
+  "name": "env-paths",
+  "version": "2.2.1",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)",
+  "repository": "https://github.com/sindresorhus/env-paths",
+  "textId": "52d8ac3fda"
  },
  {
   "name": "es-module-lexer",
@@ -1224,6 +1622,16 @@
   "textId": "445a0640ad"
  },
  {
+  "name": "fd-slicer",
+  "version": "1.1.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2014 Andrew Kelley",
+  "repository": "https://github.com/andrewrk/node-fd-slicer",
+  "textId": "c2a9f9f9b6"
+ },
+ {
   "name": "fdir",
   "version": "6.5.0",
   "license": "MIT",
@@ -1244,6 +1652,26 @@
   "textId": "868927c4ec"
  },
  {
+  "name": "fs-extra",
+  "version": "11.4.1",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2011-2024 JP Richardson",
+  "repository": "https://github.com/jprichardson/node-fs-extra",
+  "textId": "a56e3d5b9b"
+ },
+ {
+  "name": "fs-extra",
+  "version": "9.1.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2011-2017 JP Richardson",
+  "repository": "https://github.com/jprichardson/node-fs-extra",
+  "textId": "f42ef1cf05"
+ },
+ {
   "name": "gensync",
   "version": "1.0.0-beta.2",
   "license": "MIT",
@@ -1262,6 +1690,15 @@
   "copyright": "Copyright (c) 2020 Anton Korzunov",
   "repository": "https://github.com/theKashey/get-nonce",
   "textId": "be8bb8c902"
+ },
+ {
+  "name": "glob",
+  "version": "14.0.6",
+  "license": "BlueOak-1.0.0",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "copyright in it.",
+  "textId": "3ff423675d"
  },
  {
   "name": "graceful-fs",
@@ -1384,6 +1821,26 @@
   "textId": "52d8ac3fda"
  },
  {
+  "name": "inherits",
+  "version": "2.0.4",
+  "license": "ISC",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Isaac Z. Schlueter",
+  "repository": "https://github.com/isaacs/inherits",
+  "textId": "6816336497"
+ },
+ {
+  "name": "ini",
+  "version": "4.1.3",
+  "license": "ISC",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Isaac Z. Schlueter and Contributors",
+  "repository": "https://github.com/npm/ini",
+  "textId": "8a920652f2"
+ },
+ {
   "name": "is-alphabetical",
   "version": "2.0.1",
   "license": "MIT",
@@ -1414,6 +1871,26 @@
   "textId": "105369f6f4"
  },
  {
+  "name": "is-docker",
+  "version": "2.2.1",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)",
+  "repository": "https://github.com/sindresorhus/is-docker",
+  "textId": "58d674b05c"
+ },
+ {
+  "name": "is-fullwidth-code-point",
+  "version": "3.0.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)",
+  "repository": "https://github.com/sindresorhus/is-fullwidth-code-point",
+  "textId": "52d8ac3fda"
+ },
+ {
   "name": "is-potential-custom-element-name",
   "version": "1.0.1",
   "license": "MIT",
@@ -1422,6 +1899,26 @@
   "copyright": "Copyright Mathias Bynens <https://mathiasbynens.be/>",
   "repository": "https://github.com/mathiasbynens/is-potential-custom-element-name",
   "textId": "2981a83f8b"
+ },
+ {
+  "name": "is-wsl",
+  "version": "2.2.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)",
+  "repository": "https://github.com/sindresorhus/is-wsl",
+  "textId": "52d8ac3fda"
+ },
+ {
+  "name": "isexe",
+  "version": "2.0.0",
+  "license": "ISC",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Isaac Z. Schlueter and Contributors",
+  "repository": "https://github.com/isaacs/isexe",
+  "textId": "8a920652f2"
  },
  {
   "name": "jalaali-js",
@@ -1504,6 +2001,35 @@
   "textId": "d447d9aa29"
  },
  {
+  "name": "jsonfile",
+  "version": "6.2.1",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2012-2015, JP Richardson <jprichardson@gmail.com>",
+  "textId": "f436fc8441"
+ },
+ {
+  "name": "kleur",
+  "version": "3.0.3",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Luke Edwards <luke.edwards05@gmail.com> (lukeed.com)",
+  "repository": "https://github.com/lukeed/kleur",
+  "textId": "ea5b701a7a"
+ },
+ {
+  "name": "kleur",
+  "version": "4.1.5",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Luke Edwards <luke.edwards05@gmail.com> (lukeed.com)",
+  "repository": "https://github.com/lukeed/kleur",
+  "textId": "ea5b701a7a"
+ },
+ {
   "name": "lightningcss",
   "version": "1.33.0",
   "license": "MPL-2.0",
@@ -1563,6 +2089,36 @@
   "textId": "d2e5797a2f"
  },
  {
+  "name": "minimatch",
+  "version": "11.0.9",
+  "license": "BlueOak-1.0.0",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "copyright in it.",
+  "repository": "https://github.com/isaacs/minimatch",
+  "textId": "a362072c73"
+ },
+ {
+  "name": "minipass",
+  "version": "7.1.3",
+  "license": "BlueOak-1.0.0",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "copyright in it.",
+  "repository": "https://github.com/isaacs/minipass",
+  "textId": "f578f231f0"
+ },
+ {
+  "name": "minizlib",
+  "version": "3.1.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2017-2023 Isaac Z. Schlueter and Contributors\nCopyright (c) 2017-2023 Node.js contributors. All rights reserved.\nCopyright (c) 2017-2023 Joyent, Inc. and other Node contributors. All rights reserved.",
+  "repository": "https://github.com/isaacs/minizlib",
+  "textId": "a37399bdcd"
+ },
+ {
   "name": "moment",
   "version": "2.31.0",
   "license": "MIT",
@@ -1583,6 +2139,16 @@
   "textId": "58ef769c4c"
  },
  {
+  "name": "ms",
+  "version": "2.1.3",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2020 Vercel, Inc.",
+  "repository": "https://github.com/vercel/ms",
+  "textId": "f32bc383be"
+ },
+ {
   "name": "nanoid",
   "version": "3.3.20",
   "license": "MIT",
@@ -1591,6 +2157,16 @@
   "copyright": "Copyright 2017 Andrey Sitnik <andrey@sitnik.ru>",
   "repository": "https://github.com/ai/nanoid",
   "textId": "0a20ad535f"
+ },
+ {
+  "name": "native-run",
+  "version": "2.1.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2018 Drifty Co",
+  "repository": "https://github.com/ionic-team/native-run",
+  "textId": "5298567f9b"
  },
  {
   "name": "node-releases",
@@ -1613,6 +2189,16 @@
   "textId": "f5844712ea"
  },
  {
+  "name": "open",
+  "version": "8.4.2",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)",
+  "repository": "https://github.com/sindresorhus/open",
+  "textId": "58d674b05c"
+ },
+ {
   "name": "oxlint",
   "version": "1.94.0",
   "license": "MIT",
@@ -1621,6 +2207,16 @@
   "copyright": "Copyright (c) 2024-present VoidZero Inc. & Contributors\nCopyright (c) 2023 Boshen",
   "repository": "https://github.com/oxc-project/oxc",
   "textId": "9f7730185c"
+ },
+ {
+  "name": "package-json-from-dist",
+  "version": "1.0.1",
+  "license": "BlueOak-1.0.0",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "copyright in it.",
+  "repository": "https://github.com/isaacs/package-json-from-dist",
+  "textId": "3ff423675d"
  },
  {
   "name": "parse5",
@@ -1643,6 +2239,36 @@
   "textId": "4b4fdf427f"
  },
  {
+  "name": "path-key",
+  "version": "3.1.1",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)",
+  "repository": "https://github.com/sindresorhus/path-key",
+  "textId": "52d8ac3fda"
+ },
+ {
+  "name": "path-scurry",
+  "version": "3.0.0",
+  "license": "BlueOak-1.0.0",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "copyright in it.",
+  "repository": "https://github.com/isaacs/path-scurry",
+  "textId": "f578f231f0"
+ },
+ {
+  "name": "pend",
+  "version": "1.2.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2014 Andrew Kelley",
+  "repository": "https://github.com/andrewrk/node-pend",
+  "textId": "6bf2786315"
+ },
+ {
   "name": "picocolors",
   "version": "1.1.1",
   "license": "ISC",
@@ -1661,6 +2287,16 @@
   "copyright": "Copyright (c) 2017-present, Jon Schlinkert.",
   "repository": "https://github.com/micromatch/picomatch",
   "textId": "aa49650902"
+ },
+ {
+  "name": "plist",
+  "version": "3.1.1",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2010-2017 Nathan Rajlich <nathan@tootallnate.net>",
+  "repository": "https://github.com/TooTallNate/node-plist",
+  "textId": "acbbfe5aef"
  },
  {
   "name": "postcss",
@@ -1690,6 +2326,16 @@
   "copyright": "Copyright (c) Facebook, Inc. and its affiliates.",
   "repository": "https://github.com/facebook/jest",
   "textId": "f58af3a4b7"
+ },
+ {
+  "name": "prompts",
+  "version": "2.4.2",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2018 Terkel Gjervig Nielsen",
+  "repository": "https://github.com/terkelg/prompts",
+  "textId": "9e177934ff"
  },
  {
   "name": "punycode",
@@ -1783,6 +2429,16 @@
   "textId": "e097b3b649"
  },
  {
+  "name": "readable-stream",
+  "version": "3.6.2",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright Node.js contributors. All rights reserved.\nCopyright Joyent, Inc. and other Node contributors. All rights reserved.",
+  "repository": "https://github.com/nodejs/readable-stream",
+  "textId": "f272ad0027"
+ },
+ {
   "name": "redent",
   "version": "3.0.0",
   "license": "MIT",
@@ -1793,6 +2449,15 @@
   "textId": "52d8ac3fda"
  },
  {
+  "name": "rimraf",
+  "version": "6.1.4",
+  "license": "BlueOak-1.0.0",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "copyright in it.",
+  "textId": "f578f231f0"
+ },
+ {
   "name": "rolldown",
   "version": "1.2.19",
   "license": "MIT",
@@ -1801,6 +2466,26 @@
   "copyright": "Copyright (c) 2024-present VoidZero Inc. & Contributors",
   "repository": "https://github.com/rolldown/rolldown",
   "textId": "10c8712d37"
+ },
+ {
+  "name": "safe-buffer",
+  "version": "5.2.1",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Feross Aboukhadijeh",
+  "repository": "https://github.com/feross/safe-buffer",
+  "textId": "4017fce943"
+ },
+ {
+  "name": "sax",
+  "version": "1.1.4",
+  "license": "ISC",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Isaac Z. Schlueter and Contributors\nCopyright Mathias Bynens <https://mathiasbynens.be/>",
+  "repository": "https://github.com/isaacs/sax-js",
+  "textId": "8d273e816b"
  },
  {
   "name": "saxes",
@@ -1824,6 +2509,76 @@
   "textId": "4790b9ca47"
  },
  {
+  "name": "semver",
+  "version": "7.8.6",
+  "license": "ISC",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Isaac Z. Schlueter and Contributors",
+  "repository": "https://github.com/npm/node-semver",
+  "textId": "8a920652f2"
+ },
+ {
+  "name": "shebang-command",
+  "version": "2.0.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Kevin Mårtensson <kevinmartensson@gmail.com> (github.com/kevva)",
+  "repository": "https://github.com/kevva/shebang-command",
+  "textId": "c246f624d3"
+ },
+ {
+  "name": "shebang-regex",
+  "version": "3.0.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)",
+  "repository": "https://github.com/sindresorhus/shebang-regex",
+  "textId": "52d8ac3fda"
+ },
+ {
+  "name": "signal-exit",
+  "version": "3.0.7",
+  "license": "ISC",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2015, Contributors",
+  "repository": "https://github.com/tapjs/signal-exit",
+  "textId": "058ddf2d6b"
+ },
+ {
+  "name": "simple-plist",
+  "version": "1.3.1",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2013 Joe Wollard",
+  "repository": "https://github.com/wollardj/simple-plist",
+  "textId": "96d43a87d7"
+ },
+ {
+  "name": "sisteransi",
+  "version": "1.0.5",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2018 Terkel Gjervig Nielsen",
+  "repository": "https://github.com/terkelg/sisteransi",
+  "textId": "9e177934ff"
+ },
+ {
+  "name": "slice-ansi",
+  "version": "4.0.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) DC <threedeecee@gmail.com>\nCopyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)",
+  "repository": "https://github.com/chalk/slice-ansi",
+  "textId": "249a3f66bb"
+ },
+ {
   "name": "source-map-js",
   "version": "1.2.4",
   "license": "BSD-3-Clause",
@@ -1834,6 +2589,16 @@
   "textId": "7c82eb0336"
  },
  {
+  "name": "split2",
+  "version": "4.2.0",
+  "license": "ISC",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2014-2018, Matteo Collina <hello@matteocollina.com>",
+  "repository": "https://github.com/mcollina/split2",
+  "textId": "956c3db084"
+ },
+ {
   "name": "std-env",
   "version": "4.3.0",
   "license": "MIT",
@@ -1842,6 +2607,45 @@
   "copyright": "Copyright (c) Pooya Parsa <pooya@pi0.io>",
   "repository": "https://github.com/unjs/std-env",
   "textId": "9d04b3709d"
+ },
+ {
+  "name": "stream-buffers",
+  "version": "2.2.0",
+  "license": "Unlicense",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Sam Day",
+  "repository": "https://github.com/samcday/node-stream-buffer"
+ },
+ {
+  "name": "string_decoder",
+  "version": "1.3.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright Node.js contributors. All rights reserved.\nCopyright Joyent, Inc. and other Node contributors. All rights reserved.",
+  "repository": "https://github.com/nodejs/string_decoder",
+  "textId": "f272ad0027"
+ },
+ {
+  "name": "string-width",
+  "version": "4.2.3",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)",
+  "repository": "https://github.com/sindresorhus/string-width",
+  "textId": "52d8ac3fda"
+ },
+ {
+  "name": "strip-ansi",
+  "version": "6.0.1",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)",
+  "repository": "https://github.com/chalk/strip-ansi",
+  "textId": "52d8ac3fda"
  },
  {
   "name": "strip-indent",
@@ -1872,6 +2676,26 @@
   "copyright": "Copyright JS Foundation and other contributors",
   "repository": "http://github.com/webpack/tapable",
   "textId": "e07fc9b71f"
+ },
+ {
+  "name": "tar",
+  "version": "7.5.23",
+  "license": "BlueOak-1.0.0",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "copyright in it.",
+  "repository": "https://github.com/isaacs/node-tar",
+  "textId": "f578f231f0"
+ },
+ {
+  "name": "through2",
+  "version": "4.0.2",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Rod Vagg",
+  "repository": "https://github.com/rvagg/through2",
+  "textId": "dd2801b927"
  },
  {
   "name": "tinybench",
@@ -1944,6 +2768,16 @@
   "textId": "ee6ed7909a"
  },
  {
+  "name": "tree-kill",
+  "version": "1.2.2",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2018 Peter Krumins",
+  "repository": "https://github.com/pkrumins/node-tree-kill",
+  "textId": "a2a10fba04"
+ },
+ {
   "name": "tslib",
   "version": "2.8.1",
   "license": "0BSD",
@@ -1994,6 +2828,26 @@
   "textId": "8382f653b0"
  },
  {
+  "name": "universalify",
+  "version": "2.0.1",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2017, Ryan Zimmerman <opensrc@ryanzim.com>",
+  "repository": "https://github.com/RyanZim/universalify",
+  "textId": "7019805c7d"
+ },
+ {
+  "name": "untildify",
+  "version": "4.0.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)",
+  "repository": "https://github.com/sindresorhus/untildify",
+  "textId": "52d8ac3fda"
+ },
+ {
   "name": "update-browserslist-db",
   "version": "1.4.0",
   "license": "MIT",
@@ -2022,6 +2876,16 @@
   "copyright": "Copyright (c) 2017 Anton Korzunov",
   "repository": "https://github.com/theKashey/use-sidecar",
   "textId": "e097b3b649"
+ },
+ {
+  "name": "util-deprecate",
+  "version": "1.0.2",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2014 Nathan Rajlich <nathan@tootallnate.net>",
+  "repository": "https://github.com/TooTallNate/util-deprecate",
+  "textId": "33d75b2f0b"
  },
  {
   "name": "verkit",
@@ -2094,6 +2958,16 @@
   "textId": "f27a6ce67e"
  },
  {
+  "name": "which",
+  "version": "2.0.2",
+  "license": "ISC",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Isaac Z. Schlueter and Contributors",
+  "repository": "https://github.com/isaacs/node-which",
+  "textId": "8a920652f2"
+ },
+ {
   "name": "why-is-node-running",
   "version": "3.2.1",
   "license": "MIT",
@@ -2102,6 +2976,26 @@
   "copyright": "Copyright (c) 2016 Mathias Buus",
   "repository": "https://github.com/mafintosh/why-is-node-running",
   "textId": "c602f509ba"
+ },
+ {
+  "name": "wrap-ansi",
+  "version": "7.0.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)",
+  "repository": "https://github.com/chalk/wrap-ansi",
+  "textId": "58d674b05c"
+ },
+ {
+  "name": "xcode",
+  "version": "4.0.0",
+  "license": "Apache-2.0",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) Apache Software Foundation",
+  "repository": "https://github.com/apache/cordova-node-xcode",
+  "textId": "b8db2058cf"
  },
  {
   "name": "xml-name-validator",
@@ -2114,6 +3008,36 @@
   "textId": "cd0c07e064"
  },
  {
+  "name": "xml2js",
+  "version": "0.6.2",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright 2010, 2011, 2012, 2013. All rights reserved.",
+  "repository": "https://github.com/Leonidas-from-XIV/node-xml2js",
+  "textId": "065f0fc80f"
+ },
+ {
+  "name": "xmlbuilder",
+  "version": "11.0.1",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2013 Ozgur Ozcitak",
+  "repository": "https://github.com/oozcitak/xmlbuilder-js",
+  "textId": "d46c4dd3b9"
+ },
+ {
+  "name": "xmlbuilder",
+  "version": "15.1.1",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2013 Ozgur Ozcitak",
+  "repository": "https://github.com/oozcitak/xmlbuilder-js",
+  "textId": "d46c4dd3b9"
+ },
+ {
   "name": "xmlchars",
   "version": "2.2.0",
   "license": "MIT",
@@ -2122,6 +3046,26 @@
   "copyright": "Copyright Louis-Dominique Dubeau and contributors to xmlchars",
   "repository": "https://github.com/lddubeau/xmlchars",
   "textId": "32fa736e84"
+ },
+ {
+  "name": "yallist",
+  "version": "5.0.0",
+  "license": "BlueOak-1.0.0",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "copyright in it.",
+  "repository": "https://github.com/isaacs/yallist",
+  "textId": "3ff423675d"
+ },
+ {
+  "name": "yauzl",
+  "version": "2.10.0",
+  "license": "MIT",
+  "category": "permissive",
+  "scope": "dev",
+  "copyright": "Copyright (c) 2014 Josh Wolfe",
+  "repository": "https://github.com/thejoshwolfe/yauzl",
+  "textId": "8bc0cb896c"
  },
  {
   "name": "zod",

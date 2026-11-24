@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router'
+import { isNativeApp } from './adapters/kv'
 import { router } from './app/router'
 import './i18n'
 import './index.css'
@@ -21,6 +22,10 @@ whenConsented(() => {
   startSpacesAutoBackup()
   startSpacesSync()
 })
+
+// 網頁版：請瀏覽器把本站資料標記為「持續保存」，空間不足時不要自動清除（不會跳出詢問）。
+// iOS App 的資料存在 App 自己的檔案裡，不需要。
+if (!isNativeApp()) void navigator.storage?.persist?.().catch(() => {})
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
