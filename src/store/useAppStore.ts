@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { trackChanges } from '../core/appMerge'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { webStorage } from '../adapters/storage'
 import { archiveCurrent, archiveEnded, periodOf, restoreArchive as restoreArchiveData } from '../core/archive'
@@ -113,7 +114,18 @@ const touch = () => ({ updatedAt: Date.now() })
 
 export const useAppStore = create<AppState>()(
   persist(
-    (setState, getState) => ({
+    (rawSet, getState) => {
+      /**
+       * 所有修改都經過這裡：比對修改前後，自動更新逐筆同步用的修改紀錄（syncMeta，見 core/appMerge.ts）。
+       * 從外部呼叫 useAppStore.setState（例如同步套用雲端合併結果）不經過這裡，修改紀錄以合併結果為準。
+       */
+      const setState = (partial: Partial<AppState> | ((s: AppState) => Partial<AppState>)) =>
+        rawSet((s) => {
+          const patch = typeof partial === 'function' ? partial(s) : partial
+          const next = { ...s, ...patch }
+          return { ...patch, syncMeta: trackChanges(s, next, Date.now()) }
+        })
+      return {
       ...emptyAppData(),
 
       addEvent: (input) => setState((s) => ({ events: [...s.events, { id: newId(), ...input }], ...touch() })),
@@ -319,10 +331,11 @@ export const useAppStore = create<AppState>()(
 
       importData: (raw) => setState(migrate(raw)),
       exportData: () => {
-        const { schemaVersion, settings, events, tasks, shopping, places, favorites, reminders, archives, subscriptions, subscriptionsSeeded, inventory, inventorySeeded, invCats, recurring, holidays, updatedAt } = getState()
-        return { schemaVersion, settings, events, tasks, shopping, places, favorites, reminders, archives, subscriptions, subscriptionsSeeded, inventory, inventorySeeded, invCats, recurring, holidays, updatedAt }
+        const { schemaVersion, settings, events, tasks, shopping, places, favorites, reminders, archives, subscriptions, subscriptionsSeeded, inventory, inventorySeeded, invCats, recurring, holidays, updatedAt, syncMeta } = getState()
+        return { schemaVersion, settings, events, tasks, shopping, places, favorites, reminders, archives, subscriptions, subscriptionsSeeded, inventory, inventorySeeded, invCats, recurring, holidays, updatedAt, ...(syncMeta && { syncMeta }) }
       },
-    }),
+    }
+    },
     {
       name: 'acacia-next',
       storage: createJSONStorage(() => webStorage),
