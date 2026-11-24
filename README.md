@@ -130,6 +130,13 @@ src/
 
 `public/_redirects` 已設定 SPA 路由，直接開 `/tasks` 等網址也能正常載入。每個 PR 會自動產生預覽網址。
 
+`public/_headers` 設定回應標頭（`src/app/headers.test.ts` 會檢查必要的設定還在）：
+
+- **安全：**`X-Content-Type-Options`、`Referrer-Policy`、`X-Frame-Options: DENY`（不能被其他網站嵌入）、`Permissions-Policy`（定位只給本站，用不到的權限關閉）
+- **Google 登入：**`Cross-Origin-Opener-Policy` 必須是 `same-origin-allow-popups`，改成 `same-origin` 會讓登入彈出視窗無法回傳結果
+- **快取：**只有檔名含雜湊的 `/assets/*` 長期快取；HTML 沿用 Cloudflare 預設，每次確認最新版，部署後使用者重新整理就會拿到新版
+- **CSP（內容安全政策）：**目前沒有設定。Google 登入、Google 字型、Drive API 與地點搜尋 Proxy 都會連外，要列出所有來源並在預覽站測過登入後再加
+
 ### 上線檢查清單
 
 新增或更換網域（例如正式網址 `https://acaciaeveryday.pages.dev`、自訂網域）時，逐項確認：
