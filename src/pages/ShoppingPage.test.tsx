@@ -190,12 +190,13 @@ describe('ShoppingPage', () => {
       expect(screen.getByText(fullText('共 2 期 · NT$700+€25.5'))).toBeInTheDocument()
     })
   })
-  it('記帳清單跟用品清單一樣：寬螢幕兩欄，打勾、編輯、刪除照常', async () => {
+  it('記帳清單跟用品清單共用網格：手機 1 欄、1001px 起 2 欄、1360px 起 3 欄，打勾、編輯、刪除照常', async () => {
     const d = toLocalISO()
     useAppStore.setState({ shopping: [ex('牛奶', d), ex('麵包', d), ex('雞蛋', d)] })
     render(<MemoryRouter><ShoppingPage /></MemoryRouter>)
     const list = screen.getByRole('list', { name: '記帳清單' })
-    expect(list).toHaveClass('grid', 'gap-3', 'min-[1001px]:grid-cols-2')
+    expect(list).toHaveClass('grid', 'gap-3', 'min-[1001px]:grid-cols-2', 'min-[1360px]:grid-cols-3')
+    expect(list.className).not.toMatch(/(^|\s)grid-cols-3/)
     expect(within(list).getAllByRole('listitem')).toHaveLength(3)
 
     // 庫存頁的用品清單使用同一組排版
