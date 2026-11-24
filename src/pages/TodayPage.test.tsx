@@ -206,7 +206,7 @@ describe('TodayPage', () => {
     expect(screen.getByText('你有幾件重要的事，還有足夠的空檔好好呼吸。')).toHaveClass(t13)
     expect(screen.getByRole('heading', { level: 1 }).previousElementSibling).toHaveClass(t14)
     expect(screen.getByRole('link', { name: /查看月曆/ })).toHaveClass(t14)
-    expect(screen.getByRole('button', { name: '＋ 新增安排' })).toHaveClass(`${t14}!`)
+    expect(screen.getByRole('button', { name: '＋ 新增安排' })).toHaveClass(t14, 'whitespace-nowrap')
     expect(screen.getByText('個行程').closest('span')).toHaveClass(t14)
     for (const b of within(screen.getByRole('group', { name: '檢視範圍' })).getAllByRole('button')) expect(b).toHaveClass(t14)
     for (const name of ['查看完整日程 →', '全部 →']) expect(screen.getByRole('link', { name })).toHaveClass(t14)

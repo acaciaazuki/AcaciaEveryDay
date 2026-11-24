@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import appI18n from '../i18n'
 import { Link } from 'react-router'
-import { Button } from '../components/Button'
+import { Button, PAGE_ACTION_SIZE } from '../components/Button'
 import { Icon } from '../components/AcaciaIcons'
 import { EventIconBadge } from '../components/EventIcon'
 import { EventDialog } from '../components/EventDialog'
@@ -121,12 +121,12 @@ export function TodayPage() {
         title={title}
         actions={
           <>
-            <Link to="/calendar" className={`inline-flex items-center gap-1.5 rounded-(--radius-control) border border-line bg-paper px-5 py-3 font-bold hover:bg-sage-light ${TEXT_14}`}>
-              <Icon name="calendar" className="size-[1.8em]" />
+            <Link to="/calendar" className={`inline-flex items-center gap-1.5 rounded-(--radius-control) border border-line bg-paper font-bold hover:bg-sage-light ${PAGE_ACTION_SIZE}`}>
+              <Icon name="calendar" className="-my-1 size-[1.8em]" />
               {t('today.seeCalendar')}
             </Link>
             {vis.isSelf && (
-              <Button className={`px-5! py-3! ${TEXT_14}!`} onClick={() => setEditing('new')}>
+              <Button size="page" onClick={() => setEditing('new')}>
                 {t('today.addEvent')}
               </Button>
             )}

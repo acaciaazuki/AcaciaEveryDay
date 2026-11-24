@@ -101,7 +101,7 @@ export function InventoryPage() {
 
   return (
     <>
-      <PageHead eyebrow={t('inv.eyebrow')} title={t('inv.title')} actions={<Button onClick={() => setEditing('new')}>{t('inv.add')}</Button>} />
+      <PageHead eyebrow={t('inv.eyebrow')} title={t('inv.title')} actions={<Button size="page" onClick={() => setEditing('new')}>{t('inv.add')}</Button>} />
 
       {/* A. 狀態總覽 */}
       <section className="mb-5 rounded-(--radius-card) bg-linear-to-br from-mint to-sage-light p-6">
