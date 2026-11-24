@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState, type CSSProperties } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BatchEventsDialog } from '../components/BatchEventsDialog'
 import { Button } from '../components/Button'
@@ -20,10 +20,11 @@ import { useNow } from '../hooks/useNow'
 import { SHOP_STYLE, useShoppingByDate } from '../hooks/useShoppingAgenda'
 import { useOpenFromUrl } from '../hooks/useOpenFromUrl'
 import { useVisibleCalendar } from '../hooks/useVisibleCalendar'
+import { useChipCapacity } from '../hooks/useChipCapacity'
 import { HOLIDAY_STYLE, holidayStyle, useHolidaysByDate } from '../hooks/useHolidays'
 import { useAppStore } from '../store/useAppStore'
 
-// 桌面版每天最多顯示的行程標籤數，超過的折成「還有 X 個」
+// 每天最多顯示的行程標籤數，超過的折成「還有 X 個」；桌面滿版時改依格子實際高度計算
 const MAX_CHIPS = 6
 const NO_SHOPPING = new Map()
 const NO_EVENTS: CalendarEvent[] = []
@@ -76,12 +77,16 @@ export function CalendarPage() {
   })
 
   const cells = monthCells(ym.year, ym.month)
+  // 當月有幾週（4–6），桌面滿版時每週平均分配高度
+  const weeks = Math.ceil(cells.length / 7)
+  const gridRef = useRef<HTMLDivElement>(null)
+  const maxChips = useChipCapacity(gridRef, MAX_CHIPS, weeks)
   const dayItems = agendaOn(events, shopByDate, selected, vis.shared)
   const dayHolidays = holidaysByDate.get(selected) ?? []
   const selectedLabel = new Intl.DateTimeFormat(i18n.resolvedLanguage, { dateStyle: 'full' }).format(new Date(`${selected}T00:00`))
 
   return (
-    <>
+    <div className="min-[1001px]:flex min-[1001px]:min-h-0 min-[1001px]:flex-1 min-[1001px]:flex-col">
       <PageHead
         eyebrow={t('calendar.eyebrow')}
         title={t('calendar.title')}
@@ -106,7 +111,8 @@ export function CalendarPage() {
       />
       <SpaceSwitcher />
 
-      <section className="rounded-(--radius-card) bg-paper p-4 shadow-card sm:p-5 min-[1001px]:p-6">
+      {/* 桌面（1001px 以上）：月曆卡片與日期網格向下撐滿視窗剩餘高度；手機、平板維持自然高度 */}
+      <section className="rounded-(--radius-card) bg-paper p-4 shadow-card sm:p-5 min-[1001px]:flex min-[1001px]:min-h-0 min-[1001px]:flex-1 min-[1001px]:flex-col min-[1001px]:p-6">
           <MonthNav
             year={ym.year}
             month={ym.month}
@@ -116,7 +122,13 @@ export function CalendarPage() {
               setSelected(todayISO)
             }}
           />
-          <div role="grid" className="mt-4 grid grid-cols-7 gap-1">
+          <div
+            ref={gridRef}
+            role="grid"
+            data-weeks={weeks}
+            style={{ '--weeks': weeks } as CSSProperties}
+            className="mt-4 grid grid-cols-7 gap-1 min-[1001px]:flex-1 min-[1001px]:grid-rows-[auto_repeat(var(--weeks),minmax(4.5rem,1fr))]"
+          >
             {weekdayNames(i18n.resolvedLanguage).map((w, i) => (
               <div key={i} role="columnheader" className="pb-1 text-center text-[length:calc(11px*var(--fs))] font-bold text-muted">
                 {w}
@@ -130,7 +142,7 @@ export function CalendarPage() {
               const hols = holidaysByDate.get(iso) ?? []
               // 放假日（不含補班）的日期數字用假日色
               const isHoliday = hols.some((h) => !h.work)
-              const chipRoom = Math.max(0, MAX_CHIPS - hols.length)
+              const chipRoom = Math.max(0, maxChips - hols.length)
               const isSel = iso === selected
               const isToday = iso === todayISO
               return (
@@ -139,6 +151,8 @@ export function CalendarPage() {
                   role="gridcell"
                   aria-selected={isSel}
                   tabIndex={0}
+                  // 桌面滿版：contain:size 讓格子內容不影響列高，週列只依 1fr 平均分配（也避免「標籤數 ↔ 格子高度」互相撐大）。
+                  // min-h-0／p-2 加 !：Tailwind 產生的 CSS 裡 sm: 排在 min-[1001px]: 之後，不加會被 sm:min-h-36 蓋掉
                   aria-label={t('calendar.openDay', { date: iso })}
                   onClick={() => openDay(iso)}
                   onKeyDown={(e) => {
@@ -146,7 +160,7 @@ export function CalendarPage() {
                     e.preventDefault()
                     openDay(iso)
                   }}
-                  className={`min-h-20 cursor-pointer overflow-hidden rounded-lg border p-1 text-left transition sm:min-h-36 sm:p-1.5 min-[1001px]:min-h-44 min-[1001px]:p-2 min-[1400px]:min-h-52 ${
+                  className={`min-h-20 cursor-pointer overflow-hidden rounded-lg border p-1 text-left transition sm:min-h-36 sm:p-1.5 min-[1001px]:min-h-0! min-[1001px]:p-2! min-[1001px]:[contain:size] ${
                     isSel ? `border-sage ${weekend ? 'bg-weekend' : 'bg-sage-light/60'}` : `border-transparent ${weekend ? 'bg-weekend hover:bg-weekend-hover' : 'hover:bg-oat'}`
                   }`}
                 >
@@ -283,6 +297,6 @@ export function CalendarPage() {
       {viewingShop && <ShoppingDetailDialog entry={viewingShop} onClose={() => setViewingShop(null)} />}
       {holidayOpen && <HolidayImportDialog onClose={() => setHolidayOpen(false)} />}
       {batchOpen && <BatchEventsDialog initialYear={ym.year} initialMonth={ym.month} onClose={() => setBatchOpen(false)} />}
-    </>
+    </div>
   )
 }
