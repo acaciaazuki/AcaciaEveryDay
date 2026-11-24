@@ -46,7 +46,7 @@ npm install
 npm run licenses   # 重新產生 src/licenses/packages.json 與 texts.json
 ```
 
-新增、移除或升級套件後要重跑並 commit 產生的檔案；`npm test` 會檢查資料是否過期，也會擋下隨網站發布的 GPL / AGPL 套件。腳本執行時會列出 GPL / AGPL、MPL 等需要注意的授權。
+新增、移除或升級套件後要重跑並 commit 產生的檔案；`npm test`（CI 每個 PR 都會跑）會檢查資料是否過期，也會擋下隨網站發布的 GPL / AGPL 套件。腳本執行時會列出 GPL / AGPL、MPL 等需要注意的授權；隨網站發布的套件出現**新的授權類型**時，也會提醒評估是否要改 `LICENSES_VERSION`（請使用者重新同意）。
 
 ## 網站圖示（台灣相思樹）
 
@@ -56,7 +56,7 @@ Favicon、PWA 圖示、iOS 主畫面圖示、側邊欄 Logo、載入畫面與備
 npm run icons   # 需要 Playwright 的 Chromium（npx playwright install chromium）
 ```
 
-換圖示時把 `index.html` 與 `public/manifest.webmanifest` 裡的 `?v=` 一起加一，瀏覽器才會抓新圖。`npm test` 會檢查 `public/` 的圖檔有沒有跟程式裡的形狀同步。
+`index.html` 與 `public/manifest.webmanifest` 裡的 `?v=`（瀏覽器快取版本）由圖示的向量內容算出（`iconVersion()`），`npm run icons` 會自動寫入，**不用手動加一**。`npm test` 會檢查 `public/` 的圖檔與 `?v=` 有沒有跟程式裡的形狀同步，改了形狀卻忘了重跑會失敗。
 
 ## 側邊欄排序
 
@@ -64,9 +64,9 @@ npm run icons   # 需要 Playwright 的 Chromium（npx playwright install chromi
 
 ## 隱私權政策、自動備份與刪除資料
 
-- 隱私權政策（繁中／日文／英文）：側邊欄與設定頁底部的小連結點了跳出面板（`src/components/PrivacyDialog.tsx`）；公開網址 `/privacy` 打開時以今天頁為背景自動跳出同一個面板，全文在 `src/pages/privacy/policy.ts`。改到儲存、同步、定位或第三方服務時要一起更新，並改 `UPDATED_DATE`。支援信箱用環境變數 `VITE_SUPPORT_EMAIL` 覆寫（預設 acacia.qiqi@gmail.com）。
+- 隱私權政策（繁中／日文／英文）：側邊欄與設定頁底部的小連結點了跳出面板（`src/components/PrivacyDialog.tsx`）；公開網址 `/privacy` 打開時以今天頁為背景自動跳出同一個面板，全文在 `src/pages/privacy/policy.ts`。改到儲存、同步、定位或第三方服務時要一起更新，並改 `PRIVACY_VERSION`（見下方）。三種語言的章節與段落結構由測試檢查是否一致。支援信箱用環境變數 `VITE_SUPPORT_EMAIL` 覆寫（預設 acacia.qiqi@gmail.com）。
 - 使用前同意：第一次使用、或隱私權政策／第三方授權清單改版時，以全螢幕面板（`src/components/ConsentGate.tsx`）擋住整個 App，只能按「同意並開始使用」進入；沒有關閉鈕，Esc、點背景都關不掉，按「不同意」只會顯示說明、仍然擋住。同意前不啟動 Google 登入、定位、自動備份與同步。`/privacy` 網址在同意前一樣顯示政策全文。同意紀錄（版本、時間）存在本機 IndexedDB 的 `acacia-consent`，不跟 Drive 同步、不放進備份，清除瀏覽器資料或「刪除所有資料」後會再次詢問。
-  - 隱私權政策改版：改 `src/pages/privacy/policy.ts` 的 `UPDATED_DATE` 時，同時把 `src/core/consent.ts` 的 `PRIVACY_VERSION` 改成相同日期（不一致時 `npm test` 會失敗）。
+  - 隱私權政策改版：只要把 `src/core/consent.ts` 的 `PRIVACY_VERSION` 改成當天日期；政策頁的「最後更新」（`UPDATED_DATE`）直接沿用它，使用者也會被要求重新同意。
   - 第三方授權清單：套件升級不會自動要求重新同意；需要時把 `src/core/consent.ts` 的 `LICENSES_VERSION` 改成當天日期。
 - 自動備份：開啟網站與資料變動後，距上次超過 12 小時就在背景建立快照，存在 IndexedDB 的 `acacia-backups`（最多 7 份）；已登入時另外上傳到 Drive 的 `acacia_backup_v2.json`，不動同步檔。邏輯在 `src/core/backup.ts` 與 `src/store/useBackupStore.ts`。
 - 設定頁「刪除所有資料」：刪除 Drive 上的 ACACIA 檔案（已登入時）、登出，並清空本機資料與快照（`src/store/deleteAllData.ts`）。

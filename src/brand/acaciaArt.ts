@@ -298,3 +298,21 @@ export function maskableArt(): Art {
 export function splashSvg(): string {
   return toSvg(branchArt(2)).replace('<svg ', '<svg width="160" height="80" aria-hidden="true" ')
 }
+
+/** 所有網站圖示的向量內容（favicon、PWA、iOS 主畫面），iconVersion 用它算出快取版本 */
+const iconSources = () => [faviconArt(16), faviconArt(32), sprigArt(2), maskableArt(), appleTouchArt()].map((a) => toSvg(a)).join('\n')
+
+/**
+ * 圖示的快取版本：由圖示的向量內容算出 8 碼十六進位雜湊（FNV-1a）。
+ * index.html 與 public/manifest.webmanifest 的 ?v= 都用它，形狀一改版本就跟著變，不用手動加一；
+ * npm run icons 會自動寫入，npm test 會檢查有沒有忘了重跑。
+ */
+export function iconVersion(): string {
+  const input = iconSources()
+  let h = 0x811c9dc5
+  for (let i = 0; i < input.length; i++) {
+    h ^= input.charCodeAt(i)
+    h = Math.imul(h, 0x01000193)
+  }
+  return (h >>> 0).toString(16).padStart(8, '0')
+}

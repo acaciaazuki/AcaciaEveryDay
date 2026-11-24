@@ -1,13 +1,17 @@
 /**
  * 隱私權政策全文（繁中／日文／英文）。
- * 內容依程式碼實際行為撰寫：改到儲存、同步、定位或第三方服務時，記得一起更新這裡與 UPDATED_DATE。
+ * 內容依程式碼實際行為撰寫：改到儲存、同步、定位或第三方服務時，記得一起更新這裡，並把 src/core/consent.ts 的 PRIVACY_VERSION 改成當天日期
+ * （UPDATED_DATE 直接沿用它，使用者也會因此被要求重新同意）。
  * 段落中的網址與 {email} 會自動變成連結。
  */
+
+import { PRIVACY_VERSION } from '../../core/consent'
 
 /** 支援信箱（也可以用環境變數 VITE_SUPPORT_EMAIL 覆寫） */
 export const CONTACT_EMAIL: string = import.meta.env.VITE_SUPPORT_EMAIL ?? 'acacia.qiqi@gmail.com'
 export const EFFECTIVE_DATE = '2026-11-22'
-export const UPDATED_DATE = '2026-11-24'
+/** 最後更新日期＝同意紀錄用的政策版本（src/core/consent.ts 的 PRIVACY_VERSION），只要改那裡一處 */
+export const UPDATED_DATE = PRIVACY_VERSION
 
 export type PolicyBlock = string | { list: string[] } | { sub: string }
 export interface PolicySection {
