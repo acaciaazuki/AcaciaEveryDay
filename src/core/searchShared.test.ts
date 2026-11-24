@@ -30,4 +30,17 @@ describe('searchAll：共享行程', () => {
     const [hit] = searchAll({ ...empty, shared: shared(U.kid) }, '台南', 'all', fmt)
     expect(hit).toMatchObject({ title: '（已隱藏）', snippet: { field: 'loc', text: SEEN.homePlace } })
   })
+
+  it('細節可以搜尋（摘錄標示「細節」）；遮罩細節時搜不到', () => {
+    const data = seedSpaces('2026-12-01')
+    const at = { dateISO: '2026-12-01', spaceId: 'sp-family', createdBy: U.dad, kind: 'meeting' as const }
+    data.items.push(
+      { ...data.items[0]!, ...at, id: 'm1', title: '家庭會議', details: { project: '換房子計畫' } },
+      { ...data.items[0]!, ...at, id: 'm2', title: '另一個會議', details: { project: '換房子貸款' }, visibility: { ...data.items[0]!.visibility, maskedFields: ['details'] } },
+    )
+    const forKid = searchableShared(visibleCalendar(data, U.dad, U.kid, 'all').shared)
+    const hits = searchAll({ ...empty, shared: forKid }, '換房子', 'all', fmt)
+    expect(hits.map((h) => h.id)).toEqual(['m1'])
+    expect(hits[0]!.snippet).toEqual({ field: 'detail', text: '換房子計畫' })
+  })
 })

@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { EVENT_ICON_KEYS } from './eventIcons'
+import { DETAIL_MAX } from './itemDetails'
 import type { CalendarEvent } from './schema'
 
 /**
@@ -123,7 +124,7 @@ export const sharedCalendarItemSchema = z.object({
    * 依類型而定的細節，例如課程的老師、教室，會議的連結，就醫的科別。
    * 統一當作敏感欄位處理（busy_only 或遮罩 details 時整包移除）。
    */
-  details: z.record(z.string(), z.string()).default({}),
+  details: z.record(z.string(), z.string().max(DETAIL_MAX)).default({}),
   titleColor: z.string().optional(),
   bgColor: z.string().optional(),
   icon: z.enum(EVENT_ICON_KEYS).optional(),
@@ -164,6 +165,8 @@ export const busyProjectionRuleSchema = z
     includePrivate: z.boolean().default(false),
     enabled: z.boolean().default(true),
     updatedAt: timestamp.default(0),
+    /** 軟刪除：刪除的規則也要同步出去，否則其他裝置會把它帶回來 */
+    deletedAt: timestamp.nullable().default(null),
   })
   .refine((r) => r.sourceSpaceId !== r.targetSpaceId, { message: '來源與目標空間不能相同', path: ['targetSpaceId'] })
 
@@ -251,6 +254,37 @@ export function removeMember(space: Space, actorId: string, userId: string, now:
   const members = space.members.filter((m) => m.userId !== userId)
   if (!members.some((m) => m.role === 'owner')) throw new SpaceMembershipError('空間至少要保留一位 owner')
   return { ...space, members, updatedAt: now, version: space.version + 1 }
+}
+
+/** 規則目前是否生效（啟用中而且沒被刪除） */
+export const isRuleActive = (r: Pick<BusyProjectionRule, 'enabled' | 'deletedAt'>) => r.enabled && r.deletedAt === null
+
+/**
+ * 把資料裡「自己」的 id 全部換成另一個 id。
+ * Drive 同步時，每台裝置一開始各自產生 local-… 的 id；第二台裝置開啟同步時改用雲端檔案的 id，
+ * 讓所有裝置共用同一個身分（不使用 Google 帳號識別碼）。
+ */
+export function rekeyOwner(data: SharedCalendarData, from: string, to: string): SharedCalendarData {
+  if (from === to) return data
+  const swap = (id: string) => (id === from ? to : id)
+  const swapAll = (ids: string[]) => [...new Set(ids.map(swap))]
+  return {
+    ...data,
+    ownerId: swap(data.ownerId),
+    spaces: data.spaces.map((s) => ({
+      ...s,
+      createdBy: swap(s.createdBy),
+      // 雲端身分本來就是成員時（理論上不會發生），保留角色較高的那一筆
+      members: s.members.map((m) => ({ ...m, userId: swap(m.userId) })).filter((m, i, all) => all.findIndex((x) => x.userId === m.userId) === i),
+    })),
+    items: data.items.map((i) => ({
+      ...i,
+      createdBy: swap(i.createdBy),
+      ...(i.updatedBy !== undefined && { updatedBy: swap(i.updatedBy) }),
+      visibility: { ...i.visibility, allowedUserIds: swapAll(i.visibility.allowedUserIds), hiddenUserIds: swapAll(i.visibility.hiddenUserIds) },
+    })),
+    busyProjectionRules: data.busyProjectionRules.map((r) => ({ ...r, userId: swap(r.userId) })),
+  }
 }
 
 // ---------- 舊資料相容／遷移（對齊 migrate.ts 的風格） ----------

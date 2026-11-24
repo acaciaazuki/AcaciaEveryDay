@@ -6,6 +6,8 @@ import './i18n'
 import './index.css'
 import { startAutoBackup } from './store/useBackupStore'
 import { useConsentStore, whenConsented } from './store/useConsentStore'
+import { startSpacesAutoBackup } from './store/useSpacesBackupStore'
+import { startSpacesSync } from './store/useSpacesSyncStore'
 import { useSyncStore } from './store/useSyncStore'
 
 // 讀取使用條款同意紀錄；同意之前不碰 Google 登入、自動備份與同步
@@ -15,6 +17,9 @@ whenConsented(() => {
   void useSyncStore.getState().connect(false)
   // 自動備份：開啟網站時與資料變動後，距上次超過 12 小時就在背景建立快照
   startAutoBackup()
+  // 共享空間：本機自動快照；使用者開啟雲端同步時才會讀寫 acacia_spaces_v1.json
+  startSpacesAutoBackup()
+  startSpacesSync()
 })
 
 createRoot(document.getElementById('root')!).render(

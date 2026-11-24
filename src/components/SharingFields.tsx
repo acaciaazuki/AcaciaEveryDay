@@ -1,10 +1,13 @@
 import { useTranslation } from 'react-i18next'
-import { MASKABLE_FIELDS, orderedKinds, VISIBILITY_MODES, type ItemKind, type MaskableField, type Space, type Visibility } from '../core/sharing'
+import { DETAIL_MAX, detailFieldsOf } from '../core/itemDetails'
+import { MASKABLE_FIELDS, orderedKinds, VISIBILITY_MODES, type ItemKind, type Space, type Visibility } from '../core/sharing'
 import { Field } from './Field'
 
 export interface SharedDraft {
   kind: ItemKind
   location: string
+  /** 依類型填寫的細節；存檔時由 cleanDetails 只留這個類型的欄位 */
+  details: Record<string, string>
   visibility: Visibility
 }
 
@@ -37,6 +40,22 @@ export function SharingFields({ space, selfId, value, onChange, locked }: { spac
         </select>
       </label>
       <Field label={t('sharing.location')} value={value.location} onChange={(e) => onChange({ ...value, location: e.target.value })} />
+      {detailFieldsOf(value.kind).length > 0 && (
+        <div role="group" aria-label={t('sharing.detailsTitle')} className="grid gap-3 min-[30rem]:grid-cols-2">
+          {detailFieldsOf(value.kind).map((key) => (
+            <Field
+              key={key}
+              label={t(`sharing.detail.${key}`)}
+              placeholder={t(`sharing.detailPlaceholder.${key}`)}
+              type={key === 'meetingLink' ? 'url' : 'text'}
+              inputMode={key === 'meetingLink' ? 'url' : undefined}
+              maxLength={DETAIL_MAX}
+              value={value.details[key] ?? ''}
+              onChange={(e) => onChange({ ...value, details: { ...value.details, [key]: e.target.value } })}
+            />
+          ))}
+        </div>
+      )}
 
       <fieldset disabled={locked} className="grid gap-3">
         <legend className="mb-1.5 text-xs font-semibold text-muted">{t('sharing.privacy')}</legend>
@@ -87,7 +106,7 @@ export function SharingFields({ space, selfId, value, onChange, locked }: { spac
           <div role="group" aria-label={t('sharing.masked')} className="grid gap-1.5">
             <span className="text-xs font-semibold text-muted">{t('sharing.masked')}</span>
             <div className="flex flex-wrap gap-2">
-              {MASKABLE_FIELDS.filter((f): f is Exclude<MaskableField, 'details'> => f !== 'details').map((f) => (
+              {MASKABLE_FIELDS.map((f) => (
                 <label key={f} className={chip(v.maskedFields.includes(f))}>
                   <input
                     type="checkbox"

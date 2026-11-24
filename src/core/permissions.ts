@@ -1,4 +1,5 @@
 import {
+  isRuleActive,
   roleOf,
   sharedCalendarItemSchema,
   type BusyProjectionRule,
@@ -249,7 +250,8 @@ export function projectBusyBlocks(options: ProjectBusyBlocksOptions): SharedCale
   const out: SharedCalendarItem[] = []
   for (const rule of rules) {
     if (rule.targetSpaceId !== targetSpaceId) continue
-    if (!rule.enabled && !includeDeleted) continue
+    const active = isRuleActive(rule)
+    if (!active && !includeDeleted) continue
     const source = spaceById.get(rule.sourceSpaceId)
     if (!source || !roleOf(source, rule.userId) || !roleOf(target, rule.userId)) continue
 
@@ -260,7 +262,7 @@ export function projectBusyBlocks(options: ProjectBusyBlocksOptions): SharedCale
       if (item.visibility.mode === 'private' && !rule.includePrivate) continue
       if (range && (item.dateISO > range.to || (item.endDateISO || item.dateISO) < range.from)) continue
 
-      const removed = item.deletedAt !== null || !rule.enabled
+      const removed = item.deletedAt !== null || !active
       if (removed && !includeDeleted) continue
       const updatedAt = Math.max(item.updatedAt, rule.updatedAt)
       out.push({
@@ -279,7 +281,7 @@ export function projectBusyBlocks(options: ProjectBusyBlocksOptions): SharedCale
         createdBy: rule.userId,
         createdAt: item.createdAt,
         // 規則停用時版本 +1，讓墓碑蓋過先前送出的區塊
-        version: item.version + (rule.enabled ? 0 : 1),
+        version: item.version + (active ? 0 : 1),
         updatedAt,
         updatedBy: rule.userId,
         deletedAt: removed ? (item.deletedAt ?? updatedAt) : null,

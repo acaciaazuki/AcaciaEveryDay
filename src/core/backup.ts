@@ -47,7 +47,7 @@ export const countsOf = (d: AppData): SnapshotCounts => ({
 })
 
 /** 自動備份是否該執行：有啟用、本機有資料、距上次超過間隔，而且資料跟最新一份快照不同 */
-export function shouldAutoBackup(index: BackupIndex, data: Pick<AppData, 'updatedAt'>, now: number, interval = BACKUP_INTERVAL_MS): boolean {
+export function shouldAutoBackup(index: Pick<BackupIndex, 'enabled' | 'lastAt'> & { snapshots: { dataUpdatedAt: number }[] }, data: { updatedAt: number }, now: number, interval = BACKUP_INTERVAL_MS): boolean {
   if (!index.enabled) return false
   // 從沒有改過資料（新裝置、剛清除）不備份，避免空白快照把舊的擠掉
   if (data.updatedAt === 0) return false
@@ -56,10 +56,10 @@ export function shouldAutoBackup(index: BackupIndex, data: Pick<AppData, 'update
 }
 
 /** 資料跟最新一份快照一模一樣時不必再存，免得七份都是同一個版本、反而把較舊的歷史擠掉 */
-export const isSameAsLatest = (index: BackupIndex, data: Pick<AppData, 'updatedAt'>) => index.snapshots[0]?.dataUpdatedAt === data.updatedAt
+export const isSameAsLatest = (index: { snapshots: { dataUpdatedAt: number }[] }, data: { updatedAt: number }) => index.snapshots[0]?.dataUpdatedAt === data.updatedAt
 
 /** 加入新快照並滾動覆蓋，回傳新的清單與要刪掉的舊快照 id */
-export function addSnapshot(snapshots: SnapshotMeta[], meta: SnapshotMeta, max = MAX_SNAPSHOTS): { snapshots: SnapshotMeta[]; removed: string[] } {
+export function addSnapshot<T extends { id: string; createdAt: number }>(snapshots: T[], meta: T, max = MAX_SNAPSHOTS): { snapshots: T[]; removed: string[] } {
   const all = [meta, ...snapshots.filter((s) => s.id !== meta.id)].sort((a, b) => b.createdAt - a.createdAt)
   return { snapshots: all.slice(0, max), removed: all.slice(max).map((s) => s.id) }
 }

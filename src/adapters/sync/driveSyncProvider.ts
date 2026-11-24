@@ -1,14 +1,16 @@
 import { z } from 'zod'
-import { busyProjectionRuleSchema, type BusyProjectionRule, type Space } from '../../core/sharing'
+import { busyProjectionRuleSchema } from '../../core/sharing'
 import {
   buildViewerExport,
   containsLocalOnlyData,
+  mergeRuleLists,
   mergeSyncEntries,
+  newerSpace,
   spaceSyncPayloadSchema,
   type SpaceSyncPayload,
   type SyncConflict,
 } from '../../core/syncEnvelope'
-import { download, DriveError, findFile, SPACES_DRIVE_FILE, upload } from '../drive'
+import { deleteFile, download, DriveError, findFile, SPACES_DRIVE_FILE, upload } from '../drive'
 import {
   browserIsOnline,
   createStatusTracker,
@@ -57,6 +59,7 @@ export interface DriveApi {
   findFile: (token: string, name: string) => Promise<string | null>
   download: (token: string, id: string) => Promise<unknown>
   upload: (token: string, id: string | null, name: string, data: unknown) => Promise<string>
+  deleteFile: (token: string, id: string) => Promise<void>
 }
 
 export interface DriveSyncDeps {
@@ -67,7 +70,7 @@ export interface DriveSyncDeps {
   isOnline?: () => boolean
 }
 
-const realDrive: DriveApi = { findFile, download, upload }
+const realDrive: DriveApi = { findFile, download, upload, deleteFile }
 
 const maxCursor = (a: string | null, b: number | null) => {
   const n = Math.max(a === null ? -1 : Number(a), b ?? -1)
@@ -89,19 +92,15 @@ const asThisDevice = (c: SyncConflict): SyncConflict => ({
   winner: c.winner === 'local' ? 'incoming' : 'local',
 })
 
-const newerSpace = (a: Space, b: Space) => (b.version > a.version || (b.version === a.version && b.updatedAt > a.updatedAt) ? b : a)
-
-/** 合併規則：同 id 以 updatedAt 較新的為準 */
-function mergeRules(remote: readonly BusyProjectionRule[], local: readonly BusyProjectionRule[]): BusyProjectionRule[] {
-  const byId = new Map(remote.map((r) => [r.id, r]))
-  for (const r of local) {
-    const cur = byId.get(r.id)
-    if (!cur || r.updatedAt >= cur.updatedAt) byId.set(r.id, r)
-  }
-  return [...byId.values()]
+/** Drive 版多兩個動作：開啟同步時對齊身分、關閉同步時可以刪掉雲端檔案 */
+export interface DriveSyncProvider extends SyncProvider {
+  /** 雲端檔案屬於哪個 id（沒有檔案回傳 null）；第二台裝置開啟同步時用來對齊身分 */
+  peekOwner(): Promise<string | null>
+  /** 刪除 Drive 上的 acacia_spaces_v1.json（關閉同步並選擇刪除時）；回傳是否有刪到 */
+  deleteRemote(): Promise<boolean>
 }
 
-export function createDriveSyncProvider(deps: DriveSyncDeps): SyncProvider {
+export function createDriveSyncProvider(deps: DriveSyncDeps): DriveSyncProvider {
   const drive = deps.drive ?? realDrive
   const now = deps.now ?? Date.now
   const isOnline = deps.isOnline ?? browserIsOnline
@@ -199,9 +198,12 @@ export function createDriveSyncProvider(deps: DriveSyncDeps): SyncProvider {
           for (const i of merged.items) cursor = maxCursor(cursor, i.updatedAt)
           payloads.push({ ...mine, space: theirs ? newerSpace(theirs.space, mine.space) : mine.space, since: null, cursor, entries: merged.items })
         }
-        // 其他裝置新增、這台還沒拉到的空間：保留，不要覆蓋掉
+        // 其他裝置新增、這台還沒拉到的空間：保留，不要覆蓋掉。
+        // 這台已經刪除（或退出）的空間不會出現在 local（不是成員就不輸出），用本機較新的空間版本蓋過去，刪除才會傳到其他裝置
+        const localSpaces = new Map(data.spaces.map((sp) => [sp.id, sp]))
         for (const p of remoteBySpace.values()) {
-          payloads.push(p)
+          const mineSpace = localSpaces.get(p.spaceId)
+          payloads.push(mineSpace ? { ...p, space: newerSpace(p.space, mineSpace) } : p)
           for (const i of p.entries) cursor = maxCursor(cursor, i.updatedAt)
         }
 
@@ -211,7 +213,7 @@ export function createDriveSyncProvider(deps: DriveSyncDeps): SyncProvider {
           ownerId: viewerId,
           updatedAt: at,
           payloads,
-          busyProjectionRules: mergeRules(remote?.busyProjectionRules ?? [], data.busyProjectionRules.filter((r) => r.userId === viewerId)),
+          busyProjectionRules: mergeRuleLists(remote?.busyProjectionRules ?? [], data.busyProjectionRules.filter((r) => r.userId === viewerId)),
         }
         // 上傳前的最後保險：本機專屬資料不能出現在雲端檔案裡
         if (containsLocalOnlyData(file)) throw new SyncProviderError({ code: 'invalid_payload', message: '同步內容含有本機專屬資料', retryable: false })
@@ -221,6 +223,41 @@ export function createDriveSyncProvider(deps: DriveSyncDeps): SyncProvider {
 
         status.set({ state: conflicts.length ? 'conflict' : 'idle', lastSyncedAt: at, cursor, conflicts, error: null })
         return { accepted, rejected, conflicts, cursor }
+      } catch (e) {
+        fail(e)
+      }
+    },
+
+    async peekOwner() {
+      const token = await begin()
+      try {
+        fileId ??= await drive.findFile(token, SPACES_DRIVE_FILE)
+        if (!fileId) {
+          status.set({ state: 'idle' })
+          return null
+        }
+        const raw = await drive.download(token, fileId)
+        const parsed = driveSpacesFileSchema.safeParse(raw)
+        if (!parsed.success) throw new SyncProviderError({ code: 'invalid_payload', message: parsed.error.message, retryable: false })
+        status.set({ state: 'idle' })
+        return parsed.data.ownerId
+      } catch (e) {
+        fail(e)
+      }
+    },
+
+    async deleteRemote() {
+      const token = await begin()
+      try {
+        let deleted = false
+        // 同名檔案理論上只有一個，保險起見刪到找不到為止（跟 deleteAllData 一樣）
+        for (let id = await drive.findFile(token, SPACES_DRIVE_FILE), guard = 0; id && guard < 10; id = await drive.findFile(token, SPACES_DRIVE_FILE), guard++) {
+          await drive.deleteFile(token, id)
+          deleted = true
+        }
+        fileId = null
+        status.reset()
+        return deleted
       } catch (e) {
         fail(e)
       }

@@ -23,6 +23,9 @@ function fakeDrive(initial: Record<string, unknown> = {}) {
       files[name] = JSON.parse(JSON.stringify(data))
       return name
     },
+    deleteFile: async (_t, id) => {
+      delete files[id]
+    },
   }
   return { api, files, uploads, fail: (e: Error | null) => (failWith = e) }
 }
@@ -178,14 +181,14 @@ describe('Drive 同步：衝突、軟刪除與跨裝置合併', () => {
       ...emptySharedCalendarData(U.dad),
       spaces: [work],
       items: [makeItem({ id: 'mtg', spaceId: work.id, createdBy: U.dad, kind: 'meeting' })],
-      busyProjectionRules: [{ id: 'r1', userId: U.dad, sourceSpaceId: work.id, targetSpaceId: 'sp-family', kinds: [], label: '上班中', includePrivate: false, enabled: true, updatedAt: T0 }],
+      busyProjectionRules: [{ id: 'r1', userId: U.dad, sourceSpaceId: work.id, targetSpaceId: 'sp-family', kinds: [], label: '上班中', includePrivate: false, enabled: true, updatedAt: T0, deletedAt: null }],
     }
     await provider.push({ viewerId: U.dad, data: fromOtherDevice, changedSince: null })
 
     const thisDevice = {
       ...emptySharedCalendarData(U.dad),
       spaces: [familySpace()],
-      busyProjectionRules: [{ id: 'r-mom', userId: U.mom, sourceSpaceId: 'a', targetSpaceId: 'b', kinds: [], label: '', includePrivate: false, enabled: true, updatedAt: T0 }],
+      busyProjectionRules: [{ id: 'r-mom', userId: U.mom, sourceSpaceId: 'a', targetSpaceId: 'b', kinds: [], label: '', includePrivate: false, enabled: true, updatedAt: T0, deletedAt: null }],
     }
     await provider.push({ viewerId: U.dad, data: thisDevice, changedSince: null })
     const file = drive.files[SPACES] as DriveSpacesFile

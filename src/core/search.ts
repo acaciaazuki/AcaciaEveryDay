@@ -6,7 +6,7 @@ export type SearchScope = (typeof SEARCH_SCOPES)[number]
 export type SearchKind = Exclude<SearchScope, 'all'>
 
 /** 比對的欄位。title 以外命中時，結果會多顯示一行摘錄 */
-export type SearchField = 'title' | 'note' | 'loc' | 'store' | 'cat' | 'address' | 'plan' | 'payment'
+export type SearchField = 'title' | 'note' | 'loc' | 'store' | 'cat' | 'address' | 'plan' | 'payment' | 'detail'
 
 export interface SearchHit {
   key: string
@@ -117,6 +117,7 @@ export function searchAll(data: SearchData, query: string, scope: SearchScope, f
             ['title', x.title],
             ['note', x.note],
             ['loc', x.location],
+            ['detail', x.details],
           ],
         },
         tokens,
