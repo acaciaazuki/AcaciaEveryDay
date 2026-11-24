@@ -184,18 +184,23 @@ export function PlacesPage() {
         ))}
       </div>
 
-      <div className="mb-3 flex flex-wrap items-center gap-2">
+      {/*
+        排序列：排序：[自訂順序] [調整順序] [種類] [距離遠近] [今日營業]，右側留空。
+        「調整順序」不是排序選項，不放進 radiogroup；radiogroup 用 contents 讓選項直接參與外層的 flex，
+        再用 order 把「調整順序」排在「自訂順序」之後，所有按鈕維持同樣的 gap 並垂直置中。
+      */}
+      <div data-place-sort-row className="mb-3 flex flex-wrap items-center gap-2">
         <span id="place-sort-label" className="text-xs font-semibold text-muted">
           {t('places.sort.label')}
         </span>
-        <div role="radiogroup" aria-labelledby="place-sort-label" className="flex flex-wrap gap-2">
-          {PLACE_SORTS.map((s) => (
-            <button key={s} type="button" role="radio" aria-checked={sort === s} onClick={() => chooseSort(s)} className={pill(sort === s)}>
+        <div role="radiogroup" aria-labelledby="place-sort-label" className="contents">
+          {PLACE_SORTS.map((s, i) => (
+            <button key={s} type="button" role="radio" aria-checked={sort === s} onClick={() => chooseSort(s)} className={`${pill(sort === s)} ${i === 0 ? '' : 'order-2'}`}>
               {t(`places.sort.${s}`)}
             </button>
           ))}
         </div>
-        <Button variant="ghost" className="ml-auto" disabled={places.length < 2} onClick={startReorder}>
+        <Button variant="ghost" className="order-1" disabled={places.length < 2} onClick={startReorder}>
           {t('places.sort.reorder')}
         </Button>
       </div>
