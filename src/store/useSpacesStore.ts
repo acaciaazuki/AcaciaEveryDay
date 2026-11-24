@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { webStorage } from '../adapters/storage'
 import type { CalendarFilter } from '../core/calendarView'
-import { applyItemEdit, PermissionError, softDeleteItem, type ItemPatch } from '../core/permissions'
+import { applyItemEdit, PermissionError, resolveCalendarItemForViewer, softDeleteItem, type ItemPatch } from '../core/permissions'
 import { prepareSpacesRestore } from '../core/spacesBackup'
 import { applyPulled as mergePulled, type PulledData, type SyncConflict } from '../core/syncEnvelope'
 import {
@@ -94,6 +94,8 @@ interface SpacesState {
   addItem: (spaceId: string, input: NewItemInput) => string
   updateItem: (id: string, patch: ItemPatch) => void
   removeItem: (id: string) => void
+  /** 取消刪除（批次刪除、批次移動的復原）：清掉刪除時間、版本 +1，刪除與恢復都會同步給其他成員 */
+  restoreItem: (id: string) => void
 
   addRule: (input: RuleInput) => string
   updateRule: (id: string, patch: Partial<RuleInput>) => void
@@ -224,6 +226,16 @@ export const useSpacesStore = create<SpacesState>()(
           const self = guard()
           const { item, space } = itemOf(id)
           replaceItem(softDeleteItem(item, self, space, Date.now()))
+        },
+        restoreItem: (id) => {
+          const self = guard()
+          const { item, space } = itemOf(id)
+          if (item.deletedAt === null) return
+          const back = { ...item, deletedAt: null }
+          // 跟刪除一樣：要有編輯權限才能恢復
+          if (!resolveCalendarItemForViewer(back, self, { space })?.canEdit) throw new PermissionError('沒有恢復這筆行程的權限')
+          const at = Math.max(Date.now(), item.updatedAt)
+          replaceItem({ ...back, version: item.version + 1, updatedAt: at, updatedBy: self })
         },
 
         addRule: (input) => {

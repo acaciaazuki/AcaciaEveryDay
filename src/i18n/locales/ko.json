@@ -122,7 +122,25 @@
       "archived": "보관됨",
       "status": "상태"
     },
-    "openDay": "{{date}}, 이날의 일정 보기"
+    "openDay": "{{date}}, 이날의 일정 보기",
+    "manage": {
+      "start": "일괄 관리",
+      "done": "완료",
+      "hint": "일정이나 날짜 옆 체크박스를 눌러 선택하세요. 바쁜 시간 블록, 보기 전용, 쇼핑 연동, 공휴일은 선택할 수 없습니다.",
+      "bar": "일괄 작업",
+      "selected": "{{count}}개 선택",
+      "delete": "일괄 삭제",
+      "moveTo": "이동",
+      "confirmMove": "이동하기",
+      "clear": "선택 해제",
+      "select": "\"{{title}}\" 선택",
+      "selectDay": "{{date}} 전체 선택",
+      "selectAllDay": "이날 전체 선택",
+      "deleted": "일정 {{count}}개를 삭제했습니다",
+      "moved": "일정 {{count}}개를 【{{name}}】(으)로 옮겼습니다",
+      "alreadyThere": "선택한 일정은 이미 【{{name}}】에 있습니다",
+      "undone": "실행 취소됨"
+    }
   },
   "places": {
     "title": "즐겨찾는 장소",

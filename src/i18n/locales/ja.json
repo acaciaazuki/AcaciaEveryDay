@@ -122,7 +122,25 @@
       "archived": "保存済み",
       "status": "状態"
     },
-    "openDay": "{{date}} の予定を見る"
+    "openDay": "{{date}} の予定を見る",
+    "manage": {
+      "start": "まとめて管理",
+      "done": "完了",
+      "hint": "予定や日付の横のチェックボックスで選択します。予定ありのブロック、閲覧のみ、買い物連動、祝日は選択できません。",
+      "bar": "まとめて操作",
+      "selected": "{{count}} 件選択",
+      "delete": "まとめて削除",
+      "moveTo": "移動先",
+      "confirmMove": "移動する",
+      "clear": "選択を解除",
+      "select": "「{{title}}」を選択",
+      "selectDay": "{{date}} をすべて選択",
+      "selectAllDay": "この日をすべて選択",
+      "deleted": "{{count}} 件の予定を削除しました",
+      "moved": "{{count}} 件の予定を【{{name}}】に移動しました",
+      "alreadyThere": "選択した予定はすでに【{{name}}】にあります",
+      "undone": "元に戻しました"
+    }
   },
   "places": {
     "title": "お気に入りの場所",

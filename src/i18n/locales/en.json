@@ -122,7 +122,25 @@
       "archived": "Archived",
       "status": "Status"
     },
-    "openDay": "{{date}}: see this day"
+    "openDay": "{{date}}: see this day",
+    "manage": {
+      "start": "Manage",
+      "done": "Done",
+      "hint": "Tap events or the checkbox next to a date to select. Busy blocks, read-only, shopping-linked events and holidays can’t be selected.",
+      "bar": "Bulk actions",
+      "selected": "{{count}} selected",
+      "delete": "Delete",
+      "moveTo": "Move to",
+      "confirmMove": "Move",
+      "clear": "Clear",
+      "select": "Select \"{{title}}\"",
+      "selectDay": "Select all on {{date}}",
+      "selectAllDay": "Select the whole day",
+      "deleted": "Deleted {{count}} events",
+      "moved": "Moved {{count}} events to [{{name}}]",
+      "alreadyThere": "The selected events are already in [{{name}}]",
+      "undone": "Undone"
+    }
   },
   "places": {
     "title": "Favorite places",
