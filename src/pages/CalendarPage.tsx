@@ -24,6 +24,8 @@ import { useVisibleCalendar } from '../hooks/useVisibleCalendar'
 import { useChipCapacity } from '../hooks/useChipCapacity'
 import { HOLIDAY_STYLE, holidayStyle, useHolidaysByDate } from '../hooks/useHolidays'
 import { useAppStore } from '../store/useAppStore'
+import { useSpacesStore } from '../store/useSpacesStore'
+import { PERSONAL_CALENDAR_ID } from '../core/sharing'
 
 // 每天最多顯示的行程標籤數，超過的折成「還有 X 個」；桌面滿版時改依格子實際高度計算
 const MAX_CHIPS = 6
@@ -60,8 +62,11 @@ export function CalendarPage() {
   const openShared = (x: SharedEntry) => (x.canEdit ? setEditing(x) : setViewingShared(x))
   const [batchOpen, setBatchOpen] = useState(false)
   // 批次建立後的提示：可以一鍵復原（刪除剛建立的行程）
-  const [batchToast, setBatchToast] = useState<{ message: string; ids?: string[] } | null>(null)
+  const [batchToast, setBatchToast] = useState<{ message: string; ids?: string[]; spaceId?: string } | null>(null)
   const removeEvents = useAppStore((s) => s.removeEvents)
+  const removeItem = useSpacesStore((s) => s.removeItem)
+  // 批次新增預設放在上方目前選的分頁（全部時是我的行事曆）
+  const filter = useSpacesStore((s) => s.filter)
   const closeBatchToast = useCallback(() => setBatchToast(null), [])
   // 匯入的國定假日：唯讀，排在每天最前面
   const holidaysByDate = useHolidaysByDate()
@@ -302,8 +307,9 @@ export function CalendarPage() {
         <BatchEventsDialog
           initialYear={ym.year}
           initialMonth={ym.month}
+          initialTarget={filter === 'all' ? PERSONAL_CALENDAR_ID : filter}
           onClose={() => setBatchOpen(false)}
-          onCreated={({ ids, title }) => setBatchToast({ message: t('calendar.batchForm.created', { count: ids.length, title }), ids })}
+          onCreated={({ ids, title, spaceId }) => setBatchToast({ message: t('calendar.batchForm.created', { count: ids.length, title }), ids, spaceId })}
         />
       )}
       {batchToast && (
@@ -318,7 +324,9 @@ export function CalendarPage() {
               label: t('calendar.batchForm.undo'),
               onClick: () => {
                 const ids = batchToast.ids!
-                removeEvents(ids)
+                // 我的行事曆直接刪除；共享空間用軟刪除（刪除會同步給其他成員）
+                if (batchToast.spaceId) for (const id of ids) removeItem(id)
+                else removeEvents(ids)
                 // 按鈕會先關掉這個提示，下一輪再顯示「已復原」
                 setTimeout(() => setBatchToast({ message: t('calendar.batchForm.undone', { count: ids.length }) }))
               },
