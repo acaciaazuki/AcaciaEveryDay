@@ -45,23 +45,23 @@ describe('今天頁的問候與摘要橫幅', () => {
     expect(document.querySelector('svg[data-weather="night"]')).not.toBeNull()
   })
 
-  it('三種寬度的排法：手機直向、中屏左右兩欄、桌機一列（按鈕收到側邊欄）', () => {
+  it('三種寬度的排法：手機直向（含按鈕）、中屏單欄、桌機一列；681px 以上按鈕改用側邊欄', () => {
     setup()
     const hero = screen.getByRole('region', { name: '晚安' })
     const [greet, divider, message, stats, actions] = [...hero.children] as HTMLElement[]
     expect(greet).toHaveAttribute('data-hero-greet')
     expect(message).toHaveAttribute('data-hero-message')
     expect(actions).toHaveAttribute('data-hero-actions')
-    // 中屏：問候與文字在左、按鈕在右直向排列、摘要橫跨整列
-    expect(hero).toHaveClass('min-[681px]:grid-cols-[minmax(0,1fr)_auto]')
-    expect(actions).toHaveClass('min-[681px]:col-[2]', 'min-[681px]:row-[1/3]')
+    // 中屏：單欄，問候 → 文字 → 摘要；側邊欄已有新增與行事曆，橫幅不放按鈕，避免重複
+    expect(hero.className).not.toMatch(/min-\[681px\]:grid-cols-/)
+    expect(actions).toHaveClass('min-[681px]:hidden')
+    expect(actions.className).not.toMatch(/min-\[1280px\]/)
     expect(stats).toHaveClass('min-[681px]:col-[1/-1]')
     // 桌機：問候｜分隔線｜文字｜數字卡，按鈕收起
     expect(hero).toHaveClass('min-[1280px]:grid-cols-[auto_1px_minmax(0,1fr)_auto]')
     expect(divider).toHaveClass('hidden', 'min-[1280px]:block')
     expect(message).toHaveClass('min-[1280px]:col-[3]')
     expect(stats).toHaveClass('min-[1280px]:col-[4]')
-    expect(actions).toHaveClass('min-[1280px]:hidden')
     // 手機：天氣插畫排在日期之前
     expect(greet.querySelector('svg')).toHaveClass('-order-1')
   })
