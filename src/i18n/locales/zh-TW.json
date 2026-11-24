@@ -1083,7 +1083,6 @@
     "spaceName": "空間名稱",
     "hiddenFrom": "對這些人隱藏",
     "busyLabel": "忙碌時顯示的文字",
-    "projection": "把忙碌時段同步到其他空間",
     "syncState": {
       "idle": "已同步",
       "syncing": "同步中…",
@@ -1138,15 +1137,7 @@
       "memberRole": "角色",
       "memberRequired": "請輸入成員名稱",
       "addMember": "新增成員",
-      "roleOf": "{{name}} 的角色",
-      "rulesHelp": "把一個空間裡「你自己建立」的行程，以忙碌時段的形式顯示在另一個空間，不會透露標題、地點或備註。",
-      "ruleText": "{{from}} → {{to}}：顯示「{{label}}」",
-      "ruleTimeOnly": "{{from}} → {{to}}：只顯示時間",
-      "enabled": "啟用",
-      "from": "來源空間",
-      "to": "顯示在",
-      "addRule": "新增規則",
-      "sameSpace": "來源與顯示的空間不能相同"
+      "roleOf": "{{name}} 的角色"
     },
     "detailsTitle": "細節",
     "searchPreviewHint": "預覽其他成員的視角中：只搜尋這位成員看得到的共享行程，不會出現你的待辦、記帳、地點等個人資料。",
@@ -1206,6 +1197,36 @@
       "restored": "已還原",
       "restoreFailed": "還原失敗：{{reason}}"
     },
-    "place": "地點"
+    "place": "地點",
+    "rules": {
+      "title": "忙碌時段同步",
+      "help": "把某個行事曆的行程，以「忙碌」或只顯示時間的方式同步到其他行事曆，避免行程重疊，又不透露內容。",
+      "empty": "還沒有同步規則",
+      "add": "＋ 新增同步規則",
+      "addTitle": "新增忙碌時段同步",
+      "editTitle": "編輯忙碌時段同步",
+      "edit": "編輯",
+      "source": "來源行事曆",
+      "targets": "同步到",
+      "targetAll": "全部行事曆（含之後新加入的空間）",
+      "targetSelected": "指定行事曆",
+      "display": "顯示方式",
+      "displayBusy": "忙碌（可自訂文字）",
+      "displayTimeOnly": "只顯示時間區間",
+      "advanced": "進階",
+      "includeAllDay": "整天行程也同步（佔滿整天）",
+      "includePrivate": "包含私人行程",
+      "needTarget": "請至少選一個要同步到的行事曆",
+      "noTargets": "沒有其他可以同步到的行事曆",
+      "preview": "預覽：「{{space}}」的成員會看到 → {{text}}",
+      "previewSelf": "預覽：你會在「我的行事曆」看到 → {{text}}",
+      "save": "儲存",
+      "enabled": "啟用",
+      "remove": "刪除",
+      "fromSource": "來自{{name}}",
+      "sourceRow": "來源",
+      "timeOnlyNote": "只顯示佔用的時間",
+      "shortcut": "同步忙碌時段…"
+    }
   }
 }

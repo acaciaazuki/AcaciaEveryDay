@@ -14,6 +14,8 @@ import { Dialog } from './Dialog'
  * 這裡只負責「怎麼顯示」：
  * - 完整：跟一般行程一樣，左側加空間色
  * - 忙閒（busy）：淡鼠尾草綠斜紋＋時鐘圖示，只寫 busyLabel 或「忙碌」
+ * - 只顯示時間（busyDisplay 為 time_only）：淡灰斜紋，標題就是時間區間，不寫任何文字
+ * - 自己投射出去的區塊：加上「來自 ○○」標籤（其他成員看到的區塊沒有來源）
  * - 遮罩（masked）：一般外觀，加「部分隱藏」標記，被遮罩的欄位顯示「（已隱藏）」
  */
 
@@ -23,7 +25,28 @@ const BUSY_STYLE: CSSProperties = {
   borderColor: '#c8ddd3',
 }
 
+/** 只顯示時間的忙碌區塊：中性的淡灰斜紋，跟「忙碌」的綠色斜紋區分 */
+const TIME_ONLY_STYLE: CSSProperties = {
+  background: 'repeating-linear-gradient(135deg, #efede7 0 6px, var(--color-paper) 6px 12px)',
+  color: 'var(--color-muted)',
+  borderColor: '#d8d4ca',
+}
+
 const SPACE_ACCENT = '#75b799'
+const isTimeOnly = (e: SharedEntry) => e.access === 'busy' && e.busyDisplay === 'time_only'
+const busyStyle = (e: SharedEntry) => (isTimeOnly(e) ? TIME_ONLY_STYLE : BUSY_STYLE)
+
+/** 自己投射出去的區塊：「來自 ○○」 */
+function SourceTag({ entry }: { entry: SharedEntry }) {
+  const { t } = useTranslation()
+  if (!entry.projectedFrom) return null
+  const name = entry.projectedFrom.id === PERSONAL_CALENDAR_ID || !entry.projectedFrom.name ? t('sharing.myCalendar') : entry.projectedFrom.name
+  return (
+    <span data-projected-from={entry.projectedFrom.id} className="inline-flex shrink-0 items-center rounded-full border border-dashed border-[#c8ddd3] px-1.5 py-px text-[length:calc(10px*var(--fs))] font-semibold text-muted">
+      {t('sharing.rules.fromSource', { name })}
+    </span>
+  )
+}
 
 function SpaceTag({ entry }: { entry: SharedEntry }) {
   const { t } = useTranslation()
@@ -37,13 +60,14 @@ export function SharedChip({ entry, onOpen }: { entry: SharedEntry; onOpen: (x: 
   const title = useSharedTitle()
   const busy = entry.access === 'busy'
   const style: CSSProperties = busy
-    ? BUSY_STYLE
+    ? busyStyle(entry)
     : { background: entry.item.bgColor || '#eaf6ef', color: entry.item.titleColor || '#263633', borderColor: entry.space.color || SPACE_ACCENT }
   return (
     <button
       type="button"
       data-shared={entry.id}
       data-access={entry.access}
+      data-busy-display={busy ? entry.busyDisplay : undefined}
       onClick={(ev) => {
         ev.stopPropagation()
         onOpen(entry)
@@ -53,7 +77,8 @@ export function SharedChip({ entry, onOpen }: { entry: SharedEntry; onOpen: (x: 
     >
       {busy && <Icon name="clock" className="size-[1.3em] shrink-0" />}
       <span className="truncate">
-        {entry.start && `${entry.start} `}
+        {/* 只顯示時間時，標題本身就是時間區間，不再重複開始時間 */}
+        {entry.start && !isTimeOnly(entry) && `${entry.start} `}
         {title(entry)}
       </span>
     </button>
@@ -66,14 +91,16 @@ export function SharedCard({ entry, onOpen, compact = false }: { entry: SharedEn
   const title = useSharedTitle()
   const busy = entry.access === 'busy'
   const note = entry.maskedFields.includes('note') ? '' : entry.item.note
+  const timeOnly = isTimeOnly(entry)
   const style: CSSProperties = busy
-    ? { ...BUSY_STYLE, borderLeftColor: '#a9c9bb' }
+    ? { ...busyStyle(entry), borderLeftColor: timeOnly ? '#cbc6ba' : '#a9c9bb' }
     : { background: entry.item.bgColor || '#f2f8f4', borderLeftColor: entry.space.color || entry.item.titleColor || SPACE_ACCENT }
   return (
     <button
       type="button"
       data-shared={entry.id}
       data-access={entry.access}
+      data-busy-display={busy ? entry.busyDisplay : undefined}
       onClick={() => onOpen(entry)}
       className={`w-full rounded-xl border-l-4 text-left transition hover:-translate-y-px ${compact ? 'px-3 py-2' : 'px-4 py-3'} ${busy ? 'border border-dashed' : ''}`}
       style={style}
@@ -84,15 +111,19 @@ export function SharedCard({ entry, onOpen, compact = false }: { entry: SharedEn
           {title(entry)}
         </strong>
         <SpaceTag entry={entry} />
+        <SourceTag entry={entry} />
         {entry.access === 'masked' && (
           <span className="rounded-full border border-line bg-paper px-1.5 py-px text-[length:calc(10px*var(--fs))] font-semibold text-muted">{t('sharing.partlyHidden')}</span>
         )}
       </span>
-      <small className="block text-[length:calc(11px*var(--fs))] text-muted">
-        {formatTimeRange(entry.start, entry.end) || t('event.allDay')}
-        {entry.creatorName && ` · ${entry.creatorName}`}
-        {note && ` · ${note}`}
-      </small>
+      {/* 只顯示時間時標題已經是時間區間，這一行只剩建立者（沒有就不顯示） */}
+      {(!timeOnly || entry.creatorName) && (
+        <small className="block text-[length:calc(11px*var(--fs))] text-muted">
+          {timeOnly ? entry.creatorName : formatTimeRange(entry.start, entry.end) || t('event.allDay')}
+          {!timeOnly && entry.creatorName && ` · ${entry.creatorName}`}
+          {note && ` · ${note}`}
+        </small>
+      )}
     </button>
   )
 }
@@ -119,6 +150,8 @@ export function SharedDetailDialog({ entry, previewing, onClose }: { entry: Shar
         {row(t('event.date'), entry.lastDateISO !== entry.dateISO ? `${entry.dateISO} – ${entry.lastDateISO}` : entry.dateISO)}
         {row(t('sharing.time'), formatTimeRange(entry.start, entry.end) || t('event.allDay'))}
         {entry.creatorName && row(t('sharing.createdBy'), entry.creatorName)}
+        {entry.projectedFrom &&
+          row(t('sharing.rules.sourceRow'), entry.projectedFrom.id === PERSONAL_CALENDAR_ID || !entry.projectedFrom.name ? t('sharing.myCalendar') : entry.projectedFrom.name)}
         {entry.access !== 'busy' && (
           <>
             {row(t('sharing.kind'), t(`sharing.itemKind.${entry.kind}`), hidden('kind'))}
@@ -147,6 +180,7 @@ export function SharedDetailDialog({ entry, previewing, onClose }: { entry: Shar
           </>
         )}
         {entry.projected && <p className="text-xs text-muted">{t('sharing.projectedHint')}</p>}
+        {isTimeOnly(entry) && <p className="text-xs text-muted">{t('sharing.rules.timeOnlyNote')}</p>}
       </dl>
       <div className="mt-5 flex justify-end">
         <Button variant="ghost" onClick={onClose}>

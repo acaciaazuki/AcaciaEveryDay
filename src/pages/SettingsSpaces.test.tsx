@@ -46,21 +46,14 @@ describe('設定：共享空間', () => {
     expect(space.members.find((m) => m.displayName === '媽媽')?.role).toBe('viewer')
   })
 
-  it('兩個以上空間時可以設定忙閒投射規則', () => {
-    const st = useSpacesStore.getState()
-    const family = st.createSpace({ name: '陳家', kind: 'family' })
-    const work = st.createSpace({ name: '設計部', kind: 'work' })
+  it('有空間時顯示「忙碌時段同步」，可以新增規則（詳細操作見 BusySyncRules.test.tsx）', () => {
+    useSpacesStore.getState().createSpace({ name: '陳家', kind: 'family' })
     renderPage()
     const p = within(panel())
-    fireEvent.change(p.getByLabelText('來源空間'), { target: { value: work } })
-    fireEvent.change(p.getByLabelText('顯示在'), { target: { value: family } })
-    fireEvent.change(p.getAllByLabelText('忙碌時顯示的文字').at(-1)!, { target: { value: '上班中' } })
-    fireEvent.click(p.getByRole('button', { name: '新增規則' }))
-    expect(p.getByText('設計部 → 陳家：顯示「上班中」')).toBeInTheDocument()
-    expect(useSpacesStore.getState().data.busyProjectionRules[0]).toMatchObject({ sourceId: work, targetMode: 'selected', targetIds: [family], legacyTargetId: family, includeAllDay: true, label: '上班中', enabled: true })
-
-    fireEvent.click(p.getByLabelText('啟用'))
-    expect(useSpacesStore.getState().data.busyProjectionRules[0]!.enabled).toBe(false)
+    expect(p.getByRole('heading', { name: '忙碌時段同步' })).toBeInTheDocument()
+    expect(p.getByText('還沒有同步規則')).toBeInTheDocument()
+    fireEvent.click(p.getByRole('button', { name: '＋ 新增同步規則' }))
+    expect(screen.getByRole('dialog', { name: '新增忙碌時段同步' })).toBeInTheDocument()
   })
 
   it('刪除空間要確認', () => {
