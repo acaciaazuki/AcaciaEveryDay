@@ -20,7 +20,9 @@ export function SpacesPanel() {
   const [name, setName] = useState('')
   const [kind, setKind] = useState<SpaceKind>('family')
   const [error, setError] = useState('')
-  const previewing = viewerId !== selfId
+  // 預覽其他成員的視角、或本機資料來自較新版本（寫入保護）時，整個面板唯讀
+  const blocked = useSpacesStore((s) => s.blockedReason !== null)
+  const previewing = viewerId !== selfId || blocked
 
   const run = (fn: () => void) => {
     try {

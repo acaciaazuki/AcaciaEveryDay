@@ -160,3 +160,22 @@ export const searchableShared = (entries: readonly SharedEntry[]): SearchableSha
   entries
     .filter((e) => e.access !== 'busy')
     .map((e) => ({ id: e.id, title: e.item.title, note: e.item.note, location: e.item.location, details: Object.values(e.item.details).join(' '), dateISO: e.dateISO, start: e.start, spaceName: e.space.name }))
+
+/**
+ * 新增／修改行程時的重疊提醒：找出某一天、某段時間跟哪些忙碌區塊（投射產生的）重疊。
+ * - 任一方是整天（沒有開始時間）：同一天就算重疊
+ * - 跨日的忙碌區塊：保守起見，涵蓋的每一天都算重疊
+ * - 沒有結束時間：當成時間點，落在區塊內（或同一個開始時間）就算重疊
+ * 只看忙碌區塊；一般共享行程不算（那些本來就看得到內容，由使用者自己判斷）。
+ */
+export function busyConflicts(entries: readonly SharedEntry[], dateISO: string, start: string, end: string): SharedEntry[] {
+  if (!dateISO) return []
+  return sharedOn(entries, dateISO).filter((e) => {
+    if (!e.projected || e.access !== 'busy') return false
+    if (!start || !e.start || e.dateISO !== e.lastDateISO) return true
+    const myEnd = end || start
+    const theirEnd = e.end || e.start
+    if (start === e.start) return true
+    return start < theirEnd && e.start < myEnd
+  })
+}

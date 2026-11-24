@@ -1231,6 +1231,11 @@
       "sourceRow": "Source",
       "timeOnlyNote": "Seul le créneau occupé est affiché",
       "shortcut": "Synchroniser les créneaux…"
-    }
+    },
+    "overlap": {
+      "title": "Ce créneau chevauche un créneau occupé",
+      "hint": "Vous pouvez quand même enregistrer ; c’est juste un rappel."
+    },
+    "blockedBanner": "Les données du calendrier partagé sur cet appareil proviennent d’une version plus récente d’ACACIA. Pour éviter de les écraser, la modification et la synchronisation sont suspendues. Mettez l’app à jour : vos données sont conservées."
   }
 }

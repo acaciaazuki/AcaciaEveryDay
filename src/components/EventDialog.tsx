@@ -1,14 +1,15 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { SharedEntry } from '../core/calendarView'
+import { useBusyConflicts } from '../hooks/useVisibleCalendar'
 import { toLocalISO } from '../core/date'
 import { EVENT_ICON_KEYS, eventIconOf, ICON_BG } from '../core/eventIcons'
 import type { CalendarEvent } from '../core/schema'
 import { cleanDetails } from '../core/itemDetails'
-import { defaultVisibility, orderedKinds, roleOf } from '../core/sharing'
+import { defaultVisibility, orderedKinds, PERSONAL_CALENDAR_ID, roleOf } from '../core/sharing'
 import { useAppStore } from '../store/useAppStore'
 import { useSpacesStore } from '../store/useSpacesStore'
-import { isAllDay } from '../core/time'
+import { formatTimeRange, isAllDay } from '../core/time'
 import { AllDayToggle } from './AllDayToggle'
 import { Button } from './Button'
 import { ColorSwatches, TextColorSwatches } from './ColorSwatches'
@@ -141,6 +142,7 @@ export function EventDialog({ event, shared, date, onClose }: { event: CalendarE
           )}
         </div>
         {error && <p className="-mt-2 text-xs text-[#c2583d]">{error}</p>}
+        <BusyOverlapNotice target={target} dateISO={draft.dateISO} start={allDay ? '' : times.start} end={allDay ? '' : times.end} />
         <div className="grid gap-1.5 text-xs font-semibold text-muted">
           {t('event.color')}
           <ColorSwatches label={t('event.color')} value={draft.bgColor} onChange={(c) => set({ bgColor: c.bg })} />
@@ -200,5 +202,38 @@ export function EventDialog({ event, shared, date, onClose }: { event: CalendarE
         </div>
       </form>
     </Dialog>
+  )
+}
+
+/**
+ * 重疊提醒：要放進的行事曆（我的行事曆或某個空間）在這段時間已經有忙碌區塊時，列出來提醒。
+ * 不擋儲存，只是避免撞期；自己投射過去的區塊會寫出來源，其他成員的區塊寫建立者。
+ */
+function BusyOverlapNotice({ target, dateISO, start, end }: { target: string; dateISO: string; start: string; end: string }) {
+  const { t } = useTranslation()
+  const conflicts = useBusyConflicts(target, dateISO, start, end)
+  if (conflicts.length === 0) return null
+  const sourceOf = (c: SharedEntry) => {
+    if (c.projectedFrom) return t('sharing.rules.fromSource', { name: c.projectedFrom.id === PERSONAL_CALENDAR_ID || !c.projectedFrom.name ? t('sharing.myCalendar') : c.projectedFrom.name })
+    return c.creatorName
+  }
+  return (
+    <div role="status" data-busy-overlap className="-mt-1 rounded-(--radius-control) border border-[#f0dfc0] bg-[#fff8ec] px-3.5 py-2.5 text-xs leading-relaxed text-[#8a5a1c]">
+      <p className="font-bold">{t('sharing.overlap.title')}</p>
+      <ul className="mt-1 grid gap-0.5">
+        {conflicts.map((c) => {
+          const label = c.busyDisplay === 'time_only' ? '' : c.busyLabel || t('sharing.busy')
+          const source = sourceOf(c)
+          return (
+            <li key={c.id}>
+              ・{formatTimeRange(c.start, c.end) || t('event.allDay')}
+              {label && ` ${label}`}
+              {source && `（${source}）`}
+            </li>
+          )
+        })}
+      </ul>
+      <p className="mt-1 text-[#a27a45]">{t('sharing.overlap.hint')}</p>
+    </div>
   )
 }

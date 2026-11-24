@@ -236,6 +236,10 @@ export function collect(root = ROOT) {
 
 function main() {
   const { packages, texts, skippedPlatform } = collect()
+  // 重新產生前，先記下隨網站發布的套件原本有哪些授權類型（用來提醒是否要請使用者重新同意）
+  const prevPath = join(OUT_DIR, 'packages.json')
+  const runtimeLicenses = (list) => new Set(list.filter((p) => p.scope === 'runtime').map((p) => p.license))
+  const before = existsSync(prevPath) ? runtimeLicenses(JSON.parse(readFileSync(prevPath, 'utf8'))) : null
   mkdirSync(OUT_DIR, { recursive: true })
   const write = (file, data) => {
     const json = JSON.stringify(data, null, 1) + '\n'
@@ -262,6 +266,15 @@ function main() {
   if (generated.length) console.log(`\n套件未附授權檔、已依標準條文補上：${generated.map((p) => p.name).join('、')}`)
   const missing = packages.filter((p) => !p.textId)
   if (missing.length) console.warn(`\n找不到授權全文的套件（清單中會顯示授權名稱與連結）：${[...new Set(missing.map((p) => p.name))].join('、')}`)
+
+  // 隨網站發布的套件出現新的授權類型：提醒評估是否要請使用者重新同意（要的話改 LICENSES_VERSION）
+  const added = before ? [...runtimeLicenses(packages)].filter((l) => !before.has(l)) : []
+  if (added.length) {
+    console.warn(
+      `\n⚠ 隨網站發布的套件出現新的授權類型：${added.join('、')}\n` +
+        '  若這個變動需要使用者重新確認，把 src/core/consent.ts 的 LICENSES_VERSION 改成今天日期；只是版本升級則不用改。',
+    )
+  }
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main()
