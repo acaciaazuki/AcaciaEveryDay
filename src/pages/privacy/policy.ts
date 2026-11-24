@@ -7,7 +7,7 @@
 /** 支援信箱（也可以用環境變數 VITE_SUPPORT_EMAIL 覆寫） */
 export const CONTACT_EMAIL: string = import.meta.env.VITE_SUPPORT_EMAIL ?? 'acacia.qiqi@gmail.com'
 export const EFFECTIVE_DATE = '2026-11-22'
-export const UPDATED_DATE = '2026-11-22'
+export const UPDATED_DATE = '2026-11-24'
 
 export type PolicyBlock = string | { list: string[] } | { sub: string }
 export interface PolicySection {
@@ -108,6 +108,7 @@ const zhTW: PolicyDoc = {
           list: [
             'acacia_data_v2.json：同步用的完整資料。',
             'acacia_backup_v2.json：最新一份自動備份（每次自動備份時覆寫，不影響同步檔）。',
+            'acacia_spaces_v1.json：共享行事曆空間（家人、學校、工作等）的同步檔。只包含你建立的行程，以及依各行程的可見性設定過濾後你有權看到的內容；不含本機的同意紀錄。',
             'acacia_data.json：舊版 ACACIA 網站的同步檔。第一次登入時本服務會讀取它來搬移資料，但不會修改它。',
           ],
         },
@@ -176,7 +177,7 @@ const zhTW: PolicyDoc = {
             '（建議）先按「匯出 JSON」留一份備份。',
             '若要一併刪除雲端資料，先用 Google 登入同步。',
             '到「設定 → 刪除所有資料」，按「刪除所有資料」並確認。',
-            '本服務會刪除你 Drive 應用程式專用資料夾中的 ACACIA 檔案（acacia_data_v2.json、acacia_backup_v2.json 與舊版 acacia_data.json），然後登出並撤銷授權，最後清除這台裝置上的所有資料、自動備份快照與偏好設定。刪除後無法復原。',
+            '本服務會刪除你 Drive 應用程式專用資料夾中的 ACACIA 檔案（acacia_data_v2.json、acacia_backup_v2.json、acacia_spaces_v1.json 與舊版 acacia_data.json），然後登出並撤銷授權，最後清除這台裝置上的所有資料、自動備份快照與偏好設定。刪除後無法復原。',
           ],
         },
         '你也可以從 Google 端刪除或撤銷：在 Google Drive 網頁版「設定 → 管理應用程式」找到 ACACIA，選「刪除隱藏的應用程式資料」；或到 Google 帳戶的「第三方應用程式與服務」（https://myaccount.google.com/connections）移除 ACACIA 的存取權。在其他裝置上的本機資料，需在該裝置上分別刪除，或清除瀏覽器的網站資料。',
@@ -283,6 +284,7 @@ const ja: PolicyDoc = {
           list: [
             'acacia_data_v2.json：同期用の全データ。',
             'acacia_backup_v2.json：最新の自動バックアップ 1 件（自動バックアップのたびに上書きされ、同期ファイルには影響しません）。',
+            'acacia_spaces_v1.json：共有カレンダーのスペース（家族・学校・仕事など）の同期ファイル。あなたが作成した予定と、各予定の公開範囲の設定に従ってあなたが閲覧できる内容だけを含み、端末の同意記録は含みません。',
             'acacia_data.json：旧版 ACACIA サイトの同期ファイル。初回ログイン時にデータ移行のため読み込みますが、変更はしません。',
           ],
         },
@@ -351,7 +353,7 @@ const ja: PolicyDoc = {
             '（推奨）先に「JSON を書き出す」でバックアップを取ります。',
             'クラウドのデータも削除する場合は、先に Google でログインして同期します。',
             '「設定 → すべてのデータを削除」で「すべてのデータを削除」を押し、確認します。',
-            '本サービスはドライブのアプリ専用フォルダにある ACACIA のファイル（acacia_data_v2.json、acacia_backup_v2.json、旧版の acacia_data.json）を削除し、ログアウトして認可を取り消したうえで、この端末上のすべてのデータ、自動バックアップ、設定を消去します。削除後は元に戻せません。',
+            '本サービスはドライブのアプリ専用フォルダにある ACACIA のファイル（acacia_data_v2.json、acacia_backup_v2.json、acacia_spaces_v1.json、旧版の acacia_data.json）を削除し、ログアウトして認可を取り消したうえで、この端末上のすべてのデータ、自動バックアップ、設定を消去します。削除後は元に戻せません。',
           ],
         },
         'Google 側から削除・取り消しすることもできます。Google ドライブ（Web）の「設定 → アプリの管理」で ACACIA を探し「非表示のアプリデータを削除」を選ぶか、Google アカウントの「サードパーティ製のアプリとサービス」（https://myaccount.google.com/connections）で ACACIA のアクセスを削除してください。ほかの端末にあるデータは、その端末でそれぞれ削除するか、ブラウザのサイトデータを消去してください。',
@@ -458,6 +460,7 @@ const en: PolicyDoc = {
           list: [
             'acacia_data_v2.json: your full data for sync.',
             'acacia_backup_v2.json: the latest automatic backup (overwritten on each automatic backup; it does not affect the sync file).',
+            'acacia_spaces_v1.json: the sync file for shared calendar spaces (family, school, work and so on). It contains only the entries you created and what each entry’s visibility settings allow you to see; it never includes the consent record stored on your device.',
             'acacia_data.json: the sync file of the previous ACACIA website. The Service reads it once on first sign-in to migrate your data but never modifies it.',
           ],
         },
@@ -526,7 +529,7 @@ const en: PolicyDoc = {
             '(Recommended) Tap “Export JSON” first to keep a copy.',
             'To delete cloud data too, sign in with Google first.',
             'Go to “Settings → Delete all data”, tap “Delete all data” and confirm.',
-            'The Service deletes ACACIA’s files from your Drive’s app-specific folder (acacia_data_v2.json, acacia_backup_v2.json and the old acacia_data.json), signs you out and revokes access, then erases all data, automatic backups and preferences on this device. This cannot be undone.',
+            'The Service deletes ACACIA’s files from your Drive’s app-specific folder (acacia_data_v2.json, acacia_backup_v2.json, acacia_spaces_v1.json and the old acacia_data.json), signs you out and revokes access, then erases all data, automatic backups and preferences on this device. This cannot be undone.',
           ],
         },
         'You can also delete or revoke from Google’s side: in Google Drive on the web, open “Settings → Manage apps”, find ACACIA and choose “Delete hidden app data”; or remove ACACIA’s access under “Third-party apps & services” in your Google Account (https://myaccount.google.com/connections). Local data on other devices must be deleted on each device, or by clearing that browser’s site data.',

@@ -1046,5 +1046,55 @@
     "reset": "初期設定に戻す（{{range}}）",
     "required": "起床と就寝の時刻を入力してください",
     "same": "起床と就寝を同じ時刻にはできません"
+  },
+  "sharing": {
+    "spaceKind": {
+      "family": "家族",
+      "school": "学校",
+      "work": "仕事",
+      "personal": "個人"
+    },
+    "role": {
+      "owner": "オーナー",
+      "editor": "編集可",
+      "viewer": "閲覧のみ"
+    },
+    "itemKind": {
+      "event": "予定",
+      "commute": "通勤・通学",
+      "class_session": "授業",
+      "assignment": "課題の締切",
+      "exam": "試験",
+      "homecoming": "帰省",
+      "medical_ride": "通院の送迎",
+      "meeting": "会議",
+      "project_task": "プロジェクトのタスク"
+    },
+    "visibility": {
+      "group_full": "スペースのメンバー全員",
+      "busy_only": "「予定あり」のみ表示",
+      "selected_members": "指定したメンバーのみ",
+      "private": "自分のみ"
+    },
+    "maskField": {
+      "title": "タイトル",
+      "location": "場所",
+      "note": "メモ",
+      "details": "詳細",
+      "kind": "種類"
+    },
+    "busy": "予定あり",
+    "newSpace": "スペースを追加",
+    "spaceName": "スペース名",
+    "hiddenFrom": "この人たちには非表示",
+    "busyLabel": "予定ありのときの表示",
+    "projection": "予定ありの時間をほかのスペースに反映",
+    "syncState": {
+      "idle": "同期済み",
+      "syncing": "同期中…",
+      "error": "同期に失敗しました",
+      "offline": "オフラインです。接続が戻ると同期します",
+      "conflict": "2 台の端末で同時に変更された予定があり、新しいほうを残しました"
+    }
   }
 }
