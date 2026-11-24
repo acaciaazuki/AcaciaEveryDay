@@ -57,7 +57,7 @@ describe('設定：共享空間', () => {
     fireEvent.change(p.getAllByLabelText('忙碌時顯示的文字').at(-1)!, { target: { value: '上班中' } })
     fireEvent.click(p.getByRole('button', { name: '新增規則' }))
     expect(p.getByText('設計部 → 陳家：顯示「上班中」')).toBeInTheDocument()
-    expect(useSpacesStore.getState().data.busyProjectionRules[0]).toMatchObject({ sourceSpaceId: work, targetSpaceId: family, label: '上班中', enabled: true })
+    expect(useSpacesStore.getState().data.busyProjectionRules[0]).toMatchObject({ sourceId: work, targetMode: 'selected', targetIds: [family], legacyTargetId: family, includeAllDay: true, label: '上班中', enabled: true })
 
     fireEvent.click(p.getByLabelText('啟用'))
     expect(useSpacesStore.getState().data.busyProjectionRules[0]!.enabled).toBe(false)

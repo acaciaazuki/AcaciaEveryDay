@@ -51,7 +51,7 @@ describe('useSpacesStore：空間與成員', () => {
     const st = useSpacesStore.getState()
     const a = st.createSpace({ name: '家', kind: 'family' })
     const b = st.createSpace({ name: '公司', kind: 'work' })
-    st.addRule({ sourceSpaceId: b, targetSpaceId: a, label: '上班中' })
+    st.addRule({ sourceId: b, targetIds: [a], label: '上班中' })
     st.setFilter(b)
     st.deleteSpace(b)
     const s = useSpacesStore.getState()
@@ -59,6 +59,37 @@ describe('useSpacesStore：空間與成員', () => {
     expect(s.data.busyProjectionRules).toHaveLength(1)
     expect(s.data.busyProjectionRules[0]!.deletedAt).not.toBeNull()
     expect(s.filter).toBe('all')
+  })
+
+  it('投射規則改目標：移除的目標記下來（同步時送墓碑）、revision +2；加回來時從清單拿掉', () => {
+    const st = useSpacesStore.getState()
+    const a = st.createSpace({ name: '家', kind: 'family' })
+    const b = st.createSpace({ name: '公司', kind: 'work' })
+    const c = st.createSpace({ name: '社團', kind: 'personal' })
+    const id = st.addRule({ sourceId: b, targetIds: [a, c] })
+    const ruleOf = () => useSpacesStore.getState().data.busyProjectionRules.find((r) => r.id === id)!
+    expect(ruleOf()).toMatchObject({ revision: 0, retiredTargetIds: [] })
+    expect(ruleOf().legacyTargetId).toBeUndefined()
+
+    useSpacesStore.getState().updateRule(id, { targetIds: [a] })
+    expect(ruleOf()).toMatchObject({ targetIds: [a], retiredTargetIds: [c], revision: 2 })
+    // 只改文字不動目標：revision 不變
+    useSpacesStore.getState().updateRule(id, { label: '上班中' })
+    expect(ruleOf()).toMatchObject({ label: '上班中', revision: 2 })
+    useSpacesStore.getState().updateRule(id, { targetIds: [a, c] })
+    expect(ruleOf()).toMatchObject({ retiredTargetIds: [], revision: 4 })
+  })
+
+  it('新增規則：來源可以是「我的行事曆」、目標可以是全部；空間 → 單一空間時記下原本的目標', () => {
+    const st = useSpacesStore.getState()
+    const a = st.createSpace({ name: '家', kind: 'family' })
+    const b = st.createSpace({ name: '公司', kind: 'work' })
+    const all = st.addRule({ sourceId: 'personal', targetMode: 'all', display: 'time_only' })
+    const single = st.addRule({ sourceId: b, targetIds: [a] })
+    const rules = useSpacesStore.getState().data.busyProjectionRules
+    expect(rules.find((r) => r.id === all)).toMatchObject({ sourceId: 'personal', targetMode: 'all', display: 'time_only', includeAllDay: false })
+    expect(rules.find((r) => r.id === single)).toMatchObject({ legacyTargetId: a })
+    expect(() => st.addRule({ sourceId: b, targetIds: ['sp-不存在'] })).toThrow()
   })
 })
 
@@ -94,7 +125,7 @@ describe('useSpacesStore：行程與權限', () => {
     expect(() => st.updateItem('dinner', { title: 'x' })).toThrow(PreviewModeError)
     expect(() => st.removeItem('dinner')).toThrow(PreviewModeError)
     expect(() => st.createSpace({ name: 'x', kind: 'work' })).toThrow(PreviewModeError)
-    expect(() => st.addRule({ sourceSpaceId: 'sp-work', targetSpaceId: 'sp-family' })).toThrow(PreviewModeError)
+    expect(() => st.addRule({ sourceId: 'sp-work', targetIds: ['sp-family'] })).toThrow(PreviewModeError)
     expect(useSpacesStore.getState().data).toBe(before)
   })
 

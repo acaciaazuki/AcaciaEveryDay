@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { SharedEntry } from '../core/calendarView'
+import { PERSONAL_CALENDAR_ID } from '../core/sharing'
 import { detailEntries, safeLink } from '../core/itemDetails'
 import { useSharedTitle } from '../hooks/useSharedTitle'
 import { formatTimeRange } from '../core/time'
@@ -25,8 +26,9 @@ const BUSY_STYLE: CSSProperties = {
 const SPACE_ACCENT = '#75b799'
 
 function SpaceTag({ entry }: { entry: SharedEntry }) {
+  const { t } = useTranslation()
   return (
-    <span className="inline-flex shrink-0 items-center rounded-full bg-paper/80 px-1.5 py-px text-[length:calc(10px*var(--fs))] font-bold text-sage-dark">{entry.space.name}</span>
+    <span className="inline-flex shrink-0 items-center rounded-full bg-paper/80 px-1.5 py-px text-[length:calc(10px*var(--fs))] font-bold text-sage-dark">{entry.space.id === PERSONAL_CALENDAR_ID ? t('sharing.myCalendar') : entry.space.name}</span>
   )
 }
 
@@ -113,7 +115,7 @@ export function SharedDetailDialog({ entry, previewing, onClose }: { entry: Shar
         {reason}
       </p>
       <dl className="grid gap-2">
-        {row(t('sharing.space'), entry.space.name)}
+        {row(t('sharing.space'), entry.space.id === PERSONAL_CALENDAR_ID ? t('sharing.myCalendar') : entry.space.name)}
         {row(t('event.date'), entry.lastDateISO !== entry.dateISO ? `${entry.dateISO} – ${entry.lastDateISO}` : entry.dateISO)}
         {row(t('sharing.time'), formatTimeRange(entry.start, entry.end) || t('event.allDay'))}
         {entry.creatorName && row(t('sharing.createdBy'), entry.creatorName)}

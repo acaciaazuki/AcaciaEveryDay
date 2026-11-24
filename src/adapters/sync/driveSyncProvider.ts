@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { busyProjectionRuleSchema } from '../../core/sharing'
+import { busyProjectionRuleSchema, isLegacyRepresentable, toWireRule } from '../../core/sharing'
 import {
   buildViewerExport,
   containsLocalOnlyData,
@@ -42,17 +42,34 @@ import {
  */
 
 export const DRIVE_SPACES_FILE_KIND = 'acacia-spaces'
-export const DRIVE_SPACES_FILE_VERSION = 1
+/**
+ * 雲端檔案版本：
+ * - 1：所有規則都能用 v1（一個來源空間 → 一個目標空間）表示，規則附上 v1 欄位，舊版 App 照常讀寫
+ * - 2：至少一條規則用到 v2 功能（我的行事曆、多個目標、只顯示時間…）；舊版 App 讀到會停止同步、不會覆寫
+ * 讀到比 DRIVE_SPACES_FILE_VERSION 更新的檔案時回報 update_required，提示使用者更新 App。
+ */
+export const DRIVE_SPACES_FILE_VERSION = 2
 
 export const driveSpacesFileSchema = z.object({
   kind: z.literal(DRIVE_SPACES_FILE_KIND),
-  fileVersion: z.literal(DRIVE_SPACES_FILE_VERSION),
+  fileVersion: z.union([z.literal(1), z.literal(2)]),
   ownerId: z.string().min(1),
   updatedAt: z.number().int().nonnegative(),
   payloads: z.array(spaceSyncPayloadSchema),
   busyProjectionRules: z.array(busyProjectionRuleSchema).default([]),
 })
 export type DriveSpacesFile = z.infer<typeof driveSpacesFileSchema>
+
+/** 解析雲端檔案：版本比這個 App 新時回報 update_required（不覆寫雲端），格式錯誤回報 invalid_payload */
+export function parseDriveSpacesFile(raw: unknown): { data: DriveSpacesFile } {
+  const version = typeof raw === 'object' && raw !== null ? (raw as { fileVersion?: unknown }).fileVersion : undefined
+  if (typeof version === 'number' && version > DRIVE_SPACES_FILE_VERSION) {
+    throw new SyncProviderError({ code: 'update_required', message: '雲端的共享行事曆來自較新版本的 ACACIA，請先更新 App 再同步', retryable: false })
+  }
+  const parsed = driveSpacesFileSchema.safeParse(raw)
+  if (!parsed.success) throw new SyncProviderError({ code: 'invalid_payload', message: parsed.error.message, retryable: false })
+  return { data: parsed.data }
+}
 
 /** 用得到的 Drive 操作（測試時換成假的） */
 export interface DriveApi {
@@ -130,12 +147,11 @@ export function createDriveSyncProvider(deps: DriveSyncDeps): DriveSyncProvider 
     throw err
   }
 
-  /** 讀雲端檔案；不存在回傳 null，格式錯誤丟出 invalid_payload */
+  /** 讀雲端檔案；不存在回傳 null，版本較新丟出 update_required，格式錯誤丟出 invalid_payload */
   async function readRemote(token: string, viewerId: string): Promise<DriveSpacesFile | null> {
     fileId ??= await drive.findFile(token, SPACES_DRIVE_FILE)
     if (!fileId) return null
-    const parsed = driveSpacesFileSchema.safeParse(await drive.download(token, fileId))
-    if (!parsed.success) throw new SyncProviderError({ code: 'invalid_payload', message: parsed.error.message, retryable: false })
+    const parsed = parseDriveSpacesFile(await drive.download(token, fileId))
     if (parsed.data.ownerId !== viewerId) {
       throw new SyncProviderError({ code: 'forbidden', message: '雲端檔案屬於另一位使用者', retryable: false })
     }
@@ -207,19 +223,22 @@ export function createDriveSyncProvider(deps: DriveSyncDeps): DriveSyncProvider 
           for (const i of p.entries) cursor = maxCursor(cursor, i.updatedAt)
         }
 
+        const rules = mergeRuleLists(remote?.busyProjectionRules ?? [], data.busyProjectionRules.filter((r) => r.userId === viewerId))
         const file: DriveSpacesFile = {
           kind: DRIVE_SPACES_FILE_KIND,
-          fileVersion: DRIVE_SPACES_FILE_VERSION,
+          // 能用舊格式表示時維持版本 1，還沒更新的裝置才能繼續同步
+          fileVersion: rules.every(isLegacyRepresentable) ? 1 : DRIVE_SPACES_FILE_VERSION,
           ownerId: viewerId,
           updatedAt: at,
           payloads,
-          busyProjectionRules: mergeRuleLists(remote?.busyProjectionRules ?? [], data.busyProjectionRules.filter((r) => r.userId === viewerId)),
+          busyProjectionRules: rules,
         }
         // 上傳前的最後保險：本機專屬資料不能出現在雲端檔案裡
         if (containsLocalOnlyData(file)) throw new SyncProviderError({ code: 'invalid_payload', message: '同步內容含有本機專屬資料', retryable: false })
         // 驗證後再上傳，確保寫出去的一定是讀得回來的格式
         const checked = driveSpacesFileSchema.parse(file)
-        fileId = await drive.upload(token, fileId, SPACES_DRIVE_FILE, checked)
+        // 驗證會去掉 v1 欄位，上傳時再補回（toWireRule），舊版 App 才讀得懂
+        fileId = await drive.upload(token, fileId, SPACES_DRIVE_FILE, { ...checked, busyProjectionRules: checked.busyProjectionRules.map(toWireRule) })
 
         status.set({ state: conflicts.length ? 'conflict' : 'idle', lastSyncedAt: at, cursor, conflicts, error: null })
         return { accepted, rejected, conflicts, cursor }
@@ -236,9 +255,7 @@ export function createDriveSyncProvider(deps: DriveSyncDeps): DriveSyncProvider 
           status.set({ state: 'idle' })
           return null
         }
-        const raw = await drive.download(token, fileId)
-        const parsed = driveSpacesFileSchema.safeParse(raw)
-        if (!parsed.success) throw new SyncProviderError({ code: 'invalid_payload', message: parsed.error.message, retryable: false })
+        const parsed = parseDriveSpacesFile(await drive.download(token, fileId))
         status.set({ state: 'idle' })
         return parsed.data.ownerId
       } catch (e) {

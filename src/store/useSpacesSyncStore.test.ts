@@ -97,7 +97,7 @@ describe('共享空間的 Drive 同步', () => {
   it('軟刪除：行程、空間、投射規則的刪除都會傳到另一台裝置，不會被帶回來', async () => {
     const st = useSpacesStore.getState()
     const work = st.createSpace({ name: '公司', kind: 'work' })
-    st.addRule({ sourceSpaceId: work, targetSpaceId: 'sp-local-a', label: '上班中' })
+    st.addRule({ sourceId: work, targetIds: ['sp-local-a'], label: '上班中' })
     await useSpacesSyncStore.getState().enable()
     const a = save()
     // 另一台裝置拿到同樣的資料

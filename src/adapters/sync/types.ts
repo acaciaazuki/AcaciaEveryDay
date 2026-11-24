@@ -18,7 +18,8 @@ export type SyncProviderId = 'drive' | 'backend'
 /** idle 閒置／syncing 同步中／error 錯誤／offline 離線／conflict 已自動解決但有衝突需要使用者確認 */
 export type SyncState = 'idle' | 'syncing' | 'error' | 'offline' | 'conflict'
 
-export type SyncErrorCode = 'auth' | 'forbidden' | 'not_found' | 'network' | 'server' | 'invalid_payload' | 'conflict' | 'unknown'
+/** update_required：雲端資料來自較新版本的 App，要先更新才能同步（不會覆寫雲端） */
+export type SyncErrorCode = 'auth' | 'forbidden' | 'not_found' | 'network' | 'server' | 'invalid_payload' | 'conflict' | 'update_required' | 'unknown'
 
 export interface SyncErrorInfo {
   code: SyncErrorCode

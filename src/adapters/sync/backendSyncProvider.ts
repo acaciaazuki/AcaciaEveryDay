@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { busyProjectionRuleSchema, roleOf } from '../../core/sharing'
+import { busyProjectionRuleSchema, roleOf, toWireRule } from '../../core/sharing'
 import { selectPushableChanges, spaceSyncPayloadSchema, SPACE_SYNC_PAYLOAD_VERSION, syncConflictSchema, syncEntrySchema, type SpaceSyncPayload } from '../../core/syncEnvelope'
 import {
   browserIsOnline,
@@ -166,7 +166,8 @@ export function createBackendSyncProvider(config: BackendSyncConfig): SyncProvid
           payloadVersion: SPACE_SYNC_PAYLOAD_VERSION,
           deviceId: config.deviceId,
           changes: selectPushableChanges(data, viewerId, changedSince),
-          busyProjectionRules: data.busyProjectionRules.filter((r) => r.userId === viewerId),
+          // 能用 v1 表示的規則附上 v1 欄位，舊版伺服器／App 也讀得懂
+          busyProjectionRules: data.busyProjectionRules.filter((r) => r.userId === viewerId).map(toWireRule),
         }
         const res = await request(token, '/sync/changes', pushResponseSchema, { method: 'POST', body: JSON.stringify(body) })
         status.set({ state: res.conflicts.length ? 'conflict' : 'idle', lastSyncedAt: now(), cursor: res.cursor, conflicts: res.conflicts, error: null })

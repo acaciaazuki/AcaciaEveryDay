@@ -1,5 +1,5 @@
 import { projectBusyBlocks, resolveCalendarItemForViewer, type ViewAccess } from './permissions'
-import { roleOf, type ItemKind, type MaskableField, type SharedCalendarData, type SharedCalendarItem, type SpaceKind } from './sharing'
+import { PERSONAL_CALENDAR_ID, roleOf, type BusyDisplay, type ItemKind, type MaskableField, type SharedCalendarData, type SharedCalendarItem, type SpaceKind } from './sharing'
 
 /**
  * 行事曆畫面用的共享行程（已經過權限解析）。
@@ -28,6 +28,13 @@ export interface SharedEntry {
   canManageVisibility: boolean
   /** 由忙閒投射規則產生 */
   projected: boolean
+  /** 忙碌區塊的顯示方式：busy 顯示文字（busyLabel，空字串用「忙碌」）；time_only 只顯示時間區間 */
+  busyDisplay: BusyDisplay
+  /**
+   * 只有「自己投射出去的區塊」才有：來源行事曆（id 為空間 id 或 PERSONAL_CALENDAR_ID；name 空字串時由畫面顯示「我的行事曆」）。
+   * 其他成員看到的區塊永遠不帶來源。
+   */
+  projectedFrom?: { id: string; name: string }
 }
 
 /** 篩選：全部／只看我的行事曆（個人行程）／某個空間 */
@@ -44,17 +51,26 @@ export interface VisibleCalendar {
 /**
  * 算出某位檢視者在目前篩選下看得到的共享行程。
  * - 已刪除的空間、檢視者不是成員的空間：全部略過
- * - 忙閒投射：其他成員看到忙碌區塊；本人已經看得到原始行程，不重複顯示
+ * - 忙閒投射：其他成員看到忙碌區塊（不知道來源）
+ * - 自己投射出去的區塊：「全部」不顯示（原始行程已經看得到，避免重複）；
+ *   切到某個空間或「我的行事曆」時顯示，唯讀，並帶上來源（projectedFrom），方便確認同步結果
  * - 模擬其他成員的視角時，一律唯讀
  */
 export function visibleCalendar(data: SharedCalendarData, selfId: string, viewerId: string, filter: CalendarFilter): VisibleCalendar {
   const isSelf = viewerId === selfId
   const showPersonal = isSelf && (filter === 'all' || filter === 'personal')
-  if (filter === 'personal') return { viewerId, isSelf, showPersonal, shared: [] }
+  const ownProjection = ownProjectionEntry(data, viewerId)
+  if (filter === 'personal') {
+    // 「我的行事曆」只屬於本人：只有投射到這裡的自己的忙碌區塊
+    const blocks = isSelf ? projectBusyBlocks({ rules: data.busyProjectionRules.filter((r) => r.userId === viewerId), spaces: data.spaces, items: data.items, targetSpaceId: PERSONAL_CALENDAR_ID }) : []
+    const space = { id: PERSONAL_CALENDAR_ID, name: '', kind: 'personal' as const }
+    return { viewerId, isSelf, showPersonal, shared: sortEntries(blocks.map((b) => ownProjection(b, space))) }
+  }
 
   const spaces = data.spaces.filter((s) => roleOf(s, viewerId) && (filter === 'all' || s.id === filter))
   const projected = spaces.flatMap((s) => projectBusyBlocks({ rules: data.busyProjectionRules, spaces: data.spaces, items: data.items, targetSpaceId: s.id }))
   const candidates = [...data.items, ...projected.filter((b) => b.createdBy !== viewerId)]
+  const own = filter === 'all' ? [] : projected.filter((b) => b.createdBy === viewerId)
 
   const shared: SharedEntry[] = []
   for (const space of spaces) {
@@ -81,10 +97,46 @@ export function visibleCalendar(data: SharedCalendarData, selfId: string, viewer
         canEdit: isSelf && r.canEdit,
         canManageVisibility: isSelf && r.canManageVisibility,
         projected: raw.projection !== undefined,
+        busyDisplay: raw.projection?.display ?? 'busy',
       })
     }
+    for (const b of own) if (b.spaceId === space.id) shared.push(ownProjection(b, { id: space.id, name: space.name, kind: space.kind, color: space.color }))
   }
-  return { viewerId, isSelf, showPersonal, shared: shared.sort((a, b) => a.dateISO.localeCompare(b.dateISO) || a.start.localeCompare(b.start)) }
+  return { viewerId, isSelf, showPersonal, shared: sortEntries(shared) }
+}
+
+const sortEntries = (entries: SharedEntry[]) => entries.sort((a, b) => a.dateISO.localeCompare(b.dateISO) || a.start.localeCompare(b.start))
+
+/**
+ * 自己投射出去的忙碌區塊：不經過權限解析（建立者本人會拿到可編輯的完整權限），
+ * 一律當成唯讀的忙碌區塊，並附上來源行事曆。
+ */
+function ownProjectionEntry(data: SharedCalendarData, viewerId: string) {
+  const ruleById = new Map(data.busyProjectionRules.map((r) => [r.id, r]))
+  const nameOf = (id: string) => (id === PERSONAL_CALENDAR_ID ? '' : (data.spaces.find((s) => s.id === id)?.name ?? ''))
+  return (b: SharedCalendarItem, space: SharedEntry['space']): SharedEntry => {
+    const sourceId = ruleById.get(b.projection?.ruleId ?? '')?.sourceId ?? ''
+    return {
+      id: b.id,
+      dateISO: b.dateISO,
+      lastDateISO: b.endDateISO && b.endDateISO > b.dateISO ? b.endDateISO : b.dateISO,
+      start: b.start,
+      end: b.end,
+      access: 'busy',
+      item: { ...b, redaction: 'busy' },
+      kind: b.kind,
+      busyLabel: b.visibility.busyLabel,
+      maskedFields: [],
+      space,
+      creatorName: '',
+      isOwnItem: b.createdBy === viewerId,
+      canEdit: false,
+      canManageVisibility: false,
+      projected: true,
+      busyDisplay: b.projection?.display ?? 'busy',
+      projectedFrom: { id: sourceId, name: nameOf(sourceId) },
+    }
+  }
 }
 
 /** 某一天的共享行程（含跨日行程的中間日），依開始時間排序 */

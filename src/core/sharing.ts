@@ -15,7 +15,19 @@ import type { CalendarEvent } from './schema'
  * 也不含任何本機專屬設定（例如 acacia-consent 同意紀錄）。
  */
 
-export const SHARING_SCHEMA_VERSION = 1
+/**
+ * 共享行事曆資料版本。
+ * - 1：忙閒投射規則是「一個來源空間 → 一個目標空間」（sourceSpaceId／targetSpaceId）
+ * - 2：規則改成來源可以是「我的行事曆」、目標可以是全部或多個、可選顯示方式（見 busyProjectionRuleSchema）
+ * 讀取時兩種版本都接受（舊規則自動轉換）；遇到比這個更新的版本時丟出 newer 錯誤，提示使用者更新 App。
+ */
+export const SHARING_SCHEMA_VERSION = 2
+
+/** 「我的行事曆」（個人行程）在忙閒投射規則裡的保留 id；它不是真的空間 */
+export const PERSONAL_CALENDAR_ID = 'personal'
+/** 忙碌區塊的顯示方式：busy 顯示「忙碌」或自訂文字；time_only 只顯示佔用的時間區間 */
+export const BUSY_DISPLAYS = ['busy', 'time_only'] as const
+export type BusyDisplay = (typeof BUSY_DISPLAYS)[number]
 
 export const SPACE_KINDS = ['family', 'school', 'work', 'personal'] as const
 export type SpaceKind = (typeof SPACE_KINDS)[number]
@@ -142,36 +154,103 @@ export const sharedCalendarItemSchema = z.object({
    * 這種副本不是權威資料，永遠不會被推送回雲端或伺服器。
    */
   redaction: z.enum(['masked', 'busy']).optional(),
-  /** 由忙閒投射規則產生的忙碌區塊；只記規則 id，不記來源行程或來源空間 */
-  projection: z.object({ ruleId: id }).optional(),
+  /** 由忙閒投射規則產生的忙碌區塊；只記規則 id 與顯示方式，不記來源行程或來源空間 */
+  projection: z.object({ ruleId: id, display: z.enum(BUSY_DISPLAYS).optional() }).optional(),
 })
 
 /**
- * 跨空間忙閒投射規則：把 userId 本人在 sourceSpaceId 的行程，
- * 以 busy_only 忙碌區塊的形式投射到 targetSpaceId（例如把工作會議投射到家人空間，只顯示「上班中」）。
+ * 跨空間忙閒投射規則（v2）：把 userId 本人在來源（某個空間，或「我的行事曆」）的行程，
+ * 以忙碌區塊的形式投射到目標行事曆（例如把開刀房的排班投射到學校空間，只顯示「上班中」）。
  * 規則屬於個人設定，只能投射自己建立的行程。
+ *
+ * 相容性：
+ * - 讀取時接受 v1 規則（sourceSpaceId／targetSpaceId），自動轉成 v2（見 upgradeLegacyRule）
+ * - 能用 v1 完整表示的規則（isLegacyRepresentable），寫出時附上 v1 欄位，讓還沒更新的 App 照常讀寫
  */
-export const busyProjectionRuleSchema = z
-  .object({
-    id,
-    userId: id,
-    sourceSpaceId: id,
-    targetSpaceId: id,
-    /** 只投射這些類型；空陣列表示全部 */
-    kinds: z.array(z.enum(ITEM_KINDS)).default([]),
-    /** 目標空間看到的文字，例如「上班中」；空字串用預設的「忙碌」 */
-    label: z.string().max(BUSY_LABEL_MAX).default(''),
-    /** private 行程預設不投射（連「有事」都不透露），要明確開啟 */
-    includePrivate: z.boolean().default(false),
-    enabled: z.boolean().default(true),
-    updatedAt: timestamp.default(0),
-    /** 軟刪除：刪除的規則也要同步出去，否則其他裝置會把它帶回來 */
-    deletedAt: timestamp.nullable().default(null),
-  })
-  .refine((r) => r.sourceSpaceId !== r.targetSpaceId, { message: '來源與目標空間不能相同', path: ['targetSpaceId'] })
+const busyProjectionRuleObject = z.object({
+  id,
+  userId: id,
+  /** 來源：空間 id，或 PERSONAL_CALENDAR_ID */
+  sourceId: id,
+  /** all：我所在的全部行事曆（含之後新加入的空間與「我的行事曆」）；selected：只投射到 targetIds */
+  targetMode: z.enum(['all', 'selected']).default('selected'),
+  /** 勾選的目標（空間 id 或 PERSONAL_CALENDAR_ID）；targetMode 為 all 時不使用 */
+  targetIds: z.array(id).default([]),
+  /** 顯示方式 */
+  display: z.enum(BUSY_DISPLAYS).default('busy'),
+  /** 只投射這些類型；空陣列表示全部（只對空間來源有效） */
+  kinds: z.array(z.enum(ITEM_KINDS)).default([]),
+  /** 目標空間看到的文字，例如「上班中」；空字串用預設的「忙碌」（只在 display 為 busy 時使用） */
+  label: z.string().max(BUSY_LABEL_MAX).default(''),
+  /** private 行程預設不投射（連「有事」都不透露），要明確開啟（只對空間來源有效） */
+  includePrivate: z.boolean().default(false),
+  /** 沒有時間的整天行程要不要投射成整天忙碌；新規則預設不要，v1 規則轉換時為 true（維持原本行為） */
+  includeAllDay: z.boolean().default(false),
+  /**
+   * 目標變更的次數（每次 +2），算進忙碌區塊的版本：
+   * 區塊版本 = 來源行程版本 + revision，墓碑再 +1；重新加回目標時 +2，確保新區塊蓋過先前的墓碑。
+   */
+  revision: z.number().int().nonnegative().default(0),
+  /** 從目標移除的行事曆：同步時送墓碑給這些空間，讓其他成員移除舊的忙碌區塊 */
+  retiredTargetIds: z.array(id).default([]),
+  /** v1 規則原本的目標：這個目標的區塊沿用 v1 的 id，其他成員手上的舊區塊才能被更新或移除 */
+  legacyTargetId: id.optional(),
+  enabled: z.boolean().default(true),
+  updatedAt: timestamp.default(0),
+  /** 軟刪除：刪除的規則也要同步出去，否則其他裝置會把它帶回來 */
+  deletedAt: timestamp.nullable().default(null),
+})
+
+/** v1 規則（只有 sourceSpaceId／targetSpaceId）轉成 v2；已經是 v2 的原樣回傳 */
+export function upgradeLegacyRule(raw: unknown): unknown {
+  if (!isObj(raw) || 'sourceId' in raw || typeof raw.sourceSpaceId !== 'string' || typeof raw.targetSpaceId !== 'string') return raw
+  const { sourceSpaceId, targetSpaceId, ...rest } = raw
+  return { ...rest, sourceId: sourceSpaceId, targetMode: 'selected', targetIds: [targetSpaceId], display: 'busy', includeAllDay: true, legacyTargetId: targetSpaceId }
+}
+
+export const busyProjectionRuleSchema = z.preprocess(
+  upgradeLegacyRule,
+  busyProjectionRuleObject
+    .refine((r) => r.targetMode === 'all' || r.targetIds.length > 0, { message: '至少要選一個目標行事曆', path: ['targetIds'] })
+    .refine((r) => !r.targetIds.includes(r.sourceId), { message: '來源與目標不能相同', path: ['targetIds'] }),
+)
+
+/**
+ * 這條規則能不能用 v1 完整表示（舊版 App 讀寫後不會遺失任何設定）：
+ * 來源是空間、只有一個目標空間（而且就是 legacyTargetId）、顯示「忙碌」、整天行程照投射、目標沒改過。
+ */
+export function isLegacyRepresentable(r: BusyProjectionRule): boolean {
+  return (
+    r.sourceId !== PERSONAL_CALENDAR_ID &&
+    r.targetMode === 'selected' &&
+    r.targetIds.length === 1 &&
+    r.targetIds[0] !== PERSONAL_CALENDAR_ID &&
+    r.targetIds[0] === r.legacyTargetId &&
+    r.display === 'busy' &&
+    r.includeAllDay &&
+    r.revision === 0 &&
+    r.retiredTargetIds.length === 0
+  )
+}
+
+/** 寫到雲端／伺服器的規則：能用 v1 表示時附上 v1 欄位，舊版 App 才讀得懂 */
+export const toWireRule = (r: BusyProjectionRule) => (isLegacyRepresentable(r) ? { ...r, sourceSpaceId: r.sourceId, targetSpaceId: r.targetIds[0] } : r)
+
+/**
+ * 規則實際投射到哪些行事曆：
+ * - all：規則擁有者所在的每個空間（已刪除或已退出的不算）＋「我的行事曆」
+ * - selected：勾選的目標裡，擁有者仍是成員的空間＋「我的行事曆」
+ * 來源本身一律排除。
+ */
+export function ruleTargets(rule: BusyProjectionRule, spaces: readonly Pick<Space, 'id' | 'members' | 'deletedAt'>[]): string[] {
+  const member = new Set(spaces.filter((s) => roleOf(s, rule.userId)).map((s) => s.id))
+  const wanted = rule.targetMode === 'all' ? [...member, PERSONAL_CALENDAR_ID] : rule.targetIds
+  return [...new Set(wanted)].filter((t) => t !== rule.sourceId && (t === PERSONAL_CALENDAR_ID || member.has(t)))
+}
 
 export const sharedCalendarDataSchema = z.object({
-  schemaVersion: z.literal(SHARING_SCHEMA_VERSION),
+  /** 讀取時接受 v1（規則格式較舊，由 busyProjectionRuleSchema 自動轉換），輸出一律是目前版本 */
+  schemaVersion: z.union([z.literal(1), z.literal(SHARING_SCHEMA_VERSION)]).transform(() => SHARING_SCHEMA_VERSION),
   /** 這份資料屬於哪位使用者（本機／這個雲端帳號） */
   ownerId: id,
   spaces: z.array(spaceSchema).default([]),
@@ -289,7 +368,14 @@ export function rekeyOwner(data: SharedCalendarData, from: string, to: string): 
 
 // ---------- 舊資料相容／遷移（對齊 migrate.ts 的風格） ----------
 
-export class SharingMigrationError extends Error {}
+export class SharingMigrationError extends Error {
+  /** newer：資料來自較新版本的 App，需要先更新 */
+  readonly reason: 'invalid' | 'newer'
+  constructor(message: string, reason: 'invalid' | 'newer' = 'invalid') {
+    super(message)
+    this.reason = reason
+  }
+}
 
 type Raw = Record<string, unknown>
 const isObj = (v: unknown): v is Raw => typeof v === 'object' && v !== null && !Array.isArray(v)
@@ -341,11 +427,7 @@ export function importPersonalCalendar(events: CalendarEvent[], ctx: { ownerId: 
  */
 export function migrateSharedCalendarData(raw: unknown, ctx?: { ownerId: string; spaceId: string; spaceName: string; now: number }): SharedCalendarData {
   if (!isObj(raw)) throw new SharingMigrationError('資料格式不是物件')
-  if (raw.schemaVersion === SHARING_SCHEMA_VERSION) {
-    const parsed = sharedCalendarDataSchema.safeParse(raw)
-    if (!parsed.success) throw new SharingMigrationError(parsed.error.message)
-    return parsed.data
-  }
+  // 個人主資料（AppData，目前也是版本 2）要先判斷，避免跟共享資料的版本號混淆
   if (Array.isArray(raw.events) && !('spaces' in raw) && ctx) {
     const events = raw.events.filter(isObj).map((e) => ({
       id: String(e.id ?? crypto.randomUUID()),
@@ -360,6 +442,14 @@ export function migrateSharedCalendarData(raw: unknown, ctx?: { ownerId: string;
     } catch (e) {
       throw new SharingMigrationError(e instanceof Error ? e.message : String(e))
     }
+  }
+  if (typeof raw.schemaVersion === 'number' && raw.schemaVersion > SHARING_SCHEMA_VERSION) {
+    throw new SharingMigrationError(`這份共享行事曆資料來自較新版本的 ACACIA（版本 ${raw.schemaVersion}），請先更新 App`, 'newer')
+  }
+  if (raw.schemaVersion === 1 || raw.schemaVersion === SHARING_SCHEMA_VERSION) {
+    const parsed = sharedCalendarDataSchema.safeParse(raw)
+    if (!parsed.success) throw new SharingMigrationError(parsed.error.message)
+    return parsed.data
   }
   throw new SharingMigrationError(`不支援的共享行事曆版本：${String(raw.schemaVersion)}`)
 }
