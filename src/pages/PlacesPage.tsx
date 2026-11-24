@@ -220,15 +220,17 @@ export function PlacesPage() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <strong className="block truncate text-[length:calc(15px*var(--fs))]">{p.name}</strong>
-                    <small className="text-[length:calc(11px*var(--fs))] font-semibold text-muted">{t(`placeCat.${p.cat}`)}</small>
-                    {(distances || statuses) && (
-                      <div className="mt-1 flex flex-wrap gap-1.5">
-                        {distances && <span className="rounded-full bg-sage-light px-2 py-0.5 text-[length:calc(11px*var(--fs))] font-bold text-sage-dark">{distanceText(p.id)}</span>}
-                        {statuses?.get(p.id) && (
-                          <span className={`rounded-full px-2 py-0.5 text-[length:calc(11px*var(--fs))] font-bold ${OPEN_BADGE[statuses.get(p.id)!.state]}`}>{openText(statuses.get(p.id)!)}</span>
-                        )}
-                      </div>
-                    )}
+                    {/* 種類、距離、營業狀態與「編輯」同一列（省卡片高度）；窄螢幕放不下時自動換行，編輯維持靠右 */}
+                    <div data-place-meta className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1.5">
+                      <small className="text-[length:calc(11px*var(--fs))] font-semibold text-muted">{t(`placeCat.${p.cat}`)}</small>
+                      {distances && <span className="rounded-full bg-sage-light px-2 py-0.5 text-[length:calc(11px*var(--fs))] font-bold text-sage-dark">{distanceText(p.id)}</span>}
+                      {statuses?.get(p.id) && (
+                        <span className={`rounded-full px-2 py-0.5 text-[length:calc(11px*var(--fs))] font-bold ${OPEN_BADGE[statuses.get(p.id)!.state]}`}>{openText(statuses.get(p.id)!)}</span>
+                      )}
+                      <Button variant="ghost" className="ml-auto shrink-0 px-3! py-1! text-[length:calc(11px*var(--fs))]!" onClick={() => setEditing(p)}>
+                        {t('places.edit')}
+                      </Button>
+                    </div>
                   </div>
                 </div>
                 {p.address && (
@@ -239,14 +241,10 @@ export function PlacesPage() {
                 )}
                 {p.hours && <p className="mt-2 max-h-24 overflow-y-auto rounded-lg border border-line bg-[#f9fbf9] px-2.5 py-2 text-[length:calc(11px*var(--fs))] leading-relaxed whitespace-pre-wrap text-[#55645d]">{p.hours}</p>}
                 {p.note && <p className="mt-2.5 border-t border-dashed border-line pt-2.5 text-xs leading-relaxed whitespace-pre-wrap text-[#66766e]">{p.note}</p>}
-                <div className="mt-4 flex gap-2">
-                  <a href={mapsUrl(p)} target="_blank" rel="noreferrer" className="flex-1 rounded-(--radius-control) bg-sage px-3 py-2.5 text-center text-xs font-bold text-white hover:bg-sage-dark">
-                    {t('places.openMaps')}
-                  </a>
-                  <Button variant="ghost" onClick={() => setEditing(p)}>
-                    {t('places.edit')}
-                  </Button>
-                </div>
+                {/* 「編輯」移到上方後，Google Maps 滿版 */}
+                <a href={mapsUrl(p)} target="_blank" rel="noreferrer" className="mt-4 block w-full rounded-(--radius-control) bg-sage px-3 py-2.5 text-center text-xs font-bold text-white hover:bg-sage-dark">
+                  {t('places.openMaps')}
+                </a>
               </li>
             )
           })}
