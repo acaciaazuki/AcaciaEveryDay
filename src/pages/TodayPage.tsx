@@ -130,52 +130,11 @@ export function TodayPage() {
 
       {/*
         三張卡片的排法：
-        - 手機與中屏：今天的節奏 → 順手完成 → 時間軸，由上往下堆疊
-        - 1001–1279px：節奏、順手完成並排，時間軸在下方橫跨整列
+        - 手機與中屏：時間軸 → 今天的節奏 → 順手完成，先看當下的行程，節奏與待辦在下方輔助
+        - 1001–1279px：時間軸在上方橫跨整列，節奏、順手完成在下方並排
         - 1280px 以上：時間軸在左（約 70%），節奏與順手完成疊在右欄（340px）
       */}
       <div className="grid gap-6 min-[1001px]:grid-cols-2 min-[1280px]:grid-cols-[minmax(0,1fr)_340px] min-[1280px]:grid-rows-[auto_1fr] min-[1280px]:gap-7">
-        <section className={`${card} min-[1280px]:col-[2] min-[1280px]:row-[1]`}>
-          <div className="mb-5 flex items-center justify-between gap-2">
-            <h2 className={cardTitle}>{offset === 0 ? t('today.rhythm') : t('today.rhythmOn', { date: shortDate })}</h2>
-            <button type="button" onClick={() => setEditingRhythm(true)} aria-label={t('rhythm.edit')} className={linkBtn}>
-              {t('rhythm.editShort')}
-            </button>
-          </div>
-          <div className="mb-5 flex items-center justify-between gap-4">
-            <div>
-              <strong className="text-[length:calc(20px*var(--fs))] font-semibold tracking-wide tabular-nums">
-                {formatTime(wake)} <span className="font-normal text-[#a8b1ac]">–</span> {formatTime(sleep)}
-              </strong>
-              <small className="mt-1 block text-[length:calc(12px*var(--fs))] text-muted">{t('today.rhythmRange')}</small>
-            </div>
-            <WeatherArt variant="night" cloud={false} className="w-[calc(52px*var(--fs))] shrink-0" />
-          </div>
-          <div
-            role="meter"
-            aria-label={t('today.busy', { h: hours(rhythm.busyMinutes) })}
-            aria-valuemin={0}
-            aria-valuemax={rhythm.totalMinutes}
-            aria-valuenow={rhythm.busyMinutes}
-            className="mb-4 h-2.5 overflow-hidden rounded-full bg-[#ebe8e0]"
-          >
-            <div className="h-full rounded-full bg-sage transition-[width] duration-500" style={{ width: `${(rhythm.busyMinutes / rhythm.totalMinutes) * 100}%` }} />
-          </div>
-          {/* 圖例：深綠＝已安排、淺色＝空檔 */}
-          <div className="flex flex-wrap justify-between gap-x-4 gap-y-2 text-[length:calc(12.5px*var(--fs))] text-[#66726c]">
-            <span className="inline-flex items-center gap-2">
-              <i aria-hidden className="size-2.5 rounded-full bg-sage" />
-              {t('today.busy', { h: hours(rhythm.busyMinutes) })}
-            </span>
-            <span className="inline-flex items-center gap-2 font-semibold text-sage-dark">
-              <i aria-hidden className="size-2.5 rounded-full bg-[#ebe8e0] ring-1 ring-[#d9d5ca]" />
-              {t('today.free', { h: hours(rhythm.freeMinutes) })}
-            </span>
-          </div>
-        </section>
-
-        <QuickTasks className="min-[1280px]:col-[2] min-[1280px]:row-[2] min-[1280px]:self-start" />
-
         <section className={`${card} min-[1001px]:col-[1/-1] min-[1280px]:col-[1] min-[1280px]:row-[1/3] min-[1280px]:self-start`}>
           <div className="mb-7 flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
             <h2 className={cardTitle}>{offset === 0 && view === 'day' ? t('today.timeline') : t('today.timelineOther')}</h2>
@@ -273,6 +232,47 @@ export function TodayPage() {
             </button>
           )}
         </section>
+
+        <section className={`${card} min-[1280px]:col-[2] min-[1280px]:row-[1]`}>
+          <div className="mb-5 flex items-center justify-between gap-2">
+            <h2 className={cardTitle}>{offset === 0 ? t('today.rhythm') : t('today.rhythmOn', { date: shortDate })}</h2>
+            <button type="button" onClick={() => setEditingRhythm(true)} aria-label={t('rhythm.edit')} className={linkBtn}>
+              {t('rhythm.editShort')}
+            </button>
+          </div>
+          <div className="mb-5 flex items-center justify-between gap-4">
+            <div>
+              <strong className="text-[length:calc(20px*var(--fs))] font-semibold tracking-wide tabular-nums">
+                {formatTime(wake)} <span className="font-normal text-[#a8b1ac]">–</span> {formatTime(sleep)}
+              </strong>
+              <small className="mt-1 block text-[length:calc(12px*var(--fs))] text-muted">{t('today.rhythmRange')}</small>
+            </div>
+            <WeatherArt variant="night" cloud={false} className="w-[calc(52px*var(--fs))] shrink-0" />
+          </div>
+          <div
+            role="meter"
+            aria-label={t('today.busy', { h: hours(rhythm.busyMinutes) })}
+            aria-valuemin={0}
+            aria-valuemax={rhythm.totalMinutes}
+            aria-valuenow={rhythm.busyMinutes}
+            className="mb-4 h-2.5 overflow-hidden rounded-full bg-[#ebe8e0]"
+          >
+            <div className="h-full rounded-full bg-sage transition-[width] duration-500" style={{ width: `${(rhythm.busyMinutes / rhythm.totalMinutes) * 100}%` }} />
+          </div>
+          {/* 圖例：深綠＝已安排、淺色＝空檔 */}
+          <div className="flex flex-wrap justify-between gap-x-4 gap-y-2 text-[length:calc(12.5px*var(--fs))] text-[#66726c]">
+            <span className="inline-flex items-center gap-2">
+              <i aria-hidden className="size-2.5 rounded-full bg-sage" />
+              {t('today.busy', { h: hours(rhythm.busyMinutes) })}
+            </span>
+            <span className="inline-flex items-center gap-2 font-semibold text-sage-dark">
+              <i aria-hidden className="size-2.5 rounded-full bg-[#ebe8e0] ring-1 ring-[#d9d5ca]" />
+              {t('today.free', { h: hours(rhythm.freeMinutes) })}
+            </span>
+          </div>
+        </section>
+
+        <QuickTasks className="min-[1280px]:col-[2] min-[1280px]:row-[2] min-[1280px]:self-start" />
 
       </div>
 
