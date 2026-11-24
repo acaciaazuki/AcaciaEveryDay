@@ -20,7 +20,7 @@ export function SpaceSwitcher() {
   ]
   return (
     <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-      <div role="tablist" aria-label={t('sharing.filterLabel')} className="flex max-w-full gap-1.5 overflow-x-auto rounded-full bg-paper p-1 shadow-soft">
+      <div role="tablist" aria-label={t('sharing.filterLabel')} className="flex max-w-full gap-1.5 overflow-x-auto rounded-full bg-paper p-1.5 shadow-soft">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -28,20 +28,20 @@ export function SpaceSwitcher() {
             role="tab"
             aria-selected={filter === tab.id}
             onClick={() => setFilter(tab.id)}
-            className={`shrink-0 rounded-full px-3 py-1 text-xs font-bold whitespace-nowrap transition ${filter === tab.id ? 'bg-sage text-white' : 'text-muted hover:bg-sage-light hover:text-ink'}`}
+            className={`shrink-0 rounded-full px-4 py-1.5 text-[length:calc(14px*var(--fs))] font-bold whitespace-nowrap transition ${filter === tab.id ? 'bg-sage text-white' : 'text-muted hover:bg-sage-light hover:text-ink'}`}
           >
             {tab.label}
-            {'kind' in tab && <span className="ml-1 font-semibold opacity-70">{tab.kind}</span>}
+            {'kind' in tab && <span className="ml-1.5 text-[length:calc(12px*var(--fs))] font-semibold opacity-75">{tab.kind}</span>}
           </button>
         ))}
       </div>
       {viewers.length > 1 && (
-        <label className="flex items-center gap-2 text-xs font-semibold text-muted">
+        <label className="flex items-center gap-2.5 text-[length:calc(14px*var(--fs))] font-semibold text-muted">
           {t('sharing.viewerLabel')}
           <select
             value={viewerId}
             onChange={(e) => setViewer(e.target.value)}
-            className="rounded-(--radius-control) border border-line bg-paper px-2.5 py-1.5 text-xs font-semibold text-ink outline-none focus:border-sage"
+            className="rounded-(--radius-control) border border-line bg-paper px-3 py-2 text-[length:calc(14px*var(--fs))] font-semibold text-ink outline-none focus:border-sage"
           >
             {viewers.map((v) => (
               <option key={v.id} value={v.id}>
