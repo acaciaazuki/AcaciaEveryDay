@@ -419,7 +419,9 @@
     "error": "同步失敗，資料已存在本機",
     "retry": "重試",
     "help": "登入後資料會存在你 Google Drive 的應用程式專用空間，換裝置登入也能看到同一份資料。第一次登入會自動讀取舊版 ACACIA 的雲端備份。",
-    "user": "Google 使用者"
+    "user": "Google 使用者",
+    "nativeStatus": "只存在這台 iPhone（隨 iCloud 備份）",
+    "nativeNotice": "iOS App 目前不支援 Google 登入，只有本機資料與 iCloud 備份有效；需要 Google Drive 同步請改用網頁版。"
   },
   "colors": {
     "text": {
@@ -910,7 +912,8 @@
       "waiting": "下次備份時上傳",
       "uploading": "上傳中…",
       "ok": "已上傳（{{time}}）",
-      "error": "上傳失敗，本機快照不受影響"
+      "error": "上傳失敗，本機快照不受影響",
+      "native": "iOS App 不支援；快照存在這台 iPhone，並隨 iCloud 備份"
     },
     "now": "立即備份",
     "offNote": "自動備份已關閉，仍可手動備份。",
@@ -1182,7 +1185,8 @@
       "deleteForever": "刪除雲端檔案",
       "stopped": "已停止同步，Drive 上的檔案保留",
       "deleted": "已停止同步，並刪除 Drive 上的檔案",
-      "stopFailed": "關閉失敗，請稍後再試"
+      "stopFailed": "關閉失敗，請稍後再試",
+      "native": "iOS App 目前不支援 Google 登入，共享空間只存在這台 iPhone（隨 iCloud 備份）。"
     },
     "backup": {
       "title": "共享空間快照",

@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { isNativeApp } from '../adapters/kv'
 import { download, DRIVE_FILE, findFile, LEGACY_DRIVE_FILE, upload } from '../adapters/drive'
 import { fetchProfile, restoreToken, signIn, signOut, type GoogleProfile } from '../adapters/googleAuth'
 import { migrate } from '../core/migrate'
@@ -35,6 +36,8 @@ export const useSyncStore = create<SyncState>()((set, get) => ({
 
   /** 登入（interactive=false 時只嘗試沿用這個分頁已有的 token） */
   connect: async (interactive) => {
+    // iOS App 不支援 Google 登入（App 內嵌網頁不能做 OAuth），不嘗試連線，維持只存在本機
+    if (isNativeApp()) return
     const stored = restoreToken()
     if (!stored && !interactive) return
     set({ status: 'connecting' })

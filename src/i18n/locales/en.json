@@ -419,7 +419,9 @@
     "error": "Sync failed. Your data is saved on this device",
     "retry": "Retry",
     "help": "After you sign in, your data is kept in your Google Drive's app-only space, so you see the same data on any device. The first sign-in also loads your backup from the old ACACIA.",
-    "user": "Google user"
+    "user": "Google user",
+    "nativeStatus": "Saved on this iPhone only (included in iCloud backup)",
+    "nativeNotice": "The iOS app does not support Google sign-in yet. Only on-device data and iCloud backup apply; use the web version for Google Drive sync."
   },
   "colors": {
     "text": {
@@ -910,7 +912,8 @@
       "waiting": "Uploads with the next backup",
       "uploading": "Uploading…",
       "ok": "Uploaded ({{time}})",
-      "error": "Upload failed — snapshots on this device are safe"
+      "error": "Upload failed — snapshots on this device are safe",
+      "native": "Not available in the iOS app; snapshots stay on this iPhone and are included in iCloud backup"
     },
     "now": "Back up now",
     "offNote": "Automatic backup is off. You can still back up manually.",
@@ -1182,7 +1185,8 @@
       "deleteForever": "Delete cloud file",
       "stopped": "Sync stopped. The file in Drive was kept",
       "deleted": "Sync stopped and the file in Drive was deleted",
-      "stopFailed": "Couldn’t turn it off. Please try again later"
+      "stopFailed": "Couldn’t turn it off. Please try again later",
+      "native": "The iOS app does not support Google sign-in yet, so shared spaces stay on this iPhone (included in iCloud backup)."
     },
     "backup": {
       "title": "Shared space snapshots",

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { isNativeApp } from '../adapters/kv'
 import { useTranslation } from 'react-i18next'
 import { MAX_SNAPSHOTS } from '../core/backup'
 import { formatStamp } from '../core/time'
@@ -42,8 +43,10 @@ export function BackupPanel() {
     })
   }
 
-  const cloudText =
-    signedIn && cloudStatus !== 'idle'
+  // iOS App 不支援 Google 登入：雲端備份槽不可用，快照只在這台 iPhone（隨 iCloud 備份）
+  const cloudText = isNativeApp()
+    ? t('backup.cloud.native')
+    : signedIn && cloudStatus !== 'idle'
       ? { uploading: t('backup.cloud.uploading'), ok: t('backup.cloud.ok', { time: cloudAt ? formatStamp(cloudAt, lng) : '' }), error: t('backup.cloud.error') }[cloudStatus]
       : signedIn
         ? t('backup.cloud.waiting')

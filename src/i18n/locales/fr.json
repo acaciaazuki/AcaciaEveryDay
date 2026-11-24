@@ -419,7 +419,9 @@
     "error": "Échec de la synchronisation. Vos données sont enregistrées sur cet appareil",
     "retry": "Réessayer",
     "help": "Une fois connecté, vos données sont conservées dans l’espace réservé à l’application de votre Google Drive : vous retrouvez les mêmes données sur tous vos appareils. La première connexion charge aussi votre sauvegarde de l’ancien ACACIA.",
-    "user": "Utilisateur Google"
+    "user": "Utilisateur Google",
+    "nativeStatus": "Enregistré sur cet iPhone uniquement (inclus dans la sauvegarde iCloud)",
+    "nativeNotice": "L’app iOS ne prend pas encore en charge la connexion Google. Seules les données de l’appareil et la sauvegarde iCloud s’appliquent ; utilisez la version web pour la synchronisation Google Drive."
   },
   "colors": {
     "text": {
@@ -910,7 +912,8 @@
       "waiting": "Envoi lors de la prochaine sauvegarde",
       "uploading": "Envoi en cours…",
       "ok": "Envoyé ({{time}})",
-      "error": "Échec de l’envoi — les instantanés de cet appareil sont intacts"
+      "error": "Échec de l’envoi — les instantanés de cet appareil sont intacts",
+      "native": "Indisponible dans l’app iOS ; les instantanés restent sur cet iPhone et sont inclus dans la sauvegarde iCloud"
     },
     "now": "Sauvegarder maintenant",
     "offNote": "La sauvegarde automatique est désactivée. Vous pouvez toujours sauvegarder manuellement.",
@@ -1182,7 +1185,8 @@
       "deleteForever": "Supprimer le fichier cloud",
       "stopped": "Synchronisation arrêtée. Le fichier dans Drive a été conservé",
       "deleted": "Synchronisation arrêtée et fichier supprimé de Drive",
-      "stopFailed": "Impossible de la désactiver. Veuillez réessayer plus tard"
+      "stopFailed": "Impossible de la désactiver. Veuillez réessayer plus tard",
+      "native": "L’app iOS ne prend pas encore en charge la connexion Google : les espaces partagés restent sur cet iPhone (inclus dans la sauvegarde iCloud)."
     },
     "backup": {
       "title": "Instantanés des espaces partagés",

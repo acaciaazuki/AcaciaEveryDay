@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { isNativeApp } from '../adapters/kv'
 import { useTranslation } from 'react-i18next'
 import { formatStamp, TIME_24 } from '../core/time'
 import { useSpacesBackupStore } from '../store/useSpacesBackupStore'
@@ -72,7 +73,8 @@ export function SpacesSyncPanel({ readOnly }: { readOnly: boolean }) {
       <p role="status" className={`text-xs ${state === 'error' && on ? 'text-[#c2583d]' : 'text-sage-dark'}`}>
         {status}
       </p>
-      {!on && !signedIn && <p className="text-xs text-muted">{t('sharing.sync.needSignIn')}</p>}
+      {/* iOS App 不支援 Google 登入：說明只存在本機，不叫使用者去登入 */}
+      {!on && !signedIn && <p className="text-xs text-muted">{isNativeApp() ? t('sharing.sync.native') : t('sharing.sync.needSignIn')}</p>}
       {msg && <p className="text-xs text-sage-dark">{msg}</p>}
 
       {closing && (
