@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import appI18n, { LANGUAGES } from '../i18n'
+import { BATCH_NOTES as ALL_BATCH_NOTES } from '../i18n/cross'
 import { Link } from 'react-router'
 import { Button } from '../components/Button'
 import { Icon } from '../components/AcaciaIcons'
@@ -42,7 +42,7 @@ const cardTitle = 'text-[length:calc(17px*var(--fs))] font-bold tracking-wide'
  * 批次新增時自動寫進備註的「批次建立」（所有介面語言）在今天的時間軸上不顯示：
  * 它不是使用者寫的備註，只是建立方式的標記；行程資料與行事曆裡的備註欄位都不變。
  */
-const BATCH_NOTES = new Set(LANGUAGES.map((l) => appI18n.getFixedT(l.code)('calendar.batchForm.note')))
+const BATCH_NOTES = new Set(ALL_BATCH_NOTES)
 const shownNote = (note: string) => (BATCH_NOTES.has(note.trim()) ? '' : note)
 const NO_SHOPPING = new Map()
 const NO_EVENTS: CalendarEvent[] = []
