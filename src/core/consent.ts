@@ -9,7 +9,7 @@ import { z } from 'zod'
  * - 第三方授權清單：套件升級時清單會自動更新，但不會每次都要求重新同意。
  *   有需要使用者重新確認的變動（例如新增授權條件較特別的套件）時，把 LICENSES_VERSION 改成當天日期。
  */
-export const PRIVACY_VERSION = '2026-11-24'
+export const PRIVACY_VERSION = '2026-11-22'
 export const LICENSES_VERSION = '2026-11-22'
 
 export type ConsentDoc = 'privacy' | 'licenses'

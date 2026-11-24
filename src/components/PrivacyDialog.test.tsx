@@ -32,9 +32,7 @@ describe('隱私權政策', () => {
     expect(fireEvent.click(link)).toBe(false)
 
     const dialog = await screen.findByRole('dialog', { name: '隱私權政策' })
-    // 生效日期與最後更新日期
-    expect(within(dialog).getByText('2026-11-22')).toBeInTheDocument()
-    expect(within(dialog).getByText('2026-11-24')).toBeInTheDocument()
+    expect(within(dialog).getAllByText('2026-11-22')).toHaveLength(2)
     for (const h of ['2. 我們處理哪些資料', '3. 資料儲存位置與傳輸安全', '4. 第三方服務', '6. 你的權利與資料控制', '9. 聯絡我們']) {
       expect(within(dialog).getByRole('heading', { level: 3, name: h })).toBeInTheDocument()
     }

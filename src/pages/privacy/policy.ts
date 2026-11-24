@@ -7,7 +7,7 @@
 /** 支援信箱（也可以用環境變數 VITE_SUPPORT_EMAIL 覆寫） */
 export const CONTACT_EMAIL: string = import.meta.env.VITE_SUPPORT_EMAIL ?? 'acacia.qiqi@gmail.com'
 export const EFFECTIVE_DATE = '2026-11-22'
-export const UPDATED_DATE = '2026-11-24'
+export const UPDATED_DATE = '2026-11-22'
 
 export type PolicyBlock = string | { list: string[] } | { sub: string }
 export interface PolicySection {
