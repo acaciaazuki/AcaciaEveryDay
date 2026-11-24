@@ -560,4 +560,12 @@ const en: PolicyDoc = {
 
 export const POLICIES: Record<PolicyLang, PolicyDoc> = { 'zh-TW': zhTW, ja, en }
 
-export const policyFor = (lng: string | undefined): PolicyDoc => (lng === 'ja' || lng === 'en' ? POLICIES[lng] : POLICIES['zh-TW'])
+/**
+ * 依介面語言取隱私權政策。政策正文只有繁中／日文／英文三個版本（PRIVACY_VERSION 綁定這三份內容）；
+ * 韓文、法文、德文等其他介面語言顯示英文版，繁體中文仍是預設。只改顯示哪一份，不改內容，所以不會觸發重簽。
+ */
+export const policyFor = (lng: string | undefined): PolicyDoc => {
+  if (lng === 'ja' || lng === 'en') return POLICIES[lng]
+  if (lng === 'ko' || lng === 'fr' || lng === 'de') return POLICIES.en
+  return POLICIES['zh-TW']
+}

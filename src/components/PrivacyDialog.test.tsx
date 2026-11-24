@@ -4,7 +4,7 @@ import { createMemoryRouter, RouterProvider } from 'react-router'
 import { beforeEach, describe, expect, it } from 'vitest'
 import i18n from '../i18n'
 import { PrivacyPage } from '../pages/PrivacyPage'
-import { CONTACT_EMAIL, POLICIES } from '../pages/privacy/policy'
+import { CONTACT_EMAIL, POLICIES, policyFor } from '../pages/privacy/policy'
 import PrivacyDialog from './PrivacyDialog'
 import { PrivacyLink } from './PrivacyLink'
 
@@ -21,6 +21,12 @@ describe('隱私權政策', () => {
     expect(shape('en')).toEqual(shape('zh-TW'))
     expect(POLICIES.ja.summary).toHaveLength(POLICIES['zh-TW'].summary.length)
     expect(POLICIES.en.summary).toHaveLength(POLICIES['zh-TW'].summary.length)
+  })
+
+  it('韓文、法文、德文介面顯示英文版政策，其他未知語言維持繁體中文', () => {
+    for (const lng of ['ko', 'fr', 'de']) expect(policyFor(lng)).toBe(POLICIES.en)
+    expect(policyFor('ja')).toBe(POLICIES.ja)
+    expect(policyFor(undefined)).toBe(POLICIES['zh-TW'])
   })
 
   it('點小連結跳出面板（不換頁），顯示日期、各章節、Email 與外部連結，可關閉', async () => {

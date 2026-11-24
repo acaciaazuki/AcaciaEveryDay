@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import appI18n from '../i18n'
+import appI18n, { LANGUAGES } from '../i18n'
 import { Link } from 'react-router'
 import { Button } from '../components/Button'
 import { Icon } from '../components/AcaciaIcons'
@@ -35,10 +35,10 @@ const RELATIVE: Record<number, string> = { [-1]: 'yesterday', 1: 'tomorrow', 2: 
 const card = 'rounded-(--radius-card) bg-paper p-5 shadow-card'
 
 /**
- * 批次新增時自動寫進備註的「批次建立」（三種語言）在今天的時間軸上不顯示：
+ * 批次新增時自動寫進備註的「批次建立」（所有介面語言）在今天的時間軸上不顯示：
  * 它不是使用者寫的備註，只是建立方式的標記；行程資料與行事曆裡的備註欄位都不變。
  */
-const BATCH_NOTES = new Set((['zh-TW', 'ja', 'en'] as const).map((l) => appI18n.getFixedT(l)('calendar.batchForm.note')))
+const BATCH_NOTES = new Set(LANGUAGES.map((l) => appI18n.getFixedT(l.code)('calendar.batchForm.note')))
 const shownNote = (note: string) => (BATCH_NOTES.has(note.trim()) ? '' : note)
 const NO_SHOPPING = new Map()
 const NO_EVENTS: CalendarEvent[] = []

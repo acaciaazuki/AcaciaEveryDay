@@ -186,5 +186,6 @@ export function indexHolidays(sets: HolidaySet[]): Map<string, HolidayEntry[]> {
   return map
 }
 
-/** 依介面語言選名稱：英文介面優先用英文名稱，其他用當地名稱 */
-export const holidayName = (h: Pick<HolidayEntry, 'name' | 'en'>, lng: string | undefined) => (lng?.startsWith('en') && h.en ? h.en : h.name)
+/** 英文、法文、德文介面有英文名稱時用英文名稱（比當地語言好讀）；其他語言（含韓文看韓國假日）用當地名稱 */
+const PREFER_EN = /^(en|fr|de)\b/
+export const holidayName = (h: Pick<HolidayEntry, 'name' | 'en'>, lng: string | undefined) => (lng && PREFER_EN.test(lng) && h.en ? h.en : h.name)

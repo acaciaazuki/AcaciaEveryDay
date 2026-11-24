@@ -15,7 +15,7 @@ export function NavOrderPanel({ section, title }: { section: NavSection; title: 
   const isDefault = isDefaultOrder(defaults, items.map((i) => i.key))
 
   return (
-    <div className="grid gap-3">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-3">
       <SortableList
         label={title}
         items={items.map((i) => ({ id: i.key, label: t(`nav.${i.key}`), icon: i.ico }))}

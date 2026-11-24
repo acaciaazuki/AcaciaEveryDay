@@ -105,3 +105,22 @@ describe('預設貨幣', () => {
     expect((merge({ settings: { fontSize: 'lg' } }, useAppStore.getState()) as { settings: object }).settings).toEqual({ fontSize: 'lg', currency: 'TWD' })
   })
 })
+
+describe('設定頁區塊順序', () => {
+  beforeEach(async () => {
+    await i18n.changeLanguage('zh-TW')
+    useAppStore.setState(emptyAppData())
+  })
+
+  it('共享空間在雲端同步正下方，字體大小在刪除所有資料正上方', () => {
+    render(<MemoryRouter><SettingsPage /></MemoryRouter>)
+    const titles = screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent?.trim() ?? '')
+    const at = (name: string) => {
+      const i = titles.findIndex((x) => x.endsWith(name))
+      expect(i, name).toBeGreaterThanOrEqual(0)
+      return i
+    }
+    expect(at('共享空間')).toBe(at('雲端同步') + 1)
+    expect(at('字體大小')).toBe(at('刪除所有資料') - 1)
+  })
+})
