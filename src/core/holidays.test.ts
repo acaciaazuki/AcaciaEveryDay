@@ -82,6 +82,14 @@ describe('匯入與防重複', () => {
     expect(holidayName({ name: '元日', en: 'New Year’s Day' }, 'ja')).toBe('元日')
     expect(holidayName({ name: '春節' }, 'en')).toBe('春節')
   })
+
+  it('法文、德文介面有英文名稱時用英文名稱，韓文介面用當地名稱', () => {
+    const h = { name: '元日', en: 'New Year’s Day' }
+    expect(holidayName(h, 'fr')).toBe('New Year’s Day')
+    expect(holidayName(h, 'de')).toBe('New Year’s Day')
+    expect(holidayName({ name: '설날' }, 'ko')).toBe('설날')
+    expect(holidayName({ name: '春節' }, 'fr')).toBe('春節')
+  })
 })
 
 describe('資料儲存向下相容', () => {

@@ -52,7 +52,7 @@ export default function ConsentGate() {
               <BrandMark className="size-8" />
               {t('app.name')}
             </span>
-            <div role="radiogroup" aria-label={t('consent.language')} className="ml-auto flex gap-1">
+            <div role="radiogroup" aria-label={t('consent.language')} className="ml-auto flex flex-wrap justify-end gap-1">
               {LANGUAGES.map((l) => {
                 const on = i18n.resolvedLanguage === l.code
                 return (
@@ -62,7 +62,7 @@ export default function ConsentGate() {
                     role="radio"
                     aria-checked={on}
                     onClick={() => void i18n.changeLanguage(l.code)}
-                    className={`min-h-8 rounded-full border px-2.5 text-[length:calc(11px*var(--fs))] font-bold transition-colors ${on ? 'border-sage bg-sage-light text-sage-dark' : 'border-line bg-paper text-muted hover:bg-oat'}`}
+                    className={`min-h-8 rounded-full border px-2.5 text-[length:calc(11px*var(--fs))] font-bold whitespace-nowrap transition-colors ${on ? 'border-sage bg-sage-light text-sage-dark' : 'border-line bg-paper text-muted hover:bg-oat'}`}
                   >
                     {l.label}
                   </button>

@@ -112,7 +112,7 @@ export function SortableList({ items, onChange, label }: Props) {
 
   return (
     <>
-      <ol aria-label={label} className="grid gap-2">
+      <ol aria-label={label} className="grid grid-cols-[minmax(0,1fr)] gap-2">
         {list.map((item, index) => {
           const dragging = dragId === item.id
           return (
