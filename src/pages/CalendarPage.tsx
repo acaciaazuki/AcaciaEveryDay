@@ -1,6 +1,7 @@
-import { useMemo, useRef, useState, type CSSProperties } from 'react'
+import { useCallback, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BatchEventsDialog } from '../components/BatchEventsDialog'
+import { Toast } from '../components/Toast'
 import { Button } from '../components/Button'
 import { Dialog } from '../components/Dialog'
 import { EventDialog } from '../components/EventDialog'
@@ -58,6 +59,10 @@ export function CalendarPage() {
     }
   const openShared = (x: SharedEntry) => (x.canEdit ? setEditing(x) : setViewingShared(x))
   const [batchOpen, setBatchOpen] = useState(false)
+  // 批次建立後的提示：可以一鍵復原（刪除剛建立的行程）
+  const [batchToast, setBatchToast] = useState<{ message: string; ids?: string[] } | null>(null)
+  const removeEvents = useAppStore((s) => s.removeEvents)
+  const closeBatchToast = useCallback(() => setBatchToast(null), [])
   // 匯入的國定假日：唯讀，排在每天最前面
   const holidaysByDate = useHolidaysByDate()
   const [holidayOpen, setHolidayOpen] = useState(false)
@@ -293,7 +298,34 @@ export function CalendarPage() {
       {viewingShared && <SharedDetailDialog entry={viewingShared} previewing={!vis.isSelf} onClose={() => setViewingShared(null)} />}
       {viewingShop && <ShoppingDetailDialog entry={viewingShop} onClose={() => setViewingShop(null)} />}
       {holidayOpen && <HolidayImportDialog onClose={() => setHolidayOpen(false)} />}
-      {batchOpen && <BatchEventsDialog initialYear={ym.year} initialMonth={ym.month} onClose={() => setBatchOpen(false)} />}
+      {batchOpen && (
+        <BatchEventsDialog
+          initialYear={ym.year}
+          initialMonth={ym.month}
+          onClose={() => setBatchOpen(false)}
+          onCreated={({ ids, title }) => setBatchToast({ message: t('calendar.batchForm.created', { count: ids.length, title }), ids })}
+        />
+      )}
+      {batchToast && (
+        <Toast
+          key={batchToast.message}
+          message={batchToast.message}
+          onDone={closeBatchToast}
+          // 有復原按鈕時多留一點時間
+          duration={batchToast.ids ? 8000 : 2600}
+          action={
+            batchToast.ids && {
+              label: t('calendar.batchForm.undo'),
+              onClick: () => {
+                const ids = batchToast.ids!
+                removeEvents(ids)
+                // 按鈕會先關掉這個提示，下一輪再顯示「已復原」
+                setTimeout(() => setBatchToast({ message: t('calendar.batchForm.undone', { count: ids.length }) }))
+              },
+            }
+          }
+        />
+      )}
     </div>
   )
 }

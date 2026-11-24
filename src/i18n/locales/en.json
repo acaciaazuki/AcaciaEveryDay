@@ -102,7 +102,12 @@
       "submit": "Add to {{count}} days",
       "nameRequired": "Please enter a name",
       "datesRequired": "Pick at least one day",
-      "note": "Added in bulk"
+      "note": "Added in bulk",
+      "selectedList": "Selected dates",
+      "removeDate": "Remove {{date}}",
+      "created": "Added \"{{title}}\" on {{count}} days",
+      "undo": "Undo",
+      "undone": "Undone — removed {{count}} events"
     },
     "shopping": {
       "tag": "Shopping",

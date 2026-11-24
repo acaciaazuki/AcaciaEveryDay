@@ -102,7 +102,12 @@
       "submit": "加入 {{count}} 天",
       "nameRequired": "請輸入行程名稱",
       "datesRequired": "請至少選擇一天",
-      "note": "批次建立"
+      "note": "批次建立",
+      "selectedList": "已選的日期",
+      "removeDate": "移除 {{date}}",
+      "created": "已加入 {{count}} 天的「{{title}}」",
+      "undo": "復原",
+      "undone": "已復原，移除了 {{count}} 筆行程"
     },
     "shopping": {
       "tag": "購物",

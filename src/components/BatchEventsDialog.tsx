@@ -11,8 +11,23 @@ import { Field } from './Field'
 import { TimeField } from './TimeField'
 import { MonthNav } from './MonthNav'
 
-/** 選多個日期，一次建立相同的行程（舊版「任務批次輸入」） */
-export function BatchEventsDialog({ initialYear, initialMonth, onClose }: { initialYear: number; initialMonth: number; onClose: () => void }) {
+/**
+ * 選多個日期，一次建立相同的行程（舊版「任務批次輸入」）。
+ * 防呆：
+ * - 已選的日期（可以跨月份）依日期列成清單，每個都能單獨移除，送出前看得到實際會建立哪幾天
+ * - 送出後由呼叫端顯示「復原」，一鍵刪除剛建立的行程（onCreated 帶回新行程的 id）
+ */
+export function BatchEventsDialog({
+  initialYear,
+  initialMonth,
+  onClose,
+  onCreated,
+}: {
+  initialYear: number
+  initialMonth: number
+  onClose: () => void
+  onCreated?: (created: { ids: string[]; title: string }) => void
+}) {
   const { t, i18n } = useTranslation()
   const addEvents = useAppStore((s) => s.addEvents)
   const [ym, setYm] = useState({ year: initialYear, month: initialMonth })
@@ -25,6 +40,7 @@ export function BatchEventsDialog({ initialYear, initialMonth, onClose }: { init
   const [titleColor, setTitleColor] = useState<string>(TEXT_COLORS[1].color)
   const [dates, setDates] = useState<Set<string>>(() => new Set())
   const [error, setError] = useState('')
+  const dateFmt = new Intl.DateTimeFormat(i18n.resolvedLanguage, { month: 'numeric', day: 'numeric', weekday: 'short' })
 
   const toggle = (iso: string) =>
     setDates((prev) => {
@@ -40,7 +56,8 @@ export function BatchEventsDialog({ initialYear, initialMonth, onClose }: { init
     if (dates.size === 0) return setError(t('calendar.batchForm.datesRequired'))
     if (!allDay && end <= start) return setError(t('event.endBeforeStart'))
     const times = allDay ? { start: '', end: '' } : { start, end }
-    addEvents([...dates].sort().map((dateISO) => ({ title: title.trim(), dateISO, ...times, note: t('calendar.batchForm.note'), titleColor, bgColor })))
+    const ids = addEvents([...dates].sort().map((dateISO) => ({ title: title.trim(), dateISO, ...times, note: t('calendar.batchForm.note'), titleColor, bgColor })))
+    onCreated?.({ ids, title: title.trim() })
     onClose()
   }
 
@@ -95,6 +112,22 @@ export function BatchEventsDialog({ initialYear, initialMonth, onClose }: { init
             )}
           </div>
           <p className="text-[length:calc(11px*var(--fs))] text-muted">{t('calendar.batchForm.selected', { count: dates.size })}</p>
+          {/* 已選日期清單（含其他月份），依日期排序，可以單獨移除 */}
+          {dates.size > 0 && (
+            <ul aria-label={t('calendar.batchForm.selectedList')} className="flex max-h-28 flex-wrap gap-1.5 overflow-y-auto">
+              {[...dates].sort().map((iso) => {
+                const label = dateFmt.format(new Date(`${iso}T00:00`))
+                return (
+                  <li key={iso} className="inline-flex items-center gap-1 rounded-full bg-sage-light py-0.5 pr-1 pl-2.5 text-[length:calc(11px*var(--fs))] font-semibold text-sage-dark">
+                    {label}
+                    <button type="button" aria-label={t('calendar.batchForm.removeDate', { date: label })} onClick={() => toggle(iso)} className="grid size-5 place-items-center rounded-full hover:bg-mint">
+                      ×
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
         </fieldset>
         {error && <p className="-mt-2 text-xs text-[#c2583d]">{error}</p>}
         <div className="flex gap-2">
