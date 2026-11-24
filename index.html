@@ -3,6 +3,48 @@
   <head>
     <meta charset="UTF-8" />
     <!--
+      打包檔自我修復：部署期間瀏覽器可能拿到「不存在的打包檔」，Cloudflare Pages 會回 index.html（狀態 200），
+      而 /assets/* 設了一年的 immutable 快取（public/_headers），之後每次開啟都讀到這份錯的快取，畫面停在載入圖。
+      偵測到打包檔載入失敗時，略過快取重新下載這些檔案，再重新整理一次（同一個分頁只自動做一次，避免無限重整）。
+      必須放在 Vite 插入的 <script type="module"> 之前，才接得到它們的錯誤事件。
+    -->
+    <script>
+      (function () {
+        var KEY = 'acacia_asset_recover'
+        var busy = false
+        function recover(extra) {
+          if (busy) return
+          busy = true
+          try {
+            if (sessionStorage.getItem(KEY)) return
+            sessionStorage.setItem(KEY, '1')
+          } catch (e) { return }
+          var urls = (extra || []).slice()
+          var els = document.querySelectorAll('script[type="module"][src], link[rel="modulepreload"][href], link[rel="stylesheet"][href^="/assets/"]')
+          for (var i = 0; i < els.length; i++) urls.push(els[i].src || els[i].href)
+          Promise.all(urls.map(function (u) { return fetch(u, { cache: 'reload' }).catch(function () {}) }))
+            .then(function () { location.reload() })
+        }
+        // 主程式或預先載入的檔案失敗（例如 MIME 是 text/html）
+        window.addEventListener('error', function (e) {
+          var t = e.target
+          var url = t && (t.src || t.href)
+          if (url && /\/assets\//.test(url)) recover([url])
+        }, true)
+        // 點進頁面時才下載的檔案失敗（Vite 的動態載入錯誤）
+        window.addEventListener('vite:preloadError', function (e) {
+          var m = String((e.payload && e.payload.message) || '').match(/https?:\/\/[^\s'"]+\/assets\/[^\s'"]+/g)
+          recover(m || [])
+        })
+        // 正常啟動後清掉記號，下次部署出問題時還能再自動修復一次
+        window.addEventListener('load', function () {
+          setTimeout(function () {
+            if (!document.getElementById('boot-splash')) try { sessionStorage.removeItem(KEY) } catch (e) {}
+          }, 5000)
+        })
+      })()
+    </script>
+    <!--
       網站圖示：台灣相思樹枝條（由 src/brand/acaciaArt.ts 產生，改圖請執行 npm run icons）。
       ?v= 是快取版本：由圖示的向量內容算出（src/brand/acaciaArt.ts 的 iconVersion），npm run icons 會自動更新，不用手動改。
       favicon.ico 給不支援 SVG favicon 的瀏覽器（Safari 舊版等），支援 SVG 的會優先用 favicon.svg。
