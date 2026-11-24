@@ -196,20 +196,29 @@ describe('TodayPage', () => {
     expect(useAppStore.getState().events[0]).toMatchObject({ title: '小聚', icon: 'celebrate' })
   })
 
-  it('字級：問候與橫幅標題跟說明文字一樣大（13px）；日期、按鈕、摘要、檢視切換與小連結放大到 14px', () => {
+  it('字級：大字問候、15px 鼓勵文字、17px 卡片標題；日期、按鈕、檢視切換與小連結 14px', () => {
     useAppStore.setState({ events: [{ id: 'x', title: '散步', dateISO: toLocalISO(), start: '18:00', end: '18:30', note: '' }] })
     renderPage()
-    const t13 = 'text-[length:calc(13px*var(--fs))]'
     const t14 = 'text-[length:calc(14px*var(--fs))]'
-    expect(screen.getByRole('heading', { level: 1 })).toHaveClass(t13)
-    expect(screen.getByRole('heading', { name: '慢慢來，一切都會剛剛好。' })).toHaveClass(t13)
-    expect(screen.getByText('你有幾件重要的事，還有足夠的空檔好好呼吸。')).toHaveClass(t13)
+    expect(screen.getByRole('heading', { level: 1 })).toHaveClass('text-[length:calc(30px*var(--fs))]', 'min-[1280px]:text-[length:calc(36px*var(--fs))]')
+    expect(screen.getByRole('heading', { name: '慢慢來，一切都會剛剛好。' }).parentElement).toHaveClass('text-[length:calc(15px*var(--fs))]')
+    for (const name of ['今天的時間軸', '今天的節奏', '順手完成']) expect(screen.getByRole('heading', { level: 2, name })).toHaveClass('text-[length:calc(17px*var(--fs))]')
     expect(screen.getByRole('group', { name: '切換日期' })).toHaveClass(t14)
     expect(screen.getByRole('link', { name: /查看月曆/ })).toHaveClass(t14)
     expect(screen.getByRole('button', { name: '＋ 新增安排' })).toHaveClass(t14, 'whitespace-nowrap')
-    expect(screen.getByText('個行程').closest('li')).toHaveClass(t14)
+    // 摘要數字放大、說明文字在下方
+    const stat = screen.getByText('個行程').closest('li')!
+    expect(stat.querySelector('b')).toHaveClass('text-[length:calc(24px*var(--fs))]')
     for (const b of within(screen.getByRole('group', { name: '檢視範圍' })).getAllByRole('button')) expect(b).toHaveClass(t14)
     for (const name of ['查看完整日程 →', '全部 →']) expect(screen.getByRole('link', { name })).toHaveClass(t14)
     for (const name of ['調整起床與就寢時間', '＋ 新增待辦', '＋ 加一個行程']) expect(screen.getByRole('button', { name })).toHaveClass(t14)
+  })
+
+  it('卡片順序：手機先看節奏與順手完成，時間軸在後；1280px 以上時間軸移到左欄', () => {
+    renderPage()
+    const titles = screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent).filter((x) => ['今天的時間軸', '今天的節奏', '順手完成'].includes(x ?? ''))
+    expect(titles).toEqual(['今天的節奏', '順手完成', '今天的時間軸'])
+    const timeline = screen.getByRole('heading', { name: '今天的時間軸' }).closest('section')!
+    expect(timeline).toHaveClass('min-[1280px]:col-[1]', 'min-[1280px]:row-[1/3]')
   })
 })

@@ -65,11 +65,12 @@ describe('各頁右上角主按鈕尺寸統一', () => {
   })
 
   it.each([...PAGES.map(([name, Page]) => [name, Page] as const), ['設定', SettingsPage] as const])(
-    '%s：主標題跟「今天」頁的問候一樣是 13px，標題上方沒有標語小字',
+    '%s：主標題字級固定（今天頁是大字問候，其他頁 13px），標題上方沒有標語小字',
     (name, Page) => {
       render(<MemoryRouter><Page /></MemoryRouter>)
       const h1 = screen.getByRole('heading', { level: 1 })
-      expect(h1).toHaveClass('text-[length:calc(13px*var(--fs))]')
+      // 今天頁的問候是橫幅主角，用大字（30px，桌機 36px）；其他頁的 PageHead 標題維持 13px
+      expect(h1).toHaveClass(name === '今天' ? 'text-[length:calc(30px*var(--fs))]' : 'text-[length:calc(13px*var(--fs))]')
       expect(h1).not.toHaveClass('text-2xl')
       // 今天頁標題上方保留日期切換列（功能列）；其他頁標題區塊只剩標題本身
       if (name === '今天') expect(screen.getByRole('button', { name: '往前' })).toBeInTheDocument()

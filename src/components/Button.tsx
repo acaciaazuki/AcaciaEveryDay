@@ -3,7 +3,7 @@ import type { ButtonHTMLAttributes } from 'react'
 type Variant = 'primary' | 'ghost' | 'danger'
 type Size = 'md' | 'page'
 const styles: Record<Variant, string> = {
-  primary: 'bg-sage text-white shadow-[0_4px_12px_#4a987b22] hover:bg-sage-dark',
+  primary: 'bg-sage text-white shadow-[0_4px_12px_#527b6726] hover:bg-sage-dark',
   ghost: 'bg-paper text-ink border border-line hover:bg-sage-light',
   danger: 'bg-paper text-[#c2583d] border border-line hover:bg-[#fff4f1]',
 }
