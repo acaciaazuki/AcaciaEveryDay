@@ -14,6 +14,14 @@ describe('PlacesPage', () => {
   })
   afterEach(() => vi.unstubAllGlobals())
 
+  it('頂部：搜尋框在「最愛地點」標題右側，「＋ 新增地點」在最右邊', () => {
+    render(<MemoryRouter><PlacesPage /></MemoryRouter>)
+    const head = screen.getByRole('heading', { level: 1, name: '最愛地點' }).closest('[data-page-head]')!
+    const search = within(head as HTMLElement).getByRole('textbox', { name: /搜尋地點名稱/ })
+    expect(search.closest('[data-page-head-aside]')).not.toBeNull()
+    expect(within(head as HTMLElement).getByRole('button', { name: '＋ 新增地點' })).toBeInTheDocument()
+  })
+
   it('搜尋地點後自動帶入資訊並儲存', async () => {
     vi.stubGlobal(
       'fetch',
