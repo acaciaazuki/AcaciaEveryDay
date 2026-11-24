@@ -1242,5 +1242,16 @@
       "hint": "Du kannst trotzdem speichern – nur ein Hinweis."
     },
     "blockedBanner": "Die geteilten Kalenderdaten auf diesem Gerät stammen aus einer neueren ACACIA-Version. Damit sie nicht überschrieben werden, sind Bearbeiten und Synchronisieren pausiert. Bitte aktualisiere die App – deine Daten bleiben erhalten."
+  },
+  "errorScreen": {
+    "title": "Etwas ist schiefgelaufen",
+    "text": "Entschuldigung, ein unerwarteter Fehler ist aufgetreten. Deine Daten sind weiterhin auf diesem Gerät gespeichert – lade zuerst eine Sicherung herunter und lade dann neu.",
+    "backup": "Datensicherung herunterladen",
+    "reload": "Neu laden",
+    "home": "Zurück zu Heute",
+    "details": "Fehlerdetails (beim Melden mitschicken)",
+    "contact": "Wenn es weiterhin nicht funktioniert, schreib an",
+    "notFoundTitle": "Seite nicht gefunden",
+    "notFoundText": "Die Adresse ist möglicherweise falsch oder die Seite existiert nicht mehr."
   }
 }

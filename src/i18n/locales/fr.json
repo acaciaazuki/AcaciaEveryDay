@@ -1242,5 +1242,16 @@
       "hint": "Vous pouvez quand même enregistrer ; c’est juste un rappel."
     },
     "blockedBanner": "Les données du calendrier partagé sur cet appareil proviennent d’une version plus récente d’ACACIA. Pour éviter de les écraser, la modification et la synchronisation sont suspendues. Mettez l’app à jour : vos données sont conservées."
+  },
+  "errorScreen": {
+    "title": "Un problème est survenu",
+    "text": "Désolé, une erreur inattendue s’est produite. Vos données sont toujours enregistrées sur cet appareil : téléchargez d’abord une sauvegarde, puis rechargez.",
+    "backup": "Télécharger une sauvegarde",
+    "reload": "Recharger",
+    "home": "Retour à Aujourd’hui",
+    "details": "Détails de l’erreur (à joindre lors du signalement)",
+    "contact": "Si le problème persiste, écrivez à",
+    "notFoundTitle": "Page introuvable",
+    "notFoundText": "L’adresse est peut-être erronée, ou la page n’existe plus."
   }
 }

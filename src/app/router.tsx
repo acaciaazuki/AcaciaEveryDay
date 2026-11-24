@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router'
 import { TodayPage } from '../pages/TodayPage'
 import { PageLoading } from '../components/BrandMark'
+import { RouteErrorScreen } from '../components/ErrorScreen'
 import { Layout } from './Layout'
 
 /**
@@ -12,6 +13,8 @@ export const router = createBrowserRouter([
     Component: Layout,
     // 直接開啟某一頁的網址時，該頁程式下載完成前顯示相思樹載入畫面
     HydrateFallback: PageLoading,
+    // 任何頁面出錯時顯示保底畫面（可以下載資料備份），不會整頁空白
+    ErrorBoundary: RouteErrorScreen,
     children: [
       { index: true, Component: TodayPage },
       { path: 'calendar', lazy: async () => ({ Component: (await import('../pages/CalendarPage')).CalendarPage }) },

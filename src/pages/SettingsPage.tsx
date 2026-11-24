@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { backupFileName, downloadJson } from '../adapters/downloadJson'
 import { Icon } from '../components/AcaciaIcons'
 import { Link, useLocation } from 'react-router'
 import { useTranslation } from 'react-i18next'
@@ -36,14 +37,7 @@ export function SettingsPage() {
     if (hash === '#nav-order') navOrderRef.current?.scrollIntoView?.({ block: 'start' })
   }, [hash])
 
-  const download = () => {
-    const blob = new Blob([JSON.stringify(exportData(), null, 2)], { type: 'application/json' })
-    const a = document.createElement('a')
-    a.href = URL.createObjectURL(blob)
-    a.download = `acacia-${new Date().toISOString().slice(0, 10)}.json`
-    a.click()
-    URL.revokeObjectURL(a.href)
-  }
+  const download = () => downloadJson(exportData(), backupFileName())
 
   const upload = async (file: File) => {
     if (!window.confirm(t('settings.importConfirm'))) return
