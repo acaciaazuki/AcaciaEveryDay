@@ -17,7 +17,7 @@ const KEYWORDS: [Exclude<EventIconKey, 'default'>, string[]][] = [
   ['celebrate', ['慶祝', '慶生', '生日', '派對', '紀念日', '週年', '周年', '婚禮', '結婚', '喜酒', '畢業典禮', '尾牙', '誕生日', 'パーティー', '記念日', 'お祝い', '結婚式', '祝賀', 'birthday', 'party', 'anniversary', 'celebrate', 'celebration', 'wedding', 'graduation']],
   ['shopping', ['購物', '買東西', '超市', '採買', '買菜', '買い物', 'スーパー', 'shopping', 'grocery', 'groceries', 'supermarket']],
   ['meal', ['吃飯', '早餐', '午餐', '晚餐', '聚餐', '宵夜', '餐廳', '食事', '朝食', '昼食', '夕食', 'ランチ', 'ディナー', '飲み会', 'breakfast', 'brunch', 'lunch', 'dinner', 'meal', 'eat']],
-  ['exercise', ['運動', '健身', '散步', '跑步', '瑜珈', '游泳', 'ジム', '散歩', 'ランニング', 'ヨガ', 'workout', 'gym', 'running', 'run', 'yoga', 'walk', 'exercise']],
+  ['exercise', ['運動', '健身', '散步', '跑步', '慢跑', '晨跑', '夜跑', '路跑', '健走', '快走', '瑜珈', '游泳', 'ジム', '散歩', 'ランニング', 'ジョギング', 'ウォーキング', 'ヨガ', 'workout', 'gym', 'running', 'run', 'jogging', 'jog', 'yoga', 'walk', 'exercise']],
   ['vacation', ['度假', '渡假', '旅行', '旅遊', '出遊', '海邊', '沙灘', '放假', '假期', '露營', 'バカンス', '休暇', '観光', 'ビーチ', 'vacation', 'holiday', 'trip', 'travel', 'beach', 'camping']],
   ['rest', ['午休', '小睡', '休息', '咖啡', '下午茶', '昼休み', '休憩', '仮眠', 'カフェ', 'nap', 'rest', 'break', 'coffee', 'tea']],
   // 讀書、看書這類「翻書」的行程用課本；去學校上課、考試維持書包
