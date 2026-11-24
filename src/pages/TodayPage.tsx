@@ -8,6 +8,7 @@ import { EventIconBadge } from '../components/EventIcon'
 import { EventDialog } from '../components/EventDialog'
 import { HolidayCard } from '../components/HolidayAgenda'
 import { TodayHero } from '../components/TodayHero'
+import { WeatherArt } from '../components/WeatherArt'
 import { SharedCard, SharedDetailDialog } from '../components/SharedAgenda'
 import { sharedOn, type SharedEntry } from '../core/calendarView'
 import { RhythmDialog } from '../components/RhythmDialog'
@@ -32,8 +33,10 @@ const VIEWS: View[] = ['day', 'week', 'two']
 // 相對今天的天數 → 翻譯 key（昨天、明天、後天、大後天）
 const RELATIVE: Record<number, string> = { [-1]: 'yesterday', 1: 'tomorrow', 2: 'dayAfter', 3: 'threeDays' }
 
-/** 卡片：像一張張獨立的紙，內距手機 22px、平板以上 28px */
-const card = 'rounded-[calc(var(--radius-card)+4px)] bg-paper px-5.5 py-6 shadow-card sm:p-7'
+/** 卡片：白色紙卡、細邊框加輕陰影，內距手機 22px、平板以上 28px */
+const card = 'rounded-[20px] border border-line bg-paper px-5.5 py-6 shadow-card sm:p-7'
+/** 卡片標題：17px、字重明確 */
+const cardTitle = 'text-[length:calc(17px*var(--fs))] font-bold tracking-wide'
 
 /**
  * 批次新增時自動寫進備註的「批次建立」（所有介面語言）在今天的時間軸上不顯示：
@@ -101,6 +104,7 @@ export function TodayPage() {
       <TodayHero
         dateLabel={dateLabel}
         greeting={title}
+        night={offset === 0 && ['evening', 'night'].includes(greetingKey(now.getHours()))}
         onPrev={() => setOffset(offset - span)}
         onNext={() => setOffset(offset + span)}
         onBackToToday={offset !== 0 ? () => setOffset(0) : undefined}
@@ -111,7 +115,7 @@ export function TodayPage() {
         ]}
         actions={
           <>
-            <Link to="/calendar" className={`inline-flex items-center gap-1.5 rounded-(--radius-control) border border-line bg-paper font-bold hover:bg-sage-light ${PAGE_ACTION_SIZE}`}>
+            <Link to="/calendar" className={`inline-flex items-center gap-1.5 rounded-(--radius-control) border border-transparent bg-sage font-bold text-white shadow-[0_4px_12px_#527b6726] hover:bg-sage-dark ${PAGE_ACTION_SIZE}`}>
               <Icon name="calendar" className="-my-1 size-[1.8em]" />
               {t('today.seeCalendar')}
             </Link>
@@ -124,20 +128,66 @@ export function TodayPage() {
         }
       />
 
-      {/* 時間軸＋右側卡片：右側固定 340px，兩欄之間與上下都留 28px */}
-      <div className="grid gap-6 min-[1001px]:grid-cols-[minmax(0,1fr)_340px] min-[1001px]:gap-7">
-        <section className={card}>
+      {/*
+        三張卡片的排法：
+        - 手機與中屏：今天的節奏 → 順手完成 → 時間軸，由上往下堆疊
+        - 1001–1279px：節奏、順手完成並排，時間軸在下方橫跨整列
+        - 1280px 以上：時間軸在左（約 70%），節奏與順手完成疊在右欄（340px）
+      */}
+      <div className="grid gap-6 min-[1001px]:grid-cols-2 min-[1280px]:grid-cols-[minmax(0,1fr)_340px] min-[1280px]:grid-rows-[auto_1fr] min-[1280px]:gap-7">
+        <section className={`${card} min-[1280px]:col-[2] min-[1280px]:row-[1]`}>
+          <div className="mb-5 flex items-center justify-between gap-2">
+            <h2 className={cardTitle}>{offset === 0 ? t('today.rhythm') : t('today.rhythmOn', { date: shortDate })}</h2>
+            <button type="button" onClick={() => setEditingRhythm(true)} aria-label={t('rhythm.edit')} className={linkBtn}>
+              {t('rhythm.editShort')}
+            </button>
+          </div>
+          <div className="mb-5 flex items-center justify-between gap-4">
+            <div>
+              <strong className="text-[length:calc(20px*var(--fs))] font-semibold tracking-wide tabular-nums">
+                {formatTime(wake)} <span className="font-normal text-[#a8b1ac]">–</span> {formatTime(sleep)}
+              </strong>
+              <small className="mt-1 block text-[length:calc(12px*var(--fs))] text-muted">{t('today.rhythmRange')}</small>
+            </div>
+            <WeatherArt variant="night" cloud={false} className="w-[calc(52px*var(--fs))] shrink-0" />
+          </div>
+          <div
+            role="meter"
+            aria-label={t('today.busy', { h: hours(rhythm.busyMinutes) })}
+            aria-valuemin={0}
+            aria-valuemax={rhythm.totalMinutes}
+            aria-valuenow={rhythm.busyMinutes}
+            className="mb-4 h-2.5 overflow-hidden rounded-full bg-[#ebe8e0]"
+          >
+            <div className="h-full rounded-full bg-sage transition-[width] duration-500" style={{ width: `${(rhythm.busyMinutes / rhythm.totalMinutes) * 100}%` }} />
+          </div>
+          {/* 圖例：深綠＝已安排、淺色＝空檔 */}
+          <div className="flex flex-wrap justify-between gap-x-4 gap-y-2 text-[length:calc(12.5px*var(--fs))] text-[#66726c]">
+            <span className="inline-flex items-center gap-2">
+              <i aria-hidden className="size-2.5 rounded-full bg-sage" />
+              {t('today.busy', { h: hours(rhythm.busyMinutes) })}
+            </span>
+            <span className="inline-flex items-center gap-2 font-semibold text-sage-dark">
+              <i aria-hidden className="size-2.5 rounded-full bg-[#ebe8e0] ring-1 ring-[#d9d5ca]" />
+              {t('today.free', { h: hours(rhythm.freeMinutes) })}
+            </span>
+          </div>
+        </section>
+
+        <QuickTasks className="min-[1280px]:col-[2] min-[1280px]:row-[2] min-[1280px]:self-start" />
+
+        <section className={`${card} min-[1001px]:col-[1/-1] min-[1280px]:col-[1] min-[1280px]:row-[1/3] min-[1280px]:self-start`}>
           <div className="mb-7 flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
-            <h2 className="font-bold">{offset === 0 && view === 'day' ? t('today.timeline') : t('today.timelineOther')}</h2>
+            <h2 className={cardTitle}>{offset === 0 && view === 'day' ? t('today.timeline') : t('today.timelineOther')}</h2>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2.5">
-              <div role="group" aria-label={t('today.viewLabel')} className="flex rounded-full bg-oat p-0.5">
+              <div role="group" aria-label={t('today.viewLabel')} className="flex rounded-full bg-[#f1efe9] p-1">
                 {VIEWS.map((v) => (
                   <button
                     key={v}
                     type="button"
                     aria-pressed={view === v}
                     onClick={() => setView(v)}
-                    className={`rounded-full px-3.5 py-1.5 font-bold whitespace-nowrap transition ${TEXT_14} ${view === v ? 'bg-paper text-sage-dark shadow-soft' : 'text-muted hover:text-ink'}`}
+                    className={`rounded-full px-3.5 py-1.5 font-bold whitespace-nowrap transition ${TEXT_14} ${view === v ? 'bg-sage-light text-sage-dark shadow-soft' : 'text-muted hover:text-ink'}`}
                   >
                     {t(`today.view.${v}`)}
                   </button>
@@ -197,17 +247,17 @@ export function TodayPage() {
                       type="button"
                       onClick={() => setEditing(e)}
                       className="rounded-xl border-l-4 px-5 py-4 text-left transition hover:-translate-y-px"
-                      style={{ background: e.bgColor || '#f2f8f4', borderLeftColor: e.titleColor || '#75b799' }}
+                      style={{ background: e.bgColor || '#f1f5f1', borderLeftColor: e.titleColor || '#93b8a4' }}
                     >
-                      <h3 className="font-bold" style={{ color: e.titleColor || 'var(--color-ink)' }}>
+                      <h3 className="text-[length:calc(15px*var(--fs))] font-bold" style={{ color: e.titleColor || 'var(--color-ink)' }}>
                         {e.title}
                       </h3>
-                      <small className="mt-1 block text-[length:calc(11px*var(--fs))] text-muted">
+                      <small className="mt-1.5 block text-[length:calc(12.5px*var(--fs))] text-muted tabular-nums">
                         {formatTimeRange(e.start, e.end) || t('event.allDay')} {shownNote(e.note) && `· ${e.note}`}
                       </small>
                     </button>
                     {gap >= 30 && (
-                      <p className="col-start-3 flex items-center gap-1.5 py-1.5 pl-1 text-[length:calc(11px*var(--fs))] text-[#9aa6a0]">
+                      <p className="col-start-3 flex items-center gap-1.5 py-1.5 pl-1 text-[length:calc(12px*var(--fs))] text-[#939b96]">
                         <Icon name="cloud" className="size-[1.8em]" />
                         {t('today.gap')} · {hours(gap)}h
                       </p>
@@ -224,36 +274,6 @@ export function TodayPage() {
           )}
         </section>
 
-        <div className="grid content-start gap-6 min-[1001px]:gap-7">
-          <section className={card}>
-            <div className="mb-5 flex items-center justify-between gap-2">
-              <h2 className="font-bold">{offset === 0 ? t('today.rhythm') : t('today.rhythmOn', { date: shortDate })}</h2>
-              <button type="button" onClick={() => setEditingRhythm(true)} aria-label={t('rhythm.edit')} className={linkBtn}>
-                {t('rhythm.editShort')}
-              </button>
-            </div>
-            <div className="mb-5 flex items-center justify-between">
-              <div>
-                <strong className="tracking-wide">
-                  {formatTime(wake)} <span className="text-xs text-[#a8b1ac]">—</span> {formatTime(sleep)}
-                </strong>
-                <small className="mt-0.5 block text-[length:calc(11px*var(--fs))] text-muted">{t('today.rhythmRange')}</small>
-              </div>
-              <span className="text-2xl text-[#5f7a70]" aria-hidden>
-                <Icon name="moon" className="size-[1.5em]" />
-              </span>
-            </div>
-            <div className="mb-3 h-1.5 overflow-hidden rounded-full bg-[#eef2ef]">
-              <div className="h-full bg-sage transition-[width] duration-500" style={{ width: `${(rhythm.busyMinutes / rhythm.totalMinutes) * 100}%` }} />
-            </div>
-            <div className="flex justify-between text-[length:calc(11px*var(--fs))] text-muted">
-              <span>{t('today.busy', { h: hours(rhythm.busyMinutes) })}</span>
-              <b className="text-sage-dark">{t('today.free', { h: hours(rhythm.freeMinutes) })}</b>
-            </div>
-          </section>
-
-          <QuickTasks />
-        </div>
       </div>
 
       {editing && (
@@ -278,7 +298,7 @@ function TimelineTime({ hhmm }: { hhmm: string }) {
   // 沒有時間的購物記帳當作整天
   if (!hhmm) return <span className="pt-1.5 text-xs leading-tight font-bold text-muted">{t('calendar.shopping.allDay')}</span>
   return (
-    <time dateTime={hhmm} className="pt-1.5 text-xs leading-tight font-bold text-muted tabular-nums">
+    <time dateTime={hhmm} className="pt-2 text-[length:calc(13px*var(--fs))] leading-tight font-semibold text-[#6f7a74] tabular-nums">
       {formatTime(hhmm)}
     </time>
   )
@@ -348,7 +368,7 @@ function RangeList({
                       type="button"
                       onClick={() => onEdit(e)}
                       className="w-full rounded-xl border-l-4 px-3 py-2 text-left transition hover:-translate-y-px"
-                      style={{ background: e.bgColor || '#f2f8f4', borderLeftColor: e.titleColor || '#75b799' }}
+                      style={{ background: e.bgColor || '#f1f5f1', borderLeftColor: e.titleColor || '#93b8a4' }}
                     >
                       <strong className="block text-[length:calc(13px*var(--fs))]" style={{ color: e.titleColor || 'var(--color-ink)' }}>
                         {e.title}
@@ -374,7 +394,7 @@ function diffMin(a: string, b: string) {
   return m(b) - m(a)
 }
 
-function QuickTasks() {
+function QuickTasks({ className = '' }: { className?: string }) {
   const { t } = useTranslation()
   const tasks = useAppStore((s) => s.tasks)
   const toggleTask = useAppStore((s) => s.toggleTask)
@@ -394,9 +414,9 @@ function QuickTasks() {
   }
 
   return (
-    <section className={card}>
+    <section className={`${card} ${className}`}>
       <div className="mb-5 flex items-center justify-between">
-        <h2 className="font-bold">{t('today.quick')}</h2>
+        <h2 className={cardTitle}>{t('today.quick')}</h2>
         <Link to="/tasks" className={linkBtn}>
           {t('today.all')}
         </Link>
@@ -415,10 +435,10 @@ function QuickTasks() {
             <li
               key={task.id}
               className="mb-2 flex items-center gap-3 rounded-xl px-3.5 py-3 last:mb-0"
-              style={{ background: task.bgColor && task.bgColor !== '#ffffff' ? task.bgColor : '#f7f9f7', color: task.titleColor || undefined }}
+              style={{ background: task.bgColor && task.bgColor !== '#ffffff' ? task.bgColor : '#f6f5f0', color: task.titleColor || undefined }}
             >
               <button type="button" aria-label={t('tasks.markDone')} onClick={() => toggleTask(task.id)} className="size-4.5 shrink-0 rounded-full border-2 border-[#cfd8d3] bg-paper/60 hover:border-sage" />
-              <span className="text-[length:calc(13px*var(--fs))] font-semibold">{task.title}</span>
+              <span className="text-[length:calc(14px*var(--fs))] font-semibold">{task.title}</span>
             </li>
           ))}
         </ul>

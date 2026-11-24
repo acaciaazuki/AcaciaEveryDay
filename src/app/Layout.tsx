@@ -17,6 +17,9 @@ import { toLocalISO } from '../core/date'
 import { isDue, isLow } from '../core/inventory'
 import { useNavOrder } from '../hooks/useNavOrder'
 import { useAppStore } from '../store/useAppStore'
+import { useSpacesStore } from '../store/useSpacesStore'
+import { Button } from '../components/Button'
+import { EventDialog } from '../components/EventDialog'
 import { useConsentStore } from '../store/useConsentStore'
 
 // 同意面板含政策全文與授權清單，只有需要詢問時才下載
@@ -30,8 +33,8 @@ const MAIN = [
 ] as const satisfies readonly { to: string; ico: IconName; key: string; end?: boolean }[]
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
-  `flex w-full items-center gap-3 rounded-(--radius-control) px-3 py-2.5 text-[length:calc(13px*var(--fs))] font-semibold transition-colors ${
-    isActive ? 'bg-sage-light text-sage-dark' : 'text-[#7e8b85] hover:bg-[#f6f9f7] hover:text-[#5a6d63]'
+  `flex w-full items-center gap-3 rounded-(--radius-control) px-3 py-2.5 text-[length:calc(14px*var(--fs))] font-semibold transition-colors ${
+    isActive ? 'bg-sage-light text-sage-dark' : 'text-[#78837e] hover:bg-[#f4f3ee] hover:text-[#55655d]'
   }`
 
 /**
@@ -62,6 +65,9 @@ function AppShell() {
   const invAlerts = useAppStore((s) => s.inventory.filter((x) => isLow(x) || isDue(x, todayISO)).length)
   const collect = useNavOrder('collect')
   const [searchOpen, setSearchOpen] = useState(false)
+  // 側邊欄「＋ 新增安排」：任何頁面都能直接新增今天的行程；預覽其他成員的視角時不顯示
+  const [adding, setAdding] = useState(false)
+  const isSelf = useSpacesStore((s) => s.viewerId === s.selfId)
   useFontScale()
   useReminderMonitor()
   const { pathname } = useLocation()
@@ -74,7 +80,12 @@ function AppShell() {
   return (
     <div className="min-h-dvh">
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-60 flex-col border-r border-line bg-paper px-4 py-6 min-[681px]:flex">
-        <BrandLogo name={t('app.name')} className="px-2.5 pb-7" />
+        <BrandLogo name={t('app.name')} className="px-2.5 pb-6" />
+        {isSelf && (
+          <Button size="page" onClick={() => setAdding(true)} className="mb-3 w-full">
+            {t('today.addEvent')}
+          </Button>
+        )}
         <button
           type="button"
           onClick={() => setSearchOpen(true)}
@@ -154,6 +165,7 @@ function AppShell() {
         <Outlet />
       </main>
       <CommandPalette open={searchOpen} onOpenChange={setSearchOpen} />
+      {adding && <EventDialog event={null} date={todayISO} onClose={() => setAdding(false)} />}
       <ReminderBanner />
 
       <nav className="fixed inset-x-0 bottom-0 z-30 flex justify-around border-t border-line bg-paper px-3 pt-2 pb-[calc(8px+env(safe-area-inset-bottom))] shadow-[0_-4px_20px_#29483a08] min-[681px]:hidden">
