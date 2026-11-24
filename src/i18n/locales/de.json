@@ -1227,6 +1227,7 @@
       "sourceRow": "Quelle",
       "timeOnlyNote": "Nur die belegte Zeit wird angezeigt",
       "shortcut": "Belegte Zeiten synchronisieren…"
-    }
+    },
+    "blockedBanner": "Die geteilten Kalenderdaten auf diesem Gerät stammen aus einer neueren ACACIA-Version. Damit sie nicht überschrieben werden, sind Bearbeiten und Synchronisieren pausiert. Bitte aktualisiere die App – deine Daten bleiben erhalten."
   }
 }

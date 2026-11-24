@@ -1227,6 +1227,7 @@
       "sourceRow": "Source",
       "timeOnlyNote": "Only the occupied time is shown",
       "shortcut": "Sync busy times…"
-    }
+    },
+    "blockedBanner": "The shared calendar data on this device comes from a newer version of ACACIA. To avoid overwriting it, editing and sync are paused. Please update the app — your data is kept intact."
   }
 }
