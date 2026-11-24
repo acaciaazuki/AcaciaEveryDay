@@ -7,6 +7,8 @@ let started = false
 /** 依目前的個人行程更新「我的行事曆」的忙碌影子；沒有以「我的行事曆」為來源的規則時什麼都不做 */
 export function mirrorPersonalBusyNow(now = Date.now()) {
   const sp = useSpacesStore.getState()
+  // 寫入保護中（本機資料來自較新版本）不更新影子
+  if (sp.blockedReason) return
   if (!needsPersonalBusySlots(sp.data.busyProjectionRules, sp.selfId)) return
   const next = syncPersonalBusySlots(sp.data.personalBusySlots, useAppStore.getState().events, now)
   if (next) sp.setPersonalBusySlots(next)

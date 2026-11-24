@@ -11,6 +11,7 @@ import {
   createSpace as makeSpace,
   emptySharedCalendarData,
   migrateSharedCalendarData,
+  SharingMigrationError,
   PERSONAL_CALENDAR_ID,
   rekeyOwner,
   removeMember as dropMember,
@@ -42,6 +43,20 @@ import {
 export const SPACES_STORAGE_KEY = 'acacia-spaces'
 
 export class PreviewModeError extends PermissionError {}
+/** 本機的共享資料來自較新版本的 App：暫停所有修改與同步，避免把看不懂的資料覆寫掉 */
+export class SpacesWriteBlockedError extends PermissionError {}
+
+/**
+ * 寫入保護：讀到較新版本的共享資料時開啟。
+ * 開啟後 IndexedDB 不寫入、不刪除（原始資料原封不動），所有修改丟出 SpacesWriteBlockedError，同步與鏡像程序也會停下來。
+ * 只有使用者明確「刪除所有資料」（reset）才會解除。
+ */
+let writeBlocked = false
+const guardedStorage: typeof webStorage = {
+  getItem: (name) => webStorage.getItem(name),
+  setItem: (name, value) => (writeBlocked ? undefined : webStorage.setItem(name, value)),
+  removeItem: (name) => (writeBlocked ? undefined : webStorage.removeItem(name)),
+}
 
 const newSelfId = () => `local-${crypto.randomUUID()}`
 const newId = () => crypto.randomUUID()
@@ -62,6 +77,8 @@ interface SpacesState {
   filter: CalendarFilter
   /** 這台裝置是否開啟共享空間雲端同步（acacia_spaces_v1.json）；只存在本機，不會同步出去 */
   cloudSync: boolean
+  /** 本機資料來自較新版本時的說明（不存檔）；有值表示寫入保護中，所有修改與同步都暫停 */
+  blockedReason: string | null
 
   setViewer: (userId: string) => void
   setFilter: (filter: CalendarFilter) => void
@@ -104,7 +121,7 @@ interface SpacesState {
 
 const initial = () => {
   const selfId = newSelfId()
-  return { selfId, data: emptySharedCalendarData(selfId), viewerId: selfId, filter: 'all' as CalendarFilter, cloudSync: false }
+  return { selfId, data: emptySharedCalendarData(selfId), viewerId: selfId, filter: 'all' as CalendarFilter, cloudSync: false, blockedReason: null as string | null }
 }
 
 export const useSpacesStore = create<SpacesState>()(
@@ -112,11 +129,16 @@ export const useSpacesStore = create<SpacesState>()(
     (set, get) => {
       /** 所有修改都要在自己的視角下進行 */
       const guard = () => {
-        const { viewerId, selfId } = get()
+        const { viewerId, selfId, blockedReason } = get()
+        if (blockedReason) throw new SpacesWriteBlockedError(blockedReason)
         if (viewerId !== selfId) throw new PreviewModeError('預覽其他成員的視角時不能修改')
         return selfId
       }
-      const commit = (patch: Partial<SharedCalendarData>) => set((s) => ({ data: { ...s.data, ...patch, updatedAt: Date.now() } }))
+      const commit = (patch: Partial<SharedCalendarData>) => {
+        // 最後一道保險：寫入保護中，任何路徑都不能改資料
+        if (get().blockedReason) throw new SpacesWriteBlockedError(get().blockedReason!)
+        set((s) => ({ data: { ...s.data, ...patch, updatedAt: Date.now() } }))
+      }
       const spaceOf = (spaceId: string) => {
         const space = get().data.spaces.find((s) => s.id === spaceId && s.deletedAt === null)
         if (!space) throw new PermissionError('找不到這個空間')
@@ -246,7 +268,11 @@ export const useSpacesStore = create<SpacesState>()(
           if (data.ownerId !== self) throw new PermissionError('這份資料屬於另一位使用者')
           set({ data })
         },
-        reset: () => set(initial()),
+        // 「刪除所有資料」是使用者明確的選擇，這時才解除寫入保護
+        reset: () => {
+          writeBlocked = false
+          set(initial())
+        },
 
         setCloudSync: (on) => set({ cloudSync: on }),
         applyPulled: (pulled) => {
@@ -267,7 +293,7 @@ export const useSpacesStore = create<SpacesState>()(
     },
     {
       name: SPACES_STORAGE_KEY,
-      storage: createJSONStorage(() => webStorage),
+      storage: createJSONStorage(() => guardedStorage),
       // 只存身份與資料；檢視身份與篩選不存，重新開啟一律回到自己的視角
       partialize: (s) => ({ selfId: s.selfId, data: s.data, cloudSync: s.cloudSync }),
       merge: (persisted, current) => {
@@ -278,6 +304,11 @@ export const useSpacesStore = create<SpacesState>()(
           if (data.ownerId !== p.selfId) throw new Error('ownerId 與 selfId 不符')
           return { ...current, selfId: p.selfId, data, viewerId: p.selfId, filter: 'all', cloudSync: p.cloudSync === true }
         } catch (e) {
+          // 來自較新版本的資料：開啟寫入保護，原始內容留在 IndexedDB，等使用者更新 App
+          if (e instanceof SharingMigrationError && e.reason === 'newer') {
+            writeBlocked = true
+            return { ...current, blockedReason: e.message }
+          }
           // 資料壞掉時不要拿來用；保留在 IndexedDB 的原始內容要等下一次寫入才會被覆蓋
           console.error('共享行事曆資料讀取失敗', e)
           return current
