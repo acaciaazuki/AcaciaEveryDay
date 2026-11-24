@@ -219,4 +219,13 @@ describe('行事曆：共享空間', () => {
     expect(within(dialog).queryByText('儲存')).not.toBeInTheDocument()
     expect(dialog.textContent).not.toMatch(leakRe)
   })
+
+  it('頂部工具列放大：標題、按鈕、空間篩選、檢視身份都用較大的字級（跟著字體設定縮放）', () => {
+    renderPage()
+    expect(screen.getByRole('heading', { level: 1, name: '行事曆' })).toHaveClass('text-[length:calc(30px*var(--fs))]')
+    for (const name of ['國定假日', '批次新增', '＋ 新增事件']) expect(screen.getByRole('button', { name })).toHaveClass('text-[length:calc(14px*var(--fs))]!')
+    const tabs = screen.getByRole('tablist', { name: '顯示哪些行程' })
+    for (const tab of within(tabs).getAllByRole('tab')) expect(tab).toHaveClass('text-[length:calc(14px*var(--fs))]')
+    expect(screen.getByLabelText('檢視身份')).toHaveClass('text-[length:calc(14px*var(--fs))]')
+  })
 })

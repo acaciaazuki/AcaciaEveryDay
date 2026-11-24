@@ -81,3 +81,11 @@ describe('設定：共享空間', () => {
     expect(p.queryByRole('button', { name: '新增成員' })).not.toBeInTheDocument()
   })
 })
+
+describe('頁面標頭', () => {
+  it('其他頁面的標題維持原本的大小', async () => {
+    await i18n.changeLanguage('zh-TW')
+    renderPage()
+    expect(screen.getByRole('heading', { level: 1 })).toHaveClass('text-2xl')
+  })
+})
