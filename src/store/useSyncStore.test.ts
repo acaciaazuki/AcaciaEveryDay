@@ -14,6 +14,7 @@ const uploads: { id: string | null; name: string; data: unknown }[] = []
 vi.mock('../adapters/drive', () => ({
   DRIVE_FILE: 'acacia_data_v2.json',
   LEGACY_DRIVE_FILE: 'acacia_data.json',
+  SPACES_DRIVE_FILE: 'acacia_spaces_v1.json',
   findFile: async (_t: string, name: string) => (name in files ? name : null),
   download: async (_t: string, id: string) => files[id],
   upload: async (_t: string, id: string | null, name: string, data: unknown) => {

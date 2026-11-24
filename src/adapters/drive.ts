@@ -7,6 +7,8 @@ export const DRIVE_FILE = 'acacia_data_v2.json'
 export const LEGACY_DRIVE_FILE = 'acacia_data.json'
 /** 自動備份槽：只放最新一份自動備份，跟同步檔分開，不會覆蓋 acacia_data_v2.json */
 export const BACKUP_DRIVE_FILE = 'acacia_backup_v2.json'
+/** 共享行事曆（家人／學校／工作等空間）的同步檔，跟主資料同步檔、備份檔都分開 */
+export const SPACES_DRIVE_FILE = 'acacia_spaces_v1.json'
 
 export class DriveError extends Error {
   readonly status?: number

@@ -1046,5 +1046,55 @@
     "reset": "恢復預設（{{range}}）",
     "required": "請填寫起床與就寢時間",
     "same": "起床與就寢時間不能相同"
+  },
+  "sharing": {
+    "spaceKind": {
+      "family": "家人",
+      "school": "學校",
+      "work": "工作",
+      "personal": "個人"
+    },
+    "role": {
+      "owner": "擁有者",
+      "editor": "可編輯",
+      "viewer": "僅檢視"
+    },
+    "itemKind": {
+      "event": "行程",
+      "commute": "通勤（上下班／上下課）",
+      "class_session": "課程",
+      "assignment": "作業死線",
+      "exam": "考試",
+      "homecoming": "回鄉時段",
+      "medical_ride": "就醫接送",
+      "meeting": "會議",
+      "project_task": "專案事項"
+    },
+    "visibility": {
+      "group_full": "空間成員都看得到",
+      "busy_only": "只顯示忙碌",
+      "selected_members": "只給指定成員",
+      "private": "只有自己"
+    },
+    "maskField": {
+      "title": "標題",
+      "location": "地點",
+      "note": "備註",
+      "details": "細節",
+      "kind": "類型"
+    },
+    "busy": "忙碌",
+    "newSpace": "新增空間",
+    "spaceName": "空間名稱",
+    "hiddenFrom": "對這些人隱藏",
+    "busyLabel": "忙碌時顯示的文字",
+    "projection": "把忙碌時段同步到其他空間",
+    "syncState": {
+      "idle": "已同步",
+      "syncing": "同步中…",
+      "error": "同步失敗",
+      "offline": "離線中，恢復連線後會再同步",
+      "conflict": "有行程在兩台裝置上同時被修改，已保留較新的版本"
+    }
   }
 }

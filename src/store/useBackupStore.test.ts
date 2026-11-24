@@ -15,6 +15,7 @@ const uploads: { id: string | null; name: string; data: unknown }[] = []
 vi.mock('../adapters/drive', () => ({
   DRIVE_FILE: 'acacia_data_v2.json',
   LEGACY_DRIVE_FILE: 'acacia_data.json',
+  SPACES_DRIVE_FILE: 'acacia_spaces_v1.json',
   BACKUP_DRIVE_FILE: 'acacia_backup_v2.json',
   findFile: async (_t: string, name: string) => (name in files ? name : null),
   download: async (_t: string, id: string) => files[id],
@@ -130,9 +131,10 @@ describe('刪除所有資料', () => {
     useAppStore.setState(emptyAppData())
   })
 
-  it('已登入：刪除 Drive 上的同步檔、備份檔與舊版檔，登出並清空本機與快照', async () => {
+  it('已登入：刪除 Drive 上的同步檔、備份檔、共享行事曆檔與舊版檔，登出並清空本機與快照', async () => {
     files['acacia_data_v2.json'] = {}
     files['acacia_backup_v2.json'] = {}
+    files['acacia_spaces_v1.json'] = {}
     files['acacia_data.json'] = {}
     files['other.json'] = {}
     localStorage.setItem('acacia_lang', 'ja')
@@ -162,9 +164,11 @@ describe('刪除所有資料', () => {
     files['acacia_data_v2.json'] = {}
     useSyncStore.setState({ token: null, status: 'signedOut' })
     useAppStore.getState().addTask(task('本機'))
+    files['acacia_spaces_v1.json'] = {}
     const r = await deleteAllData()
     expect(r.cloud).toBe(false)
     expect(files).toHaveProperty('acacia_data_v2.json')
+    expect(files).toHaveProperty('acacia_spaces_v1.json')
     expect(useAppStore.getState().tasks).toEqual([])
   })
 })

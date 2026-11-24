@@ -1046,5 +1046,55 @@
     "reset": "Reset to default ({{range}})",
     "required": "Enter both wake and bedtime",
     "same": "Wake and bedtime can't be the same"
+  },
+  "sharing": {
+    "spaceKind": {
+      "family": "Family",
+      "school": "School",
+      "work": "Work",
+      "personal": "Personal"
+    },
+    "role": {
+      "owner": "Owner",
+      "editor": "Can edit",
+      "viewer": "View only"
+    },
+    "itemKind": {
+      "event": "Event",
+      "commute": "Commute",
+      "class_session": "Class",
+      "assignment": "Assignment due",
+      "exam": "Exam",
+      "homecoming": "Visiting home",
+      "medical_ride": "Medical ride",
+      "meeting": "Meeting",
+      "project_task": "Project task"
+    },
+    "visibility": {
+      "group_full": "Everyone in the space",
+      "busy_only": "Show as busy only",
+      "selected_members": "Selected members only",
+      "private": "Only me"
+    },
+    "maskField": {
+      "title": "Title",
+      "location": "Location",
+      "note": "Note",
+      "details": "Details",
+      "kind": "Type"
+    },
+    "busy": "Busy",
+    "newSpace": "New space",
+    "spaceName": "Space name",
+    "hiddenFrom": "Hide from",
+    "busyLabel": "Text shown when busy",
+    "projection": "Show my busy times in other spaces",
+    "syncState": {
+      "idle": "Synced",
+      "syncing": "Syncing…",
+      "error": "Sync failed",
+      "offline": "Offline. We’ll sync when you’re back online",
+      "conflict": "An event was changed on two devices at once; the newer version was kept"
+    }
   }
 }
