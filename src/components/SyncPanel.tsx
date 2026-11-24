@@ -1,6 +1,7 @@
 import { Icon } from './AcaciaIcons'
 import { useTranslation } from 'react-i18next'
 import { useSyncStore } from '../store/useSyncStore'
+import { TIME_24 } from '../core/time'
 
 /** 側欄底部與設定頁的同步狀態與登入按鈕 */
 export function SyncPanel({ showHelp = false }: { showHelp?: boolean }) {
@@ -12,7 +13,7 @@ export function SyncPanel({ showHelp = false }: { showHelp?: boolean }) {
     signedOut: t('sync.localOnly'),
     connecting: t('sync.connecting'),
     syncing: t('sync.syncing'),
-    synced: t('sync.synced', { time: lastSyncedAt ? new Intl.DateTimeFormat(i18n.resolvedLanguage, { timeStyle: 'short' }).format(lastSyncedAt) : '' }),
+    synced: t('sync.synced', { time: lastSyncedAt ? new Intl.DateTimeFormat(i18n.resolvedLanguage, TIME_24).format(lastSyncedAt) : '' }),
     error: t('sync.error'),
   }[status]
 

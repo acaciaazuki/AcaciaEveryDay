@@ -834,11 +834,10 @@
   "time": {
     "hour": "hour",
     "minute": "minute",
-    "period": "AM/PM",
     "pick": "Pick {{label}}",
     "clear": "Clear {{label}}",
     "done": "Done",
-    "hourInvalid": "Enter an hour from 1–12 (0–23 also works)",
+    "hourInvalid": "Enter an hour from 00–23",
     "minuteInvalid": "Enter minutes from 00–59"
   },
   "recurring": {

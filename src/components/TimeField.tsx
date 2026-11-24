@@ -1,29 +1,27 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import { from12, parseHourInput, parseMinuteInput, periodFirst, periodLabel, to12, type Period } from '../core/time'
+import { parseHHMM, parseHourInput, parseMinuteInput, toHHMM } from '../core/time'
 import { Icon } from './AcaciaIcons'
 
 const pad = (n: number) => String(n).padStart(2, '0')
-const HOURS = Array.from({ length: 12 }, (_, i) => i + 1)
+const HOURS = Array.from({ length: 24 }, (_, i) => i)
 const MINUTES = Array.from({ length: 12 }, (_, i) => i * 5)
 
 /**
- * 時間輸入：小時（HH）、分鐘（mm）兩個可以直接打數字的格子 + AM／PM 切換，旁邊的時鐘按鈕可以點選常用時間。
- * 取代原生 <input type="time">（繁中瀏覽器會顯示「上午／下午」，iOS 只能滾輪選）。
- * value／onChange 一律是 24 小時制 "HH:mm"；optional 的欄位可以清空成 ""。
+ * 時間輸入（24 小時制）：小時（00–23）、分鐘（00–59）兩個可以直接打數字的格子，旁邊的時鐘按鈕可以點選常用時間。
+ * 取代原生 <input type="time">（繁中瀏覽器會顯示「上午／下午」、英文顯示 AM／PM，iOS 只能滾輪選）。
+ * value／onChange 一律是 "HH:mm"；optional 的欄位可以清空成 ""。
  */
 export function TimeField({ label, value, onChange, optional = false }: { label: string; value: string; onChange: (v: string) => void; optional?: boolean }) {
-  const { t, i18n } = useTranslation()
-  const lng = i18n.resolvedLanguage
+  const { t } = useTranslation()
   const uid = useId()
   const labelId = `${uid}-label`
   const errorId = `${uid}-error`
   const pickerId = `${uid}-picker`
 
-  const init = to12(value)
-  const [hh, setHh] = useState(init ? pad(init.h12) : '')
+  const init = parseHHMM(value)
+  const [hh, setHh] = useState(init ? pad(init.h) : '')
   const [mm, setMm] = useState(init ? pad(init.m) : '')
-  const [period, setPeriod] = useState<Period>(init?.period ?? 'am')
   const [invalid, setInvalid] = useState<'hour' | 'minute' | null>(null)
   const [open, setOpen] = useState(false)
   const emitted = useRef(value)
@@ -33,10 +31,9 @@ export function TimeField({ label, value, onChange, optional = false }: { label:
 
   /** 依 value 重設格子內容（外部改值、或輸入不合法要還原時） */
   const resetFrom = (v: string) => {
-    const p = to12(v)
-    setHh(p ? pad(p.h12) : '')
+    const p = parseHHMM(v)
+    setHh(p ? pad(p.h) : '')
     setMm(p ? pad(p.m) : '')
-    if (p) setPeriod(p.period)
     setInvalid(null)
   }
 
@@ -51,7 +48,7 @@ export function TimeField({ label, value, onChange, optional = false }: { label:
     emitted.current = v
     onChange(v)
   }
-  const emitParts = (h12: number, m: number, p: Period) => emit(from12(h12, m, p))
+  const emitParts = (h: number, m: number) => emit(toHHMM(h, m))
 
   // 點選元件外面就收起點選面板
   useEffect(() => {
@@ -71,11 +68,10 @@ export function TimeField({ label, value, onChange, optional = false }: { label:
       if (optional && !mm) emit('')
       return
     }
-    const r = parseHourInput(text, period)
-    if (!r) return setInvalid('hour')
+    const h = parseHourInput(text)
+    if (h == null) return setInvalid('hour')
     setInvalid(null)
-    setPeriod(r.period)
-    emitParts(r.h12, parseMinuteInput(mm) ?? 0, r.period)
+    emitParts(h, parseMinuteInput(mm) ?? 0)
     if (!mm) setMm('00')
     // 打滿兩位數就跳到分鐘
     if (text.length === 2) {
@@ -91,35 +87,28 @@ export function TimeField({ label, value, onChange, optional = false }: { label:
     const m = parseMinuteInput(text)
     if (m == null) return setInvalid('minute')
     setInvalid(null)
-    const h = parseHourInput(hh, period)
-    if (h) emitParts(h.h12, m, h.period)
+    const h = parseHourInput(hh)
+    if (h != null) emitParts(h, m)
   }
 
-  /** 離開格子時：不合法或沒填完就還原成目前的值，合法的補零（9 → 09、21 → 09 PM） */
+  /** 離開格子時：不合法或沒填完就還原成目前的值，合法的補零（9 → 09） */
   const onBlurField = () => {
     // 打滿兩位數自動跳到分鐘時，blur 在重新渲染前就觸發，state 還是舊的；直接讀輸入格的內容
     const hText = hourRef.current?.value ?? hh
     const mText = minuteRef.current?.value ?? mm
-    const h = parseHourInput(hText, period)
+    const h = parseHourInput(hText)
     const m = parseMinuteInput(mText)
     if (optional && !hText && !mText) {
       setInvalid(null)
       if (value) emit('')
       return
     }
-    if (!h || m == null) return resetFrom(value)
-    setHh(pad(h.h12))
+    if (h == null || m == null) return resetFrom(value)
+    setHh(pad(h))
     setMm(pad(m))
   }
 
-  const togglePeriod = (p: Period) => {
-    setPeriod(p)
-    const h = parseHourInput(hh, p)
-    // 已經是 1–12 的小時才照按鈕換；0、13–23 這種 24 小時制的打法以數字為準
-    if (h && h.period === p) emitParts(h.h12, parseMinuteInput(mm) ?? 0, p)
-  }
-
-  /** ↑↓ 微調：小時照時鐘順序走（11 AM ↑ 變 12 PM），分鐘 0–59 循環 */
+  /** ↑↓ 微調：小時 0–23、分鐘 0–59 循環 */
   const onArrow = (part: 'hour' | 'minute') => (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Backspace' && part === 'minute' && !mm) {
       e.preventDefault()
@@ -129,26 +118,25 @@ export function TimeField({ label, value, onChange, optional = false }: { label:
     if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return
     e.preventDefault()
     const d = e.key === 'ArrowUp' ? 1 : -1
-    const [h, m] = (value || from12(12, 0, period)).split(':').map(Number)
+    const [h, m] = (value || '12:00').split(':').map(Number)
     const next = part === 'hour' ? `${pad((h + d + 24) % 24)}:${pad(m)}` : `${pad(h)}:${pad((m + d + 60) % 60)}`
     resetFrom(next)
     emit(next)
   }
 
-  const pickHour = (h12: number) => {
+  const pickHour = (h: number) => {
     const m = parseMinuteInput(mm) ?? 0
-    setHh(pad(h12))
+    setHh(pad(h))
     setMm(pad(m))
     setInvalid(null)
-    emitParts(h12, m, period)
+    emitParts(h, m)
   }
   const pickMinute = (m: number) => {
-    const h = parseHourInput(hh, period)
-    const h12 = h?.h12 ?? 12
-    setHh(pad(h12))
+    const h = parseHourInput(hh) ?? 12
+    setHh(pad(h))
     setMm(pad(m))
     setInvalid(null)
-    emitParts(h12, m, h?.period ?? period)
+    emitParts(h, m)
   }
 
   const clear = () => {
@@ -158,23 +146,8 @@ export function TimeField({ label, value, onChange, optional = false }: { label:
     emit('')
   }
 
-  const cur = to12(value)
+  const cur = parseHHMM(value)
   const digit = 'w-[2.2em] min-w-0 rounded-md bg-transparent px-0.5 py-0.5 text-center text-sm font-normal text-ink tabular-nums outline-none placeholder:text-[#b8c2bd] focus:bg-sage-light'
-  const periodToggle = (
-    <div role="group" aria-label={t('time.period')} className="flex shrink-0 overflow-hidden rounded-full border border-line bg-paper">
-      {(['am', 'pm'] as const).map((p) => (
-        <button
-          key={p}
-          type="button"
-          aria-pressed={period === p}
-          onClick={() => togglePeriod(p)}
-          className={`px-1.5 py-1 text-[length:calc(11px*var(--fs))] leading-none font-bold ${period === p ? 'bg-sage text-white' : 'text-muted'}`}
-        >
-          {periodLabel(p, lng)}
-        </button>
-      ))}
-    </div>
-  )
 
   return (
     <div ref={root} role="group" aria-labelledby={labelId} className="relative grid min-w-0 gap-1.5 text-xs font-semibold text-muted">
@@ -182,7 +155,6 @@ export function TimeField({ label, value, onChange, optional = false }: { label:
       <div
         className={`flex min-w-0 items-center gap-1 rounded-(--radius-control) border bg-oat px-2 py-1.5 focus-within:border-sage ${invalid ? 'border-[#e0a493]' : 'border-line'}`}
       >
-        {periodFirst(lng) && periodToggle}
         <input
           ref={hourRef}
           aria-label={`${label} ${t('time.hour')}`}
@@ -218,7 +190,6 @@ export function TimeField({ label, value, onChange, optional = false }: { label:
           onKeyDown={onArrow('minute')}
           className={digit}
         />
-        {!periodFirst(lng) && periodToggle}
         <span className="ml-auto flex shrink-0 items-center">
           {optional && value && (
             <button type="button" onClick={clear} aria-label={t('time.clear', { label })} title={t('time.clear', { label })} className="grid size-7 place-items-center rounded-full text-muted hover:bg-sage-light">
@@ -258,18 +229,15 @@ export function TimeField({ label, value, onChange, optional = false }: { label:
           }}
           className="absolute inset-x-0 top-full z-20 mt-1 grid gap-2.5 rounded-(--radius-control) border border-line bg-paper p-3 shadow-card"
         >
-          <div className="flex items-center justify-between">
-            <span>{t('time.hour')}</span>
-            {periodToggle}
-          </div>
+          <span>{t('time.hour')}</span>
           <div className="grid grid-cols-6 gap-1">
             {HOURS.map((h) => (
               <button
                 key={h}
                 type="button"
-                aria-pressed={cur?.h12 === h && cur.period === period}
+                aria-pressed={cur?.h === h}
                 onClick={() => pickHour(h)}
-                className={`rounded-lg py-1.5 text-[length:calc(13px*var(--fs))] font-semibold tabular-nums ${cur?.h12 === h && cur.period === period ? 'bg-sage text-white' : 'bg-oat text-ink hover:bg-sage-light'}`}
+                className={`rounded-lg py-1.5 text-[length:calc(13px*var(--fs))] font-semibold tabular-nums ${cur?.h === h ? 'bg-sage text-white' : 'bg-oat text-ink hover:bg-sage-light'}`}
               >
                 {pad(h)}
               </button>

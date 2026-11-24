@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import { shoppingPath, type ShoppingEntry } from '../core/shoppingAgenda'
-import { formatTime, formatTime24 } from '../core/time'
+import { formatTime } from '../core/time'
 import { SHOP_STYLE, useEntryMoney, useShoppingLabel } from '../hooks/useShoppingAgenda'
 import { Icon, IconBadge } from './AcaciaIcons'
 import { Button } from './Button'
@@ -39,10 +39,9 @@ export function ShoppingChip({ entry, onOpen }: { entry: ShoppingEntry; onOpen: 
   )
 }
 
-/** 日期清單、一週兩週檢視、今天時間軸共用的卡片 */
-/** clock24：行事曆版面用 24 小時制顯示時間 */
-export function ShoppingCard({ entry, onOpen, compact = false, clock24 = false }: { entry: ShoppingEntry; onOpen: (x: ShoppingEntry) => void; compact?: boolean; clock24?: boolean }) {
-  const { t, i18n } = useTranslation()
+/** 日期清單、一週兩週檢視、今天時間軸共用的卡片（時間一律 24 小時制） */
+export function ShoppingCard({ entry, onOpen, compact = false }: { entry: ShoppingEntry; onOpen: (x: ShoppingEntry) => void; compact?: boolean }) {
+  const { t } = useTranslation()
   const label = useShoppingLabel()
   const done = entry.expense.done
   return (
@@ -60,7 +59,7 @@ export function ShoppingCard({ entry, onOpen, compact = false, clock24 = false }
         </strong>
       </span>
       <small className="mt-0.5 block text-[length:calc(11px*var(--fs))] text-muted">
-        {entry.expense.time ? (clock24 ? formatTime24(entry.expense.time) : formatTime(entry.expense.time, i18n.resolvedLanguage)) : t('calendar.shopping.allDay')}
+        {entry.expense.time ? formatTime(entry.expense.time) : t('calendar.shopping.allDay')}
         {done && ` · ${t('calendar.shopping.done')}`}
         {entry.archived && ` · ${t('calendar.shopping.archived')}`}
       </small>
@@ -86,7 +85,7 @@ export function ShoppingDetailDialog({ entry, onClose }: { entry: ShoppingEntry;
     [t('shopping.form.amt'), money(entry)],
     [t('shopping.form.cat'), cat],
     [t('shopping.form.date'), date],
-    [t('shopping.form.time'), e.time ? formatTime(e.time, lng) : t('calendar.shopping.allDay')],
+    [t('shopping.form.time'), e.time ? formatTime(e.time) : t('calendar.shopping.allDay')],
   ]
   if (e.note) rows.push([t('shopping.form.note'), e.note])
   if (e.done) rows.push([t('calendar.shopping.status'), t('calendar.shopping.done')])

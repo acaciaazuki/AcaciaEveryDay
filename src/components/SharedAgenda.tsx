@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { SharedEntry } from '../core/calendarView'
 import { useSharedTitle } from '../hooks/useSharedTitle'
-import { formatTimeRange24 } from '../core/time'
+import { formatTimeRange } from '../core/time'
 import { Icon } from './AcaciaIcons'
 import { Button } from './Button'
 import { Dialog } from './Dialog'
@@ -86,7 +86,7 @@ export function SharedCard({ entry, onOpen, compact = false }: { entry: SharedEn
         )}
       </span>
       <small className="block text-[length:calc(11px*var(--fs))] text-muted">
-        {formatTimeRange24(entry.start, entry.end) || t('event.allDay')}
+        {formatTimeRange(entry.start, entry.end) || t('event.allDay')}
         {entry.creatorName && ` · ${entry.creatorName}`}
         {note && ` · ${note}`}
       </small>
@@ -114,7 +114,7 @@ export function SharedDetailDialog({ entry, previewing, onClose }: { entry: Shar
       <dl className="grid gap-2">
         {row(t('sharing.space'), entry.space.name)}
         {row(t('event.date'), entry.lastDateISO !== entry.dateISO ? `${entry.dateISO} – ${entry.lastDateISO}` : entry.dateISO)}
-        {row(t('sharing.time'), formatTimeRange24(entry.start, entry.end) || t('event.allDay'))}
+        {row(t('sharing.time'), formatTimeRange(entry.start, entry.end) || t('event.allDay'))}
         {entry.creatorName && row(t('sharing.createdBy'), entry.creatorName)}
         {entry.access !== 'busy' && (
           <>

@@ -9,8 +9,7 @@ import { TimeField } from './TimeField'
 
 /** 調整今天頁「節奏」的起床與就寢時間（存在設定裡，跟著備份與同步） */
 export function RhythmDialog({ onClose }: { onClose: () => void }) {
-  const { t, i18n } = useTranslation()
-  const lng = i18n.resolvedLanguage
+  const { t } = useTranslation()
   const settings = useAppStore((s) => s.settings)
   const setRhythm = useAppStore((s) => s.setRhythm)
   const [draft, setDraft] = useState(() => rhythmTimes(settings))
@@ -58,7 +57,7 @@ export function RhythmDialog({ onClose }: { onClose: () => void }) {
         )}
         <div className="mt-2 flex flex-wrap gap-2">
           <Button variant="ghost" disabled={isDefault} onClick={() => set({ wake: DEFAULT_WAKE, sleep: DEFAULT_SLEEP })}>
-            {t('rhythm.reset', { range: `${formatTime(DEFAULT_WAKE, lng)}–${formatTime(DEFAULT_SLEEP, lng)}` })}
+            {t('rhythm.reset', { range: `${formatTime(DEFAULT_WAKE)}–${formatTime(DEFAULT_SLEEP)}` })}
           </Button>
           <Button variant="ghost" className="ml-auto" onClick={onClose}>
             {t('common.cancel')}

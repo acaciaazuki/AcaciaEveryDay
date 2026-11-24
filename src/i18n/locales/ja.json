@@ -834,11 +834,10 @@
   "time": {
     "hour": "時",
     "minute": "分",
-    "period": "午前／午後",
     "pick": "{{label}}を選ぶ",
     "clear": "{{label}}をクリア",
     "done": "完了",
-    "hourInvalid": "時は 1–12 で入力してください（0–23 の 24 時間表記も可）",
+    "hourInvalid": "時は 00–23 で入力してください",
     "minuteInvalid": "分は 00–59 で入力してください"
   },
   "recurring": {

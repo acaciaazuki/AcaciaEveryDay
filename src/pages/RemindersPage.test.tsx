@@ -69,9 +69,9 @@ describe('防遺漏提醒頁', () => {
     expect(preview).toHaveTextContent('平日，抵達（公司）時')
     fireEvent.click(within(dialog).getByRole('radio', { name: '500m' }))
     fireEvent.change(within(dialog).getByLabelText('開始時間 小時'), { target: { value: '8' } })
-    fireEvent.change(within(dialog).getByLabelText('結束時間 小時'), { target: { value: '6' } })
-    fireEvent.click(within(within(dialog).getByRole('group', { name: '結束時間' })).getByRole('button', { name: 'PM' }))
-    expect(preview).toHaveTextContent('平日 08:00 AM–06:00 PM，抵達（公司）時')
+    fireEvent.change(within(dialog).getByLabelText('結束時間 小時'), { target: { value: '18' } })
+    expect(preview).toHaveTextContent('平日 08:00–18:00，抵達（公司）時')
+    expect(preview.textContent).not.toMatch(/AM|PM|上午|下午/)
 
     fireEvent.click(within(dialog).getByText('儲存'))
     expect(useAppStore.getState().reminders[0]).toMatchObject({ place: '公司', radius: 500, trigger: 'arrive', days: 'weekdays', start: '08:00', end: '18:00', items: ['錢包', '識別證'], enabled: true })
