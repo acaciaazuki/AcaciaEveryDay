@@ -1132,6 +1132,7 @@
     "readOnlyMasked": "部分內容由建立者設為隱藏",
     "readOnlyPreview": "預覽其他成員的視角時只能查看",
     "projectedHint": "這是由忙閒投射規則自動產生的忙碌時段",
+    "goToSource": "前往原始空間查看/編輯",
     "createdBy": "建立者",
     "space": "空間",
     "time": "時間",

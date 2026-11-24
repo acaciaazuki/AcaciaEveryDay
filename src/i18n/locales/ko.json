@@ -1132,6 +1132,7 @@
     "readOnlyMasked": "일부 내용은 작성자가 숨김으로 설정했어요",
     "readOnlyPreview": "다른 멤버의 시점을 미리 볼 때는 보기만 가능해요",
     "projectedHint": "바쁨 공유 규칙에 따라 자동으로 생성된 바쁜 시간이에요",
+    "goToSource": "원래 캘린더에서 보기/편집",
     "createdBy": "작성자",
     "space": "스페이스",
     "time": "시간",

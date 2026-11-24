@@ -1132,6 +1132,7 @@
     "readOnlyMasked": "Die erstellende Person hat einige Details verborgen",
     "readOnlyPreview": "Nur ansehen während der Vorschau eines anderen Mitglieds",
     "projectedHint": "Diese belegte Zeit wurde automatisch durch eine Regel hinzugefügt",
+    "goToSource": "Im Ursprungskalender ansehen/bearbeiten",
     "createdBy": "Erstellt von",
     "space": "Bereich",
     "time": "Zeit",

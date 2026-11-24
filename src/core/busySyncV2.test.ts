@@ -5,6 +5,7 @@ import { fakeDrive } from '../test/fakeDrive'
 import { familySpace, makeItem, T0, U, workSpace } from '../test/sharingFixtures'
 import { visibleCalendar } from './calendarView'
 import { projectBusyBlocks, projectedBlockId } from './permissions'
+import { buildSpaceSyncPayload } from './syncEnvelope'
 import {
   busyProjectionRuleSchema,
   createSpace,
@@ -159,12 +160,35 @@ describe('忙閒投射規則 v2：各分頁的顯示', () => {
     expect(v.shared.map((e) => e.id)).toContain('mtg')
   })
 
-  it('切到目標空間：顯示自己的投射區塊，唯讀並標註來源', () => {
+  it('切到目標空間：顯示自己的投射區塊，唯讀、帶原始標題並標註來源', () => {
     const v = visibleCalendar(data, U.dad, U.dad, 'sp-family')
     const own = v.shared.filter((e) => e.projected)
     expect(own).toHaveLength(1)
     expect(own[0]).toMatchObject({ access: 'busy', canEdit: false, canManageVisibility: false, busyLabel: '上班中', busyDisplay: 'busy', projectedFrom: { id: 'sp-work', name: '公司專案' } })
-    expect(own[0]!.item.title).toBe('')
+    // 自己投射出去的區塊直接帶入來源行程的真實標題
+    expect(own[0]!.item.title).toBe('行程')
+  })
+
+  it('我的行事曆來源：用 personalTitles 帶入個人行程標題；預覽其他成員視角時不帶', () => {
+    const d = dadData([rule({ sourceId: PERSONAL_CALENDAR_ID, targetMode: 'selected', targetIds: ['sp-family'] })])
+    d.personalBusySlots = [{ id: 'ev1', dateISO: '2026-12-01', start: '09:00', end: '10:00', version: 1, updatedAt: T0, deletedAt: null }]
+    const personalTitles = new Map([['ev1', '看牙醫']])
+    const own = visibleCalendar(d, U.dad, U.dad, 'sp-family', { personalTitles }).shared.filter((e) => e.projected)
+    expect(own).toHaveLength(1)
+    expect(own[0]!.item.title).toBe('看牙醫')
+    const mom = visibleCalendar(d, U.dad, U.mom, 'sp-family', { personalTitles }).shared.filter((e) => e.projected)
+    expect(mom).toHaveLength(1)
+    expect(JSON.stringify(mom)).not.toContain('看牙醫')
+  })
+
+  it('同步出去的忙碌區塊仍然不含標題', () => {
+    const d = dadData([rule({ targetMode: 'all', label: '上班中' })], [makeItem({ id: 'mtg', spaceId: 'sp-work', createdBy: U.dad, title: '董事會', start: '14:00', end: '16:00' })])
+    for (const viewer of [U.mom, U.dad]) {
+      const payload = buildSpaceSyncPayload({ data: d, spaceId: 'sp-family', viewerId: viewer, now: T0 })!
+      const blocks = payload.entries.filter((e) => e.projection)
+      expect(blocks.length).toBeGreaterThan(0)
+      expect(JSON.stringify(blocks)).not.toContain('董事會')
+    }
   })
 
   it('我的行事曆：顯示投射到這裡的自己的忙碌區塊；預覽其他成員的視角時沒有', () => {
@@ -174,10 +198,11 @@ describe('忙閒投射規則 v2：各分頁的顯示', () => {
     expect(visibleCalendar(data, U.dad, U.mom, 'personal').shared).toEqual([])
   })
 
-  it('其他成員看到忙碌區塊，但不知道來源', () => {
+  it('其他成員看到忙碌區塊，但不知道來源也看不到標題', () => {
     const v = visibleCalendar(data, U.dad, U.mom, 'sp-family')
     const b = v.shared.find((e) => e.projected)!
     expect(b).toMatchObject({ access: 'busy', busyLabel: '上班中', busyDisplay: 'busy' })
+    expect(b.item.title).toBe('')
     expect(b.projectedFrom).toBeUndefined()
     expect(JSON.stringify(b)).not.toContain('公司專案')
   })

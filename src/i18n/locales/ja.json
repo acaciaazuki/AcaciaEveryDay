@@ -1132,6 +1132,7 @@
     "readOnlyMasked": "作成者が一部の内容を非表示にしています",
     "readOnlyPreview": "ほかのメンバーの視点をプレビュー中は閲覧のみです",
     "projectedHint": "予定ありの反映ルールで自動的に作られた時間です",
+    "goToSource": "元のカレンダーで表示・編集",
     "createdBy": "作成者",
     "space": "スペース",
     "time": "時間",

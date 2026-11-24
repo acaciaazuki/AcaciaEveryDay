@@ -4,6 +4,7 @@ import type { SharedEntry } from '../core/calendarView'
 import { PERSONAL_CALENDAR_ID } from '../core/sharing'
 import { detailEntries, safeLink } from '../core/itemDetails'
 import { useSharedTitle } from '../hooks/useSharedTitle'
+import { useSpacesStore } from '../store/useSpacesStore'
 import { formatTimeRange } from '../core/time'
 import { Icon } from './AcaciaIcons'
 import { Button } from './Button'
@@ -15,7 +16,7 @@ import { Dialog } from './Dialog'
  * - 完整：跟一般行程一樣，左側加空間色
  * - 忙閒（busy）：淡鼠尾草綠斜紋＋時鐘圖示，只寫 busyLabel 或「忙碌」
  * - 只顯示時間（busyDisplay 為 time_only）：淡灰斜紋，標題就是時間區間，不寫任何文字
- * - 自己投射出去的區塊：加上「來自 ○○」標籤（其他成員看到的區塊沒有來源）
+ * - 自己投射出去的區塊：顯示來源行程的真實標題，保留斜紋外觀，加上「來自 ○○」標籤（其他成員看到的區塊沒有來源也沒有標題）
  * - 遮罩（masked）：一般外觀，加「部分隱藏」標記，被遮罩的欄位顯示「（已隱藏）」
  */
 
@@ -129,11 +130,40 @@ export function SharedCard({ entry, onOpen, compact = false }: { entry: SharedEn
 }
 
 /** 唯讀詳情：忙閒、遮罩、別人的行程、預覽模式都只開這個，不會開編輯表單 */
-export function SharedDetailDialog({ entry, previewing, onClose }: { entry: SharedEntry; previewing: boolean; onClose: () => void }) {
+export function SharedDetailDialog({
+  entry,
+  previewing,
+  onClose,
+  onGoToSource,
+}: {
+  entry: SharedEntry
+  previewing: boolean
+  onClose: () => void
+  /** 切換到來源分頁之後要做的事（例如從今日頁跳到行事曆頁）；在行事曆頁不用傳 */
+  onGoToSource?: () => void
+}) {
   const { t } = useTranslation()
   const title = useSharedTitle()
+  const setFilter = useSpacesStore((s) => s.setFilter)
   const hidden = (f: 'location' | 'note' | 'kind' | 'details') => entry.maskedFields.includes(f)
-  const reason = previewing ? t('sharing.readOnlyPreview') : entry.access === 'busy' ? t('sharing.readOnlyBusy') : entry.access === 'masked' ? t('sharing.readOnlyMasked') : t('sharing.readOnly')
+  // 自己投射出去的區塊：內容就是自己的行程，只是這裡不能改，所以用一般的「只能查看」
+  const ownProjection = entry.projectedFrom !== undefined
+  const reason = previewing
+    ? t('sharing.readOnlyPreview')
+    : ownProjection
+      ? t('sharing.readOnly')
+      : entry.access === 'busy'
+        ? t('sharing.readOnlyBusy')
+        : entry.access === 'masked'
+          ? t('sharing.readOnlyMasked')
+          : t('sharing.readOnly')
+  /** 前往來源行事曆：切換到來源分頁（「我的行事曆」或來源空間），可在那裡查看或編輯原始行程 */
+  const sourceId = entry.projectedFrom?.id ?? ''
+  const goToSource = () => {
+    setFilter(sourceId)
+    onClose()
+    onGoToSource?.()
+  }
   const row = (label: string, value: string, isHidden = false) => (
     <div className="grid grid-cols-[6em_1fr] gap-2 text-[length:calc(13px*var(--fs))]">
       <dt className="text-muted">{label}</dt>
@@ -182,7 +212,12 @@ export function SharedDetailDialog({ entry, previewing, onClose }: { entry: Shar
         {entry.projected && <p className="text-xs text-muted">{t('sharing.projectedHint')}</p>}
         {isTimeOnly(entry) && <p className="text-xs text-muted">{t('sharing.rules.timeOnlyNote')}</p>}
       </dl>
-      <div className="mt-5 flex justify-end">
+      <div className="mt-5 flex flex-wrap justify-end gap-2">
+        {!previewing && sourceId && (
+          <Button variant="primary" data-go-to-source={sourceId} onClick={goToSource}>
+            {t('sharing.goToSource')}
+          </Button>
+        )}
         <Button variant="ghost" onClick={onClose}>
           {t('sharing.close')}
         </Button>
