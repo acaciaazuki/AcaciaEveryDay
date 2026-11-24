@@ -19,4 +19,24 @@ describe('PageHead', () => {
     expect(screen.getByRole('button', { name: '‹' }).parentElement).toHaveClass('text-[length:calc(14px*var(--fs))]')
     expect(screen.getByRole('heading', { level: 1, name: '晚安' })).toHaveClass(PAGE_TITLE_SIZE)
   })
+
+  it('aside 放在標題與操作按鈕之間：寬螢幕同一行、最寬 360px；窄螢幕移到第二行佔滿整行', () => {
+    render(<PageHead title="最愛地點" aside={<input aria-label="搜尋" />} actions={<button type="button">＋ 新增</button>} />)
+    const head = screen.getByRole('heading', { level: 1 }).closest('[data-page-head]')!
+    expect(head).toHaveClass('flex', 'flex-wrap', 'items-center', 'justify-between', 'clear-right')
+    const [title, aside, actions] = [...head.children] as HTMLElement[]
+    expect(title).toContainElement(screen.getByRole('heading', { level: 1 }))
+    expect(aside).toHaveAttribute('data-page-head-aside')
+    expect(aside).toContainElement(screen.getByRole('textbox', { name: '搜尋' }))
+    expect(aside).toHaveClass('order-last', 'w-full', 'min-[1001px]:order-none', 'min-[1001px]:max-w-[360px]', 'min-[1001px]:flex-1')
+    // 按鈕一律靠最右邊
+    expect(actions).toHaveClass('ml-auto')
+    expect(actions).toContainElement(screen.getByRole('button', { name: '＋ 新增' }))
+  })
+
+  it('沒傳 aside 就不輸出空的容器', () => {
+    const { container } = render(<PageHead title="標題" actions={<button type="button">按鈕</button>} />)
+    expect(container.querySelector('[data-page-head-aside]')).toBeNull()
+    expect(container.querySelector('[data-page-head]')).not.toHaveClass('clear-right')
+  })
 })

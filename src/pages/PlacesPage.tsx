@@ -129,7 +129,19 @@ export function PlacesPage() {
 
   return (
     <>
-      <PageHead title={t('places.title')} actions={<Button size="page" onClick={() => setEditing('new')}>{t('places.add')}</Button>} />
+      <PageHead
+        title={t('places.title')}
+        // 搜尋框放在標題右側（寬螢幕同一行）；排序模式時不顯示
+        aside={
+          !reordering && (
+            <label className="flex items-center gap-2 rounded-(--radius-control) border border-line bg-paper px-3 py-2.5 shadow-soft">
+              <Icon name="search" className="text-muted" />
+              <input aria-label={t('places.filterPlaceholder')} placeholder={t('places.filterPlaceholder')} value={q} onChange={(e) => setQ(e.target.value)} className="min-w-0 flex-1 bg-transparent text-sm outline-none" />
+            </label>
+          )
+        }
+        actions={<Button size="page" onClick={() => setEditing('new')}>{t('places.add')}</Button>}
+      />
 
       {reordering ? (
         <section aria-labelledby="place-reorder-title" className="rounded-(--radius-card) bg-paper p-4 shadow-card sm:p-5">
@@ -150,11 +162,6 @@ export function PlacesPage() {
         </section>
       ) : (
         <>
-      <label className="mb-3 flex items-center gap-2 rounded-(--radius-control) border border-line bg-paper px-3 py-2.5 shadow-soft">
-        <Icon name="search" className="text-muted" />
-        <input aria-label={t('places.filterPlaceholder')} placeholder={t('places.filterPlaceholder')} value={q} onChange={(e) => setQ(e.target.value)} className="min-w-0 flex-1 bg-transparent text-sm outline-none" />
-      </label>
-
       <div className="mb-3 flex gap-2 overflow-x-auto pb-1" role="radiogroup" aria-label={t('places.form.cat')}>
         {(['all', ...PLACE_CATEGORY_KEYS] as const).map((c) => (
           <button
