@@ -1227,6 +1227,10 @@
       "sourceRow": "Quelle",
       "timeOnlyNote": "Nur die belegte Zeit wird angezeigt",
       "shortcut": "Belegte Zeiten synchronisieren…"
+    },
+    "overlap": {
+      "title": "Diese Zeit überschneidet sich mit einer belegten Zeit",
+      "hint": "Du kannst trotzdem speichern – nur ein Hinweis."
     }
   }
 }
