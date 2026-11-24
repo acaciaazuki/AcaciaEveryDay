@@ -156,7 +156,7 @@ export function ShoppingPage() {
                         {s.title}
                       </strong>
                       <small className="mt-1 block text-[length:calc(11px*var(--fs))] opacity-80">
-                        {s.store || t('shopping.noStore')} · <Icon name={st.icon} className="size-[1.5em]" /> {catLabel(s)} · {s.date} {formatTime(s.time, lng)}
+                        {s.store || t('shopping.noStore')} · <Icon name={st.icon} className="size-[1.5em]" /> {catLabel(s)} · {s.date} {formatTime(s.time)}
                         {s.unitPrice != null && ` · ${formatQty(s.quantity)} × ${money(s.unitPrice, cur)}`}
                         {s.unitPrice == null && s.quantity != null && s.quantity !== 1 && ` · ${t('shopping.qtyOnly', { count: s.quantity })}`}
                         {s.recurringId && (

@@ -157,4 +157,13 @@ describe('TodayPage', () => {
     expect(useAppStore.getState().events[0].icon).toBeUndefined()
     expect(container.querySelector('[data-icon]')).toHaveAttribute('data-icon', 'meal')
   })
+  it('時間軸與節奏都用 24 小時制，不顯示 AM／PM', () => {
+    const d = toLocalISO()
+    useAppStore.setState({ events: [{ id: 'n', title: '晚上散步', dateISO: d, start: '21:00', end: '21:45', note: '' }] })
+    renderPage()
+    expect(screen.getByText('21:00', { selector: 'time' })).toBeInTheDocument()
+    expect(screen.getByText(/21:00–21:45/)).toBeInTheDocument()
+    expect(screen.getByText(/07:00/)).toBeInTheDocument()
+    expect(document.body.textContent).not.toMatch(/AM|PM|上午|下午/)
+  })
 })

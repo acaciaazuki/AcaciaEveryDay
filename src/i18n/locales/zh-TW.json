@@ -834,11 +834,10 @@
   "time": {
     "hour": "小時",
     "minute": "分鐘",
-    "period": "AM／PM",
     "pick": "點選{{label}}",
     "clear": "清除{{label}}",
     "done": "完成",
-    "hourInvalid": "小時請輸入 1–12（也可以打 0–23 的 24 小時制）",
+    "hourInvalid": "小時請輸入 00–23",
     "minuteInvalid": "分鐘請輸入 00–59"
   },
   "recurring": {

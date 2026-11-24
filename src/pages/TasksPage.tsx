@@ -23,7 +23,7 @@ type Draft = Omit<Task, 'id' | 'done'>
 const blank: Draft = { title: '', loc: '', date: '', time: '', titleColor: DEFAULT_TEXT_COLOR, bgColor: '#ffffff' }
 
 export function TasksPage() {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const tasks = useAppStore((s) => s.tasks)
   const toggleTask = useAppStore((s) => s.toggleTask)
   const [editing, setEditing] = useState<Task | 'new' | null>(null)
@@ -79,7 +79,7 @@ export function TasksPage() {
                             )}
                             {(task.date || task.time) && (
                               <span className="inline-flex items-center gap-1">
-                                <Icon name="calendar" className="size-[1.5em]" /> {task.date} {formatTime(task.time, i18n.resolvedLanguage)}
+                                <Icon name="calendar" className="size-[1.5em]" /> {task.date} {formatTime(task.time)}
                               </span>
                             )}
                           </p>

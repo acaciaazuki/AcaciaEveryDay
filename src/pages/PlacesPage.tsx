@@ -32,7 +32,7 @@ const pill = (on: boolean) =>
   `shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold ${on ? 'border-sage bg-sage text-white' : 'border-line bg-paper text-[#55645d] hover:bg-sage-light'}`
 
 export function PlacesPage() {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const places = useAppStore((s) => s.places)
   const sort: PlaceSort = useAppStore((s) => s.settings.placeSort) ?? 'custom'
   const setPlaceSort = useAppStore((s) => s.setPlaceSort)
@@ -110,7 +110,7 @@ export function PlacesPage() {
     const f = formatDistance(d)
     return t(`places.sort.${f.unit}`, { value: f.value })
   }
-  const openText = (s: OpenStatus) => (s.state === 'later' && s.opensAt ? t('places.sort.status.laterAt', { time: formatTime(s.opensAt, i18n.resolvedLanguage) }) : t(`places.sort.status.${s.state}`))
+  const openText = (s: OpenStatus) => (s.state === 'later' && s.opensAt ? t('places.sort.status.laterAt', { time: formatTime(s.opensAt) }) : t(`places.sort.status.${s.state}`))
 
   const notice = (() => {
     if (sort === 'open') return { text: t('places.sort.openHint') }

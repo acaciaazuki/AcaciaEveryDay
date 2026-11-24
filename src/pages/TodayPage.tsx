@@ -17,7 +17,7 @@ import type { CalendarEvent } from '../core/schema'
 import { agendaOn, type AgendaItem, type ShoppingEntry } from '../core/shoppingAgenda'
 import { dayRhythm, eventsOn, greetingKey, hours, rhythmTimes } from '../core/today'
 import { isLow } from '../core/inventory'
-import { formatTime, formatTimeRange, periodFirst, timeParts } from '../core/time'
+import { formatTime, formatTimeRange } from '../core/time'
 import { useNow } from '../hooks/useNow'
 import { useShoppingByDate } from '../hooks/useShoppingAgenda'
 import { useHolidaysByDate } from '../hooks/useHolidays'
@@ -182,7 +182,7 @@ export function TodayPage() {
                 if (it.kind === 'shopping')
                   return (
                     <li key={it.id} className="relative grid grid-cols-[calc(48px*var(--fs))_calc(36px*var(--fs))_1fr] items-start gap-x-3">
-                      <TimelineTime hhmm={it.start} lng={lng} />
+                      <TimelineTime hhmm={it.start} />
                       <ShoppingBadge className="relative z-10 ring-4 ring-paper" />
                       {next && <span aria-hidden className="absolute top-[calc(36px*var(--fs)+0.25rem)] -bottom-2 left-[calc(48px*var(--fs)+0.75rem+18px*var(--fs)-1px)] w-0.5 bg-[#e1eae5]" />}
                       <ShoppingCard entry={it.entry} onOpen={setViewingShop} />
@@ -191,7 +191,7 @@ export function TodayPage() {
                 if (it.kind === 'shared')
                   return (
                     <li key={it.id} className="relative grid grid-cols-[calc(48px*var(--fs))_calc(36px*var(--fs))_1fr] items-start gap-x-3">
-                      <TimelineTime hhmm={it.start} lng={lng} />
+                      <TimelineTime hhmm={it.start} />
                       <EventIconBadge icon={it.shared.access === 'busy' || it.shared.maskedFields.includes('title') ? 'default' : eventIconOf(it.shared.item)} className="relative z-10 ring-4 ring-paper" />
                       {next && <span aria-hidden className="absolute top-[calc(36px*var(--fs)+0.25rem)] -bottom-2 left-[calc(48px*var(--fs)+0.75rem+18px*var(--fs)-1px)] w-0.5 bg-[#e1eae5]" />}
                       <SharedCard entry={it.shared} onOpen={openShared} />
@@ -201,7 +201,7 @@ export function TodayPage() {
                 const gap = next && e.end && next.start > e.end ? diffMin(e.end, next.start) : 0
                 return (
                   <li key={e.id} className="relative grid grid-cols-[calc(48px*var(--fs))_calc(36px*var(--fs))_1fr] items-start gap-x-3">
-                    <TimelineTime hhmm={e.start} lng={lng} />
+                    <TimelineTime hhmm={e.start} />
                     <EventIconBadge icon={eventIconOf(e)} className="relative z-10 ring-4 ring-paper" />
                     {/* 垂直時間軸線：從這顆徽章連到下一顆 */}
                     {next && <span aria-hidden className="absolute top-[calc(36px*var(--fs)+0.25rem)] -bottom-2 left-[calc(48px*var(--fs)+0.75rem+18px*var(--fs)-1px)] w-0.5 bg-[#e1eae5]" />}
@@ -215,7 +215,7 @@ export function TodayPage() {
                         {e.title}
                       </h3>
                       <small className="text-[length:calc(11px*var(--fs))] text-muted">
-                        {formatTimeRange(e.start, e.end, lng) || t('event.allDay')} {e.note && `· ${e.note}`}
+                        {formatTimeRange(e.start, e.end) || t('event.allDay')} {e.note && `· ${e.note}`}
                       </small>
                     </button>
                     {gap >= 30 && (
@@ -247,7 +247,7 @@ export function TodayPage() {
             <div className="mb-3 flex items-center justify-between">
               <div>
                 <strong>
-                  {formatTime(wake, lng)} <span className="text-xs text-[#a8b1ac]">—</span> {formatTime(sleep, lng)}
+                  {formatTime(wake)} <span className="text-xs text-[#a8b1ac]">—</span> {formatTime(sleep)}
                 </strong>
                 <small className="block text-[length:calc(11px*var(--fs))] text-muted">{t('today.rhythmRange')}</small>
               </div>
@@ -284,16 +284,14 @@ export function TodayPage() {
   )
 }
 
-/** 時間軸左側的時間：時間與 AM／PM 分兩行，窄欄位也放得下（日文「午後」在上） */
-function TimelineTime({ hhmm, lng }: { hhmm: string; lng: string | undefined }) {
+/** 時間軸左側的時間（24 小時制） */
+function TimelineTime({ hhmm }: { hhmm: string }) {
   const { t } = useTranslation()
   // 沒有時間的購物記帳當作整天
   if (!hhmm) return <span className="pt-1.5 text-xs leading-tight font-bold text-muted">{t('calendar.shopping.allDay')}</span>
-  const p = timeParts(hhmm, lng)
   return (
-    <time dateTime={hhmm} className={`flex pt-1.5 text-xs leading-tight font-bold text-muted ${periodFirst(lng) ? 'flex-col-reverse' : 'flex-col'}`}>
-      <span className="tabular-nums">{p?.time ?? hhmm}</span>
-      {p && <span className="text-[length:calc(10px*var(--fs))] font-semibold">{p.period}</span>}
+    <time dateTime={hhmm} className="pt-1.5 text-xs leading-tight font-bold text-muted tabular-nums">
+      {formatTime(hhmm)}
     </time>
   )
 }
@@ -368,7 +366,7 @@ function RangeList({
                         {e.title}
                       </strong>
                       <small className="text-[length:calc(11px*var(--fs))] text-muted">
-                        {formatTimeRange(e.start, e.end, lng) || t('event.allDay')} {e.note && `· ${e.note}`}
+                        {formatTimeRange(e.start, e.end) || t('event.allDay')} {e.note && `· ${e.note}`}
                       </small>
                     </button>
                   </li>
