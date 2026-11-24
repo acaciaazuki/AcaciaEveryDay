@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { BusyRuleDialog } from './BusySyncRules'
 import { useMySpaces, useViewerOptions } from '../hooks/useViewerOptions'
 import { useSpacesStore } from '../store/useSpacesStore'
 
@@ -11,6 +13,8 @@ export function SpaceSwitcher() {
   const setViewer = useSpacesStore((s) => s.setViewer)
   const spaces = useMySpaces()
   const viewers = useViewerOptions()
+  const isSelf = useSpacesStore((s) => s.viewerId === s.selfId)
+  const [syncing, setSyncing] = useState(false)
   if (spaces.length === 0) return null
 
   const tabs = [
@@ -35,6 +39,13 @@ export function SpaceSwitcher() {
           </button>
         ))}
       </div>
+      {/* 切到單一行事曆時的快捷入口：把其他行事曆的忙碌時段同步到這裡（預覽其他成員時不顯示） */}
+      {isSelf && filter !== 'all' && (
+        <button type="button" onClick={() => setSyncing(true)} className="mr-auto rounded-full px-3 py-1.5 text-[length:calc(13px*var(--fs))] font-semibold text-sage-dark hover:bg-sage-light">
+          {t('sharing.rules.shortcut')}
+        </button>
+      )}
+      {syncing && <BusyRuleDialog presetTarget={filter} onClose={() => setSyncing(false)} />}
       {viewers.length > 1 && (
         <label className="flex items-center gap-2.5 text-[length:calc(14px*var(--fs))] font-semibold text-muted">
           {t('sharing.viewerLabel')}

@@ -1083,7 +1083,6 @@
     "spaceName": "Nom de l’espace",
     "hiddenFrom": "Masquer pour",
     "busyLabel": "Texte affiché quand occupé",
-    "projection": "Afficher mes créneaux occupés dans d’autres espaces",
     "syncState": {
       "idle": "Synchronisé",
       "syncing": "Synchronisation…",
@@ -1138,15 +1137,7 @@
       "memberRole": "Rôle",
       "memberRequired": "Saisissez un nom de membre",
       "addMember": "Ajouter un membre",
-      "roleOf": "Rôle de {{name}}",
-      "rulesHelp": "Affichez les événements que vous avez créés dans un espace comme créneaux occupés dans un autre espace, sans titre, lieu ni note.",
-      "ruleText": "{{from}} → {{to}} : affiché comme « {{label}} »",
-      "ruleTimeOnly": "{{from}} → {{to}} : horaire seulement",
-      "enabled": "Activé",
-      "from": "Espace source",
-      "to": "Afficher dans",
-      "addRule": "Ajouter une règle",
-      "sameSpace": "Choisissez deux espaces différents"
+      "roleOf": "Rôle de {{name}}"
     },
     "detailsTitle": "Détails",
     "searchPreviewHint": "Aperçu d’un autre membre : seule la recherche dans les événements partagés qu’il peut voir est effectuée. Vos tâches, dépenses, lieux et autres données personnelles ne sont pas affichés.",
@@ -1206,6 +1197,36 @@
       "restored": "Restauré",
       "restoreFailed": "Restauration impossible : {{reason}}"
     },
-    "place": "Lieu"
+    "place": "Lieu",
+    "rules": {
+      "title": "Synchronisation des créneaux occupés",
+      "help": "Affichez les événements d'un calendrier dans les autres comme « Occupé » ou avec l'horaire seulement, pour éviter les chevauchements sans révéler les détails.",
+      "empty": "Aucune règle de synchronisation",
+      "add": "+ Ajouter une règle",
+      "addTitle": "Nouvelle synchronisation",
+      "editTitle": "Modifier la synchronisation",
+      "edit": "Modifier",
+      "source": "Calendrier source",
+      "targets": "Synchroniser vers",
+      "targetAll": "Tous les calendriers (y compris les espaces rejoints plus tard)",
+      "targetSelected": "Calendriers choisis",
+      "display": "Affichage",
+      "displayBusy": "Occupé (texte personnalisable)",
+      "displayTimeOnly": "Horaire seulement",
+      "advanced": "Avancé",
+      "includeAllDay": "Inclure les événements sur la journée (journée occupée)",
+      "includePrivate": "Inclure les événements privés",
+      "needTarget": "Choisissez au moins un calendrier",
+      "noTargets": "Aucun autre calendrier disponible",
+      "preview": "Aperçu : les membres de « {{space}} » verront → {{text}}",
+      "previewSelf": "Aperçu : vous verrez dans « Mon calendrier » → {{text}}",
+      "save": "Enregistrer",
+      "enabled": "Activé",
+      "remove": "Supprimer",
+      "fromSource": "Depuis {{name}}",
+      "sourceRow": "Source",
+      "timeOnlyNote": "Seul le créneau occupé est affiché",
+      "shortcut": "Synchroniser les créneaux…"
+    }
   }
 }

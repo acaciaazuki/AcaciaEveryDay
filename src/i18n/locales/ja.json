@@ -1083,7 +1083,6 @@
     "spaceName": "スペース名",
     "hiddenFrom": "この人たちには非表示",
     "busyLabel": "予定ありのときの表示",
-    "projection": "予定ありの時間をほかのスペースに反映",
     "syncState": {
       "idle": "同期済み",
       "syncing": "同期中…",
@@ -1138,15 +1137,7 @@
       "memberRole": "役割",
       "memberRequired": "メンバー名を入力してください",
       "addMember": "メンバーを追加",
-      "roleOf": "{{name}} の役割",
-      "rulesHelp": "あるスペースで「自分が作った」予定を、ほかのスペースに「予定あり」として表示します。タイトル・場所・メモは表示されません。",
-      "ruleText": "{{from}} → {{to}}：「{{label}}」と表示",
-      "ruleTimeOnly": "{{from}} → {{to}}：時間のみ表示",
-      "enabled": "有効",
-      "from": "元のスペース",
-      "to": "表示先",
-      "addRule": "ルールを追加",
-      "sameSpace": "元のスペースと表示先は別にしてください"
+      "roleOf": "{{name}} の役割"
     },
     "detailsTitle": "詳細",
     "searchPreviewHint": "ほかのメンバーの視点をプレビュー中：そのメンバーが見られる共有予定だけを検索し、あなたのタスク・家計簿・お気に入りの場所などは表示しません。",
@@ -1206,6 +1197,36 @@
       "restored": "復元しました",
       "restoreFailed": "復元できませんでした：{{reason}}"
     },
-    "place": "場所"
+    "place": "場所",
+    "rules": {
+      "title": "予定ありの時間を同期",
+      "help": "あるカレンダーの予定を、「予定あり」または時間だけの形でほかのカレンダーに同期します。重なりを防ぎつつ、内容は伝わりません。",
+      "empty": "同期ルールはまだありません",
+      "add": "＋ 同期ルールを追加",
+      "addTitle": "予定ありの同期を追加",
+      "editTitle": "予定ありの同期を編集",
+      "edit": "編集",
+      "source": "同期元のカレンダー",
+      "targets": "同期先",
+      "targetAll": "すべてのカレンダー（今後参加するスペースを含む）",
+      "targetSelected": "カレンダーを選ぶ",
+      "display": "表示方法",
+      "displayBusy": "予定あり（文字を変更できます）",
+      "displayTimeOnly": "時間だけ表示",
+      "advanced": "詳細設定",
+      "includeAllDay": "終日の予定も同期（終日ふさがり）",
+      "includePrivate": "非公開の予定も含める",
+      "needTarget": "同期先のカレンダーを1つ以上選んでください",
+      "noTargets": "同期できるほかのカレンダーがありません",
+      "preview": "プレビュー：「{{space}}」のメンバーに表示 → {{text}}",
+      "previewSelf": "プレビュー：「マイカレンダー」に表示 → {{text}}",
+      "save": "保存",
+      "enabled": "有効",
+      "remove": "削除",
+      "fromSource": "{{name}}から",
+      "sourceRow": "同期元",
+      "timeOnlyNote": "ふさがっている時間だけ表示",
+      "shortcut": "予定ありを同期…"
+    }
   }
 }

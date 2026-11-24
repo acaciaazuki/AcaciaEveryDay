@@ -1083,7 +1083,6 @@
     "spaceName": "Name des Bereichs",
     "hiddenFrom": "Verbergen vor",
     "busyLabel": "Angezeigter Text bei Beschäftigung",
-    "projection": "Meine belegten Zeiten in anderen Bereichen zeigen",
     "syncState": {
       "idle": "Synchronisiert",
       "syncing": "Wird synchronisiert…",
@@ -1138,15 +1137,7 @@
       "memberRole": "Rolle",
       "memberRequired": "Gib einen Namen für das Mitglied ein",
       "addMember": "Mitglied hinzufügen",
-      "roleOf": "Rolle von {{name}}",
-      "rulesHelp": "Zeige die Termine, die du in einem Bereich erstellt hast, in einem anderen Bereich als belegte Zeit – ohne Titel, Ort oder Notiz.",
-      "ruleText": "{{from}} → {{to}}: angezeigt als „{{label}}“",
-      "ruleTimeOnly": "{{from}} → {{to}}: nur Uhrzeit",
-      "enabled": "An",
-      "from": "Aus Bereich",
-      "to": "Anzeigen in",
-      "addRule": "Regel hinzufügen",
-      "sameSpace": "Wähle zwei verschiedene Bereiche"
+      "roleOf": "Rolle von {{name}}"
     },
     "detailsTitle": "Details",
     "searchPreviewHint": "Vorschau eines anderen Mitglieds: Durchsucht werden nur die geteilten Termine, die es sehen kann. Deine Aufgaben, Ausgaben, Orte und anderen persönlichen Daten werden nicht angezeigt.",
@@ -1206,6 +1197,36 @@
       "restored": "Wiederhergestellt",
       "restoreFailed": "Wiederherstellung fehlgeschlagen: {{reason}}"
     },
-    "place": "Ort"
+    "place": "Ort",
+    "rules": {
+      "title": "Belegte Zeiten synchronisieren",
+      "help": "Termine eines Kalenders erscheinen in anderen als „Belegt“ oder nur mit Uhrzeit – so überschneidet sich nichts und Details bleiben privat.",
+      "empty": "Noch keine Synchronisierungsregeln",
+      "add": "+ Regel hinzufügen",
+      "addTitle": "Neue Synchronisierung",
+      "editTitle": "Synchronisierung bearbeiten",
+      "edit": "Bearbeiten",
+      "source": "Quellkalender",
+      "targets": "Synchronisieren nach",
+      "targetAll": "Alle Kalender (auch später beigetretene Bereiche)",
+      "targetSelected": "Ausgewählte Kalender",
+      "display": "Anzeige",
+      "displayBusy": "Belegt (eigener Text)",
+      "displayTimeOnly": "Nur Zeitraum",
+      "advanced": "Erweitert",
+      "includeAllDay": "Ganztägige Termine einbeziehen (ganzer Tag belegt)",
+      "includePrivate": "Private Termine einbeziehen",
+      "needTarget": "Wähle mindestens einen Kalender",
+      "noTargets": "Keine anderen Kalender verfügbar",
+      "preview": "Vorschau: Mitglieder von „{{space}}“ sehen → {{text}}",
+      "previewSelf": "Vorschau: Du siehst in „Mein Kalender“ → {{text}}",
+      "save": "Speichern",
+      "enabled": "Aktiv",
+      "remove": "Löschen",
+      "fromSource": "Aus {{name}}",
+      "sourceRow": "Quelle",
+      "timeOnlyNote": "Nur die belegte Zeit wird angezeigt",
+      "shortcut": "Belegte Zeiten synchronisieren…"
+    }
   }
 }

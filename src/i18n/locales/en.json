@@ -1083,7 +1083,6 @@
     "spaceName": "Space name",
     "hiddenFrom": "Hide from",
     "busyLabel": "Text shown when busy",
-    "projection": "Show my busy times in other spaces",
     "syncState": {
       "idle": "Synced",
       "syncing": "Syncing…",
@@ -1138,15 +1137,7 @@
       "memberRole": "Role",
       "memberRequired": "Enter a member name",
       "addMember": "Add member",
-      "roleOf": "Role of {{name}}",
-      "rulesHelp": "Show the events you created in one space as busy time in another space, without the title, location or note.",
-      "ruleText": "{{from}} → {{to}}: shown as “{{label}}”",
-      "ruleTimeOnly": "{{from}} → {{to}}: time only",
-      "enabled": "On",
-      "from": "From space",
-      "to": "Show in",
-      "addRule": "Add rule",
-      "sameSpace": "Choose two different spaces"
+      "roleOf": "Role of {{name}}"
     },
     "detailsTitle": "Details",
     "searchPreviewHint": "Previewing another member: only the shared events they can see are searched. Your tasks, expenses, places and other personal data are not shown.",
@@ -1206,6 +1197,36 @@
       "restored": "Restored",
       "restoreFailed": "Couldn’t restore: {{reason}}"
     },
-    "place": "Location"
+    "place": "Location",
+    "rules": {
+      "title": "Busy time sync",
+      "help": "Show events from one calendar in others as \"Busy\" or time only, so plans don't overlap and details stay private.",
+      "empty": "No sync rules yet",
+      "add": "+ Add sync rule",
+      "addTitle": "New busy time sync",
+      "editTitle": "Edit busy time sync",
+      "edit": "Edit",
+      "source": "Source calendar",
+      "targets": "Sync to",
+      "targetAll": "All calendars (including spaces you join later)",
+      "targetSelected": "Selected calendars",
+      "display": "Show as",
+      "displayBusy": "Busy (custom text)",
+      "displayTimeOnly": "Time range only",
+      "advanced": "Advanced",
+      "includeAllDay": "Include all-day events (whole day busy)",
+      "includePrivate": "Include private events",
+      "needTarget": "Choose at least one calendar to sync to",
+      "noTargets": "No other calendars to sync to",
+      "preview": "Preview: members of \"{{space}}\" will see → {{text}}",
+      "previewSelf": "Preview: you will see in \"My calendar\" → {{text}}",
+      "save": "Save",
+      "enabled": "On",
+      "remove": "Delete",
+      "fromSource": "From {{name}}",
+      "sourceRow": "Source",
+      "timeOnlyNote": "Only the occupied time is shown",
+      "shortcut": "Sync busy times…"
+    }
   }
 }

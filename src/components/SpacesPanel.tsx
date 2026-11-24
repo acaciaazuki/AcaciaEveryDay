@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import { canManageSpace, MEMBER_ROLES, PERSONAL_CALENDAR_ID, roleOf, SPACE_KINDS, type BusyProjectionRule, type MemberRole, type Space, type SpaceKind } from '../core/sharing'
+import { canManageSpace, MEMBER_ROLES, roleOf, SPACE_KINDS, type MemberRole, type Space, type SpaceKind } from '../core/sharing'
+import { BusySyncRules } from './BusySyncRules'
 import { useSpacesStore } from '../store/useSpacesStore'
 import { Button } from './Button'
 import { Field } from './Field'
@@ -8,7 +9,7 @@ import { SpacesSnapshots, SpacesSyncPanel } from './SpacesSyncPanel'
 
 const select = 'rounded-(--radius-control) border border-line bg-oat px-3 py-2 text-sm font-normal text-ink outline-none focus:border-sage'
 
-/** 設定頁「共享空間」：新增空間、模擬成員與角色、跨空間忙閒投射規則 */
+/** 設定頁「共享空間」：新增空間、模擬成員與角色、忙碌時段同步規則 */
 export function SpacesPanel() {
   const { t } = useTranslation()
   const selfId = useSpacesStore((s) => s.selfId)
@@ -79,7 +80,7 @@ export function SpacesPanel() {
         </ul>
       )}
 
-      {spaces.length >= 2 && <RulesEditor spaces={spaces} readOnly={previewing} onError={setError} />}
+      <BusySyncRules readOnly={previewing} />
       <SpacesSnapshots readOnly={previewing} />
     </section>
   )
@@ -180,91 +181,3 @@ function SpaceCard({ space, selfId, readOnly, onError }: { space: Space; selfId:
   )
 }
 
-function RulesEditor({ spaces, readOnly, onError }: { spaces: Space[]; readOnly: boolean; onError: (m: string) => void }) {
-  const { t } = useTranslation()
-  const selfId = useSpacesStore((s) => s.selfId)
-  const rules = useSpacesStore((s) => s.data.busyProjectionRules).filter((r) => r.userId === selfId && r.deletedAt === null)
-  const addRule = useSpacesStore((s) => s.addRule)
-  const updateRule = useSpacesStore((s) => s.updateRule)
-  const removeRule = useSpacesStore((s) => s.removeRule)
-  const [from, setFrom] = useState(spaces[0]!.id)
-  const [to, setTo] = useState(spaces[1]!.id)
-  const [label, setLabel] = useState('')
-  const nameOf = (id: string) => (id === PERSONAL_CALENDAR_ID ? t('sharing.myCalendar') : (spaces.find((s) => s.id === id)?.name ?? '—'))
-  const targetsOf = (r: BusyProjectionRule) => (r.targetMode === 'all' ? t('sharing.allCalendars') : r.targetIds.map(nameOf).join('、'))
-
-  return (
-    <div className="mt-5 border-t border-line pt-4">
-      <h3 className="mb-1 text-sm font-bold">{t('sharing.projection')}</h3>
-      <p className="mb-3 text-xs leading-relaxed text-muted">{t('sharing.panel.rulesHelp')}</p>
-      {rules.length > 0 && (
-        <ul className="mb-3 grid gap-1.5">
-          {rules.map((r) => (
-            <li key={r.id} className="flex flex-wrap items-center gap-2 text-[length:calc(13px*var(--fs))]">
-              <span className="min-w-0 flex-1">
-                {r.display === 'time_only'
-                  ? t('sharing.panel.ruleTimeOnly', { from: nameOf(r.sourceId), to: targetsOf(r) })
-                  : t('sharing.panel.ruleText', { from: nameOf(r.sourceId), to: targetsOf(r), label: r.label || t('sharing.busy') })}
-              </span>
-              {!readOnly && (
-                <>
-                  <label className="flex items-center gap-1 text-xs text-muted">
-                    <input type="checkbox" checked={r.enabled} onChange={(e) => updateRule(r.id, { enabled: e.target.checked })} />
-                    {t('sharing.panel.enabled')}
-                  </label>
-                  <button type="button" className="text-xs text-muted hover:text-ink" onClick={() => removeRule(r.id)}>
-                    {t('sharing.panel.remove')}
-                  </button>
-                </>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
-      {!readOnly && (
-        <form
-          className="flex flex-wrap items-end gap-2"
-          onSubmit={(e) => {
-            e.preventDefault()
-            if (from === to) return onError(t('sharing.panel.sameSpace'))
-            try {
-              // 目前的編輯器只建立「空間 → 單一空間」、整天行程照投射的規則（跟舊版一致，舊版 App 也讀得懂）；完整設定介面在第 3 階段
-              addRule({ sourceId: from, targetMode: 'selected', targetIds: [to], label: label.trim(), includeAllDay: true })
-              setLabel('')
-              onError('')
-            } catch (err) {
-              onError(err instanceof Error ? err.message : String(err))
-            }
-          }}
-        >
-          <label className="grid gap-1.5 text-xs font-semibold text-muted">
-            {t('sharing.panel.from')}
-            <select value={from} onChange={(e) => setFrom(e.target.value)} className={select}>
-              {spaces.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="grid gap-1.5 text-xs font-semibold text-muted">
-            {t('sharing.panel.to')}
-            <select value={to} onChange={(e) => setTo(e.target.value)} className={select}>
-              {spaces.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <div className="min-w-28 flex-1">
-            <Field label={t('sharing.busyLabel')} placeholder={t('sharing.busyLabelPlaceholder')} maxLength={20} value={label} onChange={(e) => setLabel(e.target.value)} />
-          </div>
-          <Button type="submit" variant="ghost">
-            {t('sharing.panel.addRule')}
-          </Button>
-        </form>
-      )}
-    </div>
-  )
-}
