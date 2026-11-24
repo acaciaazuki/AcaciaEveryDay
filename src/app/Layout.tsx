@@ -134,9 +134,9 @@ function AppShell() {
         </div>
       </aside>
 
-      {/* 行事曆在桌面（1001px 以上）撐滿視窗高度：main 變成直向 flex、至少一個視窗高，底部留白縮小；內容放不下時整頁照常捲動 */}
+      {/* 行事曆在所有寬度撐滿視窗高度：main 變成直向 flex、至少一個視窗高（手機的底部內距預留導覽列約 57px 與安全區域，月曆底部距導覽列約 15px；平板與桌面底部留白縮成 24px）；內容放不下時整頁照常捲動 */}
       <main
-        className={`mx-auto ${wide ? 'max-w-[2000px] min-[1001px]:flex min-[1001px]:min-h-dvh min-[1001px]:flex-col min-[1001px]:pb-6' : 'max-w-[1400px] min-[1001px]:pb-16'} px-3.5 pt-4 pb-[calc(88px+env(safe-area-inset-bottom))] min-[681px]:ml-60 min-[681px]:px-6 min-[681px]:pb-16 min-[1001px]:px-9`}
+        className={`mx-auto ${wide ? 'flex min-h-dvh max-w-[2000px] flex-col pb-[calc(72px+env(safe-area-inset-bottom))] min-[681px]:pb-6' : 'max-w-[1400px] pb-[calc(88px+env(safe-area-inset-bottom))] min-[681px]:pb-16'} px-3.5 pt-4 min-[681px]:ml-60 min-[681px]:px-6 min-[1001px]:px-9`}
       >
         <button
           type="button"

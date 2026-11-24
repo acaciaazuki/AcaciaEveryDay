@@ -1,7 +1,7 @@
 import { useEffect, useState, type RefObject } from 'react'
 
-/** 桌面滿版月曆的斷點（跟 Layout、CalendarPage 的 min-[1001px] 一致） */
-export const FILL_QUERY = '(min-width: 1001px)'
+/** 格子開始顯示行程標籤（而不是圓點）的寬度，跟 CalendarPage 的 sm: 一致；這以上依格子高度計算標籤數 */
+export const FILL_QUERY = '(min-width: 640px)'
 /**
  * 一列標籤與格子外框的高度，用根字級（rem）換算，因為 leading-4、size-6、p-2 都是 rem：
  * - 標籤：行高 1rem ＋ 上下 1px 內距 ＋ 1px 間距
@@ -17,8 +17,8 @@ export const cellChromePx = (rem: number) => rem * 2.75 + 2
 export const chipsThatFit = (cellHeight: number, rem = 16) => Math.max(0, Math.floor((cellHeight - cellChromePx(rem)) / chipRowPx(rem)) - 1)
 
 /**
- * 桌面滿版時依日期格子的實際高度決定每天顯示幾個標籤（視窗越高顯示越多）。
- * 手機、平板或量不到高度（測試環境）時維持 fallback。
+ * 依日期格子的實際高度決定每天顯示幾個標籤（視窗越高顯示越多）。
+ * 手機（640px 以下只顯示圓點）或量不到高度（測試環境）時維持 fallback。
  * weeks 變了（切換月份）也要重新量：網格總高度不變，ResizeObserver 不會觸發，但每列高度變了。
  */
 export function useChipCapacity(grid: RefObject<HTMLElement | null>, fallback: number, weeks: number): number {

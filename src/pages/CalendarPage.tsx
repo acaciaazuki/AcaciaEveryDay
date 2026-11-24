@@ -85,7 +85,7 @@ export function CalendarPage() {
   const selectedLabel = new Intl.DateTimeFormat(i18n.resolvedLanguage, { dateStyle: 'full' }).format(new Date(`${selected}T00:00`))
 
   return (
-    <div className="min-[1001px]:flex min-[1001px]:min-h-0 min-[1001px]:flex-1 min-[1001px]:flex-col">
+    <div className="flex min-h-0 flex-1 flex-col">
       <PageHead
         title={t('calendar.title')}
         actions={
@@ -107,8 +107,8 @@ export function CalendarPage() {
       />
       <SpaceSwitcher />
 
-      {/* 桌面（1001px 以上）：月曆卡片與日期網格向下撐滿視窗剩餘高度；手機、平板維持自然高度 */}
-      <section className="rounded-(--radius-card) bg-paper p-4 shadow-card sm:p-5 min-[1001px]:flex min-[1001px]:min-h-0 min-[1001px]:flex-1 min-[1001px]:flex-col min-[1001px]:p-6">
+      {/* 所有寬度：月曆卡片與日期網格向下撐滿視窗剩餘高度（手機到底部導覽列上方、桌面到視窗底部 24px） */}
+      <section className="flex min-h-0 flex-1 flex-col rounded-(--radius-card) bg-paper p-4 shadow-card sm:p-5 min-[1001px]:p-6">
           <MonthNav
             year={ym.year}
             month={ym.month}
@@ -123,7 +123,8 @@ export function CalendarPage() {
             role="grid"
             data-weeks={weeks}
             style={{ '--weeks': weeks } as CSSProperties}
-            className="mt-4 grid grid-cols-7 gap-1 min-[1001px]:flex-1 min-[1001px]:grid-rows-[auto_repeat(var(--weeks),minmax(4.5rem,1fr))]"
+            // 週列依當月週數平均分配（1fr）；最小高度：手機 3.25rem、平板 5rem、桌面 4.5rem，極矮的視窗才會整頁捲動
+            className="mt-4 grid flex-1 grid-cols-7 grid-rows-[auto_repeat(var(--weeks),minmax(var(--row-min),1fr))] gap-1 [--row-min:3.25rem] min-[640px]:[--row-min:5rem] min-[1001px]:[--row-min:4.5rem]!"
           >
             {weekdayNames(i18n.resolvedLanguage).map((w, i) => (
               <div key={i} role="columnheader" className="pb-1 text-center text-[length:calc(11px*var(--fs))] font-bold text-muted">
@@ -147,8 +148,8 @@ export function CalendarPage() {
                   role="gridcell"
                   aria-selected={isSel}
                   tabIndex={0}
-                  // 桌面滿版：contain:size 讓格子內容不影響列高，週列只依 1fr 平均分配（也避免「標籤數 ↔ 格子高度」互相撐大）。
-                  // min-h-0／p-2 加 !：Tailwind 產生的 CSS 裡 sm: 排在 min-[1001px]: 之後，不加會被 sm:min-h-36 蓋掉
+                  // contain:size 讓格子內容不影響列高，週列只依 1fr 平均分配（也避免「標籤數 ↔ 格子高度」互相撐大）。
+                  // p-2 加 !：Tailwind 產生的 CSS 裡 sm: 排在 min-[1001px]: 之後，不加會被 sm:p-1.5 蓋掉
                   aria-label={t('calendar.openDay', { date: iso })}
                   onClick={() => openDay(iso)}
                   onKeyDown={(e) => {
@@ -156,7 +157,7 @@ export function CalendarPage() {
                     e.preventDefault()
                     openDay(iso)
                   }}
-                  className={`min-h-20 cursor-pointer overflow-hidden rounded-lg border p-1 text-left transition sm:min-h-36 sm:p-1.5 min-[1001px]:min-h-0! min-[1001px]:p-2! min-[1001px]:[contain:size] ${
+                  className={`min-h-0 cursor-pointer overflow-hidden rounded-lg border p-1 text-left transition [contain:size] sm:p-1.5 min-[1001px]:p-2! ${
                     isSel ? `border-sage ${weekend ? 'bg-weekend' : 'bg-sage-light/60'}` : `border-transparent ${weekend ? 'bg-weekend hover:bg-weekend-hover' : 'hover:bg-oat'}`
                   }`}
                 >
