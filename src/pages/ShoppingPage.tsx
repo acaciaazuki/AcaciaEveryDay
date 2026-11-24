@@ -73,7 +73,55 @@ export function ShoppingPage() {
 
   return (
     <>
-      <PageHead title={t('shopping.title')} actions={
+      {/*
+        頂部同一行：[標題] [本期記帳] [預算進度] …… [批次加入固定支出] [＋ 新增記帳]
+        1280px 以上同一行垂直置中；較窄時本期記帳與預算移到第二行，寬度不夠再各自折行。
+      */}
+      <PageHead
+        title={t('shopping.title')}
+        asideFill
+        aside={
+          <div className="flex flex-wrap items-stretch gap-3">
+            {/* 本期記帳：週期、總額、分類小計 */}
+            <section aria-labelledby="shopping-period" className="flex min-w-0 flex-[1_1_280px] flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl border border-line bg-paper px-4 py-2.5 shadow-soft">
+              <div className="shrink-0">
+                <h2 id="shopping-period" className="text-[length:calc(11px*var(--fs))] font-bold whitespace-nowrap text-[#78867f]">
+                  {t('shopping.period', { start: period.start.slice(5).replace('-', '/'), end: period.end.slice(5).replace('-', '/') })}
+                </h2>
+                <p className={`mt-0.5 flex flex-wrap items-baseline gap-x-1 text-[length:calc(20px*var(--fs))] leading-tight font-extrabold tracking-tight tabular-nums ${over ? 'text-[#ef4444]' : ''}`} data-testid="period-total">
+                  <TotalsText totals={totals} money={money} fallback={currency} />
+                </p>
+              </div>
+              {/* 1280px 以上跟標題同一行：分類小計維持單行、可左右捲動，卡片不會被撐高；較窄時有整行可用，照常折行 */}
+              {byCategory.length > 0 && (
+                <ul aria-label={t('shopping.byCategory')} className="flex min-w-0 flex-1 flex-wrap gap-1.5 min-[1280px]:flex-nowrap min-[1280px]:overflow-x-auto min-[1280px]:[scrollbar-width:none] min-[1280px]:pr-4 min-[1280px]:[mask-image:linear-gradient(to_right,#000_calc(100%-24px),transparent)]">
+                  {byCategory.map(([k, v]) => (
+                    <li key={k} className="rounded-full border border-line bg-[#f9f8f4] px-2.5 py-1 text-[length:calc(11px*var(--fs))] font-semibold whitespace-nowrap text-[#55645d]">
+                      {keyLabel(k)}:{' '}
+                      <span className="inline-flex flex-wrap gap-x-1">
+                        <TotalsText totals={v} money={money} fallback={currency} />
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+            {/* 預算進度：百分比、進度條、歸檔本期 */}
+            <div className="flex min-w-0 flex-[1_1_230px] items-center gap-3 min-[1280px]:flex-[0_1_230px] rounded-2xl border border-line bg-paper px-4 py-2.5 shadow-soft">
+              <div className="min-w-0 flex-1">
+                <p className="text-[length:calc(11px*var(--fs))] whitespace-nowrap text-[#7d8882]">{t('shopping.budget', { percent: percent.toFixed(1) })}</p>
+                <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-[#eeece6]" role="progressbar" aria-label={t('shopping.budget', { percent: percent.toFixed(1) })} aria-valuenow={Math.round(percent)} aria-valuemin={0} aria-valuemax={100}>
+                  <div className={`h-full rounded-full transition-[width] duration-500 ${over ? 'bg-[#ef4444]' : 'bg-sage'}`} style={{ width: `${percent}%` }} />
+                </div>
+                {hasForeign && <p className="mt-1 text-[length:calc(10px*var(--fs))] leading-snug text-[#9aa59f]">{t('shopping.budgetOnly', { sym: currencySymbol(currency, lng) })}</p>}
+              </div>
+              <Button variant="ghost" className="shrink-0 whitespace-nowrap" disabled={inPeriod === 0} title={inPeriod === 0 ? t('shopping.archive.nothing') : undefined} onClick={() => setConfirmArchive(true)}>
+                {t('shopping.archive.button')}
+              </Button>
+            </div>
+          </div>
+        }
+        actions={
           <>
             <Button variant="ghost" size="page" className="inline-flex items-center gap-1" onClick={() => setRecView('import')}>
               <Icon name="recurring" className="-my-1 size-[1.5em]" />
@@ -83,37 +131,6 @@ export function ShoppingPage() {
           </>
         }
       />
-
-      <section className="mb-4 rounded-2xl border border-line bg-paper p-5 shadow-soft">
-        <div className="mb-3 flex items-end justify-between gap-3">
-          <div className="min-w-0">
-            <h2 className="mb-1 text-[length:calc(13px*var(--fs))] font-bold text-[#78867f]">{t('shopping.period', { start: period.start.slice(5).replace('-', '/'), end: period.end.slice(5).replace('-', '/') })}</h2>
-            <p className={`flex flex-wrap items-baseline gap-x-1 gap-y-1 text-[length:calc(32px*var(--fs))] leading-none font-extrabold tracking-tight ${over ? 'text-[#ef4444]' : ''}`} data-testid="period-total">
-              <TotalsText totals={totals} money={money} fallback={currency} />
-            </p>
-          </div>
-          <div className="grid shrink-0 justify-items-end gap-2">
-            <p className="text-right whitespace-nowrap text-[length:calc(11px*var(--fs))] text-[#9aa59f]">{t('shopping.budget', { percent: percent.toFixed(1) })}</p>
-            <Button variant="ghost" disabled={inPeriod === 0} title={inPeriod === 0 ? t('shopping.archive.nothing') : undefined} onClick={() => setConfirmArchive(true)}>
-              {t('shopping.archive.button')}
-            </Button>
-          </div>
-        </div>
-        <div className="mb-4 h-2 overflow-hidden rounded-full bg-[#f0f3f1]" role="progressbar" aria-valuenow={Math.round(percent)} aria-valuemin={0} aria-valuemax={100}>
-          <div className={`h-full transition-[width] duration-500 ${over ? 'bg-[#ef4444]' : 'bg-sage'}`} style={{ width: `${percent}%` }} />
-        </div>
-        {hasForeign && <p className="-mt-2 mb-3 text-[length:calc(11px*var(--fs))] text-[#9aa59f]">{t('shopping.budgetOnly', { sym: currencySymbol(currency, lng) })}</p>}
-        <div className="flex flex-wrap gap-2">
-          {byCategory.map(([k, v]) => (
-            <span key={k} className="rounded-full border border-line bg-[#f9fbf9] px-3 py-1.5 text-[length:calc(11px*var(--fs))] font-semibold text-[#55645d]">
-              {keyLabel(k)}:{' '}
-              <span className="inline-flex flex-wrap gap-x-1">
-                <TotalsText totals={v} money={money} fallback={currency} />
-              </span>
-            </span>
-          ))}
-        </div>
-      </section>
 
       <section className="rounded-(--radius-card) bg-paper p-5 shadow-card">
         <div className="mb-3 flex items-center justify-between">

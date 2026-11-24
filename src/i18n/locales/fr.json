@@ -240,6 +240,7 @@
     "empty": "Aucune dépense pour l’instant",
     "period": "Période en cours ({{start}} – {{end}})",
     "budget": "{{percent}} % du budget",
+    "byCategory": "Par catégorie",
     "noStore": "Aucun magasin",
     "markDone": "Marquer comme acheté",
     "markUndone": "Marquer comme non acheté",

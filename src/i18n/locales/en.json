@@ -240,6 +240,7 @@
     "empty": "No entries yet",
     "period": "This period ({{start}} – {{end}})",
     "budget": "{{percent}}% of budget",
+    "byCategory": "By category",
     "noStore": "No store",
     "markDone": "Mark as bought",
     "markUndone": "Mark as not bought",

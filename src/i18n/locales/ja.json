@@ -240,6 +240,7 @@
     "empty": "記録はまだありません",
     "period": "今期の支出（{{start}} – {{end}}）",
     "budget": "予算の {{percent}}%",
+    "byCategory": "カテゴリ別小計",
     "noStore": "店舗未指定",
     "markDone": "購入済みにする",
     "markUndone": "未購入に戻す",
