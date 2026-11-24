@@ -78,7 +78,9 @@
     "rhythmOn": "{{date}}의 리듬",
     "rangeEmpty": "일정 없음",
     "todayBadge": "오늘",
-    "lowStock": "재고가 부족한 물품이 {{count}}개 있어요. 구매 계획을 세워 주세요"
+    "lowStock": "재고가 부족한 물품이 {{count}}개 있어요. 구매 계획을 세워 주세요",
+    "dateNav": "날짜 변경",
+    "summary": "오늘 요약"
   },
   "calendar": {
     "title": "캘린더",

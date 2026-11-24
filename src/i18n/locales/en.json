@@ -78,7 +78,9 @@
     "rhythmOn": "{{date}}'s rhythm",
     "rangeEmpty": "No plans",
     "todayBadge": "Today",
-    "lowStock": "{{count}} items running low, plan a restock"
+    "lowStock": "{{count}} items running low, plan a restock",
+    "dateNav": "Change date",
+    "summary": "Today at a glance"
   },
   "calendar": {
     "title": "Calendar",

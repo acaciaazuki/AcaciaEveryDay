@@ -78,7 +78,9 @@
     "rhythmOn": "Rythme du {{date}}",
     "rangeEmpty": "Aucun programme",
     "todayBadge": "Aujourd’hui",
-    "lowStock": "{{count}} article(s) bientôt épuisé(s), pensez à réapprovisionner"
+    "lowStock": "{{count}} article(s) bientôt épuisé(s), pensez à réapprovisionner",
+    "dateNav": "Changer de date",
+    "summary": "Résumé du jour"
   },
   "calendar": {
     "title": "Calendrier",
