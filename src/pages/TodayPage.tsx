@@ -32,8 +32,8 @@ const VIEWS: View[] = ['day', 'week', 'two']
 // 相對今天的天數 → 翻譯 key（昨天、明天、後天、大後天）
 const RELATIVE: Record<number, string> = { [-1]: 'yesterday', 1: 'tomorrow', 2: 'dayAfter', 3: 'threeDays' }
 
-/** 卡片：內距手機 20px、平板以上 24px */
-const card = 'rounded-(--radius-card) bg-paper p-5 shadow-card sm:p-6'
+/** 卡片：像一張張獨立的紙，內距手機 22px、平板以上 28px */
+const card = 'rounded-[calc(var(--radius-card)+4px)] bg-paper px-5.5 py-6 shadow-card sm:p-7'
 
 /**
  * 批次新增時自動寫進備註的「批次建立」（所有介面語言）在今天的時間軸上不顯示：
@@ -96,7 +96,8 @@ export function TodayPage() {
         : new Intl.DateTimeFormat(lng, { month: 'long', day: 'numeric', weekday: 'long' }).format(viewDate)
 
   return (
-    <>
+    // 內容最寬約 1180px、在可用寬度裡置中：寬螢幕兩側留白，不把卡片拉得扁長
+    <div data-today-page className="mx-auto w-full max-w-[1180px]">
       <TodayHero
         dateLabel={dateLabel}
         greeting={title}
@@ -123,10 +124,10 @@ export function TodayPage() {
         }
       />
 
-      {/* 時間軸＋右側卡片；超寬螢幕（1600px 以上）右側欄加寬，兩欄比例更均衡 */}
-      <div className="grid gap-5 min-[1001px]:grid-cols-[minmax(0,1fr)_320px] min-[1280px]:gap-6 min-[1600px]:grid-cols-[minmax(0,1fr)_380px]">
+      {/* 時間軸＋右側卡片：右側固定 340px，兩欄之間與上下都留 28px */}
+      <div className="grid gap-6 min-[1001px]:grid-cols-[minmax(0,1fr)_340px] min-[1001px]:gap-7">
         <section className={card}>
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
+          <div className="mb-7 flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
             <h2 className="font-bold">{offset === 0 && view === 'day' ? t('today.timeline') : t('today.timelineOther')}</h2>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2.5">
               <div role="group" aria-label={t('today.viewLabel')} className="flex rounded-full bg-oat p-0.5">
@@ -163,7 +164,7 @@ export function TodayPage() {
               {offset === 0 ? t('today.timelineEmpty') : t('today.timelineEmptyOther')}
             </button>
           ) : (
-            <ol className="grid gap-3">
+            <ol className="grid gap-4">
               {items.map((it, i) => {
                 const next = items.at(i + 1)
                 if (it.kind === 'shopping')
@@ -195,14 +196,13 @@ export function TodayPage() {
                     <button
                       type="button"
                       onClick={() => setEditing(e)}
-                      className="rounded-xl border-l-4 px-5 py-3.5 text-left transition hover:-translate-y-px min-[1280px]:flex min-[1280px]:items-baseline min-[1280px]:justify-between min-[1280px]:gap-4"
+                      className="rounded-xl border-l-4 px-5 py-4 text-left transition hover:-translate-y-px"
                       style={{ background: e.bgColor || '#f2f8f4', borderLeftColor: e.titleColor || '#75b799' }}
                     >
-                      {/* 寬螢幕：標題靠左、時間與備註靠右同一列，長卡片不顯得空洞 */}
                       <h3 className="font-bold" style={{ color: e.titleColor || 'var(--color-ink)' }}>
                         {e.title}
                       </h3>
-                      <small className="mt-0.5 block text-[length:calc(11px*var(--fs))] text-muted min-[1280px]:mt-0 min-[1280px]:shrink-0 min-[1280px]:text-right">
+                      <small className="mt-1 block text-[length:calc(11px*var(--fs))] text-muted">
                         {formatTimeRange(e.start, e.end) || t('event.allDay')} {shownNote(e.note) && `· ${e.note}`}
                       </small>
                     </button>
@@ -218,32 +218,32 @@ export function TodayPage() {
             </ol>
           )}
           {vis.isSelf && (view !== 'day' || items.length > 0) && (
-            <button type="button" onClick={() => setEditing('new')} className={`${linkBtn} mt-5`}>
+            <button type="button" onClick={() => setEditing('new')} className={`${linkBtn} mt-6`}>
               {t('today.addOne')}
             </button>
           )}
         </section>
 
-        <div className="grid content-start gap-5 min-[1280px]:gap-6">
+        <div className="grid content-start gap-6 min-[1001px]:gap-7">
           <section className={card}>
-            <div className="mb-4 flex items-center justify-between gap-2">
+            <div className="mb-5 flex items-center justify-between gap-2">
               <h2 className="font-bold">{offset === 0 ? t('today.rhythm') : t('today.rhythmOn', { date: shortDate })}</h2>
               <button type="button" onClick={() => setEditingRhythm(true)} aria-label={t('rhythm.edit')} className={linkBtn}>
                 {t('rhythm.editShort')}
               </button>
             </div>
-            <div className="mb-4 flex items-center justify-between">
+            <div className="mb-5 flex items-center justify-between">
               <div>
-                <strong>
+                <strong className="tracking-wide">
                   {formatTime(wake)} <span className="text-xs text-[#a8b1ac]">—</span> {formatTime(sleep)}
                 </strong>
-                <small className="block text-[length:calc(11px*var(--fs))] text-muted">{t('today.rhythmRange')}</small>
+                <small className="mt-0.5 block text-[length:calc(11px*var(--fs))] text-muted">{t('today.rhythmRange')}</small>
               </div>
               <span className="text-2xl text-[#5f7a70]" aria-hidden>
                 <Icon name="moon" className="size-[1.5em]" />
               </span>
             </div>
-            <div className="mb-2.5 h-2 overflow-hidden rounded-full bg-[#f0f3f1]">
+            <div className="mb-3 h-1.5 overflow-hidden rounded-full bg-[#eef2ef]">
               <div className="h-full bg-sage transition-[width] duration-500" style={{ width: `${(rhythm.busyMinutes / rhythm.totalMinutes) * 100}%` }} />
             </div>
             <div className="flex justify-between text-[length:calc(11px*var(--fs))] text-muted">
@@ -268,7 +268,7 @@ export function TodayPage() {
       {viewingShared && <SharedDetailDialog entry={viewingShared} previewing={!vis.isSelf} onClose={() => setViewingShared(null)} />}
       {editingRhythm && <RhythmDialog onClose={() => setEditingRhythm(false)} />}
       {viewingShop && <ShoppingDetailDialog entry={viewingShop} onClose={() => setViewingShop(null)} />}
-    </>
+    </div>
   )
 }
 
@@ -395,7 +395,7 @@ function QuickTasks() {
 
   return (
     <section className={card}>
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-5 flex items-center justify-between">
         <h2 className="font-bold">{t('today.quick')}</h2>
         <Link to="/tasks" className={linkBtn}>
           {t('today.all')}
@@ -424,7 +424,7 @@ function QuickTasks() {
         </ul>
       )}
       {open ? (
-        <form onSubmit={submit} className="mt-3 flex gap-2">
+        <form onSubmit={submit} className="mt-4 flex gap-2">
           <input
             autoFocus
             aria-label={t('today.quickPlaceholder')}
@@ -437,7 +437,7 @@ function QuickTasks() {
           <Button type="submit">{t('common.add')}</Button>
         </form>
       ) : (
-        <button type="button" onClick={() => setOpen(true)} className={`${linkBtn} mt-3`}>
+        <button type="button" onClick={() => setOpen(true)} className={`${linkBtn} mt-4`}>
           {t('today.quickAdd')}
         </button>
       )}
