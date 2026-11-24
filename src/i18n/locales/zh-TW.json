@@ -78,7 +78,9 @@
     "rhythmOn": "{{date}}的節奏",
     "rangeEmpty": "沒有行程",
     "todayBadge": "今天",
-    "lowStock": "{{count}} 項用品庫存不足，記得安排採購"
+    "lowStock": "{{count}} 項用品庫存不足，記得安排採購",
+    "dateNav": "切換日期",
+    "summary": "今天的摘要"
   },
   "calendar": {
     "title": "行事曆",

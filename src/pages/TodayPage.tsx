@@ -7,7 +7,7 @@ import { Icon } from '../components/AcaciaIcons'
 import { EventIconBadge } from '../components/EventIcon'
 import { EventDialog } from '../components/EventDialog'
 import { HolidayCard } from '../components/HolidayAgenda'
-import { PageHead } from '../components/PageHead'
+import { TodayHero } from '../components/TodayHero'
 import { SharedCard, SharedDetailDialog } from '../components/SharedAgenda'
 import { sharedOn, type SharedEntry } from '../core/calendarView'
 import { RhythmDialog } from '../components/RhythmDialog'
@@ -46,8 +46,6 @@ const NO_EVENTS: CalendarEvent[] = []
 const linkBtn = 'text-[length:calc(14px*var(--fs))] font-semibold text-sage hover:text-sage-dark'
 /** 字級 14px（跟著字體設定縮放） */
 const TEXT_14 = 'text-[length:calc(14px*var(--fs))]'
-/** 問候與橫幅標題：跟橫幅說明文字（13px）同樣大小 */
-const TEXT_13 = 'text-[length:calc(13px*var(--fs))]'
 
 export function TodayPage() {
   const { t, i18n } = useTranslation()
@@ -95,29 +93,20 @@ export function TodayPage() {
       : RELATIVE[offset]
         ? t(`today.relative.${RELATIVE[offset]}`)
         : new Intl.DateTimeFormat(lng, { month: 'long', day: 'numeric', weekday: 'long' }).format(viewDate)
-  const stepBtn = 'grid size-7 place-items-center rounded-full border border-line bg-paper text-base text-ink hover:bg-sage-light'
 
   return (
     <>
-      <PageHead
-        eyebrowClassName={TEXT_14}
-        eyebrow={
-          <span className="flex flex-wrap items-center gap-1.5">
-            <button type="button" aria-label={t('today.prev')} onClick={() => setOffset(offset - span)} className={stepBtn}>
-              ‹
-            </button>
-            <span>{dateLabel}</span>
-            <button type="button" aria-label={t('today.next')} onClick={() => setOffset(offset + span)} className={stepBtn}>
-              ›
-            </button>
-            {offset !== 0 && (
-              <button type="button" onClick={() => setOffset(0)} className="rounded-full bg-sage-light px-2.5 py-1 text-[length:calc(11px*var(--fs))] font-bold text-sage-dark hover:bg-mint">
-                {t('today.backToToday')}
-              </button>
-            )}
-          </span>
-        }
-        title={title}
+      <TodayHero
+        dateLabel={dateLabel}
+        greeting={title}
+        onPrev={() => setOffset(offset - span)}
+        onNext={() => setOffset(offset + span)}
+        onBackToToday={offset !== 0 ? () => setOffset(0) : undefined}
+        stats={[
+          { value: rangeCount, label: t('today.statEvents') },
+          { value: openTasks.length, label: t('today.statTasks') },
+          { value: `${hours(freeMinutes)}h`, label: t('today.statFree') },
+        ]}
         actions={
           <>
             <Link to="/calendar" className={`inline-flex items-center gap-1.5 rounded-(--radius-control) border border-line bg-paper font-bold hover:bg-sage-light ${PAGE_ACTION_SIZE}`}>
@@ -132,28 +121,6 @@ export function TodayPage() {
           </>
         }
       />
-
-      <section className="mb-5 flex items-center justify-between gap-4 rounded-(--radius-card) bg-linear-to-br from-mint to-sage-light p-6">
-        <div>
-          <h2 className={`mb-1 font-extrabold ${TEXT_13}`}>{t('today.bannerTitle')}</h2>
-          <p className="mb-4 text-[length:calc(13px*var(--fs))] text-[#55645d]">{t('today.bannerText')}</p>
-          <div className="flex flex-wrap gap-2">
-            {[
-              [rangeCount, t('today.statEvents')],
-              [openTasks.length, t('today.statTasks')],
-              [`${hours(freeMinutes)}h`, t('today.statFree')],
-            ].map(([n, label]) => (
-              <span key={String(label)} className={`rounded-full bg-paper/80 px-3.5 py-2 text-[#55645d] ${TEXT_14}`}>
-                <b className="mr-1 text-ink">{n}</b>
-                {label}
-              </span>
-            ))}
-          </div>
-        </div>
-        <div className="hidden text-[calc(48px*var(--fs))] text-[#5f7a70] sm:block" aria-hidden>
-          <Icon name="cloudSun" className="size-[1.8em]" />
-        </div>
-      </section>
 
       <div className="grid gap-5 min-[1001px]:grid-cols-[1fr_320px]">
         <section className={card}>

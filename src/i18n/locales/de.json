@@ -78,7 +78,9 @@
     "rhythmOn": "Rhythmus am {{date}}",
     "rangeEmpty": "Keine Pläne",
     "todayBadge": "Heute",
-    "lowStock": "Artikel mit geringem Bestand: {{count}}. Plane Nachschub ein"
+    "lowStock": "Artikel mit geringem Bestand: {{count}}. Plane Nachschub ein",
+    "dateNav": "Datum wechseln",
+    "summary": "Heute im Überblick"
   },
   "calendar": {
     "title": "Kalender",

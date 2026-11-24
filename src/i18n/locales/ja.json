@@ -78,7 +78,9 @@
     "rhythmOn": "{{date}}のリズム",
     "rangeEmpty": "予定なし",
     "todayBadge": "今日",
-    "lowStock": "{{count}} 件のアイテムが在庫不足です。買い物の予定を立てましょう"
+    "lowStock": "{{count}} 件のアイテムが在庫不足です。買い物の予定を立てましょう",
+    "dateNav": "日付の切り替え",
+    "summary": "今日のまとめ"
   },
   "calendar": {
     "title": "カレンダー",

@@ -38,7 +38,8 @@ describe('各頁右上角主按鈕尺寸統一', () => {
 
   it.each(PAGES)('%s：右上角按鈕跟行事曆「＋ 新增事件」一樣大、不折行', (_, Page, names) => {
     render(<MemoryRouter><Page /></MemoryRouter>)
-    const head = screen.getByRole('heading', { level: 1 }).closest('div')!.parentElement!
+    // 頁面標頭（PageHead 或今天頁的問候橫幅）都標了 data-page-head
+    const head = screen.getByRole('heading', { level: 1 }).closest('[data-page-head]')!
     for (const name of names) {
       const btn = [...head.querySelectorAll('button')].find((b) => b.textContent?.trim() === name)
       expect(btn, name).toBeTruthy()
@@ -48,7 +49,8 @@ describe('各頁右上角主按鈕尺寸統一', () => {
 
   it('記帳本的「批次加入固定支出」次要按鈕與主按鈕同高', () => {
     render(<MemoryRouter><ShoppingPage /></MemoryRouter>)
-    const head = screen.getByRole('heading', { level: 1 }).closest('div')!.parentElement!
+    // 頁面標頭（PageHead 或今天頁的問候橫幅）都標了 data-page-head
+    const head = screen.getByRole('heading', { level: 1 }).closest('[data-page-head]')!
     const buttons = [...head.querySelectorAll('button')]
     expect(buttons.length).toBeGreaterThanOrEqual(2)
     for (const b of buttons) expect(b).toHaveClass(...PAGE_ACTION)

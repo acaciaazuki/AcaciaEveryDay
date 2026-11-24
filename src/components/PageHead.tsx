@@ -20,7 +20,7 @@ export function PageHead({
   eyebrowClassName?: string
 }) {
   return (
-    <div className="mt-4 mb-5 flex flex-wrap items-center justify-between gap-3">
+    <div data-page-head className="mt-4 mb-5 flex flex-wrap items-center justify-between gap-3">
       <div>
         {eyebrow && <div className={`mb-1.5 tracking-wide text-muted ${eyebrowClassName}`}>{eyebrow}</div>}
         <h1 className={`font-extrabold tracking-tight ${PAGE_TITLE_SIZE}`}>{title}</h1>
