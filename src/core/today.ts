@@ -27,7 +27,7 @@ function toMin(hhmm: string) {
  * 就寢時間早於或等於起床時間（例如 01:00）代表睡到隔天：區間延伸到隔天凌晨，
  * 但只計算這一天的行程（隔天凌晨的行程屬於隔天）。
  */
-export function dayRhythm(events: CalendarEvent[], wake = DEFAULT_WAKE, sleep = DEFAULT_SLEEP) {
+export function dayRhythm(events: readonly Pick<CalendarEvent, 'start' | 'end'>[], wake = DEFAULT_WAKE, sleep = DEFAULT_SLEEP) {
   const lo = toMin(wake)
   const hi = lo + rhythmLength(wake, sleep)
   const spans = events

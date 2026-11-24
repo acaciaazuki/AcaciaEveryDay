@@ -1,9 +1,12 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
+import type { SharedEntry } from '../core/calendarView'
 import { toLocalISO } from '../core/date'
 import { EVENT_ICON_KEYS, eventIconOf, ICON_BG } from '../core/eventIcons'
 import type { CalendarEvent } from '../core/schema'
+import { defaultVisibility, orderedKinds, roleOf } from '../core/sharing'
 import { useAppStore } from '../store/useAppStore'
+import { useSpacesStore } from '../store/useSpacesStore'
 import { isAllDay } from '../core/time'
 import { AllDayToggle } from './AllDayToggle'
 import { Button } from './Button'
@@ -11,22 +14,56 @@ import { ColorSwatches, TextColorSwatches } from './ColorSwatches'
 import { Dialog } from './Dialog'
 import { EventIconArt } from './EventIcon'
 import { Field } from './Field'
+import { SharingFields, type SharedDraft } from './SharingFields'
 import { TimeField } from './TimeField'
 
 type Draft = Omit<CalendarEvent, 'id'>
 
-/** 行程新增 / 編輯，今天頁與行事曆共用 */
-export function EventDialog({ event, date, onClose }: { event: CalendarEvent | null; date?: string; onClose: () => void }) {
+/** 共享行程轉成表單共用的欄位 */
+const draftOfShared = (x: SharedEntry): Draft => ({
+  title: x.item.title,
+  dateISO: x.item.dateISO,
+  start: x.item.start,
+  end: x.item.end,
+  note: x.item.note,
+  titleColor: x.item.titleColor,
+  bgColor: x.item.bgColor,
+  icon: x.item.icon,
+})
+
+/**
+ * 行程新增 / 編輯，今天頁與行事曆共用。
+ * - 「放在哪裡」選「我的行事曆」時跟原本一樣存進個人行程（useAppStore）
+ * - 選共享空間時多出類型、地點與隱私設定，存進 useSpacesStore（所有權限檢查在 store 裡）
+ * - 只有能編輯的共享行程才會打開這個對話框；忙閒、遮罩或預覽中的行程開的是唯讀詳情
+ */
+export function EventDialog({ event, shared, date, onClose }: { event: CalendarEvent | null; shared?: SharedEntry; date?: string; onClose: () => void }) {
   const { t } = useTranslation()
   const addEvent = useAppStore((s) => s.addEvent)
   const updateEvent = useAppStore((s) => s.updateEvent)
   const removeEvent = useAppStore((s) => s.removeEvent)
+  const selfId = useSpacesStore((s) => s.selfId)
+  const allSpaces = useSpacesStore((s) => s.data.spaces)
+  const addItem = useSpacesStore((s) => s.addItem)
+  const updateItem = useSpacesStore((s) => s.updateItem)
+  const removeItem = useSpacesStore((s) => s.removeItem)
+  // 可以新增行程的空間：自己是 owner 或 editor
+  const writable = allSpaces.filter((s) => ['owner', 'editor'].includes(roleOf(s, selfId) ?? ''))
+  const editing = !!event || !!shared
+  const [target, setTarget] = useState<string>(shared?.space.id ?? 'personal')
+  const space = allSpaces.find((s) => s.id === target)
+  const [sharedDraft, setSharedDraft] = useState<SharedDraft>(() =>
+    shared
+      ? { kind: shared.item.kind, location: shared.item.location, visibility: shared.item.visibility }
+      : { kind: 'event', location: '', visibility: defaultVisibility() },
+  )
   const [draft, setDraft] = useState<Draft>(
-    event ?? { title: '', dateISO: date ?? toLocalISO(), start: '09:00', end: '10:00', note: '', titleColor: '#3d876c', bgColor: '#eaf6ef' },
+    event ?? (shared && draftOfShared(shared)) ?? { title: '', dateISO: date ?? toLocalISO(), start: '09:00', end: '10:00', note: '', titleColor: '#3d876c', bgColor: '#eaf6ef' },
   )
   // 整天：不存時間；切回來時還原原本填的時間
-  const [allDay, setAllDay] = useState(() => !!event && isAllDay(event))
-  const [times, setTimes] = useState(() => (event && !isAllDay(event) ? { start: event.start, end: event.end } : { start: '09:00', end: '10:00' }))
+  const initialTimes = event ?? (shared && { start: shared.item.start, end: shared.item.end })
+  const [allDay, setAllDay] = useState(() => !!initialTimes && isAllDay(initialTimes))
+  const [times, setTimes] = useState(() => (initialTimes && !isAllDay(initialTimes) ? { start: initialTimes.start, end: initialTimes.end } : { start: '09:00', end: '10:00' }))
   const [error, setError] = useState('')
   const set = (patch: Partial<Draft>) => setDraft((d) => ({ ...d, ...patch }))
 
@@ -37,9 +74,31 @@ export function EventDialog({ event, date, onClose }: { event: CalendarEvent | n
     const { start, end } = allDay ? { start: '', end: '' } : times
     if (start && end && end <= start) return setError(t('event.endBeforeStart'))
     const data = { ...draft, title, start, end, note: draft.note.trim() }
-    if (event) updateEvent(event.id, data)
-    else addEvent(data)
-    onClose()
+    if (!space) {
+      if (event) updateEvent(event.id, data)
+      else addEvent(data)
+      return onClose()
+    }
+    const vis = sharedDraft.visibility
+    if (vis.mode === 'selected_members' && vis.allowedUserIds.length === 0) return setError(t('sharing.allowedRequired'))
+    // 只留這個空間現有成員，避免殘留已移除成員的 id
+    const members = new Set(space.members.map((m) => m.userId))
+    const visibility = { ...vis, allowedUserIds: vis.allowedUserIds.filter((id) => members.has(id)), hiddenUserIds: vis.hiddenUserIds.filter((id) => members.has(id)), busyLabel: vis.busyLabel.trim() }
+    const content = { ...data, kind: sharedDraft.kind, location: sharedDraft.location.trim() }
+    try {
+      if (shared) updateItem(shared.id, shared.canManageVisibility ? { ...content, visibility } : content)
+      else addItem(space.id, { ...content, visibility })
+      onClose()
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e))
+    }
+  }
+
+  const pickTarget = (id: string) => {
+    setTarget(id)
+    const next = allSpaces.find((s) => s.id === id)
+    // 換空間時，類型預設成該空間建議的第一個
+    if (next) setSharedDraft((d) => ({ ...d, kind: orderedKinds(next.kind)[0]!, visibility: defaultVisibility() }))
   }
 
   return (
@@ -51,6 +110,24 @@ export function EventDialog({ event, date, onClose }: { event: CalendarEvent | n
           </span>
           {draft.title.trim() || t('event.preview')}
         </div>
+        {!editing && writable.length > 0 && (
+          <label className="grid gap-1.5 text-xs font-semibold text-muted">
+            {t('sharing.belongsTo')}
+            <select
+              value={target}
+              onChange={(e) => pickTarget(e.target.value)}
+              className="rounded-(--radius-control) border border-line bg-oat px-3 py-2.5 text-sm font-normal text-ink outline-none focus:border-sage"
+            >
+              <option value="personal">{t('sharing.myCalendar')}</option>
+              {writable.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}（{t(`sharing.spaceKind.${s.kind}`)}）
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+        {editing && space && <p className="-mt-1 text-xs font-semibold text-sage-dark">{t('sharing.inSpace', { name: space.name })}</p>}
         <Field label={t('event.title')} placeholder={t('event.titlePlaceholder')} value={draft.title} onChange={(e) => set({ title: e.target.value })} autoFocus />
         <Field label={t('event.date')} type="date" value={draft.dateISO} onChange={(e) => set({ dateISO: e.target.value })} />
         <div className="grid gap-2">
@@ -101,12 +178,14 @@ export function EventDialog({ event, date, onClose }: { event: CalendarEvent | n
           </div>
         </div>
         <Field label={t('event.note')} placeholder={t('event.notePlaceholder')} value={draft.note} onChange={(e) => set({ note: e.target.value })} />
+        {space && <SharingFields space={space} selfId={selfId} value={sharedDraft} onChange={setSharedDraft} locked={!!shared && !shared.canManageVisibility} />}
         <div className="mt-2 flex gap-2">
-          {event && (
+          {editing && (
             <Button
               variant="danger"
               onClick={() => {
-                removeEvent(event.id)
+                if (shared) removeItem(shared.id)
+                else if (event) removeEvent(event.id)
                 onClose()
               }}
             >

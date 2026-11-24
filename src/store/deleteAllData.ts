@@ -4,6 +4,7 @@ import { emptyAppData } from '../core/schema'
 import { useAppStore } from './useAppStore'
 import { useBackupStore } from './useBackupStore'
 import { useConsentStore } from './useConsentStore'
+import { useSpacesStore } from './useSpacesStore'
 import { useSyncStore } from './useSyncStore'
 
 /** ACACIA 在 Google Drive 應用程式專用資料夾裡會用到的所有檔案（含舊版網站的同步檔） */
@@ -22,7 +23,7 @@ function clearLocalPrefs() {
  * 刪除所有資料：
  * 1. 已登入 Google 時，先刪除 Drive 應用程式專用資料夾裡的同步檔、備份檔與共享行事曆檔（失敗就停下來，本機資料不動）
  * 2. 登出並撤銷這次登入的授權
- * 3. 清空本機的主資料、自動備份快照與小設定
+ * 3. 清空本機的主資料、共享行事曆空間（acacia-spaces）、自動備份快照與小設定
  * 4. 清掉使用條款同意紀錄：畫面回到同意面板，跟第一次使用一樣
  * 回傳是否有刪到雲端資料
  */
@@ -42,6 +43,7 @@ export async function deleteAllData(): Promise<{ cloud: boolean }> {
   await clearBackups()
   useBackupStore.getState().reset()
   useAppStore.setState(emptyAppData())
+  useSpacesStore.getState().reset()
   clearLocalPrefs()
   await useConsentStore.getState().reset()
   return { cloud }

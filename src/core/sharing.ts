@@ -196,6 +196,12 @@ export const emptySharedCalendarData = (ownerId: string): SharedCalendarData => 
 
 export const defaultVisibility = (overrides: Partial<Visibility> = {}): Visibility => visibilitySchema.parse(overrides)
 
+/** 新增行程時的類型選單順序：該空間類型建議的排前面，其他接在後面 */
+export const orderedKinds = (kind: SpaceKind): ItemKind[] => {
+  const first = SUGGESTED_KINDS[kind]
+  return [...first, ...ITEM_KINDS.filter((k) => !first.includes(k))]
+}
+
 // ---------- 空間與成員 ----------
 
 /** 檢視者在空間裡的角色；不是成員（或空間已刪除）回傳 null */
