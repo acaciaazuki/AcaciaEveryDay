@@ -42,7 +42,12 @@ const BATCH_NOTES = new Set((['zh-TW', 'ja', 'en'] as const).map((l) => appI18n.
 const shownNote = (note: string) => (BATCH_NOTES.has(note.trim()) ? '' : note)
 const NO_SHOPPING = new Map()
 const NO_EVENTS: CalendarEvent[] = []
-const linkBtn = 'text-xs font-semibold text-sage hover:text-sage-dark'
+/** 卡片右上角與底部的小連結（查看完整日程、加一個行程、調整、全部、新增待辦），跟著字體設定縮放 */
+const linkBtn = 'text-[length:calc(14px*var(--fs))] font-semibold text-sage hover:text-sage-dark'
+/** 字級 14px（跟著字體設定縮放） */
+const TEXT_14 = 'text-[length:calc(14px*var(--fs))]'
+/** 問候與橫幅標題：跟橫幅說明文字（13px）同樣大小 */
+const TEXT_13 = 'text-[length:calc(13px*var(--fs))]'
 
 export function TodayPage() {
   const { t, i18n } = useTranslation()
@@ -90,11 +95,13 @@ export function TodayPage() {
       : RELATIVE[offset]
         ? t(`today.relative.${RELATIVE[offset]}`)
         : new Intl.DateTimeFormat(lng, { month: 'long', day: 'numeric', weekday: 'long' }).format(viewDate)
-  const stepBtn = 'grid size-6 place-items-center rounded-full border border-line bg-paper text-sm text-ink hover:bg-sage-light'
+  const stepBtn = 'grid size-7 place-items-center rounded-full border border-line bg-paper text-base text-ink hover:bg-sage-light'
 
   return (
     <>
       <PageHead
+        titleClassName={TEXT_13}
+        eyebrowClassName={TEXT_14}
         eyebrow={
           <span className="flex flex-wrap items-center gap-1.5">
             <button type="button" aria-label={t('today.prev')} onClick={() => setOffset(offset - span)} className={stepBtn}>
@@ -114,18 +121,22 @@ export function TodayPage() {
         title={title}
         actions={
           <>
-            <Link to="/calendar" className="inline-flex items-center gap-1.5 rounded-(--radius-control) border border-line bg-paper px-4 py-2.5 text-xs font-bold hover:bg-sage-light">
+            <Link to="/calendar" className={`inline-flex items-center gap-1.5 rounded-(--radius-control) border border-line bg-paper px-5 py-3 font-bold hover:bg-sage-light ${TEXT_14}`}>
               <Icon name="calendar" className="size-[1.8em]" />
               {t('today.seeCalendar')}
             </Link>
-            {vis.isSelf && <Button onClick={() => setEditing('new')}>{t('today.addEvent')}</Button>}
+            {vis.isSelf && (
+              <Button className={`px-5! py-3! ${TEXT_14}!`} onClick={() => setEditing('new')}>
+                {t('today.addEvent')}
+              </Button>
+            )}
           </>
         }
       />
 
       <section className="mb-5 flex items-center justify-between gap-4 rounded-(--radius-card) bg-linear-to-br from-mint to-sage-light p-6">
         <div>
-          <h2 className="mb-1.5 text-lg font-extrabold">{t('today.bannerTitle')}</h2>
+          <h2 className={`mb-1 font-extrabold ${TEXT_13}`}>{t('today.bannerTitle')}</h2>
           <p className="mb-4 text-[length:calc(13px*var(--fs))] text-[#55645d]">{t('today.bannerText')}</p>
           <div className="flex flex-wrap gap-2">
             {[
@@ -133,7 +144,7 @@ export function TodayPage() {
               [openTasks.length, t('today.statTasks')],
               [`${hours(freeMinutes)}h`, t('today.statFree')],
             ].map(([n, label]) => (
-              <span key={String(label)} className="rounded-full bg-paper/80 px-3 py-1.5 text-xs text-[#55645d]">
+              <span key={String(label)} className={`rounded-full bg-paper/80 px-3.5 py-2 text-[#55645d] ${TEXT_14}`}>
                 <b className="mr-1 text-ink">{n}</b>
                 {label}
               </span>
@@ -157,7 +168,7 @@ export function TodayPage() {
                     type="button"
                     aria-pressed={view === v}
                     onClick={() => setView(v)}
-                    className={`rounded-full px-3 py-1 text-xs font-bold whitespace-nowrap transition ${view === v ? 'bg-paper text-sage-dark shadow-soft' : 'text-muted hover:text-ink'}`}
+                    className={`rounded-full px-3.5 py-1.5 font-bold whitespace-nowrap transition ${TEXT_14} ${view === v ? 'bg-paper text-sage-dark shadow-soft' : 'text-muted hover:text-ink'}`}
                   >
                     {t(`today.view.${v}`)}
                   </button>
