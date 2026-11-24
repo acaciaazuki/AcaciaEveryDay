@@ -98,6 +98,24 @@ describe('ShoppingPage', () => {
     expect(screen.getByText('2025-12-10 – 2026-01-09')).toBeInTheDocument()
   })
 
+  it('頂部同一行：標題 → 本期記帳 → 預算進度 → 批次加入固定支出、＋ 新增記帳', () => {
+    useAppStore.setState({ shopping: [ex('午餐', toLocalISO(), 120)] })
+    render(<MemoryRouter><ShoppingPage /></MemoryRouter>)
+    const head = screen.getByRole('heading', { level: 1 }).closest('[data-page-head]') as HTMLElement
+    expect(head).toHaveClass('flex', 'flex-wrap', 'items-center', 'justify-between')
+    const [title, aside, actions] = [...head.children] as HTMLElement[]
+    expect(title).toHaveTextContent('購物清單')
+    // 中間撐滿、可縮小，不擠壓右側按鈕；1279px 以下移到第二行
+    expect(aside).toHaveClass('min-w-0', 'order-last', 'w-full', 'min-[1280px]:order-none', 'min-[1280px]:flex-1')
+    const period = within(aside).getByRole('region', { name: /^本期/ })
+    expect(within(period).getByTestId('period-total')).toHaveTextContent('120')
+    expect(within(period).getByRole('list', { name: '分類小計' })).toHaveTextContent('食: NT$120')
+    expect(within(aside).getByRole('progressbar')).toBeInTheDocument()
+    expect(within(aside).getByRole('button', { name: '歸檔本期' })).toBeInTheDocument()
+    expect([...actions.querySelectorAll('button')].map((b) => b.textContent?.trim())).toEqual(['批次加入固定支出', '＋ 新增記帳'])
+    expect(actions).toHaveClass('ml-auto')
+  })
+
   it('立即歸檔本期：確認後清空本期，記帳本出現新的一期，可還原', () => {
     const today = toLocalISO()
     const p = billingPeriod()

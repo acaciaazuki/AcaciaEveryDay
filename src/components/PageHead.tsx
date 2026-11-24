@@ -10,17 +10,24 @@ export const PAGE_TITLE_SIZE = 'text-[length:calc(13px*var(--fs))]'
  * - aside：1001px 以上排在標題右邊、同一行垂直置中，寬度最多 360px（空間不夠時可縮到 240px）；
  *   1000px 以下移到第二行、佔滿整行，第一行維持「標題 …… 操作按鈕」
  * - 有 aside 時標頭排在手機右上角浮動搜尋鈕的下方，避免第二行被浮動鈕擠窄
+ * - asideFill：aside 內容較多（例如購物頁的本期記帳與預算卡）時使用。1280px 以上撐滿標題與按鈕之間（flex-1、可縮小，
+ *   不會擠壓右側按鈕）；1279px 以下移到第二行、佔滿整行
  */
+const ASIDE_SEARCH = 'order-last w-full min-[1001px]:order-none min-[1001px]:w-auto min-[1001px]:max-w-[360px] min-[1001px]:min-w-[240px] min-[1001px]:flex-1'
+const ASIDE_FILL = 'order-last w-full min-w-0 min-[1280px]:order-none min-[1280px]:w-auto min-[1280px]:flex-1'
+
 export function PageHead({
   eyebrow,
   title,
   aside,
+  asideFill = false,
   actions,
   eyebrowClassName = 'text-[length:calc(11px*var(--fs))]',
 }: {
   eyebrow?: ReactNode
   title: string
   aside?: ReactNode
+  asideFill?: boolean
   actions?: ReactNode
   eyebrowClassName?: string
 }) {
@@ -32,7 +39,7 @@ export function PageHead({
         <h1 className={`font-extrabold tracking-tight ${PAGE_TITLE_SIZE}`}>{title}</h1>
       </div>
       {aside && (
-        <div data-page-head-aside className="order-last w-full min-[1001px]:order-none min-[1001px]:w-auto min-[1001px]:max-w-[360px] min-[1001px]:min-w-[240px] min-[1001px]:flex-1">
+        <div data-page-head-aside className={asideFill ? ASIDE_FILL : ASIDE_SEARCH}>
           {aside}
         </div>
       )}

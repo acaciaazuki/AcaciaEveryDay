@@ -51,8 +51,9 @@ describe('各頁右上角主按鈕尺寸統一', () => {
     render(<MemoryRouter><ShoppingPage /></MemoryRouter>)
     // 頁面標頭（PageHead 或今天頁的問候橫幅）都標了 data-page-head
     const head = screen.getByRole('heading', { level: 1 }).closest('[data-page-head]')!
-    const buttons = [...head.querySelectorAll('button')]
-    expect(buttons.length).toBeGreaterThanOrEqual(2)
+    // 只看右側操作按鈕；標題旁的本期記帳卡裡的「歸檔本期」是精簡尺寸
+    const buttons = [...head.querySelectorAll(':scope > :last-child button')]
+    expect(buttons.map((b) => b.textContent?.trim())).toEqual(['批次加入固定支出', '＋ 新增記帳'])
     for (const b of buttons) expect(b).toHaveClass(...PAGE_ACTION)
   })
 

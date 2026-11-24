@@ -240,6 +240,7 @@
     "empty": "아직 기록이 없어요",
     "period": "이번 기간 기록 ({{start}} – {{end}})",
     "budget": "예산 진행률 {{percent}}%",
+    "byCategory": "분류별 소계",
     "noStore": "상점 미지정",
     "markDone": "구매 완료로 표시",
     "markUndone": "구매 예정으로 표시",

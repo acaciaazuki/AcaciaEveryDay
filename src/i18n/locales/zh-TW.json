@@ -240,6 +240,7 @@
     "empty": "尚無記帳紀錄",
     "period": "本期記帳（{{start}} – {{end}}）",
     "budget": "預算進度 {{percent}}%",
+    "byCategory": "分類小計",
     "noStore": "未指定商店",
     "markDone": "標記為已購",
     "markUndone": "標記為待購",

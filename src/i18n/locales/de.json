@@ -240,6 +240,7 @@
     "empty": "Noch keine Einträge",
     "period": "Dieser Zeitraum ({{start}} – {{end}})",
     "budget": "{{percent}} % des Budgets",
+    "byCategory": "Nach Kategorie",
     "noStore": "Kein Geschäft",
     "markDone": "Als gekauft markieren",
     "markUndone": "Als nicht gekauft markieren",
