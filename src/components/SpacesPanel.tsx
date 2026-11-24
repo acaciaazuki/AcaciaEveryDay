@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import { canManageSpace, MEMBER_ROLES, roleOf, SPACE_KINDS, type MemberRole, type Space, type SpaceKind } from '../core/sharing'
+import { canManageSpace, MEMBER_ROLES, PERSONAL_CALENDAR_ID, roleOf, SPACE_KINDS, type BusyProjectionRule, type MemberRole, type Space, type SpaceKind } from '../core/sharing'
 import { useSpacesStore } from '../store/useSpacesStore'
 import { Button } from './Button'
 import { Field } from './Field'
@@ -190,7 +190,8 @@ function RulesEditor({ spaces, readOnly, onError }: { spaces: Space[]; readOnly:
   const [from, setFrom] = useState(spaces[0]!.id)
   const [to, setTo] = useState(spaces[1]!.id)
   const [label, setLabel] = useState('')
-  const nameOf = (id: string) => spaces.find((s) => s.id === id)?.name ?? '—'
+  const nameOf = (id: string) => (id === PERSONAL_CALENDAR_ID ? t('sharing.myCalendar') : (spaces.find((s) => s.id === id)?.name ?? '—'))
+  const targetsOf = (r: BusyProjectionRule) => (r.targetMode === 'all' ? t('sharing.allCalendars') : r.targetIds.map(nameOf).join('、'))
 
   return (
     <div className="mt-5 border-t border-line pt-4">
@@ -201,7 +202,9 @@ function RulesEditor({ spaces, readOnly, onError }: { spaces: Space[]; readOnly:
           {rules.map((r) => (
             <li key={r.id} className="flex flex-wrap items-center gap-2 text-[length:calc(13px*var(--fs))]">
               <span className="min-w-0 flex-1">
-                {t('sharing.panel.ruleText', { from: nameOf(r.sourceSpaceId), to: nameOf(r.targetSpaceId), label: r.label || t('sharing.busy') })}
+                {r.display === 'time_only'
+                  ? t('sharing.panel.ruleTimeOnly', { from: nameOf(r.sourceId), to: targetsOf(r) })
+                  : t('sharing.panel.ruleText', { from: nameOf(r.sourceId), to: targetsOf(r), label: r.label || t('sharing.busy') })}
               </span>
               {!readOnly && (
                 <>
@@ -225,7 +228,8 @@ function RulesEditor({ spaces, readOnly, onError }: { spaces: Space[]; readOnly:
             e.preventDefault()
             if (from === to) return onError(t('sharing.panel.sameSpace'))
             try {
-              addRule({ sourceSpaceId: from, targetSpaceId: to, label: label.trim() })
+              // 目前的編輯器只建立「空間 → 單一空間」、整天行程照投射的規則（跟舊版一致，舊版 App 也讀得懂）；完整設定介面在第 3 階段
+              addRule({ sourceId: from, targetMode: 'selected', targetIds: [to], label: label.trim(), includeAllDay: true })
               setLabel('')
               onError('')
             } catch (err) {

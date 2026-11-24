@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { emptySharedCalendarData, type SharedCalendarData } from '../../core/sharing'
+import { busyProjectionRuleSchema, emptySharedCalendarData, type SharedCalendarData } from '../../core/sharing'
 import { familySpace, makeItem, SECRET, T0, U, workSpace } from '../../test/sharingFixtures'
 import { DriveError } from '../drive'
 import { createDriveSyncProvider, DRIVE_SPACES_FILE_KIND, driveSpacesFileSchema, type DriveApi, type DriveSpacesFile } from './driveSyncProvider'
@@ -181,14 +181,15 @@ describe('Drive 同步：衝突、軟刪除與跨裝置合併', () => {
       ...emptySharedCalendarData(U.dad),
       spaces: [work],
       items: [makeItem({ id: 'mtg', spaceId: work.id, createdBy: U.dad, kind: 'meeting' })],
-      busyProjectionRules: [{ id: 'r1', userId: U.dad, sourceSpaceId: work.id, targetSpaceId: 'sp-family', kinds: [], label: '上班中', includePrivate: false, enabled: true, updatedAt: T0, deletedAt: null }],
+      // 舊格式（v1）的規則經過 schema 轉成 v2
+      busyProjectionRules: [busyProjectionRuleSchema.parse({ id: 'r1', userId: U.dad, sourceSpaceId: work.id, targetSpaceId: 'sp-family', kinds: [], label: '上班中', includePrivate: false, enabled: true, updatedAt: T0, deletedAt: null })],
     }
     await provider.push({ viewerId: U.dad, data: fromOtherDevice, changedSince: null })
 
     const thisDevice = {
       ...emptySharedCalendarData(U.dad),
       spaces: [familySpace()],
-      busyProjectionRules: [{ id: 'r-mom', userId: U.mom, sourceSpaceId: 'a', targetSpaceId: 'b', kinds: [], label: '', includePrivate: false, enabled: true, updatedAt: T0, deletedAt: null }],
+      busyProjectionRules: [busyProjectionRuleSchema.parse({ id: 'r-mom', userId: U.mom, sourceSpaceId: 'a', targetSpaceId: 'b', kinds: [], label: '', includePrivate: false, enabled: true, updatedAt: T0, deletedAt: null })],
     }
     await provider.push({ viewerId: U.dad, data: thisDevice, changedSince: null })
     const file = drive.files[SPACES] as DriveSpacesFile

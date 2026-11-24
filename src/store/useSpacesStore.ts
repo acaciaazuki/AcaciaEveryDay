@@ -11,9 +11,11 @@ import {
   createSpace as makeSpace,
   emptySharedCalendarData,
   migrateSharedCalendarData,
+  PERSONAL_CALENDAR_ID,
   rekeyOwner,
   removeMember as dropMember,
   roleOf,
+  ruleTargets,
   sharedCalendarItemSchema,
   spaceSchema,
   upsertMember,
@@ -44,7 +46,11 @@ const newSelfId = () => `local-${crypto.randomUUID()}`
 const newId = () => crypto.randomUUID()
 
 export type NewItemInput = Omit<SharedCalendarItemInput, 'id' | 'spaceId' | 'createdBy' | 'createdAt' | 'updatedAt' | 'updatedBy' | 'version' | 'deletedAt' | 'redaction' | 'projection'>
-export type RuleInput = Pick<BusyProjectionRule, 'sourceSpaceId' | 'targetSpaceId'> & Partial<Pick<BusyProjectionRule, 'kinds' | 'label' | 'includePrivate' | 'enabled'>>
+export type RuleInput = Pick<BusyProjectionRule, 'sourceId'> &
+  Partial<Pick<BusyProjectionRule, 'targetMode' | 'targetIds' | 'display' | 'kinds' | 'label' | 'includePrivate' | 'includeAllDay' | 'enabled'>>
+
+/** 規則實際指定的目標（全部時用目前算出來的結果），用來比對修改前後少了哪些 */
+const chosenTargets = (r: BusyProjectionRule, spaces: readonly Space[]) => (r.targetMode === 'all' ? ruleTargets(r, spaces) : r.targetIds)
 
 interface SpacesState {
   selfId: string
@@ -149,9 +155,12 @@ export const useSpacesStore = create<SpacesState>()(
           replaceSpace({ ...space, deletedAt: now, updatedAt: now, version: space.version + 1 })
           // 跟這個空間有關的投射規則一起標記刪除（軟刪除才會同步到其他裝置）；篩選停在這個空間時回到全部
           commit({
-            busyProjectionRules: get().data.busyProjectionRules.map((r) =>
-              r.deletedAt === null && (r.sourceSpaceId === spaceId || r.targetSpaceId === spaceId) ? { ...r, deletedAt: now, updatedAt: now } : r,
-            ),
+            busyProjectionRules: get().data.busyProjectionRules.map((r) => {
+              if (r.deletedAt !== null) return r
+              // 來源被刪除，或唯一的目標被刪除：整條規則刪除；其他情況只把這個空間從目標拿掉
+              if (r.sourceId === spaceId || (r.targetMode === 'selected' && r.targetIds.length === 1 && r.targetIds[0] === spaceId)) return { ...r, deletedAt: now, updatedAt: now }
+              return r.targetIds.includes(spaceId) ? { ...r, targetIds: r.targetIds.filter((t) => t !== spaceId), updatedAt: now } : r
+            }),
           })
           if (get().filter === spaceId) set({ filter: 'all' })
         },
@@ -194,14 +203,29 @@ export const useSpacesStore = create<SpacesState>()(
 
         addRule: (input) => {
           const self = guard()
-          for (const id of [input.sourceSpaceId, input.targetSpaceId]) if (!roleOf(spaceOf(id), self)) throw new PermissionError('不是這個空間的成員')
-          const rule = busyProjectionRuleSchema.parse({ ...input, id: newId(), userId: self, updatedAt: Date.now() })
+          const targets = input.targetMode === 'all' ? [] : (input.targetIds ?? [])
+          for (const id of [input.sourceId, ...targets]) if (id !== PERSONAL_CALENDAR_ID && !roleOf(spaceOf(id), self)) throw new PermissionError('不是這個空間的成員')
+          // 空間 → 單一空間的規則記下原本的目標：區塊 id 沿用 v1 格式，舊版 App 也讀得懂這條規則
+          const single = input.sourceId !== PERSONAL_CALENDAR_ID && input.targetMode !== 'all' && targets.length === 1 && targets[0] !== PERSONAL_CALENDAR_ID
+          const rule = busyProjectionRuleSchema.parse({ ...input, ...(single && { legacyTargetId: targets[0] }), id: newId(), userId: self, updatedAt: Date.now() })
           commit({ busyProjectionRules: [...get().data.busyProjectionRules, rule] })
           return rule.id
         },
         updateRule: (id, patch) => {
-          guard()
-          const rules = get().data.busyProjectionRules.map((r) => (r.id === id ? busyProjectionRuleSchema.parse({ ...r, ...patch, updatedAt: Date.now() }) : r))
+          const self = guard()
+          for (const t of patch.targetMode === 'all' ? [] : (patch.targetIds ?? [])) if (t !== PERSONAL_CALENDAR_ID && !roleOf(spaceOf(t), self)) throw new PermissionError('不是這個空間的成員')
+          const spaces = get().data.spaces
+          const rules = get().data.busyProjectionRules.map((r) => {
+            if (r.id !== id) return r
+            const next = busyProjectionRuleSchema.parse({ ...r, ...patch, updatedAt: Date.now() })
+            const before = chosenTargets(r, spaces)
+            const after = chosenTargets(next, spaces)
+            if (before.length === after.length && before.every((t) => after.includes(t)) && r.targetMode === next.targetMode) return next
+            // 目標有變：移除的目標記下來（同步時送墓碑），加回來的從清單拿掉；revision +2 讓新區塊蓋過先前的墓碑
+            const retired = new Set([...next.retiredTargetIds, ...before.filter((t) => !after.includes(t))])
+            for (const t of after) retired.delete(t)
+            return { ...next, retiredTargetIds: [...retired], revision: next.revision + 2 }
+          })
           commit({ busyProjectionRules: rules })
         },
         removeRule: (id) => {

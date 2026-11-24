@@ -1,6 +1,8 @@
 import {
   isRuleActive,
+  PERSONAL_CALENDAR_ID,
   roleOf,
+  ruleTargets,
   sharedCalendarItemSchema,
   type BusyProjectionRule,
   type MaskableField,
@@ -220,54 +222,68 @@ function opaqueId(input: string): string {
   return `busy-${hash(0x811c9dc5)}${hash(0x01000193)}`
 }
 
-export const projectedBlockId = (ruleId: string, itemId: string) => opaqueId(`${ruleId}|${itemId}`)
+/**
+ * 忙碌區塊 id：規則＋來源行程＋目標。
+ * v1 規則原本的目標（legacyTargetId）沿用舊格式（不含目標），其他成員手上的舊區塊才能被更新或移除。
+ */
+export const projectedBlockId = (ruleId: string, itemId: string, targetId?: string) => opaqueId(targetId === undefined ? `${ruleId}|${itemId}` : `${ruleId}|${itemId}|${targetId}`)
+const blockIdFor = (rule: BusyProjectionRule, itemId: string, targetId: string) => projectedBlockId(rule.id, itemId, targetId === rule.legacyTargetId ? undefined : targetId)
 
 export interface ProjectBusyBlocksOptions {
   rules: readonly BusyProjectionRule[]
   spaces: readonly Space[]
   items: readonly SharedCalendarItem[]
+  /** 目標行事曆：空間 id，或 PERSONAL_CALENDAR_ID（「我的行事曆」，只有規則擁有者自己看得到） */
   targetSpaceId: string
   /** 只投射這段日期（含頭尾，YYYY-MM-DD）內的行程 */
   range?: { from: string; to: string }
-  /** 同步用：來源行程已刪除或規則已停用時，產生對應的墓碑讓其他成員移除忙碌區塊 */
+  /** 同步用：來源行程已刪除、規則已停用或目標已移除時，產生對應的墓碑讓其他成員移除忙碌區塊 */
   includeDeleted?: boolean
 }
 
 /**
- * 把其他空間符合規則的行程，轉成目標空間的 busy_only 忙碌區塊。
+ * 把其他行事曆符合規則的行程，轉成目標行事曆的 busy_only 忙碌區塊。
  *
+ * - 一條規則可以有多個目標（全部或勾選），每個目標各自產生區塊（id 含目標，不會互相覆蓋）
  * - 只投射規則擁有者本人建立的行程（不能把別人的行程投射出去）
- * - 規則擁有者必須同時是來源與目標空間的成員
- * - 產生的區塊只有時間與規則的 label，不帶標題、地點、備註、細節、類型、來源空間或來源行程 id
+ * - 規則擁有者必須同時是來源與目標空間的成員（「我的行事曆」只屬於自己）
+ * - 產生的區塊只有時間與規則的 label／顯示方式，不帶標題、地點、備註、細節、類型、來源空間或來源行程 id
  * - 來源行程的 hiddenUserIds 會沿用：被隱藏的人連忙碌區塊也看不到
+ * - 沒有時間的整天行程只在規則開啟 includeAllDay 時投射
+ * - 來源是「我的行事曆」的規則，個人行程在第 2 階段才會接進來；目前不產生區塊
  */
 export function projectBusyBlocks(options: ProjectBusyBlocksOptions): SharedCalendarItem[] {
   const { rules, spaces, items, targetSpaceId, range, includeDeleted = false } = options
   const spaceById = new Map(spaces.map((s) => [s.id, s]))
-  const target = spaceById.get(targetSpaceId)
-  if (!target) return []
+  const targetIsPersonal = targetSpaceId === PERSONAL_CALENDAR_ID
+  if (!targetIsPersonal && !spaceById.get(targetSpaceId)) return []
 
   const out: SharedCalendarItem[] = []
   for (const rule of rules) {
-    if (rule.targetSpaceId !== targetSpaceId) continue
-    const active = isRuleActive(rule)
+    const live = ruleTargets(rule, spaces).includes(targetSpaceId)
+    // 從目標移除（或規則的目標已經不包含它）時，同步用的墓碑仍要送給這個空間
+    const retired = !live && rule.retiredTargetIds.includes(targetSpaceId)
+    if (!live && !(retired && includeDeleted)) continue
+    const active = isRuleActive(rule) && live
     if (!active && !includeDeleted) continue
-    const source = spaceById.get(rule.sourceSpaceId)
-    if (!source || !roleOf(source, rule.userId) || !roleOf(target, rule.userId)) continue
+    if (rule.sourceId === PERSONAL_CALENDAR_ID) continue
+    const source = spaceById.get(rule.sourceId)
+    if (!source || !roleOf(source, rule.userId)) continue
 
     for (const item of items) {
       if (item.spaceId !== source.id || item.createdBy !== rule.userId) continue
       if (item.redaction || item.projection) continue // 不從過濾過的副本或其他投射再投射
       if (rule.kinds.length > 0 && !rule.kinds.includes(item.kind)) continue
       if (item.visibility.mode === 'private' && !rule.includePrivate) continue
+      if (!item.start && !rule.includeAllDay) continue
       if (range && (item.dateISO > range.to || (item.endDateISO || item.dateISO) < range.from)) continue
 
       const removed = item.deletedAt !== null || !active
       if (removed && !includeDeleted) continue
       const updatedAt = Math.max(item.updatedAt, rule.updatedAt)
       out.push({
-        id: projectedBlockId(rule.id, item.id),
-        spaceId: target.id,
+        id: blockIdFor(rule, item.id, targetSpaceId),
+        spaceId: targetSpaceId,
         kind: 'event',
         title: '',
         dateISO: item.dateISO,
@@ -277,15 +293,15 @@ export function projectBusyBlocks(options: ProjectBusyBlocksOptions): SharedCale
         location: '',
         note: '',
         details: {},
-        visibility: { mode: 'busy_only', allowedUserIds: [], hiddenUserIds: [...item.visibility.hiddenUserIds], busyLabel: rule.label, maskedFields: [] },
+        visibility: { mode: 'busy_only', allowedUserIds: [], hiddenUserIds: [...item.visibility.hiddenUserIds], busyLabel: rule.display === 'busy' ? rule.label : '', maskedFields: [] },
         createdBy: rule.userId,
         createdAt: item.createdAt,
-        // 規則停用時版本 +1，讓墓碑蓋過先前送出的區塊
-        version: item.version + (active ? 0 : 1),
+        // 版本 = 來源行程版本 + 規則的 revision；停用或移除目標時再 +1，讓墓碑蓋過先前送出的區塊
+        version: item.version + rule.revision + (active ? 0 : 1),
         updatedAt,
         updatedBy: rule.userId,
         deletedAt: removed ? (item.deletedAt ?? updatedAt) : null,
-        projection: { ruleId: rule.id },
+        projection: rule.display === 'busy' ? { ruleId: rule.id } : { ruleId: rule.id, display: rule.display },
       })
     }
   }
