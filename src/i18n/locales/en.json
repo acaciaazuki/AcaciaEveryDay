@@ -1242,5 +1242,16 @@
       "hint": "You can still save — this is just a heads-up."
     },
     "blockedBanner": "The shared calendar data on this device comes from a newer version of ACACIA. To avoid overwriting it, editing and sync are paused. Please update the app — your data is kept intact."
+  },
+  "errorScreen": {
+    "title": "Something went wrong",
+    "text": "Sorry, an unexpected error occurred. Your data is still saved on this device — you can download a backup first, then reload.",
+    "backup": "Download data backup",
+    "reload": "Reload",
+    "home": "Back to Today",
+    "details": "Error details (include these when reporting)",
+    "contact": "If it still doesn’t work, email",
+    "notFoundTitle": "Page not found",
+    "notFoundText": "The address may be mistyped, or the page no longer exists."
   }
 }
