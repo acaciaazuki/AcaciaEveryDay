@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
+import appI18n from '../i18n'
 import { Link } from 'react-router'
 import { Button } from '../components/Button'
 import { Icon } from '../components/AcaciaIcons'
@@ -32,6 +33,13 @@ const VIEWS: View[] = ['day', 'week', 'two']
 const RELATIVE: Record<number, string> = { [-1]: 'yesterday', 1: 'tomorrow', 2: 'dayAfter', 3: 'threeDays' }
 
 const card = 'rounded-(--radius-card) bg-paper p-5 shadow-card'
+
+/**
+ * 批次新增時自動寫進備註的「批次建立」（三種語言）在今天的時間軸上不顯示：
+ * 它不是使用者寫的備註，只是建立方式的標記；行程資料與行事曆裡的備註欄位都不變。
+ */
+const BATCH_NOTES = new Set((['zh-TW', 'ja', 'en'] as const).map((l) => appI18n.getFixedT(l)('calendar.batchForm.note')))
+const shownNote = (note: string) => (BATCH_NOTES.has(note.trim()) ? '' : note)
 const NO_SHOPPING = new Map()
 const NO_EVENTS: CalendarEvent[] = []
 const linkBtn = 'text-xs font-semibold text-sage hover:text-sage-dark'
@@ -215,7 +223,7 @@ export function TodayPage() {
                         {e.title}
                       </h3>
                       <small className="text-[length:calc(11px*var(--fs))] text-muted">
-                        {formatTimeRange(e.start, e.end) || t('event.allDay')} {e.note && `· ${e.note}`}
+                        {formatTimeRange(e.start, e.end) || t('event.allDay')} {shownNote(e.note) && `· ${e.note}`}
                       </small>
                     </button>
                     {gap >= 30 && (
@@ -366,7 +374,7 @@ function RangeList({
                         {e.title}
                       </strong>
                       <small className="text-[length:calc(11px*var(--fs))] text-muted">
-                        {formatTimeRange(e.start, e.end) || t('event.allDay')} {e.note && `· ${e.note}`}
+                        {formatTimeRange(e.start, e.end) || t('event.allDay')} {shownNote(e.note) && `· ${e.note}`}
                       </small>
                     </button>
                   </li>

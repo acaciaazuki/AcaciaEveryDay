@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BatchEventsDialog } from '../components/BatchEventsDialog'
 import { Button } from '../components/Button'
+import { Dialog } from '../components/Dialog'
 import { EventDialog } from '../components/EventDialog'
 import { HolidayCard, HolidayChip, HolidayImportDialog } from '../components/HolidayAgenda'
 import { MonthNav } from '../components/MonthNav'
@@ -40,6 +41,19 @@ export function CalendarPage() {
   const [selected, setSelected] = useState(todayISO)
   const [editing, setEditing] = useState<CalendarEvent | SharedEntry | 'new' | null>(null)
   const [viewingShared, setViewingShared] = useState<SharedEntry | null>(null)
+  // 點日期打開「這一天」：列出當天全部行程與新增入口（取代原本右側的當日行程面板，手機也靠它點開行程）
+  const [dayOpen, setDayOpen] = useState(false)
+  const openDay = (iso: string) => {
+    setSelected(iso)
+    setDayOpen(true)
+  }
+  /** 從「這一天」裡點開某一筆時，先收起這一天，避免兩層對話框疊在一起 */
+  const fromDay =
+    <T,>(fn: (x: T) => void) =>
+    (x: T) => {
+      setDayOpen(false)
+      fn(x)
+    }
   const openShared = (x: SharedEntry) => (x.canEdit ? setEditing(x) : setViewingShared(x))
   const [batchOpen, setBatchOpen] = useState(false)
   // 匯入的國定假日：唯讀，排在每天最前面
@@ -86,8 +100,7 @@ export function CalendarPage() {
       />
       <SpaceSwitcher />
 
-      <div className="grid gap-5 min-[1001px]:grid-cols-[1fr_320px]">
-        <section className="rounded-(--radius-card) bg-paper p-4 shadow-card sm:p-5">
+      <section className="rounded-(--radius-card) bg-paper p-4 shadow-card sm:p-5 min-[1001px]:p-6">
           <MonthNav
             year={ym.year}
             month={ym.month}
@@ -120,9 +133,14 @@ export function CalendarPage() {
                   role="gridcell"
                   aria-selected={isSel}
                   tabIndex={0}
-                  onClick={() => setSelected(iso)}
-                  onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setSelected(iso)}
-                  className={`min-h-20 cursor-pointer overflow-hidden rounded-lg border p-1 text-left transition sm:min-h-36 sm:p-1.5 min-[1001px]:min-h-40 ${
+                  aria-label={t('calendar.openDay', { date: iso })}
+                  onClick={() => openDay(iso)}
+                  onKeyDown={(e) => {
+                    if (e.key !== 'Enter' && e.key !== ' ') return
+                    e.preventDefault()
+                    openDay(iso)
+                  }}
+                  className={`min-h-20 cursor-pointer overflow-hidden rounded-lg border p-1 text-left transition sm:min-h-36 sm:p-1.5 min-[1001px]:min-h-44 min-[1001px]:p-2 min-[1400px]:min-h-52 ${
                     isSel ? `border-sage ${weekend ? 'bg-weekend' : 'bg-sage-light/60'}` : `border-transparent ${weekend ? 'bg-weekend hover:bg-weekend-hover' : 'hover:bg-oat'}`
                   }`}
                 >
@@ -170,16 +188,27 @@ export function CalendarPage() {
                       </button>
                       )
                     })}
-                    {evs.length > chipRoom && <span className="px-1.5 text-[length:calc(10px*var(--fs))] text-muted">{t('calendar.more', { count: evs.length - chipRoom })}</span>}
+                    {evs.length > chipRoom && (
+                      <button
+                        type="button"
+                        onClick={(ev) => {
+                          ev.stopPropagation()
+                          openDay(iso)
+                        }}
+                        className="justify-self-start rounded px-1.5 text-[length:calc(10px*var(--fs))] text-muted hover:bg-sage-light hover:text-sage-dark"
+                      >
+                        {t('calendar.more', { count: evs.length - chipRoom })}
+                      </button>
+                    )}
                   </div>
                 </div>
               )
             })}
           </div>
-        </section>
+      </section>
 
-        <section className="content-start rounded-(--radius-card) bg-paper p-5 shadow-card">
-          <h2 className="mb-3 font-bold">{selectedLabel}</h2>
+      {dayOpen && (
+        <Dialog open onOpenChange={(o) => !o && setDayOpen(false)} title={selectedLabel}>
           {dayHolidays.length > 0 && (
             <ul className="mb-2 grid gap-2">
               {dayHolidays.map((h) => (
@@ -197,13 +226,13 @@ export function CalendarPage() {
                 if (it.kind === 'shopping')
                   return (
                     <li key={it.id}>
-                      <ShoppingCard compact entry={it.entry} onOpen={setViewingShop} />
+                      <ShoppingCard compact entry={it.entry} onOpen={fromDay(setViewingShop)} />
                     </li>
                   )
                 if (it.kind === 'shared')
                   return (
                     <li key={it.id}>
-                      <SharedCard compact entry={it.shared} onOpen={openShared} />
+                      <SharedCard compact entry={it.shared} onOpen={fromDay(openShared)} />
                     </li>
                   )
                 const e = it.event
@@ -211,7 +240,7 @@ export function CalendarPage() {
                 <li key={e.id}>
                   <button
                     type="button"
-                    onClick={() => setEditing(e)}
+                    onClick={() => fromDay(setEditing)(e)}
                     className="w-full rounded-xl border-l-4 px-3 py-2.5 text-left"
                     style={{ background: e.bgColor || '#f2f8f4', borderLeftColor: e.titleColor || '#75b799' }}
                   >
@@ -228,12 +257,12 @@ export function CalendarPage() {
             </ul>
           )}
           {vis.isSelf && (
-            <button type="button" onClick={() => setEditing('new')} className="mt-3 text-xs font-semibold text-sage hover:text-sage-dark">
+            <button type="button" onClick={() => fromDay(setEditing)('new')} className="mt-3 text-xs font-semibold text-sage hover:text-sage-dark">
               {t('calendar.addOnDay')}
             </button>
           )}
-        </section>
-      </div>
+        </Dialog>
+      )}
 
       {editing && (
         <EventDialog

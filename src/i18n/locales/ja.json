@@ -117,7 +117,8 @@
       "done": "完了",
       "archived": "保存済み",
       "status": "状態"
-    }
+    },
+    "openDay": "{{date}} の予定を見る"
   },
   "places": {
     "eyebrow": "場所を検索すると情報を自動取得し、イラストで分類します",
@@ -544,6 +545,7 @@
     "train": "電車",
     "flight": "飛行機",
     "book": "読書・教科書",
+    "celebrate": "お祝い",
     "default": "その他"
   },
   "subs": {

@@ -28,7 +28,10 @@ describe('行事曆的國定假日', () => {
     const chip = selectedCell().querySelector('[data-holiday]')!
     expect(chip).toHaveTextContent('測試假日')
     expect(chip.tagName).not.toBe('BUTTON')
-    const card = screen.getAllByText('測試假日').map((el) => el.closest('[data-holiday]')!).find((el) => el !== chip)!
+    // 點日期打開「這一天」，裡面的假日卡片
+    fireEvent.click(selectedCell())
+    const day = screen.getByRole('dialog')
+    const card = within(day).getByText('測試假日').closest('[data-holiday]')!
     expect(within(card as HTMLElement).getByText('國定假日')).toBeInTheDocument()
     expect(card.closest('button')).toBeNull()
     // 假日不是一般行程，不會寫進 events
@@ -38,7 +41,8 @@ describe('行事曆的國定假日', () => {
   it('補班日顯示「補班」', () => {
     useAppStore.setState({ holidays: [set({ days: [{ date: today, name: '補行上班', work: true }] })] })
     renderPage(<CalendarPage />)
-    expect(screen.getAllByText('補班').length).toBeGreaterThan(0)
+    fireEvent.click(selectedCell())
+    expect(within(screen.getByRole('dialog')).getAllByText('補班').length).toBeGreaterThan(0)
   })
 
   it('今天頁也看得到假日', () => {

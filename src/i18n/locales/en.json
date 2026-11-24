@@ -117,7 +117,8 @@
       "done": "Done",
       "archived": "Archived",
       "status": "Status"
-    }
+    },
+    "openDay": "{{date}}: see this day"
   },
   "places": {
     "eyebrow": "Search a place to fill in its details, sorted with cute icons",
@@ -544,6 +545,7 @@
     "train": "Train",
     "flight": "Flight",
     "book": "Reading",
+    "celebrate": "Celebration",
     "default": "General"
   },
   "subs": {
