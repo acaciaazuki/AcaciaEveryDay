@@ -125,6 +125,24 @@ describe('最愛地點排序', () => {
     expect(screen.getAllByText('營業時間未知')).toHaveLength(2)
   })
 
+  it('排序列：排序：自訂順序 → 調整順序 → 種類 → 距離遠近 → 今日營業，同一個 gap、垂直置中，右側留空', () => {
+    renderPage()
+    const group = screen.getByRole('radiogroup', { name: '排序' })
+    const row = group.parentElement!
+    expect(row).toHaveAttribute('data-place-sort-row')
+    expect(row).toHaveClass('flex', 'flex-wrap', 'items-center', 'gap-2')
+    // 選項直接參與外層 flex，才能跟「調整順序」穿插排列
+    expect(group).toHaveClass('contents')
+    const reorder = screen.getByRole('button', { name: '調整順序' })
+    expect(reorder).not.toHaveClass('ml-auto')
+    expect(within(group).queryByRole('button', { name: '調整順序' })).toBeNull()
+    // 依 CSS order 排出畫面上的順序（同 order 依原本的 DOM 順序）
+    const orderOf = (el: Element) => Number(el.className.match(/(?:^|\s)order-(\d+)/)?.[1] ?? 0)
+    const items = [...row.querySelectorAll('[role="radio"], [data-place-sort-row] > button')]
+    const visual = items.map((el, i) => ({ el, i })).sort((a, b) => orderOf(a.el) - orderOf(b.el) || a.i - b.i).map(({ el }) => el.textContent)
+    expect(visual).toEqual(['自訂順序', '調整順序', '種類', '距離遠近', '今日營業'])
+  })
+
   it('調整順序：上下按鈕移動後存進資料，並切回自訂順序', () => {
     useAppStore.getState().setPlaceSort('category')
     renderPage()
