@@ -73,7 +73,7 @@ export function ShoppingPage() {
 
   return (
     <>
-      <PageHead eyebrow={t('shopping.eyebrow')} title={t('shopping.title')} actions={
+      <PageHead title={t('shopping.title')} actions={
           <>
             <Button variant="ghost" size="page" className="inline-flex items-center gap-1" onClick={() => setRecView('import')}>
               <Icon name="recurring" className="-my-1 size-[1.5em]" />

@@ -1,18 +1,22 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import { PageHead } from './PageHead'
+import { PAGE_TITLE_SIZE, PageHead } from './PageHead'
 
 describe('PageHead', () => {
-  it('預設字級跟原本一樣，其他頁面不受影響', () => {
-    render(<PageHead eyebrow="小字" title="標題" />)
-    expect(screen.getByRole('heading', { level: 1 })).toHaveClass('text-2xl')
-    expect(screen.getByText('小字')).toHaveClass('text-[length:calc(11px*var(--fs))]')
+  it('主標題用全站統一的 13px（跟著字體設定縮放），沒傳 eyebrow 就不輸出任何小字', () => {
+    const { container } = render(<PageHead title="標題" />)
+    const h1 = screen.getByRole('heading', { level: 1 })
+    expect(PAGE_TITLE_SIZE).toBe('text-[length:calc(13px*var(--fs))]')
+    expect(h1).toHaveClass(PAGE_TITLE_SIZE)
+    expect(h1).not.toHaveClass('text-2xl')
+    // 標題區塊裡只有標題本身，沒有留下空的小字列
+    expect(h1.parentElement!.children).toHaveLength(1)
+    expect(container.querySelector('.text-muted')).toBeNull()
   })
 
-  it('個別頁面可以調整字級', () => {
-    render(<PageHead eyebrow="小字" title="標題" titleClassName="text-[length:calc(30px*var(--fs))]" eyebrowClassName="text-[length:calc(12px*var(--fs))]" />)
-    expect(screen.getByRole('heading', { level: 1 })).toHaveClass('text-[length:calc(30px*var(--fs))]')
-    expect(screen.getByRole('heading', { level: 1 })).not.toHaveClass('text-2xl')
-    expect(screen.getByText('小字')).toHaveClass('text-[length:calc(12px*var(--fs))]')
+  it('有功能的列（例如今天頁的日期切換）照常顯示在標題上方', () => {
+    render(<PageHead eyebrow={<button type="button">‹</button>} title="晚安" eyebrowClassName="text-[length:calc(14px*var(--fs))]" />)
+    expect(screen.getByRole('button', { name: '‹' }).parentElement).toHaveClass('text-[length:calc(14px*var(--fs))]')
+    expect(screen.getByRole('heading', { level: 1, name: '晚安' })).toHaveClass(PAGE_TITLE_SIZE)
   })
 })

@@ -80,7 +80,7 @@ export function SubscriptionsPage() {
 
   return (
     <>
-      <PageHead eyebrow={t('subs.eyebrow')} title={t('subs.title')} actions={<Button size="page" onClick={() => setEditing('new')}>{t('subs.add')}</Button>} />
+      <PageHead title={t('subs.title')} actions={<Button size="page" onClick={() => setEditing('new')}>{t('subs.add')}</Button>} />
 
       {/* A. 本月帳單控制台 */}
       <section className="mb-5 rounded-(--radius-card) bg-linear-to-br from-mint to-sage-light p-6">

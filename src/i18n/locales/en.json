@@ -30,7 +30,6 @@
     "withCurrency": "{{label}} ({{sym}})"
   },
   "today": {
-    "eyebrow": "Take it slow today",
     "title": "Today",
     "greeting": {
       "morning": "Good morning",
@@ -82,7 +81,6 @@
     "lowStock": "{{count}} items running low, plan a restock"
   },
   "calendar": {
-    "eyebrow": "Put what matters in just the right place",
     "title": "Calendar",
     "batch": "Add in bulk",
     "add": "+ New event",
@@ -121,7 +119,6 @@
     "openDay": "{{date}}: see this day"
   },
   "places": {
-    "eyebrow": "Search a place to fill in its details, sorted with cute icons",
     "title": "Favorite places",
     "add": "+ Add place",
     "filterPlaceholder": "Search by name, address or note…",
@@ -205,7 +202,6 @@
     }
   },
   "tasks": {
-    "eyebrow": "No rush, just don't forget",
     "title": "Later",
     "add": "+ New task",
     "empty": "Nothing to do",
@@ -236,7 +232,6 @@
     }
   },
   "shopping": {
-    "eyebrow": "Each period runs from the 10th to the 9th of next month",
     "title": "Shopping & budget",
     "list": "Entries",
     "count": "{{count}} entries",
@@ -290,7 +285,6 @@
     "budgetOnly": "Budget progress counts {{sym}} spending only; other currencies are listed separately, not converted."
   },
   "settings": {
-    "eyebrow": "Language and data",
     "title": "Settings",
     "language": "Language",
     "data": "Backup and moving data",
@@ -440,7 +434,6 @@
     }
   },
   "reminders": {
-    "eyebrow": "One last check before you go",
     "title": "Don’t-forget reminders",
     "add": "+ New",
     "empty": "No reminders yet. Create one to be reminded of your essentials when you leave work or arrive home.",
@@ -550,7 +543,6 @@
     "default": "General"
   },
   "subs": {
-    "eyebrow": "Every recurring charge, at a glance",
     "title": "Subscriptions & renewals",
     "add": "+ Add subscription",
     "openPage": "Open subscriptions",
@@ -633,7 +625,6 @@
     "samplePayment": "Credit card"
   },
   "inv": {
-    "eyebrow": "Know what's in the cupboard",
     "title": "Supplies & reminders",
     "add": "+ Add item",
     "openPage": "Open supplies & reminders",

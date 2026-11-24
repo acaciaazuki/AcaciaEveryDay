@@ -30,7 +30,6 @@
     "withCurrency": "{{label}} ({{sym}})"
   },
   "today": {
-    "eyebrow": "Prenez votre temps aujourd’hui",
     "title": "Aujourd’hui",
     "greeting": {
       "morning": "Bonjour",
@@ -82,7 +81,6 @@
     "lowStock": "{{count}} article(s) bientôt épuisé(s), pensez à réapprovisionner"
   },
   "calendar": {
-    "eyebrow": "Placez l’essentiel au bon endroit",
     "title": "Calendrier",
     "batch": "Ajout groupé",
     "add": "+ Nouvel événement",
@@ -121,7 +119,6 @@
     "openDay": "{{date}} : voir ce jour"
   },
   "places": {
-    "eyebrow": "Recherchez un lieu pour remplir ses informations, classées avec de jolies icônes",
     "title": "Lieux favoris",
     "add": "+ Ajouter un lieu",
     "filterPlaceholder": "Rechercher par nom, adresse ou note…",
@@ -205,7 +202,6 @@
     }
   },
   "tasks": {
-    "eyebrow": "Sans se presser, mais sans oublier",
     "title": "Plus tard",
     "add": "+ Nouvelle tâche",
     "empty": "Rien à faire",
@@ -236,7 +232,6 @@
     }
   },
   "shopping": {
-    "eyebrow": "Chaque période va du 10 au 9 du mois suivant",
     "title": "Achats et budget",
     "list": "Dépenses",
     "count": "{{count}} dépense(s)",
@@ -290,7 +285,6 @@
     "budgetOnly": "La progression du budget ne compte que les dépenses en {{sym}} ; les autres devises sont listées à part, sans conversion."
   },
   "settings": {
-    "eyebrow": "Langue et données",
     "title": "Réglages",
     "language": "Langue",
     "data": "Sauvegarde et transfert des données",
@@ -440,7 +434,6 @@
     }
   },
   "reminders": {
-    "eyebrow": "Une dernière vérification avant de partir",
     "title": "Rappels à ne pas oublier",
     "add": "+ Nouveau",
     "empty": "Aucun rappel pour l’instant. Créez-en un pour penser à vos essentiels en quittant le travail ou en rentrant chez vous.",
@@ -550,7 +543,6 @@
     "default": "Général"
   },
   "subs": {
-    "eyebrow": "Tous vos prélèvements récurrents, d’un coup d’œil",
     "title": "Abonnements et renouvellements",
     "add": "+ Ajouter un abonnement",
     "openPage": "Ouvrir les abonnements",
@@ -633,7 +625,6 @@
     "samplePayment": "Carte bancaire"
   },
   "inv": {
-    "eyebrow": "Sachez ce qu’il y a dans vos placards",
     "title": "Fournitures et rappels",
     "add": "+ Ajouter un article",
     "openPage": "Ouvrir les fournitures et rappels",
