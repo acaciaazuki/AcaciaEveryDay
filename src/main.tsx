@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router'
 import { isNativeApp } from './adapters/kv'
 import { router } from './app/router'
+import { AppErrorBoundary } from './components/ErrorScreen'
 import './i18n'
 import './index.css'
 import { startAutoBackup } from './store/useBackupStore'
@@ -32,6 +33,8 @@ if (!isNativeApp()) void navigator.storage?.persist?.().catch(() => {})
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <AppErrorBoundary>
+      <RouterProvider router={router} />
+    </AppErrorBoundary>
   </StrictMode>,
 )

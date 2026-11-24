@@ -8,12 +8,15 @@ import { ShoppingPage } from '../pages/ShoppingPage'
 import { SubscriptionsPage } from '../pages/SubscriptionsPage'
 import { TasksPage } from '../pages/TasksPage'
 import { TodayPage } from '../pages/TodayPage'
+import { RouteErrorScreen } from '../components/ErrorScreen'
 import { Layout } from './Layout'
 
 export const router = createBrowserRouter([
   {
     path: '/',
     Component: Layout,
+    // 任何頁面出錯時顯示保底畫面（可以下載資料備份），不會整頁空白
+    ErrorBoundary: RouteErrorScreen,
     children: [
       { index: true, Component: TodayPage },
       { path: 'calendar', Component: CalendarPage },
