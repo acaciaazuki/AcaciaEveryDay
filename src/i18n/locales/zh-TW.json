@@ -30,7 +30,6 @@
     "withCurrency": "{{label}}（{{sym}}）"
   },
   "today": {
-    "eyebrow": "今天也慢慢來",
     "title": "今天",
     "greeting": {
       "morning": "早安",
@@ -82,7 +81,6 @@
     "lowStock": "{{count}} 項用品庫存不足，記得安排採購"
   },
   "calendar": {
-    "eyebrow": "把重要的事，放進剛好的位置",
     "title": "行事曆",
     "batch": "批次新增",
     "add": "＋ 新增事件",
@@ -121,7 +119,6 @@
     "openDay": "{{date}}，查看這天的行程"
   },
   "places": {
-    "eyebrow": "搜尋地點自動抓取資訊，並用可愛插圖分類",
     "title": "最愛地點",
     "add": "＋ 新增地點",
     "filterPlaceholder": "搜尋地點名稱、地址或備註…",
@@ -205,7 +202,6 @@
     }
   },
   "tasks": {
-    "eyebrow": "不急，但記得要做",
     "title": "稍後辦",
     "add": "＋ 新增待辦",
     "empty": "目前沒有待辦事項",
@@ -236,7 +232,6 @@
     }
   },
   "shopping": {
-    "eyebrow": "每月 10 日至次月 9 日結算",
     "title": "購物清單 & 記帳本",
     "list": "記帳清單",
     "count": "{{count}} 筆",
@@ -290,7 +285,6 @@
     "budgetOnly": "預算進度只計算 {{sym}} 的支出；其他幣別分開列出，不換算匯率。"
   },
   "settings": {
-    "eyebrow": "語言與資料",
     "title": "設定",
     "language": "語言",
     "data": "資料備份與搬家",
@@ -440,7 +434,6 @@
     }
   },
   "reminders": {
-    "eyebrow": "出門前，再確認一次",
     "title": "防遺漏提醒",
     "add": "＋ 新增",
     "empty": "還沒有提醒。建立一個，離開公司或抵達家裡時，提醒你帶齊隨身物品。",
@@ -550,7 +543,6 @@
     "default": "一般"
   },
   "subs": {
-    "eyebrow": "每一筆固定扣款，都清清楚楚",
     "title": "訂閱與續費",
     "add": "＋ 新增訂閱",
     "openPage": "前往訂閱與續費",
@@ -633,7 +625,6 @@
     "samplePayment": "信用卡"
   },
   "inv": {
-    "eyebrow": "家裡的備品，心裡有數",
     "title": "庫存與提醒",
     "add": "＋ 新增用品",
     "openPage": "前往庫存與提醒",

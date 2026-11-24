@@ -6,6 +6,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import i18n from '../i18n'
 import { emptyAppData } from '../core/schema'
 import { useAppStore } from '../store/useAppStore'
+import { SettingsPage } from './SettingsPage'
 import { CalendarPage } from './CalendarPage'
 import { InventoryPage } from './InventoryPage'
 import { PlacesPage } from './PlacesPage'
@@ -60,4 +61,19 @@ describe('各頁右上角主按鈕尺寸統一', () => {
     render(<MemoryRouter><CalendarPage /></MemoryRouter>)
     expect(screen.getByRole('heading', { level: 1 }).className).toBe(places)
   })
+
+  it.each([...PAGES.map(([name, Page]) => [name, Page] as const), ['設定', SettingsPage] as const])(
+    '%s：主標題跟「今天」頁的問候一樣是 13px，標題上方沒有標語小字',
+    (name, Page) => {
+      render(<MemoryRouter><Page /></MemoryRouter>)
+      const h1 = screen.getByRole('heading', { level: 1 })
+      expect(h1).toHaveClass('text-[length:calc(13px*var(--fs))]')
+      expect(h1).not.toHaveClass('text-2xl')
+      // 今天頁標題上方保留日期切換列（功能列）；其他頁標題區塊只剩標題本身
+      if (name === '今天') expect(screen.getByRole('button', { name: '往前' })).toBeInTheDocument()
+      else expect(h1.parentElement!.children).toHaveLength(1)
+      for (const tagline of ['把重要的事，放進剛好的位置', '不急，但記得要做', '每月 10 日至次月 9 日結算', '搜尋地點自動抓取資訊'])
+        expect(document.body.textContent).not.toContain(tagline)
+    },
+  )
 })

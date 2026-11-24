@@ -19,7 +19,7 @@ describe('行事曆頂部工具列', () => {
 
   it('頂部工具列：標題與其他頁 PageHead 主標題同字級，按鈕、空間篩選、檢視身份用較大的字級（跟著字體設定縮放）', () => {
     renderPage()
-    expect(screen.getByRole('heading', { level: 1, name: '行事曆' })).toHaveClass('text-2xl')
+    expect(screen.getByRole('heading', { level: 1, name: '行事曆' })).toHaveClass('text-[length:calc(13px*var(--fs))]')
     for (const name of ['國定假日', '批次新增', '＋ 新增事件']) expect(screen.getByRole('button', { name })).toHaveClass('px-5', 'py-3', 'text-[length:calc(14px*var(--fs))]', 'whitespace-nowrap')
     const tabs = screen.getByRole('tablist', { name: '顯示哪些行程' })
     for (const tab of within(tabs).getAllByRole('tab')) expect(tab).toHaveClass('text-[length:calc(14px*var(--fs))]')

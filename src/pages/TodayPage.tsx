@@ -100,7 +100,6 @@ export function TodayPage() {
   return (
     <>
       <PageHead
-        titleClassName={TEXT_13}
         eyebrowClassName={TEXT_14}
         eyebrow={
           <span className="flex flex-wrap items-center gap-1.5">

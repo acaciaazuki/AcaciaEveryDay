@@ -25,7 +25,7 @@ export function RemindersPage() {
 
   return (
     <>
-      <PageHead eyebrow={t('reminders.eyebrow')} title={t('reminders.title')} actions={<Button size="page" onClick={() => setEditing('new')}>{t('reminders.add')}</Button>} />
+      <PageHead title={t('reminders.title')} actions={<Button size="page" onClick={() => setEditing('new')}>{t('reminders.add')}</Button>} />
 
       <section className="mb-4 grid gap-2 rounded-2xl border border-line bg-paper p-4 text-xs shadow-soft">
         <div className="flex flex-wrap items-center justify-between gap-2">

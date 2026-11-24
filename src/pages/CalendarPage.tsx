@@ -87,9 +87,7 @@ export function CalendarPage() {
   return (
     <div className="min-[1001px]:flex min-[1001px]:min-h-0 min-[1001px]:flex-1 min-[1001px]:flex-col">
       <PageHead
-        eyebrow={t('calendar.eyebrow')}
         title={t('calendar.title')}
-        eyebrowClassName="text-[length:calc(12px*var(--fs))]"
         actions={
           // 預覽其他成員的視角時只能看，不顯示新增按鈕
           vis.isSelf && (

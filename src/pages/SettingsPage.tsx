@@ -57,7 +57,7 @@ export function SettingsPage() {
 
   return (
     <>
-      <PageHead eyebrow={t('settings.eyebrow')} title={t('settings.title')} />
+      <PageHead title={t('settings.title')} />
       <div className="grid max-w-xl grid-cols-[minmax(0,1fr)] gap-4">
         <section className="rounded-(--radius-card) bg-paper p-6 shadow-card">
           <h2 className="mb-3 font-bold">{t('settings.language')}</h2>

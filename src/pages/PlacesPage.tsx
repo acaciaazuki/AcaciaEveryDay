@@ -129,7 +129,7 @@ export function PlacesPage() {
 
   return (
     <>
-      <PageHead eyebrow={t('places.eyebrow')} title={t('places.title')} actions={<Button size="page" onClick={() => setEditing('new')}>{t('places.add')}</Button>} />
+      <PageHead title={t('places.title')} actions={<Button size="page" onClick={() => setEditing('new')}>{t('places.add')}</Button>} />
 
       {reordering ? (
         <section aria-labelledby="place-reorder-title" className="rounded-(--radius-card) bg-paper p-4 shadow-card sm:p-5">

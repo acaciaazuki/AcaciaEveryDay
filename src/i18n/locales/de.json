@@ -30,7 +30,6 @@
     "withCurrency": "{{label}} ({{sym}})"
   },
   "today": {
-    "eyebrow": "Heute ganz in Ruhe",
     "title": "Heute",
     "greeting": {
       "morning": "Guten Morgen",
@@ -82,7 +81,6 @@
     "lowStock": "Artikel mit geringem Bestand: {{count}}. Plane Nachschub ein"
   },
   "calendar": {
-    "eyebrow": "Das Wichtige genau an den richtigen Platz",
     "title": "Kalender",
     "batch": "Mehrere hinzufügen",
     "add": "+ Neuer Termin",
@@ -121,7 +119,6 @@
     "openDay": "{{date}}: diesen Tag ansehen"
   },
   "places": {
-    "eyebrow": "Ort suchen, Details übernehmen und mit niedlichen Symbolen sortieren",
     "title": "Lieblingsorte",
     "add": "+ Ort hinzufügen",
     "filterPlaceholder": "Nach Name, Adresse oder Notiz suchen…",
@@ -205,7 +202,6 @@
     }
   },
   "tasks": {
-    "eyebrow": "Keine Eile, nur nicht vergessen",
     "title": "Später",
     "add": "+ Neue Aufgabe",
     "empty": "Nichts zu tun",
@@ -236,7 +232,6 @@
     }
   },
   "shopping": {
-    "eyebrow": "Jeder Zeitraum läuft vom 10. bis zum 9. des Folgemonats",
     "title": "Einkäufe & Budget",
     "list": "Einträge",
     "count": "Einträge: {{count}}",
@@ -290,7 +285,6 @@
     "budgetOnly": "Der Budgetfortschritt zählt nur Ausgaben in {{sym}}; andere Währungen werden separat aufgeführt, nicht umgerechnet."
   },
   "settings": {
-    "eyebrow": "Sprache und Daten",
     "title": "Einstellungen",
     "language": "Sprache",
     "data": "Backup und Datenumzug",
@@ -440,7 +434,6 @@
     }
   },
   "reminders": {
-    "eyebrow": "Ein letzter Check vor dem Losgehen",
     "title": "Nicht-vergessen-Erinnerungen",
     "add": "+ Neu",
     "empty": "Noch keine Erinnerungen. Erstelle eine, damit du beim Verlassen der Arbeit oder bei der Ankunft zu Hause an das Wichtigste denkst.",
@@ -550,7 +543,6 @@
     "default": "Allgemein"
   },
   "subs": {
-    "eyebrow": "Alle wiederkehrenden Abbuchungen auf einen Blick",
     "title": "Abos & Verlängerungen",
     "add": "+ Abo hinzufügen",
     "openPage": "Abos öffnen",
@@ -633,7 +625,6 @@
     "samplePayment": "Kreditkarte"
   },
   "inv": {
-    "eyebrow": "Wissen, was im Schrank ist",
     "title": "Vorräte & Erinnerungen",
     "add": "+ Artikel hinzufügen",
     "openPage": "Vorräte & Erinnerungen öffnen",
