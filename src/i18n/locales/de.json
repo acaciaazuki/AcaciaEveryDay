@@ -1245,6 +1245,7 @@
       "includeAllDay": "Ganztägige Termine einbeziehen (ganzer Tag belegt)",
       "includePrivate": "Private Termine einbeziehen",
       "needTarget": "Wähle mindestens einen Kalender",
+      "duplicate": "„{{source}}“ wird bereits mit „{{targets}}“ synchronisiert. Pro Zeitraum wird nur ein belegter Block angezeigt; um die Darstellung zu ändern, bearbeite die bestehende Regel unter {{place}}.",
       "noTargets": "Keine anderen Kalender verfügbar",
       "preview": "Vorschau: Mitglieder von „{{space}}“ sehen → {{text}}",
       "previewSelf": "Vorschau: Du siehst in „Mein Kalender“ → {{text}}",

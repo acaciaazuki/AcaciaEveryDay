@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router'
 import { isNativeApp } from './adapters/kv'
-import { router } from './app/router'
+import { prefetchPages, router } from './app/router'
 import { AppErrorBoundary } from './components/ErrorScreen'
 import { i18nReady } from './i18n'
 import './index.css'
@@ -26,6 +26,10 @@ whenConsented(() => {
   // 個人行程變動時更新「我的行事曆」的忙碌影子（有以它為來源的投射規則時才會動作）
   startPersonalBusyMirror()
 })
+
+// 網站載入完成後，趁空檔在背景預先下載其他頁面，之後點選單不用等下載
+if (document.readyState === 'complete') prefetchPages()
+else window.addEventListener('load', () => prefetchPages(), { once: true })
 
 // 網頁版：請瀏覽器把本站資料標記為「持續保存」，空間不足時不要自動清除（不會跳出詢問）。
 // iOS App 的資料存在 App 自己的檔案裡，不需要。

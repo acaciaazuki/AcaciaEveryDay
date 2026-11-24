@@ -149,3 +149,22 @@ describe('修改紀錄 trackChanges', () => {
     expect(titles(merged)).toEqual(['a', 'b', 'c'])
   })
 })
+
+describe('合併結果沿用本機的物件', () => {
+  it('跟本機內容一樣的清單與設定沿用原本的參照（套用時畫面不用整個重畫）', () => {
+    const local = { ...emptyAppData(), events: [{ id: 'e1', title: '看牙醫', dateISO: '2026-12-01', start: '10:00', end: '11:00', note: '' }], updatedAt: 5 }
+    const remote = structuredClone(local)
+    const merged = mergeAppData(local, remote, 10)
+    expect(merged.events).toBe(local.events)
+    expect(merged.tasks).toBe(local.tasks)
+    expect(merged.settings).toBe(local.settings)
+  })
+
+  it('雲端有新的紀錄時換成新的清單', () => {
+    const local = { ...emptyAppData(), updatedAt: 5 }
+    const remote = { ...emptyAppData(), events: [{ id: 'e2', title: '健身', dateISO: '2026-12-02', start: '19:00', end: '20:00', note: '' }], updatedAt: 6 }
+    const merged = mergeAppData(local, remote, 10)
+    expect(merged.events).not.toBe(local.events)
+    expect(merged.events.map((e) => e.id)).toEqual(['e2'])
+  })
+})

@@ -1245,6 +1245,7 @@
       "includeAllDay": "Inclure les événements sur la journée (journée occupée)",
       "includePrivate": "Inclure les événements privés",
       "needTarget": "Choisissez au moins un calendrier",
+      "duplicate": "« {{source}} » est déjà synchronisé vers « {{targets}} ». Un seul créneau occupé est affiché par plage horaire ; pour changer l’affichage, modifiez la règle existante dans {{place}}.",
       "noTargets": "Aucun autre calendrier disponible",
       "preview": "Aperçu : les membres de « {{space}} » verront → {{text}}",
       "previewSelf": "Aperçu : vous verrez dans « Mon calendrier » → {{text}}",

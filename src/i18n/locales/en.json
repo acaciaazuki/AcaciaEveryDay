@@ -1245,6 +1245,7 @@
       "includeAllDay": "Include all-day events (whole day busy)",
       "includePrivate": "Include private events",
       "needTarget": "Choose at least one calendar to sync to",
+      "duplicate": "“{{source}}” already syncs to “{{targets}}”. Only one busy block is shown per time slot; to change how it looks, edit the existing rule in {{place}}.",
       "noTargets": "No other calendars to sync to",
       "preview": "Preview: members of \"{{space}}\" will see → {{text}}",
       "previewSelf": "Preview: you will see in \"My calendar\" → {{text}}",

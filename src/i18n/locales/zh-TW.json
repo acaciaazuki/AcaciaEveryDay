@@ -1245,6 +1245,7 @@
       "includeAllDay": "整天行程也同步（佔滿整天）",
       "includePrivate": "包含私人行程",
       "needTarget": "請至少選一個要同步到的行事曆",
+      "duplicate": "「{{source}}」已經有規則同步到「{{targets}}」。同一時段只會顯示一個忙碌區塊；要改顯示方式，建議到「{{place}}」編輯原本的規則。",
       "noTargets": "沒有其他可以同步到的行事曆",
       "preview": "預覽：「{{space}}」的成員會看到 → {{text}}",
       "previewSelf": "預覽：你會在「我的行事曆」看到 → {{text}}",

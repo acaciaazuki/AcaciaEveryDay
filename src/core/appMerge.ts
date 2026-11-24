@@ -47,6 +47,8 @@ export function canonical(value: unknown): string {
     ) ?? ''
   )
 }
+/** 兩個清單是否是同樣的物件、同樣的順序 */
+const sameItems = (x: readonly unknown[], y: readonly unknown[]) => x.length === y.length && x.every((v, i) => v === y[i])
 /** 不受裝置語言影響的字串比較 */
 const cmp = (x: string, y: string) => (x < y ? -1 : x > y ? 1 : 0)
 
@@ -167,7 +169,9 @@ export function mergeAppData(local: AppData, remote: AppData, now: number): AppD
     const bOrder = b.time(orderKey)
     const [first, second] = bOrder > aOrder ? [bItems, aItems] : [aItems, bItems]
     const ids = [...new Set([...first, ...second].map((x) => keyOf(name, x)))].filter((id) => result.has(id))
-    ;(out as Record<string, unknown>)[name] = ids.map((id) => result.get(id))
+    const list = ids.map((id) => result.get(id))
+    // 結果跟本機完全一樣（同樣的物件、同樣的順序）時沿用本機的陣列：套用到本機時畫面不用整個重畫
+    ;(out as Record<string, unknown>)[name] = sameItems(list, aItems) ? aItems : list
     record(orderKey, Math.max(aOrder, bOrder))
   }
 
@@ -182,7 +186,8 @@ export function mergeAppData(local: AppData, remote: AppData, now: number): AppD
     if (value !== undefined) settings[k] = value
     record(key, r.time)
   }
-  out.settings = settings as AppData['settings']
+  const settingsKeys = Object.keys(settings)
+  out.settings = (settingsKeys.length === Object.keys(aSettings).length && settingsKeys.every((k) => settings[k] === aSettings[k]) ? local.settings : settings) as AppData['settings']
 
   for (const f of FIELDS) {
     const key = `field:${f}`

@@ -181,6 +181,23 @@ describe('忙閒投射規則 v2：各分頁的顯示', () => {
     expect(JSON.stringify(mom)).not.toContain('看牙醫')
   })
 
+  it('兩條規則把同一筆行程同步到同一個空間：畫面只顯示一個忙碌區塊（自己與其他成員都是）', () => {
+    const d = dadData([rule({ id: 'ra', targetMode: 'all' }), rule({ id: 'rb', targetMode: 'selected', targetIds: ['sp-family'] })])
+    // 同步資料仍各自產生（不改區塊 id 與版本）
+    expect(projectBusyBlocks({ rules: d.busyProjectionRules, spaces: d.spaces, items: d.items, targetSpaceId: 'sp-family' })).toHaveLength(2)
+    expect(visibleCalendar(d, U.dad, U.dad, 'sp-family').shared.filter((e) => e.projected)).toHaveLength(1)
+    expect(visibleCalendar(d, U.dad, U.mom, 'sp-family').shared.filter((e) => e.projected)).toHaveLength(1)
+  })
+
+  it('自己同一時段的兩筆不同行程，投射區塊仍分開顯示', () => {
+    const items = [
+      makeItem({ id: 'a', spaceId: 'sp-work', createdBy: U.dad, title: '週會', start: '14:00', end: '16:00' }),
+      makeItem({ id: 'b', spaceId: 'sp-work', createdBy: U.dad, title: '面試', start: '14:00', end: '16:00' }),
+    ]
+    const d = dadData([rule({ targetMode: 'all' })], items)
+    expect(visibleCalendar(d, U.dad, U.dad, 'sp-family').shared.filter((e) => e.projected).map((e) => e.item.title).sort()).toEqual(['週會', '面試'].sort())
+  })
+
   it('同步出去的忙碌區塊仍然不含標題', () => {
     const d = dadData([rule({ targetMode: 'all', label: '上班中' })], [makeItem({ id: 'mtg', spaceId: 'sp-work', createdBy: U.dad, title: '董事會', start: '14:00', end: '16:00' })])
     for (const viewer of [U.mom, U.dad]) {

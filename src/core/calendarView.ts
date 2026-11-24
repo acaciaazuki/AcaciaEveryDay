@@ -74,7 +74,7 @@ export function visibleCalendar(data: SharedCalendarData, selfId: string, viewer
     // 「我的行事曆」只屬於本人：只有投射到這裡的自己的忙碌區塊
     const blocks = isSelf ? projectBusyBlocks({ rules: data.busyProjectionRules.filter((r) => r.userId === viewerId), spaces: data.spaces, items: data.items, personalSlots: data.personalBusySlots, targetSpaceId: PERSONAL_CALENDAR_ID, ...titles }) : []
     const space = { id: PERSONAL_CALENDAR_ID, name: '', kind: 'personal' as const }
-    return { viewerId, isSelf, showPersonal, shared: sortEntries(blocks.map((b) => ownProjection(b, space))) }
+    return { viewerId, isSelf, showPersonal, shared: sortEntries(dedupeProjected(blocks.map((b) => ownProjection(b, space)))) }
   }
 
   const spaces = data.spaces.filter((s) => roleOf(s, viewerId) && (filter === 'all' || s.id === filter))
@@ -113,7 +113,24 @@ export function visibleCalendar(data: SharedCalendarData, selfId: string, viewer
     }
     for (const b of own) if (b.spaceId === space.id) shared.push(ownProjection(b, { id: space.id, name: space.name, kind: space.kind, color: space.color }))
   }
-  return { viewerId, isSelf, showPersonal, shared: sortEntries(shared) }
+  return { viewerId, isSelf, showPersonal, shared: sortEntries(dedupeProjected(shared)) }
+}
+
+/**
+ * 重複的忙碌區塊只留一個：同一個人有兩條以上的規則把同一筆行程同步到同一個行事曆時
+ * （例如「全部行事曆」加上「指定陳家」），會各自產生一個區塊；畫面上同一個人、同一時段的區塊只顯示第一個。
+ * 只影響顯示，不改同步資料（區塊 id 與版本維持原樣，其他成員手上的資料不會亂掉）。
+ * 自己的區塊另外比對來源與標題，同一時段的不同行程仍會分開顯示。
+ */
+function dedupeProjected(entries: SharedEntry[]): SharedEntry[] {
+  const seen = new Set<string>()
+  return entries.filter((e) => {
+    if (!e.projected) return true
+    const key = [e.space.id, e.item.createdBy, e.dateISO, e.lastDateISO, e.start, e.end, e.projectedFrom?.id ?? '', e.item.title].join('|')
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
 }
 
 const sortEntries = (entries: SharedEntry[]) => entries.sort((a, b) => a.dateISO.localeCompare(b.dateISO) || a.start.localeCompare(b.start))

@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import { PERSONAL_CALENDAR_ID, roleOf, type BusyDisplay, type BusyProjectionRule, type Space } from '../core/sharing'
+import { isRuleActive, PERSONAL_CALENDAR_ID, roleOf, ruleTargets, type BusyDisplay, type BusyProjectionRule, type Space } from '../core/sharing'
 import { useSpacesStore } from '../store/useSpacesStore'
 import { Button } from './Button'
 import { Dialog } from './Dialog'
@@ -101,6 +101,8 @@ export function BusyRuleDialog({ rule, presetTarget, onClose }: { rule?: BusyPro
   const { t } = useTranslation()
   const addRule = useSpacesStore((s) => s.addRule)
   const updateRule = useSpacesStore((s) => s.updateRule)
+  const selfId = useSpacesStore((s) => s.selfId)
+  const allRules = useSpacesStore((s) => s.data.busyProjectionRules)
   const spaces = useMemberSpaces()
   const nameOf = useCalendarName(spaces)
   const [sourceId, setSourceId] = useState(rule?.sourceId ?? (presetTarget === PERSONAL_CALENDAR_ID ? (spaces[0]?.id ?? PERSONAL_CALENDAR_ID) : PERSONAL_CALENDAR_ID))
@@ -115,6 +117,9 @@ export function BusyRuleDialog({ rule, presetTarget, onClose }: { rule?: BusyPro
   const candidates = [...(sourceId === PERSONAL_CALENDAR_ID ? [] : [PERSONAL_CALENDAR_ID]), ...spaces.map((s) => s.id).filter((id) => id !== sourceId)]
   const chosen = targetMode === 'all' ? candidates : targetIds.filter((id) => candidates.includes(id))
   const sample = display === 'time_only' ? '14:00–16:00' : `14:00–16:00 ${label.trim() || t('sharing.busy')}`
+  // 同一個來源已經有其他啟用中的規則同步到這些行事曆：提醒會重複，建議改原本的規則
+  const covered = new Set(allRules.filter((r) => r.id !== rule?.id && r.userId === selfId && r.sourceId === sourceId && isRuleActive(r)).flatMap((r) => ruleTargets(r, spaces)))
+  const duplicated = chosen.filter((id) => covered.has(id))
   const previewSpace = chosen.find((id) => id !== PERSONAL_CALENDAR_ID)
   const preview = previewSpace ? t('sharing.rules.preview', { space: nameOf(previewSpace), text: sample }) : chosen.length > 0 ? t('sharing.rules.previewSelf', { text: sample }) : ''
 
@@ -231,6 +236,11 @@ export function BusyRuleDialog({ rule, presetTarget, onClose }: { rule?: BusyPro
         {preview && (
           <p data-rule-preview className="rounded-(--radius-control) bg-sage-light px-3 py-2 text-xs text-sage-dark">
             {preview}
+          </p>
+        )}
+        {duplicated.length > 0 && (
+          <p data-rule-duplicate role="note" className="rounded-(--radius-control) border border-[#f0dfc0] bg-[#fff8ec] px-3 py-2 text-xs leading-relaxed text-[#8a5a1c]">
+            {t('sharing.rules.duplicate', { source: nameOf(sourceId), targets: duplicated.map(nameOf).join('、'), place: `${t('nav.settings')} → ${t('sharing.rules.title')}` })}
           </p>
         )}
         {error && (

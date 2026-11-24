@@ -5,7 +5,7 @@ import i18n from '../i18n'
 import { visibleCalendar } from '../core/calendarView'
 import { PERSONAL_CALENDAR_ID } from '../core/sharing'
 import { useSpacesStore } from '../store/useSpacesStore'
-import { BusySyncRules } from './BusySyncRules'
+import { BusyRuleDialog, BusySyncRules } from './BusySyncRules'
 import { SharedCard, SharedDetailDialog } from './SharedAgenda'
 import { SpaceSwitcher } from './SpaceSwitcher'
 
@@ -101,6 +101,19 @@ describe('忙碌時段同步：設定介面', () => {
     expect(d.getByRole('radio', { name: '指定行事曆' })).toBeChecked()
     expect(d.getByRole('checkbox', { name: '陳家' })).toBeChecked()
     expect(d.getByRole('checkbox', { name: '中榮開刀房' })).not.toBeChecked()
+  })
+
+  it('同一個來源已經同步到選的行事曆：提醒會重複，並指出到設定編輯原本的規則', () => {
+    useSpacesStore.getState().addRule({ sourceId: PERSONAL_CALENDAR_ID, targetMode: 'all' })
+    render(<BusyRuleDialog presetTarget={family} onClose={() => {}} />)
+    const note = dialog().querySelector('[data-rule-duplicate]')
+    expect(note).toHaveTextContent('「我的行事曆」已經有規則同步到「陳家」')
+    expect(note).toHaveTextContent('設定 → 忙碌時段同步')
+  })
+
+  it('沒有重複時不顯示提醒', () => {
+    render(<BusyRuleDialog presetTarget={family} onClose={() => {}} />)
+    expect(dialog().querySelector('[data-rule-duplicate]')).toBeNull()
   })
 
   it('「全部」分頁沒有快捷入口', () => {
