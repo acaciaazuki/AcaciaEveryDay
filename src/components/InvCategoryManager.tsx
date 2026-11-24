@@ -1,9 +1,9 @@
 import { useId, useState, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { countInCat, isDefaultInvCatOrder, validateCatName, type CatNameError } from '../core/invCategories'
-import { INV_CAT_NAME_MAX, INV_CATEGORIES } from '../core/schema'
+import { INV_CAT_NAME_MAX } from '../core/schema'
 import { useInvCategories } from '../hooks/useInvCategories'
-import { LANGUAGES } from '../i18n'
+import { INV_CATEGORY_NAMES } from '../i18n/cross'
 import { useAppStore } from '../store/useAppStore'
 import { Icon } from './AcaciaIcons'
 import { Button } from './Button'
@@ -15,7 +15,7 @@ import { SortableList } from './SortableList'
  * 會放在用品表單（分類選「其他」時）裡，所以 Enter 只新增分類、不送出外層表單。
  */
 export function CustomCatEditor({ onAdded, onRemoved }: { onAdded?: (id: string) => void; onRemoved?: (id: string) => void }) {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const uid = useId()
   const cats = useInvCategories()
   const inventory = useAppStore((s) => s.inventory)
@@ -28,7 +28,7 @@ export function CustomCatEditor({ onAdded, onRemoved }: { onAdded?: (id: string)
   // 內建分類三種語言的名稱都不能拿來當自訂名稱，切換語言後才不會看到兩個「其他」
   const taken = () => [
     ...cats.list.map((c) => c.label),
-    ...LANGUAGES.flatMap(({ code }) => INV_CATEGORIES.map((k) => i18n.getFixedT(code)(`inv.cat.${k}`))),
+    ...INV_CATEGORY_NAMES,
   ]
 
   const add = () => {

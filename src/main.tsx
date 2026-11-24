@@ -4,7 +4,7 @@ import { RouterProvider } from 'react-router'
 import { isNativeApp } from './adapters/kv'
 import { router } from './app/router'
 import { AppErrorBoundary } from './components/ErrorScreen'
-import './i18n'
+import { i18nReady } from './i18n'
 import './index.css'
 import { startAutoBackup } from './store/useBackupStore'
 import { useConsentStore, whenConsented } from './store/useConsentStore'
@@ -31,10 +31,11 @@ whenConsented(() => {
 // iOS App 的資料存在 App 自己的檔案裡，不需要。
 if (!isNativeApp()) void navigator.storage?.persist?.().catch(() => {})
 
-createRoot(document.getElementById('root')!).render(
+// 等目前語言的翻譯下載完成再畫畫面（繁體中文已打包，不用等）；下載失敗時照樣顯示，缺的文字會用繁體中文
+void i18nReady.finally(() => createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AppErrorBoundary>
       <RouterProvider router={router} />
     </AppErrorBoundary>
   </StrictMode>,
-)
+))

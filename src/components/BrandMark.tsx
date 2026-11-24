@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { branchArt, COLORS, sprigArt, type Art } from '../brand/acaciaArt'
 
 /**
@@ -57,4 +58,10 @@ export function BootSplash({ label }: { label: string }) {
       <AcaciaBranch className="w-40" active />
     </div>
   )
+}
+
+/** 直接開啟某一頁的網址時，該頁程式下載完成前顯示的載入畫面（跟 index.html 的載入畫面同一張圖） */
+export function PageLoading() {
+  const { t } = useTranslation()
+  return <BootSplash label={t('app.loading')} />
 }
