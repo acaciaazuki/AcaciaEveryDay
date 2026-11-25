@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { backupFileName, downloadJson } from '../adapters/downloadJson'
+import { backupFileName, downloadJson, downloadText, spacesFileName } from '../adapters/downloadJson'
+import { buildIcs, icsFileName } from '../core/ics'
+import { useCalendarExport } from '../hooks/useVisibleCalendar'
 import { Icon } from '../components/AcaciaIcons'
 import { Link, useLocation } from 'react-router'
 import { useTranslation } from 'react-i18next'
@@ -38,6 +40,10 @@ export function SettingsPage() {
   }, [hash])
 
   const download = () => downloadJson(exportData(), backupFileName())
+  // 資料可攜：標準 .ics（其他行事曆 App 可以匯入）與共享空間 JSON；只含自己看得到的內容
+  const calendarExport = useCalendarExport()
+  const downloadIcs = () => downloadText(buildIcs(calendarExport.icsEvents(), { calendarName: t('app.name') }), icsFileName(), 'text/calendar;charset=utf-8')
+  const downloadSpaces = () => downloadJson(calendarExport.spacesExport(), spacesFileName())
 
   const upload = async (file: File) => {
     if (!window.confirm(t('settings.importConfirm'))) return
@@ -134,9 +140,16 @@ export function SettingsPage() {
         <SpacesPanel />
         <section className="rounded-(--radius-card) bg-paper p-6 shadow-card">
           <h2 className="mb-2 font-bold">{t('settings.data')}</h2>
-          <p className="mb-4 text-xs leading-relaxed text-muted">{t('settings.dataHelp')}</p>
+          <p className="mb-2 text-xs leading-relaxed text-muted">{t('settings.dataHelp')}</p>
+          <p className="mb-4 text-xs leading-relaxed text-muted">{t('settings.exportHelp')}</p>
           <div className="flex flex-wrap gap-2">
             <Button onClick={download}>{t('settings.export')}</Button>
+            <Button variant="ghost" onClick={downloadIcs}>
+              {t('settings.exportIcs')}
+            </Button>
+            <Button variant="ghost" onClick={downloadSpaces}>
+              {t('settings.exportSpaces')}
+            </Button>
             <Button variant="ghost" onClick={() => fileRef.current?.click()}>
               {t('settings.import')}
             </Button>

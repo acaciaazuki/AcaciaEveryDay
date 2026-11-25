@@ -2,7 +2,10 @@ import { useMemo } from 'react'
 import { busyConflicts, visibleCalendar, type SharedEntry, type VisibleCalendar } from '../core/calendarView'
 import { resolveCalendarItemForViewer } from '../core/permissions'
 import type { SharedCalendarItem, Space } from '../core/sharing'
-import { trashEntries, type TrashEntry } from '../core/trash'
+import { liveEvents, trashEntries, type TrashEntry } from '../core/trash'
+import type { IcsEvent } from '../core/ics'
+import { buildViewerExport } from '../core/syncEnvelope'
+import { useSharedTitle } from './useSharedTitle'
 import { useAppStore } from '../store/useAppStore'
 import { useSpacesStore } from '../store/useSpacesStore'
 
@@ -54,4 +57,40 @@ export function useTrashEntries(): (TrashEntry & { deletedByName?: string })[] {
       return { ...e, deletedByName: member?.displayName ?? '' }
     })
   }, [isSelf, events, data, selfId])
+}
+
+/**
+ * 匯出用的資料（設定頁的「匯出行事曆（.ics）」「匯出共享空間（JSON）」）：
+ * 一律以本人視角、經過權限引擎過濾，只匯出自己看得到的內容——別人的忙碌區塊只有時間、遮罩的欄位維持空白。
+ * - icsEvents：我的行事曆（不含最近刪除）＋所有共享空間裡看得到的行程
+ * - spacesExport：共享空間的同步封包（自己看得到的版本，跟 Drive 同步檔同一套過濾）
+ */
+export function useCalendarExport() {
+  const sharedTitle = useSharedTitle()
+  return {
+    icsEvents: (): IcsEvent[] => {
+      const { data, selfId } = useSpacesStore.getState()
+      const personal = liveEvents(useAppStore.getState().events).map(
+        (e): IcsEvent => ({ uid: `${e.id}@personal.acacia-everyday`, title: e.title, dateISO: e.dateISO, start: e.start, end: e.end, note: e.note }),
+      )
+      const shared = visibleCalendar(data, selfId, selfId, 'all').shared.map(
+        (e): IcsEvent => ({
+          uid: `${e.id}@shared.acacia-everyday`,
+          title: sharedTitle(e),
+          dateISO: e.dateISO,
+          endDateISO: e.lastDateISO === e.dateISO ? '' : e.lastDateISO,
+          start: e.start,
+          end: e.end,
+          location: e.access === 'busy' ? '' : e.item.location,
+          note: e.access === 'busy' ? '' : e.item.note,
+          category: e.space.name,
+        }),
+      )
+      return [...personal, ...shared].filter((e) => e.dateISO).sort((a, b) => (a.dateISO + a.start).localeCompare(b.dateISO + b.start))
+    },
+    spacesExport: () => {
+      const { data, selfId } = useSpacesStore.getState()
+      return { format: 'acacia-spaces-export', exportedAt: Date.now(), viewerId: selfId, spaces: buildViewerExport(data, selfId, Date.now()), busyProjectionRules: data.busyProjectionRules.filter((r) => r.userId === selfId) }
+    },
+  }
 }
