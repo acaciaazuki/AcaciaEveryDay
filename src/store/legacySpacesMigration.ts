@@ -7,7 +7,7 @@ import { useBackupStore } from './useBackupStore'
  * 共享行事曆功能移除後的一次性轉換：
  * 舊版把共享空間存在本機的 acacia-spaces（跟個人資料 acacia-next 分開）。第一次開啟新版時：
  * 1. 讀出舊的共享空間資料；沒有就什麼都不做
- * 2. 把「自己建立、還沒刪除」的共享行程轉成個人行程（地點與細節併進備註；跨日行程在備註寫上結束日）
+ * 2. 把「自己建立、還沒刪除」的共享行程轉成個人行程（地點與細節併進備註；跨日行程保留結束日）
  * 3. 轉換前先替個人資料留一份本機快照（原因：轉換共享行程前），並把舊的共享資料原樣另存一份
  * 4. 加進個人行程後，清掉本機的 acacia-spaces 與共享空間快照
  * 任何一步失敗（例如資料損毀）就整個跳過、不清除，也不影響畫面；下次開啟會再試一次。
@@ -53,13 +53,15 @@ export function legacySharedToEvents(raw: unknown, existingIds: ReadonlySet<stri
     if (!title) continue
     const details = isObj(it.details) ? Object.values(it.details).filter((v): v is string => typeof v === 'string' && v.trim() !== '') : []
     const endDate = str(it.endDateISO)
-    const note = [str(it.note), str(it.location), ...details, endDate && endDate > str(it.dateISO) ? `～${endDate}` : ''].map((x) => x.trim()).filter(Boolean).join(' · ')
+    const note = [str(it.note), str(it.location), ...details].map((x) => x.trim()).filter(Boolean).join(' · ')
+    const endDateISO = endDate && endDate > str(it.dateISO) ? endDate : ''
     let id = str(it.id) || crypto.randomUUID()
     if (used.has(id)) id = crypto.randomUUID()
     const parsed = eventSchema.safeParse({
       id,
       title,
       dateISO: str(it.dateISO),
+      ...(endDateISO && { endDateISO }),
       start: str(it.start),
       end: str(it.end),
       note,
@@ -68,7 +70,7 @@ export function legacySharedToEvents(raw: unknown, existingIds: ReadonlySet<stri
       ...(typeof it.icon === 'string' && { icon: it.icon }),
     })
     // 個別欄位格式不對（例如圖示是新版才有的）：去掉圖示再試一次；還是不行就略過這一筆
-    const ok = parsed.success ? parsed.data : eventSchema.safeParse({ id, title, dateISO: str(it.dateISO), start: str(it.start), end: str(it.end), note }).data
+    const ok = parsed.success ? parsed.data : eventSchema.safeParse({ id, title, dateISO: str(it.dateISO), ...(endDateISO && { endDateISO }), start: str(it.start), end: str(it.end), note }).data
     if (!ok || !ok.dateISO) continue
     used.add(ok.id)
     out.push(ok)

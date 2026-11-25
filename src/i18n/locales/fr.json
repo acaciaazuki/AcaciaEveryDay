@@ -372,6 +372,7 @@
     "title": "Qu’est-ce qui est prévu ?",
     "titlePlaceholder": "ex. Déjeuner entre amis",
     "date": "Date",
+    "endDate": "Date de fin",
     "start": "Début",
     "end": "Fin",
     "color": "Couleur de la carte",
@@ -382,7 +383,8 @@
     "textColor": "Couleur du texte",
     "icon": "Icône",
     "iconAuto": "Auto",
-    "allDay": "Toute la journée"
+    "allDay": "Toute la journée",
+    "overnightHint": "Passe minuit : se termine le {{date}}"
   },
   "search": {
     "title": "Recherche",

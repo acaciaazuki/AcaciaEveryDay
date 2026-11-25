@@ -1,4 +1,5 @@
 import type { CalendarEvent, Settings } from './schema'
+import { busyTimesOn, coversDay, type Spanning } from './span'
 
 /** 沒有自訂時的作息：07:00 起床、23:00 就寢 */
 export const DEFAULT_WAKE = '07:00'
@@ -60,9 +61,16 @@ export function greetingKey(hour: number): GreetingKey {
   return 'night'
 }
 
-/** 依開始時間排序當天行程 */
+/**
+ * 某天佔用的時段（給節奏計算）：跨日（含跨午夜）的行程只算這一天的那一段，
+ * 第一天算到 24:00、最後一天從 00:00 開始、中間整天；整天行程不算時數（跟原本一樣）。
+ */
+export const busyTimesOnDay = (items: readonly Spanning[], iso: string) =>
+  items.flatMap((x) => (coversDay(x, iso) ? [busyTimesOn(x, iso) ?? { start: '', end: '' }] : [])).sort((a, b) => a.start.localeCompare(b.start))
+
+/** 依開始時間排序當天行程（含跨日行程涵蓋到這一天的） */
 export const eventsOn = (events: CalendarEvent[], iso: string) =>
-  events.filter((e) => e.dateISO === iso).sort((a, b) => a.start.localeCompare(b.start))
+  events.filter((e) => coversDay(e, iso)).sort((a, b) => a.start.localeCompare(b.start))
 
 /** 分鐘轉成「1.5」這種小時數字串 */
 export const hours = (min: number) => String(Math.round((min / 60) * 10) / 10)

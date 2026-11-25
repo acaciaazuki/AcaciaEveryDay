@@ -15,9 +15,10 @@ import { addDays, dateRange, toLocalISO } from '../core/date'
 import { eventIconOf } from '../core/eventIcons'
 import type { CalendarEvent } from '../core/schema'
 import { agendaOn, type AgendaItem, type ShoppingEntry } from '../core/shoppingAgenda'
-import { dayRhythm, eventsOn, greetingKey, hours, rhythmTimes } from '../core/today'
+import { busyTimesOnDay, dayRhythm, greetingKey, hours, rhythmTimes } from '../core/today'
+import { useRangeText } from '../hooks/useRangeText'
 import { isLow } from '../core/inventory'
-import { formatTime, formatTimeRange } from '../core/time'
+import { formatTime } from '../core/time'
 import { useNow } from '../hooks/useNow'
 import { useShoppingByDate } from '../hooks/useShoppingAgenda'
 import { useHolidaysByDate } from '../hooks/useHolidays'
@@ -49,6 +50,7 @@ const TEXT_14 = 'text-[length:calc(14px*var(--fs))]'
 
 export function TodayPage() {
   const { t, i18n } = useTranslation()
+  const range = useRangeText()
   // 「最近刪除」裡的行程不顯示
   const allEvents = useAppStore((s) => liveEvents(s.events))
   const tasks = useAppStore((s) => s.tasks)
@@ -71,7 +73,8 @@ export function TodayPage() {
   const span = VIEW_DAYS[view]
   const days = dateRange(viewISO, span)
   // 節奏與空檔：依當天的個人行程計算
-  const busyOn = (d: string) => eventsOn(allEvents, d)
+  // 跨日（含跨午夜）的行程只算這一天那一段
+  const busyOn = (d: string) => busyTimesOnDay(allEvents, d)
   const agenda = (d: string) => agendaOn(allEvents, shopByDate, d)
   const items = agenda(viewISO)
   // 行程數包含購物；節奏與自由時間只看一般行程（購物記帳只有時間點，沒有結束時間）
@@ -170,10 +173,12 @@ export function TodayPage() {
                     </li>
                   )
                 const e = it.event
-                const gap = next && e.end && next.start > e.end ? diffMin(e.end, next.start) : 0
+                // 跨日行程用這一天那一段的結束時間（第一天到午夜，不算空檔）
+                const endHere = it.span.end
+                const gap = next && endHere && next.start > endHere ? diffMin(endHere, next.start) : 0
                 return (
                   <li key={e.id} className="relative grid grid-cols-[calc(48px*var(--fs))_calc(36px*var(--fs))_1fr] items-start gap-x-3">
-                    <TimelineTime hhmm={e.start} />
+                    <TimelineTime hhmm={it.span.start} />
                     <EventIconBadge icon={eventIconOf(e)} className="relative z-10 ring-4 ring-paper" />
                     {/* 垂直時間軸線：從這顆徽章連到下一顆 */}
                     {next && <span aria-hidden className="absolute top-[calc(36px*var(--fs)+0.25rem)] -bottom-2 left-[calc(48px*var(--fs)+0.75rem+18px*var(--fs)-1px)] w-0.5 bg-[#e1eae5]" />}
@@ -187,7 +192,7 @@ export function TodayPage() {
                         {e.title}
                       </h3>
                       <small className="mt-1.5 block text-[length:calc(12.5px*var(--fs))] text-muted tabular-nums">
-                        {formatTimeRange(e.start, e.end) || t('event.allDay')} {shownNote(e.note) && `· ${e.note}`}
+                        {range(e)} {shownNote(e.note) && `· ${e.note}`}
                       </small>
                     </button>
                     {gap >= 30 && (
@@ -296,6 +301,7 @@ function RangeList({
   onShop: (x: ShoppingEntry) => void
 }) {
   const { t } = useTranslation()
+  const range = useRangeText()
   const fmt = new Intl.DateTimeFormat(lng, { month: 'numeric', day: 'numeric', weekday: 'short' })
   return (
     <ol className="grid gap-1.5">
@@ -339,7 +345,7 @@ function RangeList({
                         {e.title}
                       </strong>
                       <small className="text-[length:calc(11px*var(--fs))] text-muted">
-                        {formatTimeRange(e.start, e.end) || t('event.allDay')} {shownNote(e.note) && `· ${e.note}`}
+                        {range(e)} {shownNote(e.note) && `· ${e.note}`}
                       </small>
                     </button>
                   </li>

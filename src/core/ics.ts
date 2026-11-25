@@ -113,5 +113,5 @@ export const icsFileName = (now = new Date()) => `acacia-calendar-${now.toISOStr
 export const personalIcsEvents = (events: readonly CalendarEvent[]): IcsEvent[] =>
   events
     .filter((e) => e.deletedAt === undefined && e.dateISO)
-    .map((e) => ({ uid: `${e.id}@personal.acacia-everyday`, title: e.title, dateISO: e.dateISO, start: e.start, end: e.end, note: e.note }))
+    .map((e) => ({ uid: `${e.id}@personal.acacia-everyday`, title: e.title, dateISO: e.dateISO, endDateISO: e.endDateISO ?? '', start: e.start, end: e.end, note: e.note }))
     .sort((a, b) => (a.dateISO + a.start).localeCompare(b.dateISO + b.start))
