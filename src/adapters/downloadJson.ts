@@ -13,8 +13,5 @@ export function downloadText(text: string, fileName: string, type: string) {
   URL.revokeObjectURL(a.href)
 }
 
-/** 共享空間匯出檔名：acacia-spaces-YYYY-MM-DD.json */
-export const spacesFileName = (now = new Date()) => `acacia-spaces-${now.toISOString().slice(0, 10)}.json`
-
 /** 匯出檔名：acacia-YYYY-MM-DD.json */
 export const backupFileName = (now = new Date()) => `acacia-${now.toISOString().slice(0, 10)}.json`

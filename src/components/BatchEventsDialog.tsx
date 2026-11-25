@@ -2,9 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { monthCells, shiftMonth, weekdayNames } from '../core/calendar'
 import { TEXT_COLORS } from '../core/categories'
-import { orderedKinds, PERSONAL_CALENDAR_ID, roleOf } from '../core/sharing'
 import { useAppStore } from '../store/useAppStore'
-import { useSpacesStore } from '../store/useSpacesStore'
 import { AllDayToggle } from './AllDayToggle'
 import { Button } from './Button'
 import { ColorSwatches, TextColorSwatches } from './ColorSwatches'
@@ -18,34 +16,20 @@ import { MonthNav } from './MonthNav'
  * 防呆：
  * - 已選的日期（可以跨月份）依日期列成清單，每個都能單獨移除，送出前看得到實際會建立哪幾天
  * - 送出後由呼叫端顯示「復原」，一鍵刪除剛建立的行程（onCreated 帶回新行程的 id）
- *
- * 放在哪裡：「我的行事曆」或自己可以編輯（owner／editor）的共享空間，預設是行事曆上方目前選的分頁。
- * 選空間時建立的是該空間的一般共享行程（spaceId 綁定該空間、建立者是自己），可以直接編輯與刪除，不是忙碌投射。
  */
 export function BatchEventsDialog({
   initialYear,
   initialMonth,
-  initialTarget = PERSONAL_CALENDAR_ID,
   onClose,
   onCreated,
 }: {
   initialYear: number
   initialMonth: number
-  /** 預設放在哪裡：行事曆上方目前選的分頁（空間 id 或 PERSONAL_CALENDAR_ID）；不能編輯的空間會改成我的行事曆 */
-  initialTarget?: string
   onClose: () => void
-  /** spaceId：建立在共享空間時是空間 id，建立在我的行事曆時沒有 */
-  onCreated?: (created: { ids: string[]; title: string; spaceId?: string }) => void
+  onCreated?: (created: { ids: string[]; title: string }) => void
 }) {
   const { t, i18n } = useTranslation()
   const addEvents = useAppStore((s) => s.addEvents)
-  const addItem = useSpacesStore((s) => s.addItem)
-  const selfId = useSpacesStore((s) => s.selfId)
-  const allSpaces = useSpacesStore((s) => s.data.spaces)
-  // 預覽其他成員的視角時不能新增到空間（只能檢視）
-  const isSelf = useSpacesStore((s) => s.viewerId === s.selfId)
-  const writable = isSelf ? allSpaces.filter((sp) => ['owner', 'editor'].includes(roleOf(sp, selfId) ?? '')) : []
-  const [target, setTarget] = useState(() => (writable.some((sp) => sp.id === initialTarget) ? initialTarget : PERSONAL_CALENDAR_ID))
   const [ym, setYm] = useState({ year: initialYear, month: initialMonth })
   const [title, setTitle] = useState('')
   const [start, setStart] = useState('09:00')
@@ -73,21 +57,9 @@ export function BatchEventsDialog({
     if (!allDay && end <= start) return setError(t('event.endBeforeStart'))
     const times = allDay ? { start: '', end: '' } : { start, end }
     const days = [...dates].sort()
-    const space = writable.find((sp) => sp.id === target)
-    if (!space) {
-      const ids = addEvents(days.map((dateISO) => ({ title: title.trim(), dateISO, ...times, note: t('calendar.batchForm.note'), titleColor, bgColor })))
-      onCreated?.({ ids, title: title.trim() })
-      return onClose()
-    }
-    // 共享空間：每一天建立一筆該空間的共享行程；類型用空間建議的第一個，備註不寫「批次建立」（其他成員也看得到）
-    try {
-      const kind = orderedKinds(space.kind)[0]!
-      const ids = days.map((dateISO) => addItem(space.id, { title: title.trim(), dateISO, ...times, kind, titleColor, bgColor }))
-      onCreated?.({ ids, title: title.trim(), spaceId: space.id })
-      onClose()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err))
-    }
+    const ids = addEvents(days.map((dateISO) => ({ title: title.trim(), dateISO, ...times, note: t('calendar.batchForm.note'), titleColor, bgColor })))
+    onCreated?.({ ids, title: title.trim() })
+    onClose()
   }
 
   return (
@@ -96,23 +68,6 @@ export function BatchEventsDialog({
         <div className="rounded-(--radius-control) border-l-4 px-4 py-3 text-sm font-bold" style={{ background: bgColor, color: titleColor, borderLeftColor: titleColor }}>
           {title.trim() || t('event.preview')}
         </div>
-        {writable.length > 0 && (
-          <label className="grid gap-1.5 text-xs font-semibold text-muted">
-            {t('sharing.belongsTo')}
-            <select
-              value={target}
-              onChange={(e) => setTarget(e.target.value)}
-              className="rounded-(--radius-control) border border-line bg-oat px-3 py-2.5 text-sm font-normal text-ink outline-none focus:border-sage"
-            >
-              <option value={PERSONAL_CALENDAR_ID}>{t('sharing.myCalendar')}</option>
-              {writable.map((sp) => (
-                <option key={sp.id} value={sp.id}>
-                  {sp.name}（{t(`sharing.spaceKind.${sp.kind}`)}）
-                </option>
-              ))}
-            </select>
-          </label>
-        )}
         <Field label={t('calendar.batchForm.name')} placeholder={t('calendar.batchForm.namePlaceholder')} value={title} onChange={(e) => setTitle(e.target.value)} autoFocus />
         <div className="grid gap-2">
           <AllDayToggle checked={allDay} onChange={setAllDay} />

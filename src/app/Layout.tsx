@@ -7,7 +7,6 @@ import type { IconName } from '../core/icons'
 import { BootSplash, BrandLogo } from '../components/BrandMark'
 import { CommandPalette } from '../components/CommandPalette'
 import { ReminderBanner } from '../components/ReminderBanner'
-import { SpacesBlockedBanner, ViewerBanner } from '../components/SpaceSwitcher'
 import { LicensesLink } from '../components/LicensesLink'
 import { PrivacyLink } from '../components/PrivacyLink'
 import { SyncPanel } from '../components/SyncPanel'
@@ -17,7 +16,6 @@ import { toLocalISO } from '../core/date'
 import { isDue, isLow } from '../core/inventory'
 import { useNavOrder } from '../hooks/useNavOrder'
 import { useAppStore } from '../store/useAppStore'
-import { useSpacesStore } from '../store/useSpacesStore'
 import { Button } from '../components/Button'
 import { EventDialog } from '../components/EventDialog'
 import { GlobalToast } from '../components/GlobalToast'
@@ -67,9 +65,8 @@ function AppShell() {
   const invAlerts = useAppStore((s) => s.inventory.filter((x) => isLow(x) || isDue(x, todayISO)).length)
   const collect = useNavOrder('collect')
   const [searchOpen, setSearchOpen] = useState(false)
-  // 側邊欄「＋ 新增安排」：任何頁面都能直接新增今天的行程；預覽其他成員的視角時不顯示
+  // 側邊欄「＋ 新增安排」：任何頁面都能直接新增今天的行程
   const [adding, setAdding] = useState(false)
-  const isSelf = useSpacesStore((s) => s.viewerId === s.selfId)
   useFontScale()
   useReminderMonitor()
   // 畫面顯示後，閒置時先下載其他頁面的程式，之後切換頁面不用等
@@ -86,11 +83,9 @@ function AppShell() {
       <PageLoadingBar />
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-60 flex-col border-r border-line bg-paper px-4 py-6 min-[681px]:flex">
         <BrandLogo name={t('app.name')} className="px-2.5 pb-6" />
-        {isSelf && (
-          <Button size="page" onClick={() => setAdding(true)} className="mb-3 w-full">
-            {t('today.addEvent')}
-          </Button>
-        )}
+        <Button size="page" onClick={() => setAdding(true)} className="mb-3 w-full">
+          {t('today.addEvent')}
+        </Button>
         <button
           type="button"
           onClick={() => setSearchOpen(true)}
@@ -165,9 +160,6 @@ function AppShell() {
         >
           <Icon name="search" className="size-[1.7em]" />
         </button>
-        {/* 預覽其他成員的視角時，每一頁上方都提醒目前是唯讀預覽 */}
-        <SpacesBlockedBanner />
-        <ViewerBanner />
         <Outlet />
       </main>
       <CommandPalette open={searchOpen} onOpenChange={setSearchOpen} />

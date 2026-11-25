@@ -7,15 +7,12 @@ import { useNavigate } from 'react-router'
 import { PLACE_CATEGORIES, type PlaceCategory } from '../core/categories'
 import { formatCurrency, formatMoney } from '../core/format'
 import { useCurrency } from '../hooks/useCurrency'
-import { searchableShared } from '../core/calendarView'
 import { SEARCH_SCOPES, excerpt, searchAll, splitHighlight, tokenize, type SearchFormat, type SearchHit, type SearchKind, type SearchScope } from '../core/search'
-import { useVisibleCalendar } from '../hooks/useVisibleCalendar'
 import { invCatLabel } from '../hooks/useInvCategories'
 import { useAppStore } from '../store/useAppStore'
 import { liveEvents } from '../core/trash'
 
 const RECENT_KEY = 'acacia_recent_search'
-const NO_EVENTS: never[] = []
 const RECENT_MAX = 8
 
 function loadRecent(): string[] {
@@ -87,14 +84,8 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const { events: allPersonalEvents, tasks, shopping, archives, places, subscriptions, inventory, invCats, recurring } = useAppStore()
-  // 行程跟行事曆畫面用同一份權限過濾：預覽其他成員時不搜個人行程，共享行程只搜看得到的欄位
-  const vis = useVisibleCalendar()
   // 「最近刪除」裡的行程搜尋不到
-  const personalEvents = liveEvents(allPersonalEvents)
-  const events = vis.showPersonal ? personalEvents : NO_EVENTS
-  const shared = useMemo(() => searchableShared(vis.shared), [vis.shared])
-  // 預覽其他成員的視角時只搜尋（過濾後的）共享行程：自己的待辦、記帳、地點、訂閱、庫存、固定支出都不出現
-  const previewing = !vis.isSelf
+  const events = liveEvents(allPersonalEvents)
   const [query, setQuery] = useState('')
   const [scope, setScope] = useState<SearchScope>('all')
   const [recent, setRecent] = useState<string[]>(loadRecent)
@@ -112,17 +103,13 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
       invCat: (c) => invCatLabel(c, invCats, t),
       invMeta: (x) => t('inv.searchMeta', { count: x.stock, unit: x.unit || t('inv.defaultUnit') }),
       recurringMeta: (x) => t('recurring.searchMeta', { day: x.day, amount: formatMoney(x.amount, lng, x.currency) }),
-      hiddenTitle: t('sharing.hiddenTitle'),
     }),
     // eslint 無法追 t 的穩定性；語系變了就重算
     [invCats, lng, currency, t],
   )
   const data = useMemo(
-    () =>
-      previewing
-        ? { events: NO_EVENTS, tasks: [], shopping: [], archives: [], places: [], subscriptions: [], inventory: [], recurring: [], shared }
-        : { events, tasks, shopping, archives, places, subscriptions, inventory, recurring, shared },
-    [previewing, events, tasks, shopping, archives, places, subscriptions, inventory, recurring, shared],
+    () => ({ events, tasks, shopping, archives, places, subscriptions, inventory, recurring }),
+    [events, tasks, shopping, archives, places, subscriptions, inventory, recurring],
   )
   const hits = useMemo(() => searchAll(data, query, scope, fmt), [data, query, scope, fmt])
 
@@ -192,15 +179,10 @@ function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
         ))}
       </div>
 
-      {previewing && tokens.length > 0 && (
-        <p role="note" className="border-b border-line bg-sage-light px-4 py-1.5 text-[length:calc(11px*var(--fs))] text-sage-dark">
-          {t('sharing.searchPreviewHint')}
-        </p>
-      )}
       <Command.List className="max-h-[56vh] overflow-y-auto p-2">
         {tokens.length === 0 ? (
           <div className="px-3 py-4">
-            <p className="text-[length:calc(13px*var(--fs))] text-muted">{previewing ? t('sharing.searchPreviewHint') : t('search.hint')}</p>
+            <p className="text-[length:calc(13px*var(--fs))] text-muted">{t('search.hint')}</p>
             {recent.length > 0 && (
               <div className="mt-4">
                 <div className="mb-2 flex items-center justify-between">

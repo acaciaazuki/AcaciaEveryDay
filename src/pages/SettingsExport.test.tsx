@@ -6,7 +6,6 @@ import i18n from '../i18n'
 import { emptyAppData } from '../core/schema'
 import { useAppStore } from '../store/useAppStore'
 import { useConsentStore } from '../store/useConsentStore'
-import { useSpacesStore } from '../store/useSpacesStore'
 import { SettingsPage } from './SettingsPage'
 
 /** 攔截下載：記下檔名與內容 */
@@ -24,11 +23,10 @@ function captureDownloads() {
   return files
 }
 
-describe('設定頁：匯出行事曆與共享空間', () => {
+describe('設定頁：匯出行事曆', () => {
   beforeEach(async () => {
     await i18n.changeLanguage('zh-TW')
     useConsentStore.setState({ status: 'accepted', record: null, pending: [] })
-    useSpacesStore.getState().reset()
     useAppStore.setState({
       ...emptyAppData(),
       events: [
@@ -39,35 +37,16 @@ describe('設定頁：匯出行事曆與共享空間', () => {
   })
   afterEach(() => vi.restoreAllMocks())
 
-  it('.ics：包含我的行事曆與看得到的共享行程（含空間名稱分類），不含最近刪除', async () => {
-    const sp = useSpacesStore.getState()
-    const family = sp.createSpace({ name: '陳家', kind: 'family' })
-    sp.addItem(family, { kind: 'event', title: '家庭聚餐', dateISO: '2026-11-27', start: '18:00', end: '20:00', location: '外婆家' })
+  it('.ics：只包含我的行事曆，不含最近刪除；設定頁沒有共享空間匯出', async () => {
     const files = captureDownloads()
     render(<MemoryRouter><SettingsPage /></MemoryRouter>)
+    expect(screen.queryByRole('button', { name: /匯出共享空間/ })).toBeNull()
     fireEvent.click(screen.getByRole('button', { name: '匯出行事曆（.ics）' }))
     expect(files[0]!.name).toMatch(/^acacia-calendar-\d{4}-\d{2}-\d{2}\.ics$/)
     expect(files[0]!.type).toBe('text/calendar;charset=utf-8')
     const ics = (await files[0]!.text).replace(/\r\n /g, '')
     expect(ics).toContain('SUMMARY:牙醫')
-    expect(ics).toContain('SUMMARY:家庭聚餐')
-    expect(ics).toContain('LOCATION:外婆家')
-    expect(ics).toContain('CATEGORIES:陳家')
+    expect(ics).toContain('DTSTART:20261125T140000')
     expect(ics).not.toContain('已刪除的')
-  })
-
-  it('共享空間 JSON：自己看得到的同步封包與自己的投射規則', async () => {
-    const sp = useSpacesStore.getState()
-    const family = sp.createSpace({ name: '陳家', kind: 'family' })
-    sp.addItem(family, { kind: 'event', title: '家庭聚餐', dateISO: '2026-11-27', start: '18:00', end: '20:00' })
-    const files = captureDownloads()
-    render(<MemoryRouter><SettingsPage /></MemoryRouter>)
-    fireEvent.click(screen.getByRole('button', { name: '匯出共享空間（JSON）' }))
-    expect(files[0]!.name).toMatch(/^acacia-spaces-\d{4}-\d{2}-\d{2}\.json$/)
-    const json = JSON.parse(await files[0]!.text) as { format: string; viewerId: string; spaces: { space: { name: string }; entries: { title: string }[] }[] }
-    expect(json.format).toBe('acacia-spaces-export')
-    expect(json.viewerId).toBe(useSpacesStore.getState().selfId)
-    expect(json.spaces[0]!.space.name).toBe('陳家')
-    expect(json.spaces[0]!.entries.map((e) => e.title)).toEqual(['家庭聚餐'])
   })
 })

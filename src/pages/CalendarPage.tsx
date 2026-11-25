@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { useCallback, useRef, useState, type CSSProperties } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Icon } from '../components/AcaciaIcons'
 import { BatchEventsDialog } from '../components/BatchEventsDialog'
@@ -10,9 +10,6 @@ import { EventDialog } from '../components/EventDialog'
 import { HolidayCard, HolidayChip, HolidayImportDialog } from '../components/HolidayAgenda'
 import { MonthNav } from '../components/MonthNav'
 import { PageHead } from '../components/PageHead'
-import { SharedCard, SharedChip, SharedDetailDialog } from '../components/SharedAgenda'
-import { SpaceSwitcher } from '../components/SpaceSwitcher'
-import type { SharedEntry } from '../core/calendarView'
 import { ShoppingCard, ShoppingChip, ShoppingDetailDialog } from '../components/ShoppingAgenda'
 import { monthCells, shiftMonth, weekdayNames } from '../core/calendar'
 import { toLocalISO } from '../core/date'
@@ -22,37 +19,26 @@ import { agendaOn, type ShoppingEntry } from '../core/shoppingAgenda'
 import { useNow } from '../hooks/useNow'
 import { SHOP_STYLE, useShoppingByDate } from '../hooks/useShoppingAgenda'
 import { useOpenFromUrl } from '../hooks/useOpenFromUrl'
-import { useVisibleCalendar } from '../hooks/useVisibleCalendar'
 import { useChipCapacity } from '../hooks/useChipCapacity'
 import { HOLIDAY_STYLE, holidayStyle, useHolidaysByDate } from '../hooks/useHolidays'
 import { useAppStore } from '../store/useAppStore'
-import { useSpacesStore } from '../store/useSpacesStore'
-import { PERSONAL_CALENDAR_ID, roleOf } from '../core/sharing'
 import { CalendarBatchBar } from '../components/CalendarBatchBar'
 import { TriCheckbox } from '../components/TriCheckbox'
-import { canBatchShared, deleteSelection, moveSelection, personalKey, sharedKey, type BatchSelectable } from '../store/calendarBatch'
+import { deleteSelection, personalKey, type BatchSelectable } from '../store/calendarBatch'
 import { liveEvents } from '../core/trash'
 
 // 每天最多顯示的行程標籤數，超過的折成「還有 X 個」；桌面滿版時改依格子實際高度計算
 const MAX_CHIPS = 6
-const NO_SHOPPING = new Map()
-const NO_EVENTS: CalendarEvent[] = []
-/** 頂部工具列的按鈕：比預設大一級（跟著設定裡的字體大小縮放） */
-const isShared = (x: CalendarEvent | SharedEntry): x is SharedEntry => 'access' in x
 
 export function CalendarPage() {
   const { t, i18n } = useTranslation()
   // 「最近刪除」裡的行程不顯示
-  const allEvents = useAppStore((s) => liveEvents(s.events))
-  // 共享空間行程一律經過權限過濾；預覽其他成員或篩選某個空間時，不顯示個人行程與購物
-  const vis = useVisibleCalendar()
-  const events = vis.showPersonal ? allEvents : NO_EVENTS
+  const events = useAppStore((s) => liveEvents(s.events))
   const now = useNow()
   const todayISO = toLocalISO(now)
   const [ym, setYm] = useState(() => ({ year: now.getFullYear(), month: now.getMonth() }))
   const [selected, setSelected] = useState(todayISO)
-  const [editing, setEditing] = useState<CalendarEvent | SharedEntry | 'new' | null>(null)
-  const [viewingShared, setViewingShared] = useState<SharedEntry | null>(null)
+  const [editing, setEditing] = useState<CalendarEvent | 'new' | null>(null)
   // 點日期打開「這一天」：列出當天全部行程與新增入口（取代原本右側的當日行程面板，手機也靠它點開行程）
   const [dayOpen, setDayOpen] = useState(false)
   const openDay = (iso: string) => {
@@ -66,40 +52,29 @@ export function CalendarPage() {
       setDayOpen(false)
       fn(x)
     }
-  const openShared = (x: SharedEntry) => (x.canEdit ? setEditing(x) : setViewingShared(x))
   const [batchOpen, setBatchOpen] = useState(false)
   // 「最近刪除」：刪掉的行程保留 30 天
   const [trashOpen, setTrashOpen] = useState(false)
   // 批次建立後的提示：可以一鍵復原（刪除剛建立的行程）
-  // 提示（批次建立、批次刪除、批次移動）：undo 有值時顯示「復原」
+  // 提示（批次建立、批次刪除）：undo 有值時顯示「復原」
   const [batchToast, setBatchToast] = useState<{ message: string; undo?: () => void; undone?: string } | null>(null)
   const discardEvents = useAppStore((s) => s.discardEvents)
-  const discardItem = useSpacesStore((s) => s.discardItem)
   // 批次管理模式：行程前出現勾選框、每天有「全選當天」、底部有操作列；一般瀏覽時都不顯示
   const [managing, setManaging] = useState(false)
   const [picked, setPicked] = useState<Map<string, BatchSelectable>>(() => new Map())
-  const selfId = useSpacesStore((s) => s.selfId)
-  const allSpaces = useSpacesStore((s) => s.data.spaces)
-  // 可以移過去的空間：自己可以編輯的（owner／editor）
-  const writableSpaces = allSpaces.filter((sp) => ['owner', 'editor'].includes(roleOf(sp, selfId) ?? ''))
-  // 批次新增預設放在上方目前選的分頁（全部時是我的行事曆）
-  const filter = useSpacesStore((s) => s.filter)
   const closeBatchToast = useCallback(() => setBatchToast(null), [])
   // 匯入的國定假日：唯讀，排在每天最前面
   const holidaysByDate = useHolidaysByDate()
   const [holidayOpen, setHolidayOpen] = useState(false)
   // 購物記帳連動進來的行程：只能看，點開是唯讀詳情
-  const allShopping = useShoppingByDate()
-  const shopByDate = vis.showPersonal ? allShopping : NO_SHOPPING
+  const shopByDate = useShoppingByDate()
   const [viewingShop, setViewingShop] = useState<ShoppingEntry | null>(null)
-  // ⌘K 搜尋結果導過來時開啟；共享行程依權限開編輯或唯讀詳情
-  const openables = useMemo(() => [...events, ...vis.shared], [events, vis.shared])
-  useOpenFromUrl(openables, (e) => {
+  // ⌘K 搜尋結果導過來時開啟
+  useOpenFromUrl(events, (e) => {
     const [y, m] = e.dateISO.split('-').map(Number)
     if (y && m) setYm({ year: y, month: m - 1 })
     if (e.dateISO) setSelected(e.dateISO)
-    if (isShared(e)) openShared(e)
-    else setEditing(e)
+    setEditing(e)
   })
 
   const cells = monthCells(ym.year, ym.month)
@@ -107,17 +82,11 @@ export function CalendarPage() {
   const weeks = Math.ceil(cells.length / 7)
   const gridRef = useRef<HTMLDivElement>(null)
   const maxChips = useChipCapacity(gridRef, MAX_CHIPS, weeks)
-  const dayItems = agendaOn(events, shopByDate, selected, vis.shared)
+  const dayItems = agendaOn(events, shopByDate, selected)
 
-  /** 某一天可以批次操作的行程：個人行程、自己可以編輯的完整共享行程（投射、唯讀、購物連動排除） */
+  /** 某一天可以批次操作的行程：我的行事曆的行程（購物連動排除） */
   const selectablesOn = (iso: string): BatchSelectable[] =>
-    !vis.isSelf
-      ? []
-      : agendaOn(events, shopByDate, iso, vis.shared).flatMap((it): BatchSelectable[] => {
-          if (it.kind === 'event') return [{ key: personalKey(it.event.id), kind: 'personal', event: it.event }]
-          if (it.kind === 'shared' && canBatchShared(it.shared)) return [{ key: sharedKey(it.shared.id), kind: 'shared', entry: it.shared }]
-          return []
-        })
+    agendaOn(events, shopByDate, iso).flatMap((it): BatchSelectable[] => (it.kind === 'event' ? [{ key: personalKey(it.event.id), event: it.event }] : []))
   const togglePick = (x: BatchSelectable) =>
     setPicked((prev) => {
       const next = new Map(prev)
@@ -143,21 +112,10 @@ export function CalendarPage() {
     setManaging(false)
     setPicked(new Map())
   }
-  const calendarName = (id: string) => (id === PERSONAL_CALENDAR_ID ? t('sharing.myCalendar') : (allSpaces.find((sp) => sp.id === id)?.name ?? ''))
   const runDelete = () => {
     const r = deleteSelection([...picked.values()])
     setPicked(new Map())
     setBatchToast({ message: t('calendar.manage.deleted', { count: r.count }), undo: r.undo, undone: t('calendar.manage.undone') })
-  }
-  const runMove = (target: string) => {
-    const name = calendarName(target)
-    const r = moveSelection([...picked.values()], target, writableSpaces.find((sp) => sp.id === target))
-    setPicked(new Map())
-    setBatchToast(
-      r.count === 0
-        ? { message: t('calendar.manage.alreadyThere', { name }) }
-        : { message: t('calendar.manage.moved', { count: r.count, name }), undo: r.undo, undone: t('calendar.manage.undone') },
-    )
   }
   const dayHolidays = holidaysByDate.get(selected) ?? []
   const selectedLabel = new Intl.DateTimeFormat(i18n.resolvedLanguage, { dateStyle: 'full' }).format(new Date(`${selected}T00:00`))
@@ -167,9 +125,7 @@ export function CalendarPage() {
       <PageHead
         title={t('calendar.title')}
         actions={
-          // 預覽其他成員的視角時只能看，不顯示新增按鈕
-          vis.isSelf && (
-            <>
+          <>
               <Button variant="ghost" size="page" onClick={() => setHolidayOpen(true)}>
                 {t('holidays.open')}
               </Button>
@@ -185,11 +141,9 @@ export function CalendarPage() {
               <Button size="page" onClick={() => setEditing('new')}>
                 {t('calendar.add')}
               </Button>
-            </>
-          )
+          </>
         }
       />
-      <SpaceSwitcher />
       {managing && <p data-manage-hint className="-mt-2 mb-3 text-xs text-muted">{t('calendar.manage.hint')}</p>}
 
       {/* 所有寬度：月曆卡片與日期網格向下撐滿視窗剩餘高度（手機到底部導覽列上方、桌面到視窗底部 24px） */}
@@ -220,7 +174,7 @@ export function CalendarPage() {
               if (!iso) return <div key={`pad-${i}`} />
               // 每週從星期日開始，第 0 欄是日、第 6 欄是六
               const weekend = i % 7 === 0 || i % 7 === 6
-              const evs = agendaOn(events, shopByDate, iso, vis.shared)
+              const evs = agendaOn(events, shopByDate, iso)
               const hols = holidaysByDate.get(iso) ?? []
               // 放假日（不含補班）的日期數字用假日色
               const isHoliday = hols.some((h) => !h.work)
@@ -266,7 +220,7 @@ export function CalendarPage() {
                       <span
                         key={it.id}
                         className="size-1.5 rounded-full"
-                        style={{ background: it.kind === 'shopping' ? SHOP_STYLE.dot : it.kind === 'shared' ? (it.shared.access === 'busy' ? '#a9c9bb' : it.shared.space.color || '#75b799') : it.event.titleColor || '#4a987b' }}
+                        style={{ background: it.kind === 'shopping' ? SHOP_STYLE.dot : it.event.titleColor || '#4a987b' }}
                       />
                     ))}
                   </div>
@@ -276,18 +230,14 @@ export function CalendarPage() {
                     ))}
                     {evs.slice(0, chipRoom).map((it) => {
                       if (managing) {
-                        const x = pickable.find((p) => p.key === (it.kind === 'event' ? personalKey(it.event.id) : (it.kind === 'shared' ? sharedKey(it.shared.id) : '')))
+                        const x = it.kind === 'event' ? pickable.find((p) => p.key === personalKey(it.event.id)) : undefined
                         if (x) return <PickChip key={it.id} item={x} picked={picked.has(x.key)} onToggle={() => togglePick(x)} />
                       }
-                      // 批次管理時不能選的（投射、唯讀、購物連動）淡化、不能點
-                      const chip =
-                        it.kind === 'shopping' ? (
-                          <ShoppingChip key={it.id} entry={it.entry} onOpen={setViewingShop} />
-                        ) : it.kind === 'shared' ? (
-                          <SharedChip key={it.id} entry={it.shared} onOpen={openShared} />
-                        ) : null
-                      if (chip) return managing ? <span key={it.id} data-unpickable className="pointer-events-none grid opacity-40">{chip}</span> : chip
-                      if (it.kind !== 'event') return null
+                      // 批次管理時不能選的（購物連動）淡化、不能點
+                      if (it.kind === 'shopping') {
+                        const chip = <ShoppingChip key={it.id} entry={it.entry} onOpen={setViewingShop} />
+                        return managing ? <span key={it.id} data-unpickable className="pointer-events-none grid opacity-40">{chip}</span> : chip
+                      }
                       const e = it.event
                       return (
                       <button
@@ -357,12 +307,6 @@ export function CalendarPage() {
                       <ShoppingCard compact entry={it.entry} onOpen={fromDay(setViewingShop)} />
                     </li>
                   )
-                if (it.kind === 'shared')
-                  return (
-                    <li key={it.id}>
-                      <SharedCard compact entry={it.shared} onOpen={fromDay(openShared)} />
-                    </li>
-                  )
                 const e = it.event
                 return (
                 <li key={e.id}>
@@ -384,7 +328,7 @@ export function CalendarPage() {
               })}
             </ul>
           )}
-          {vis.isSelf && !managing && (
+          {!managing && (
             <button type="button" onClick={() => fromDay(setEditing)('new')} className="mt-3 text-xs font-semibold text-sage hover:text-sage-dark">
               {t('calendar.addOnDay')}
             </button>
@@ -395,29 +339,23 @@ export function CalendarPage() {
       {editing && (
         <EventDialog
           key={editing === 'new' ? 'new' : editing.id}
-          event={editing === 'new' || isShared(editing) ? null : editing}
-          shared={editing !== 'new' && isShared(editing) ? editing : undefined}
+          event={editing === 'new' ? null : editing}
           date={selected}
           onClose={() => setEditing(null)}
         />
       )}
-      {viewingShared && <SharedDetailDialog entry={viewingShared} previewing={!vis.isSelf} onClose={() => setViewingShared(null)} />}
       {viewingShop && <ShoppingDetailDialog entry={viewingShop} onClose={() => setViewingShop(null)} />}
       {holidayOpen && <HolidayImportDialog onClose={() => setHolidayOpen(false)} />}
       {batchOpen && (
         <BatchEventsDialog
           initialYear={ym.year}
           initialMonth={ym.month}
-          initialTarget={filter === 'all' ? PERSONAL_CALENDAR_ID : filter}
           onClose={() => setBatchOpen(false)}
-          onCreated={({ ids, title, spaceId }) =>
+          onCreated={({ ids, title }) =>
             setBatchToast({
               message: t('calendar.batchForm.created', { count: ids.length, title }),
-              // 取消剛建立的行程：不進「最近刪除」；共享空間會留下墓碑（刪除會同步給其他成員）
-              undo: () => {
-                if (spaceId) for (const id of ids) discardItem(id)
-                else discardEvents(ids)
-              },
+              // 取消剛建立的行程：直接移除，不進「最近刪除」
+              undo: () => discardEvents(ids),
               undone: t('calendar.batchForm.undone', { count: ids.length }),
             })
           }
@@ -427,7 +365,7 @@ export function CalendarPage() {
         <>
           {/* 預留操作列的高度，月曆底部不會被擋住 */}
           <div aria-hidden className="h-20 shrink-0" />
-          <CalendarBatchBar count={picked.size} targets={writableSpaces} onDelete={runDelete} onMove={runMove} onClear={() => setPicked(new Map())} onDone={stopManaging} />
+          <CalendarBatchBar count={picked.size} onDelete={runDelete} onClear={() => setPicked(new Map())} onDone={stopManaging} />
         </>
       )}
       {trashOpen && <TrashDialog onClose={() => setTrashOpen(false)} />}
@@ -485,14 +423,10 @@ function PickChip({ item, picked, onToggle }: { item: BatchSelectable; picked: b
   )
 }
 
-/** 標籤與清單共用：顯示用的名稱、時間與顏色（共享行程用空間顏色） */
+/** 標籤與清單共用：顯示用的名稱、時間與顏色 */
 function pickView(item: BatchSelectable) {
-  if (item.kind === 'personal') {
-    const e = item.event
-    return { title: e.title, start: e.start, end: e.end, bg: e.bgColor || '#eaf6ef', fg: e.titleColor || '#263633', space: '' }
-  }
-  const e = item.entry
-  return { title: e.item.title, start: e.start, end: e.end, bg: e.item.bgColor || '#eaf6ef', fg: e.item.titleColor || '#263633', space: e.space.name }
+  const e = item.event
+  return { title: e.title, start: e.start, end: e.end, bg: e.bgColor || '#eaf6ef', fg: e.titleColor || '#263633' }
 }
 
 /** 批次管理：「這一天」的清單，可以選取的行程前面有勾選框，最上面是全選當天；不能選的淡化顯示 */
@@ -524,11 +458,11 @@ function ManageDayList({
       )}
       <ul className="grid gap-2">
         {items.map((it) => {
-          const x = pickable.find((p) => p.key === (it.kind === 'event' ? personalKey(it.event.id) : (it.kind === 'shared' ? sharedKey(it.shared.id) : '')))
+          const x = it.kind === 'event' ? pickable.find((p) => p.key === personalKey(it.event.id)) : undefined
           if (!x)
             return (
               <li key={it.id} data-unpickable className="pointer-events-none opacity-40">
-                {it.kind === 'shopping' ? <ShoppingCard compact entry={it.entry} onOpen={() => {}} /> : it.kind === 'shared' ? <SharedCard compact entry={it.shared} onOpen={() => {}} /> : null}
+                {it.kind === 'shopping' ? <ShoppingCard compact entry={it.entry} onOpen={() => {}} /> : null}
               </li>
             )
           const v = pickView(x)
@@ -542,7 +476,6 @@ function ManageDayList({
                   </strong>
                   <small className="text-[length:calc(11px*var(--fs))] text-muted">
                     {formatTimeRange(v.start, v.end) || t('event.allDay')}
-                    {v.space && ` · ${v.space}`}
                   </small>
                 </span>
               </label>

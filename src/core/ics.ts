@@ -1,6 +1,8 @@
+import type { CalendarEvent } from './schema'
+
 /**
  * 匯出標準 iCalendar（.ics，RFC 5545）：其他行事曆 App（Apple 行事曆、Google 日曆、Outlook…）都能匯入。
- * 純函式、不連網；匯出的內容由呼叫端決定（只放使用者自己看得到的資料，見 hooks/useVisibleCalendar 的 useCalendarExport）。
+ * 純函式、不連網；匯出我的行事曆（personalIcsEvents）。
  *
  * - 有時間的行程用「浮動時間」（不帶時區，匯入後照當地時間顯示，跟 App 裡看到的一樣）
  * - 整天行程用 VALUE=DATE，結束日依規範是「隔天」（不含）
@@ -20,7 +22,7 @@ export interface IcsEvent {
   end: string
   location?: string
   note?: string
-  /** 分類（例如空間名稱），匯入後有些 App 會顯示 */
+  /** 分類，匯入後有些 App 會顯示 */
   category?: string
 }
 
@@ -106,3 +108,10 @@ export function buildIcs(events: readonly IcsEvent[], options: { calendarName: s
 
 /** 匯出檔名：acacia-calendar-YYYY-MM-DD.ics */
 export const icsFileName = (now = new Date()) => `acacia-calendar-${now.toISOString().slice(0, 10)}.ics`
+
+/** 我的行事曆（不含「最近刪除」）轉成 .ics 行程 */
+export const personalIcsEvents = (events: readonly CalendarEvent[]): IcsEvent[] =>
+  events
+    .filter((e) => e.deletedAt === undefined && e.dateISO)
+    .map((e) => ({ uid: `${e.id}@personal.acacia-everyday`, title: e.title, dateISO: e.dateISO, start: e.start, end: e.end, note: e.note }))
+    .sort((a, b) => (a.dateISO + a.start).localeCompare(b.dateISO + b.start))

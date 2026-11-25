@@ -17,7 +17,7 @@ describe('購物記帳映射到行事曆', () => {
   it('跟行程合併並依時間排序，沒有時間的記帳排最前面', () => {
     const byDate = indexByDate(shoppingEntries([exp({ id: 'pm', time: '16:00' }), exp({ id: 'am', time: '08:00' }), exp({ id: 'none', time: '' })], []))
     const items = agendaOn([ev({ id: 'work' }), ev({ id: 'other', dateISO: '2026-11-23' })], byDate, '2026-11-22')
-    expect(items.map((i) => (i.kind === 'event' ? i.event.id : i.kind === 'shopping' ? i.entry.id : i.shared.id))).toEqual(['none', 'am', 'work', 'pm'])
+    expect(items.map((i) => (i.kind === 'event' ? i.event.id : i.entry.id))).toEqual(['none', 'am', 'work', 'pm'])
   })
 
   it('行程與購物 id 相同時不會撞 key；同一時間行程排前面', () => {

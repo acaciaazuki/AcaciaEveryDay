@@ -20,7 +20,7 @@ setConsentPrefsForTests(prefs.api)
 
 const { useAppStore } = await import('./useAppStore')
 const { useBackupStore } = await import('./useBackupStore')
-const { useSpacesBackupStore } = await import('./useSpacesBackupStore')
+const { kv } = await import('../adapters/kv')
 const { useConsentStore } = await import('./useConsentStore')
 const { deleteAllData } = await import('./deleteAllData')
 
@@ -30,15 +30,18 @@ describe('iOS App：刪除所有資料', () => {
   beforeEach(() => vi.spyOn(console, 'error').mockImplementation(() => {}))
   afterEach(() => vi.restoreAllMocks())
 
-  it('主資料、共享空間、兩種快照的檔案與 Preferences 裡的同意紀錄都清掉', async () => {
+  it('主資料、快照（含舊版共享空間快照）的檔案與 Preferences 裡的同意紀錄都清掉', async () => {
     useAppStore.getState().addTask({ title: '祕密待辦', loc: '', date: '', time: '' })
     await useBackupStore.getState().backupNow('manual')
-    await useSpacesBackupStore.getState().backupNow('manual')
+    // 舊版留下的共享空間資料與快照
+    await kv('state').set('acacia-spaces', '{"state":{}}')
+    await kv('spacesBackups').set('index', { snapshots: [] })
     await useConsentStore.getState().accept()
     await flush()
     const paths = () => [...fs.files.keys()]
     expect(paths().some((p) => p.startsWith('acacia/state/'))).toBe(true)
     expect(paths().some((p) => p.startsWith('acacia/backups/'))).toBe(true)
+    expect(paths().some((p) => p.startsWith('acacia/spacesBackups/'))).toBe(true)
     expect(prefs.values.has('acacia-consent')).toBe(true)
 
     await deleteAllData()
