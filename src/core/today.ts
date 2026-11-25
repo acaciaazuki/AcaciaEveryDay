@@ -68,9 +68,5 @@ export function greetingKey(hour: number): GreetingKey {
 export const busyTimesOnDay = (items: readonly Spanning[], iso: string) =>
   items.flatMap((x) => (coversDay(x, iso) ? [busyTimesOn(x, iso) ?? { start: '', end: '' }] : [])).sort((a, b) => a.start.localeCompare(b.start))
 
-/** 依開始時間排序當天行程（含跨日行程涵蓋到這一天的） */
-export const eventsOn = (events: CalendarEvent[], iso: string) =>
-  events.filter((e) => coversDay(e, iso)).sort((a, b) => a.start.localeCompare(b.start))
-
 /** 分鐘轉成「1.5」這種小時數字串 */
 export const hours = (min: number) => String(Math.round((min / 60) * 10) / 10)

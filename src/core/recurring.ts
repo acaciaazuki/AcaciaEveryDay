@@ -37,16 +37,6 @@ export function importedKeys(shopping: Expense[], archives: Archive[]): Set<stri
   return keys
 }
 
-/** 本期已經帶入過的範本 id */
-export function importedInPeriod(period: BillingPeriod, shopping: Expense[], archives: Archive[]): Set<string> {
-  const ids = new Set<string>()
-  for (const k of importedKeys(shopping, archives)) {
-    const at = k.lastIndexOf('@')
-    if (k.slice(at + 1) === period.start) ids.add(k.slice(0, at))
-  }
-  return ids
-}
-
 /** 舊資料或亂填的批次月數一律收斂到 1–12 */
 export const batchMonthsOf = (r: Pick<Recurring, 'batchMonths'>) => Math.min(BATCH_MONTHS_MAX, Math.max(1, Math.floor(Number(r.batchMonths) || 1)))
 

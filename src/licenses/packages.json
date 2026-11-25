@@ -1382,16 +1382,6 @@
   "textId": "c67b363a1c"
  },
  {
-  "name": "date-fns",
-  "version": "4.4.0",
-  "license": "MIT",
-  "category": "permissive",
-  "scope": "runtime",
-  "copyright": "Copyright (c) 2021 Sasha Koss and Lesha Koss https://kossnocorp.mit-license.org",
-  "repository": "https://github.com/date-fns/date-fns",
-  "textId": "675e4b68ec"
- },
- {
   "name": "date-holidays",
   "version": "3.39.2",
   "license": "(ISC AND CC-BY-SA-4.0)",

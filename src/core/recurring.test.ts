@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { archiveCurrent, restoreArchive } from './archive'
 import { summarize } from './expenses'
 import { migrate } from './migrate'
-import { buildImports, dueDateInPeriod, importedInPeriod, importedKeys, importKey, planImport, progressOf, rollbackInstallment, shiftPeriod } from './recurring'
+import { buildImports, dueDateInPeriod, importedKeys, importKey, planImport, progressOf, rollbackInstallment, shiftPeriod } from './recurring'
 import { emptyAppData, SCHEMA_VERSION, type Recurring } from './schema'
 import { useAppStore } from '../store/useAppStore'
 
@@ -64,13 +64,15 @@ describe('固定支出：批次帶入', () => {
 
   it('已加入標記以範本 id＋週期判斷：歸檔本期後仍算已加入，下一期可再帶入；還原後也不重複', () => {
     const { expenses } = buildImports([tpl('rent')], [{ id: 'rent', amount: 1, note: '' }], period, new Set())
-    expect(importedInPeriod(period, expenses, [])).toEqual(new Set(['rent']))
+    const rentThis = importKey('rent', period.start)
+    const rentNext = importKey('rent', '2026-12-10')
+    expect(importedKeys(expenses, [])).toEqual(new Set([rentThis]))
     const archived = archiveCurrent(expenses, [], '2026-11-22', 1)
     expect(archived.shopping).toEqual([])
-    expect(importedInPeriod(period, archived.shopping, archived.archives)).toEqual(new Set(['rent']))
-    expect(importedInPeriod({ start: '2026-12-10', end: '2027-01-09' }, archived.shopping, archived.archives).size).toBe(0)
+    expect(importedKeys(archived.shopping, archived.archives).has(rentThis)).toBe(true)
+    expect(importedKeys(archived.shopping, archived.archives).has(rentNext)).toBe(false)
     const restored = restoreArchive(archived.shopping, archived.archives, period.start)
-    expect(importedInPeriod(period, restored.shopping, restored.archives)).toEqual(new Set(['rent']))
+    expect(importedKeys(restored.shopping, restored.archives)).toEqual(new Set([rentThis]))
   })
 })
 
