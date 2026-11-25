@@ -88,7 +88,9 @@ describe('最近刪除與忙碌投射的連動', () => {
     })
     const id = sp().addItem(family, { kind: 'event', title: '回診', dateISO: '2026-11-25', start: '09:00', end: '10:00' })
     sp().removeItem(id)
-    purgeTrashNow(now + TRASH_RETENTION_MS)
+    // 以實際的刪除時間計算「滿 30 天」：刪除時才取時間，跟上面的 now 可能差幾毫秒（CI 機器較慢時）
+    const deletedAt = sp().data.items.find((i) => i.id === id)!.deletedAt!
+    purgeTrashNow(deletedAt + TRASH_RETENTION_MS)
     expect(app().events).toEqual([])
     expect(sp().data.items.find((i) => i.id === id)!.title).toBe('')
 
