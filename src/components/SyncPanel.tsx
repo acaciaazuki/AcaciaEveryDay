@@ -10,7 +10,7 @@ import { isNativeApp } from '../adapters/kv'
  */
 export function SyncPanel({ showHelp = false }: { showHelp?: boolean }) {
   const { t, i18n } = useTranslation()
-  const { status, profile, lastSyncedAt, connect, disconnect, push } = useSyncStore()
+  const { status, profile, lastSyncedAt, connect, reauthorize, disconnect, push } = useSyncStore()
   const signedIn = status !== 'signedOut' && status !== 'connecting'
   const native = isNativeApp()
 
@@ -20,6 +20,7 @@ export function SyncPanel({ showHelp = false }: { showHelp?: boolean }) {
     syncing: t('sync.syncing'),
     synced: t('sync.synced', { time: lastSyncedAt ? new Intl.DateTimeFormat(i18n.resolvedLanguage, TIME_24).format(lastSyncedAt) : '' }),
     error: t('sync.error'),
+    needsPermission: t('sync.needsPermission'),
   }[status]
 
   return (
@@ -36,6 +37,11 @@ export function SyncPanel({ showHelp = false }: { showHelp?: boolean }) {
         </div>
       </div>
       {showHelp && !native && <p className="text-xs leading-relaxed text-muted">{t('sync.help')}</p>}
+      {status === 'needsPermission' && (
+        <p role="alert" className="rounded-(--radius-control) bg-sage-light px-3 py-2 text-[length:calc(11px*var(--fs))] leading-relaxed text-sage-dark">
+          {t('sync.needsPermissionHelp')}
+        </p>
+      )}
       {native ? (
         <p role="note" data-native-sync-notice className="rounded-(--radius-control) bg-sage-light px-3 py-2 text-[length:calc(11px*var(--fs))] leading-relaxed text-sage-dark">
           {t('sync.nativeNotice')}
@@ -44,6 +50,11 @@ export function SyncPanel({ showHelp = false }: { showHelp?: boolean }) {
         <div className="flex gap-2">
           {signedIn ? (
             <>
+              {status === 'needsPermission' && (
+                <button type="button" onClick={() => void reauthorize()} className="flex-1 rounded-(--radius-control) bg-sage px-3 py-2 text-xs font-bold text-white">
+                  {t('sync.grantPermission')}
+                </button>
+              )}
               {status === 'error' && (
                 <button type="button" onClick={() => void push()} className="flex-1 rounded-(--radius-control) bg-sage px-3 py-2 text-xs font-bold text-white">
                   {t('sync.retry')}
