@@ -214,6 +214,15 @@ App 內的處理（`isNativeApp()` 判斷）：
 
 之後若要支援：評估 Capacitor 的原生 Google Sign-In 外掛（需要 Google Cloud 的 iOS 用戶端 ID 與 Xcode 設定），登入後沿用現有的 Drive 同步程式。
 
+### App Store 隱私標示
+
+隱私權政策第 4 節已寫明 ACACIA 申報「不收集資料（Data Not Collected）」。在 App Store Connect 填寫「App 隱私」前，逐項確認仍然成立：
+
+- [ ] **沒有追蹤、廣告、分析或當機回報 SDK：**`package.json` 的 dependencies 只有畫面、狀態、翻譯與 Capacitor 套件；新增任何會連外的套件前要先檢查
+- [ ] **地點搜尋 Proxy 不保存搜尋字詞：**`VITE_PLACES_PROXY_URL` 指向的 Cloudflare Worker 要關閉 Workers Logs／Logpush，程式只即時轉送查詢、不寫入任何儲存。若這個 Worker 不是自己經營的，搜尋字詞就屬於傳給第三方，要重新評估標示，或改成自己的 Worker
+- [ ] **沒有自己的伺服器接收使用者資料：**同步只寫使用者自己的 Google Drive 應用程式專用資料夾；`backendSyncProvider` 目前沒有啟用，啟用前要重新評估
+- [ ] **資料保留期間與政策一致：**最近刪除 30 天（`src/core/trash.ts` 的 `TRASH_RETENTION_MS`）、刪除標記 180 天（`src/core/appMerge.ts` 的 `TOMBSTONE_TTL`）；改這兩個數字時要一起改政策並更新 `PRIVACY_VERSION`
+
 ## 從舊版搬資料
 
 在新版「設定」頁匯入舊版匯出的 JSON。舊版分類（例如「食」「咖啡」）會自動轉成代碼，自訂的記帳類別會保留原文字。
