@@ -6,6 +6,9 @@ import { detailEntries, safeLink } from '../core/itemDetails'
 import { useSharedTitle } from '../hooks/useSharedTitle'
 import { useSpacesStore } from '../store/useSpacesStore'
 import { formatTimeRange } from '../core/time'
+import { spanTimeText, type DaySpan } from '../core/span'
+import { useRangeText } from '../hooks/useRangeText'
+import { spanChipClass } from './spanChip'
 import { Icon } from './AcaciaIcons'
 import { Button } from './Button'
 import { Dialog } from './Dialog'
@@ -57,8 +60,10 @@ function SpaceTag({ entry }: { entry: SharedEntry }) {
 }
 
 /** 月曆格子裡的小標籤 */
-export function SharedChip({ entry, onOpen }: { entry: SharedEntry; onOpen: (x: SharedEntry) => void }) {
+export function SharedChip({ entry, onOpen, span }: { entry: SharedEntry; onOpen: (x: SharedEntry) => void; span?: DaySpan }) {
   const title = useSharedTitle()
+  // 跨日行程：這一天那一段的時間（第一天「22:30 →」、最後一天「→ 02:00」、中間不顯示時間）
+  const time = span && span.pos !== 'single' ? spanTimeText(span) : entry.start
   const busy = entry.access === 'busy'
   const style: CSSProperties = busy
     ? busyStyle(entry)
@@ -69,17 +74,18 @@ export function SharedChip({ entry, onOpen }: { entry: SharedEntry; onOpen: (x: 
       data-shared={entry.id}
       data-access={entry.access}
       data-busy-display={busy ? entry.busyDisplay : undefined}
+      data-span={span?.pos}
       onClick={(ev) => {
         ev.stopPropagation()
         onOpen(entry)
       }}
-      className={`flex items-center gap-0.5 truncate rounded px-1.5 py-px text-left text-[length:calc(10px*var(--fs))] leading-4 font-semibold ${busy ? 'border' : 'border-l-2'}`}
+      className={`flex items-center gap-0.5 truncate ${spanChipClass(span)} px-1.5 py-px text-left text-[length:calc(10px*var(--fs))] leading-4 font-semibold ${busy ? 'border' : 'border-l-2'}`}
       style={style}
     >
       {busy && <Icon name="clock" className="size-[1.3em] shrink-0" />}
       <span className="truncate">
         {/* 只顯示時間時，標題本身就是時間區間，不再重複開始時間 */}
-        {entry.start && !isTimeOnly(entry) && `${entry.start} `}
+        {time && !isTimeOnly(entry) && `${time} `}
         {title(entry)}
       </span>
     </button>
@@ -90,6 +96,7 @@ export function SharedChip({ entry, onOpen }: { entry: SharedEntry; onOpen: (x: 
 export function SharedCard({ entry, onOpen, compact = false }: { entry: SharedEntry; onOpen: (x: SharedEntry) => void; compact?: boolean }) {
   const { t } = useTranslation()
   const title = useSharedTitle()
+  const range = useRangeText()
   const busy = entry.access === 'busy'
   const note = entry.maskedFields.includes('note') ? '' : entry.item.note
   const timeOnly = isTimeOnly(entry)
@@ -120,7 +127,7 @@ export function SharedCard({ entry, onOpen, compact = false }: { entry: SharedEn
       {/* 只顯示時間時標題已經是時間區間，這一行只剩建立者（沒有就不顯示） */}
       {(!timeOnly || entry.creatorName) && (
         <small className="block text-[length:calc(11px*var(--fs))] text-muted">
-          {timeOnly ? entry.creatorName : formatTimeRange(entry.start, entry.end) || t('event.allDay')}
+          {timeOnly ? entry.creatorName : range({ dateISO: entry.dateISO, endDateISO: entry.lastDateISO, start: entry.start, end: entry.end })}
           {!timeOnly && entry.creatorName && ` · ${entry.creatorName}`}
           {note && ` · ${note}`}
         </small>

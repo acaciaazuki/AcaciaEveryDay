@@ -16,6 +16,11 @@ export const eventSchema = z.object({
   id,
   title: z.string(),
   dateISO: isoDate,
+  /**
+   * 跨日行程的結束日（例如大夜班、家庭旅遊）；沒有或空字串表示同一天（舊資料不用遷移）。
+   * end 是這一天的結束時間；跨午夜的行程 end 會早於 start（見 core/span.ts）。
+   */
+  endDateISO: isoDate.or(z.literal('')).optional().catch(undefined),
   start: hhmm,
   end: hhmm,
   note: z.string().default(''),

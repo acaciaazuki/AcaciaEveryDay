@@ -377,6 +377,7 @@
     "title": "何をしますか？",
     "titlePlaceholder": "例：友だちとランチ",
     "date": "日付",
+    "endDate": "終了日",
     "start": "開始",
     "end": "終了",
     "color": "カード背景色",
@@ -387,7 +388,8 @@
     "textColor": "文字色",
     "icon": "アイコン",
     "iconAuto": "自動",
-    "allDay": "終日"
+    "allDay": "終日",
+    "overnightHint": "日付をまたぎます：{{date}} に終了"
   },
   "search": {
     "title": "検索",

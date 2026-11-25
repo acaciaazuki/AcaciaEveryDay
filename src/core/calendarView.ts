@@ -1,3 +1,4 @@
+import { busyTimesOn } from './span'
 import { projectBusyBlocks, resolveCalendarItemForViewer, type ViewAccess } from './permissions'
 import { PERSONAL_CALENDAR_ID, roleOf, type BusyDisplay, type ItemKind, type MaskableField, type SharedCalendarData, type SharedCalendarItem, type SpaceKind } from './sharing'
 
@@ -175,7 +176,8 @@ export const searchableShared = (entries: readonly SharedEntry[]): SearchableSha
 /**
  * 新增／修改行程時的重疊提醒：找出某一天、某段時間跟哪些忙碌區塊（投射產生的）重疊。
  * - 任一方是整天（沒有開始時間）：同一天就算重疊
- * - 跨日的忙碌區塊：保守起見，涵蓋的每一天都算重疊
+ * - 跨日（含跨午夜）的忙碌區塊：只比對它在這一天佔用的那一段（第一天到午夜、最後一天從午夜開始、中間整天）
+ * - 自己的行程跨午夜（結束時間早於開始時間）：這一天算到午夜
  * - 沒有結束時間：當成時間點，落在區塊內（或同一個開始時間）就算重疊
  * 只看忙碌區塊；一般共享行程不算（那些本來就看得到內容，由使用者自己判斷）。
  */
@@ -183,10 +185,11 @@ export function busyConflicts(entries: readonly SharedEntry[], dateISO: string, 
   if (!dateISO) return []
   return sharedOn(entries, dateISO).filter((e) => {
     if (!e.projected || e.access !== 'busy') return false
-    if (!start || !e.start || e.dateISO !== e.lastDateISO) return true
-    const myEnd = end || start
-    const theirEnd = e.end || e.start
-    if (start === e.start) return true
-    return start < theirEnd && e.start < myEnd
+    const theirs = busyTimesOn({ dateISO: e.dateISO, endDateISO: e.lastDateISO, start: e.start, end: e.end }, dateISO)
+    if (!start || !theirs || !theirs.start) return true
+    const myEnd = !end ? start : end < start ? '24:00' : end
+    const theirEnd = theirs.end || theirs.start
+    if (start === theirs.start) return true
+    return start < theirEnd && theirs.start < myEnd
   })
 }

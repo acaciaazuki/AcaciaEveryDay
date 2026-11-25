@@ -10,6 +10,7 @@ import { defaultVisibility, orderedKinds, PERSONAL_CALENDAR_ID, roleOf } from '.
 import { useAppStore } from '../store/useAppStore'
 import { useSpacesStore } from '../store/useSpacesStore'
 import { showToast } from '../store/useToastStore'
+import { checkEnd, shiftEndDate } from '../core/span'
 import { formatTimeRange, isAllDay } from '../core/time'
 import { AllDayToggle } from './AllDayToggle'
 import { Button } from './Button'
@@ -26,6 +27,7 @@ type Draft = Omit<CalendarEvent, 'id'>
 const draftOfShared = (x: SharedEntry): Draft => ({
   title: x.item.title,
   dateISO: x.item.dateISO,
+  endDateISO: x.item.endDateISO,
   start: x.item.start,
   end: x.item.end,
   note: x.item.note,
@@ -69,14 +71,19 @@ export function EventDialog({ event, shared, date, onClose }: { event: CalendarE
   const [times, setTimes] = useState(() => (initialTimes && !isAllDay(initialTimes) ? { start: initialTimes.start, end: initialTimes.end } : { start: '09:00', end: '10:00' }))
   const [error, setError] = useState('')
   const set = (patch: Partial<Draft>) => setDraft((d) => ({ ...d, ...patch }))
+  // 同一天、結束時間早於開始時間：提示會跨過午夜，結束在隔天（儲存時自動處理，不擋下）
+  const endCheck = checkEnd({ dateISO: draft.dateISO, endDateISO: draft.endDateISO ?? '', start: allDay ? '' : times.start, end: allDay ? '' : times.end })
+  const overnight = endCheck.ok && endCheck.overnight ? endCheck.endDateISO : ''
 
   const submit = (e: FormEvent) => {
     e.preventDefault()
     const title = draft.title.trim()
     if (!title) return setError(t('event.titleRequired'))
     const { start, end } = allDay ? { start: '', end: '' } : times
-    if (start && end && end <= start) return setError(t('event.endBeforeStart'))
-    const data = { ...draft, title, start, end, note: draft.note.trim() }
+    // 結束日期＋時間要晚於開始；同一天結束時間較早（例如 22:30～02:00）視為跨過午夜，結束日自動是隔天
+    const ended = checkEnd({ dateISO: draft.dateISO, endDateISO: draft.endDateISO ?? '', start, end })
+    if (!ended.ok) return setError(t('event.endBeforeStart'))
+    const data = { ...draft, title, start, end, endDateISO: ended.endDateISO, note: draft.note.trim() }
     if (!space) {
       if (event) updateEvent(event.id, data)
       else addEvent(data)
@@ -132,7 +139,22 @@ export function EventDialog({ event, shared, date, onClose }: { event: CalendarE
         )}
         {editing && space && <p className="-mt-1 text-xs font-semibold text-sage-dark">{t('sharing.inSpace', { name: space.name })}</p>}
         <Field label={t('event.title')} placeholder={t('event.titlePlaceholder')} value={draft.title} onChange={(e) => set({ title: e.target.value })} autoFocus />
-        <Field label={t('event.date')} type="date" value={draft.dateISO} onChange={(e) => set({ dateISO: e.target.value })} />
+        <div className="grid gap-3 min-[30rem]:grid-cols-2">
+          {/* 開始日期改了，結束日期跟著平移（保持天數）；沒設結束日期時就跟開始日期同一天 */}
+          <Field
+            label={t('event.date')}
+            type="date"
+            value={draft.dateISO}
+            onChange={(e) => set({ dateISO: e.target.value, endDateISO: shiftEndDate(draft.dateISO, e.target.value, draft.endDateISO ?? '') })}
+          />
+          <Field
+            label={t('event.endDate')}
+            type="date"
+            min={draft.dateISO}
+            value={draft.endDateISO || draft.dateISO}
+            onChange={(e) => set({ endDateISO: e.target.value && e.target.value !== draft.dateISO ? e.target.value : '' })}
+          />
+        </div>
         <div className="grid gap-2">
           <AllDayToggle checked={allDay} onChange={setAllDay} />
           {!allDay && (
@@ -140,6 +162,11 @@ export function EventDialog({ event, shared, date, onClose }: { event: CalendarE
               <TimeField label={t('event.start')} value={times.start} onChange={(start) => setTimes((x) => ({ ...x, start }))} />
               <TimeField label={t('event.end')} value={times.end} onChange={(end) => setTimes((x) => ({ ...x, end }))} />
             </div>
+          )}
+          {overnight && (
+            <p data-overnight className="text-xs text-sage-dark">
+              {t('event.overnightHint', { date: overnight })}
+            </p>
           )}
         </div>
         {error && <p className="-mt-2 text-xs text-[#c2583d]">{error}</p>}

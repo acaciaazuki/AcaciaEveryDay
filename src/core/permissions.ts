@@ -290,7 +290,7 @@ export function projectBusyBlocks(options: ProjectBusyBlocksOptions): SharedCale
     if (rule.sourceId === PERSONAL_CALENDAR_ID) {
       for (const slot of personalSlots) {
         if (!slot.start && !rule.includeAllDay) continue
-        if (range && (slot.dateISO > range.to || slot.dateISO < range.from)) continue
+        if (range && (slot.dateISO > range.to || (slot.endDateISO || slot.dateISO) < range.from)) continue
         const removed = slot.deletedAt !== null || !active
         if (removed && !includeDeleted) continue
         const updatedAt = Math.max(slot.updatedAt, rule.updatedAt)
@@ -300,7 +300,8 @@ export function projectBusyBlocks(options: ProjectBusyBlocksOptions): SharedCale
           kind: 'event',
           title: withTitles ? (personalTitles?.get(slot.id) ?? '') : '',
           dateISO: slot.dateISO,
-          endDateISO: '',
+          // 跨日（含跨午夜）的個人行程：忙碌區塊一樣跨日
+          endDateISO: slot.endDateISO && slot.endDateISO > slot.dateISO ? slot.endDateISO : '',
           start: slot.start,
           end: slot.end,
           location: '',

@@ -71,7 +71,7 @@ export function useCalendarExport() {
     icsEvents: (): IcsEvent[] => {
       const { data, selfId } = useSpacesStore.getState()
       const personal = liveEvents(useAppStore.getState().events).map(
-        (e): IcsEvent => ({ uid: `${e.id}@personal.acacia-everyday`, title: e.title, dateISO: e.dateISO, start: e.start, end: e.end, note: e.note }),
+        (e): IcsEvent => ({ uid: `${e.id}@personal.acacia-everyday`, title: e.title, dateISO: e.dateISO, endDateISO: e.endDateISO ?? '', start: e.start, end: e.end, note: e.note }),
       )
       const shared = visibleCalendar(data, selfId, selfId, 'all').shared.map(
         (e): IcsEvent => ({

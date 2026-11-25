@@ -377,6 +377,7 @@
     "title": "Was hast du vor?",
     "titlePlaceholder": "z. B. Mittagessen mit Freunden",
     "date": "Datum",
+    "endDate": "Enddatum",
     "start": "Beginn",
     "end": "Ende",
     "color": "Kartenfarbe",
@@ -387,7 +388,8 @@
     "textColor": "Textfarbe",
     "icon": "Symbol",
     "iconAuto": "Automatisch",
-    "allDay": "Ganztägig"
+    "allDay": "Ganztägig",
+    "overnightHint": "Geht über Mitternacht: endet am {{date}}"
   },
   "search": {
     "title": "Suche",

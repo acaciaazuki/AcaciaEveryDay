@@ -258,6 +258,8 @@ export function ruleTargets(rule: BusyProjectionRule, spaces: readonly Pick<Spac
 export const personalBusySlotSchema = z.object({
   id,
   dateISO: isoDate,
+  /** 跨日行程的結束日；沒有或空字串表示同一天（舊資料沒有這個欄位） */
+  endDateISO: isoDate.or(z.literal('')).optional(),
   start: hhmm.default(''),
   end: hhmm.default(''),
   version: z.number().int().nonnegative(),

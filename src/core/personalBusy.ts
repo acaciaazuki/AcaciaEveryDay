@@ -5,13 +5,16 @@ import { PERSONAL_CALENDAR_ID, type BusyProjectionRule, type PersonalBusySlot } 
 export const needsPersonalBusySlots = (rules: readonly BusyProjectionRule[], userId: string) =>
   rules.some((r) => r.userId === userId && r.sourceId === PERSONAL_CALENDAR_ID && r.deletedAt === null)
 
-const sameTime = (slot: PersonalBusySlot, e: Pick<CalendarEvent, 'dateISO' | 'start' | 'end'>) => slot.dateISO === e.dateISO && slot.start === e.start && slot.end === e.end
+/** 同一天的行程結束日存空字串（不存 undefined），影子與行程比較時兩者視為相同 */
+const endOf = (x: { dateISO: string; endDateISO?: string }) => (x.endDateISO && x.endDateISO > x.dateISO ? x.endDateISO : '')
+const sameTime = (slot: PersonalBusySlot, e: Pick<CalendarEvent, 'dateISO' | 'endDateISO' | 'start' | 'end'>) =>
+  slot.dateISO === e.dateISO && endOf(slot) === endOf(e) && slot.start === e.start && slot.end === e.end
 /** 版本用秒數遞增，同一秒內至少 +1 */
 const nextVersion = (prev: number, now: number) => Math.max(Math.floor(now / 1000), prev + 1)
 
 /**
  * 依目前的個人行程更新忙碌影子，回傳新的陣列；沒有任何變化時回傳 null（呼叫端就不用寫入、也不會觸發同步）。
- * - 新增或時間改變的行程：更新日期、時間與版本
+ * - 新增或時間改變的行程（含跨日的結束日）：更新日期、時間與版本
  * - 只改標題、備註、顏色：影子不變（這些內容本來就不會送出去）
  * - 刪除的行程：留下刪除標記
  * - 刪掉又加回來（同一個 id）：清掉刪除標記並提高版本
@@ -32,7 +35,7 @@ export function syncPersonalBusySlots(slots: readonly PersonalBusySlot[], events
       continue
     }
     changed = true
-    next.push({ id: e.id, dateISO: e.dateISO, start: e.start, end: e.end, version: nextVersion(prev?.version ?? 0, now), updatedAt: now, deletedAt: null })
+    next.push({ id: e.id, dateISO: e.dateISO, ...(endOf(e) && { endDateISO: endOf(e) }), start: e.start, end: e.end, version: nextVersion(prev?.version ?? 0, now), updatedAt: now, deletedAt: null })
   }
 
   for (const s of slots) {

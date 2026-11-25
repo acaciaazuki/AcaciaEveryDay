@@ -45,7 +45,7 @@ export function deleteSelection(selection: readonly BatchSelectable[]): { count:
  * 做法：在目標建立一筆內容相同的原生行程（自己是建立者，可以直接編輯刪除），再刪掉原本那筆；已經在目標的略過。
  * - 個人 → 空間：類型用目標空間建議的第一個
  * - 空間 → 空間：保留類型、地點、細節；可見性改用目標空間的預設（原本的成員名單不適用）
- * - 空間 → 我的行事曆：個人行程沒有地點與細節欄位，地點寫進備註；跨日行程只保留第一天
+ * - 空間 → 我的行事曆：個人行程沒有地點與細節欄位，地點寫進備註；跨日行程保留結束日
  * 忙碌投射是即時算出來的，移動後會自動跟著更新。
  */
 export function moveSelection(selection: readonly BatchSelectable[], target: string, targetSpace?: Space): { count: number; undo: () => void } {
@@ -59,7 +59,7 @@ export function moveSelection(selection: readonly BatchSelectable[], target: str
       if (x.kind !== 'shared') continue
       const i = x.entry.item
       const note = [i.note, i.location].filter(Boolean).join(' · ')
-      created.personal.push(...useAppStore.getState().addEvents([{ title: i.title, dateISO: i.dateISO, start: i.start, end: i.end, note, titleColor: i.titleColor, bgColor: i.bgColor, icon: i.icon }]))
+      created.personal.push(...useAppStore.getState().addEvents([{ title: i.title, dateISO: i.dateISO, endDateISO: i.endDateISO, start: i.start, end: i.end, note, titleColor: i.titleColor, bgColor: i.bgColor, icon: i.icon }]))
       useSpacesStore.getState().discardItem(i.id)
       removed.shared.push(i)
       continue
@@ -71,6 +71,7 @@ export function moveSelection(selection: readonly BatchSelectable[], target: str
         useSpacesStore.getState().addItem(targetSpace.id, {
           title: e.title,
           dateISO: e.dateISO,
+          endDateISO: e.endDateISO ?? '',
           start: e.start,
           end: e.end,
           note: e.note,

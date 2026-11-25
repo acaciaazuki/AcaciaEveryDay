@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import type { SharedEntry } from '../core/calendarView'
-import { formatTimeRange } from '../core/time'
+import { useRangeText } from './useRangeText'
 
 /**
  * 共享行程顯示用的標題：忙閒顯示 busyLabel 或「忙碌」；只顯示時間的忙碌區塊顯示時間區間（整天顯示「整天」）；
@@ -9,9 +9,11 @@ import { formatTimeRange } from '../core/time'
  */
 export function useSharedTitle() {
   const { t } = useTranslation()
+  const range = useRangeText()
   return (e: SharedEntry) => {
     if (e.projectedFrom && e.item.title) return e.item.title
-    if (e.access === 'busy' && e.busyDisplay === 'time_only') return formatTimeRange(e.start, e.end) || t('event.allDay')
+    // 跨日（含跨午夜）的只顯示時間區塊：連日期一起顯示，例如「12/10 22:30 – 12/11 02:00」
+    if (e.access === 'busy' && e.busyDisplay === 'time_only') return range({ dateISO: e.dateISO, endDateISO: e.lastDateISO, start: e.start, end: e.end })
     if (e.access === 'busy') return e.busyLabel || t('sharing.busy')
     if (e.maskedFields.includes('title') || !e.item.title) return t('sharing.hiddenTitle')
     return e.item.title
