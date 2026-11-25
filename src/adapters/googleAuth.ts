@@ -116,6 +116,8 @@ export async function signOut(token: string | null) {
 }
 
 export interface GoogleProfile {
+  /** Google 帳號 ID：用來判斷這次登入的是不是上次同步的同一個帳號（只存雜湊值，見 adapters/syncAccount） */
+  sub?: string
   name?: string
   picture?: string
 }

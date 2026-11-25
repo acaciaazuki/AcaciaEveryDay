@@ -11,7 +11,7 @@ import { isNativeApp } from '../adapters/kv'
 export function SyncPanel({ showHelp = false }: { showHelp?: boolean }) {
   const { t, i18n } = useTranslation()
   const { status, profile, lastSyncedAt, connect, reauthorize, disconnect, push } = useSyncStore()
-  const signedIn = status !== 'signedOut' && status !== 'connecting'
+  const signedIn = status !== 'signedOut' && status !== 'connecting' && status !== 'confirmAccount'
   const native = isNativeApp()
 
   const statusText = {
@@ -21,6 +21,7 @@ export function SyncPanel({ showHelp = false }: { showHelp?: boolean }) {
     synced: t('sync.synced', { time: lastSyncedAt ? new Intl.DateTimeFormat(i18n.resolvedLanguage, TIME_24).format(lastSyncedAt) : '' }),
     error: t('sync.error'),
     needsPermission: t('sync.needsPermission'),
+    confirmAccount: t('sync.confirmAccount'),
   }[status]
 
   return (
@@ -71,7 +72,7 @@ export function SyncPanel({ showHelp = false }: { showHelp?: boolean }) {
           ) : (
             <button
               type="button"
-              disabled={status === 'connecting'}
+              disabled={status === 'connecting' || status === 'confirmAccount'}
               onClick={() => void connect(true)}
               className="flex-1 rounded-(--radius-control) bg-sage-light px-3 py-2 text-xs font-bold text-sage-dark hover:bg-mint disabled:opacity-60"
             >

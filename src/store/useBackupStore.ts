@@ -25,6 +25,8 @@ interface BackupState extends BackupIndex {
   restore: (id: string) => Promise<void>
   /** 清空（刪除所有資料後用） */
   reset: () => void
+  /** 換了 Google 帳號：忘掉上一個帳號的雲端備份檔 id，下次上傳時在新帳號的 Drive 重新尋找 */
+  forgetCloudFile: () => void
 }
 
 /** 所有讀寫 IndexedDB 的動作排隊依序執行，避免自動備份與手動操作同時改清單 */
@@ -114,6 +116,11 @@ export const useBackupStore = create<BackupState>()((set, get) => {
     reset: () => {
       cloudFileId = null
       set({ ...emptyBackupIndex(), ready: true, cloudStatus: 'idle', cloudAt: null })
+    },
+
+    forgetCloudFile: () => {
+      cloudFileId = null
+      set({ cloudStatus: 'idle', cloudAt: null })
     },
   }
 })

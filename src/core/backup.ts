@@ -8,9 +8,10 @@ export const MAX_SNAPSHOTS = 7
 
 /**
  * auto：自動備份；manual：按「立即備份」；beforeRestore：還原前替當時的資料留一份；
- * beforeMigration：共享行事曆功能移除時，把共享行程轉成個人行程之前留一份
+ * beforeMigration：共享行事曆功能移除時，把共享行程轉成個人行程之前留一份；
+ * beforeAccountSwitch：登入不同 Google 帳號、選擇切換帳號時，清空本機資料之前留一份
  */
-export type BackupReason = 'auto' | 'manual' | 'beforeRestore' | 'beforeMigration'
+export type BackupReason = 'auto' | 'manual' | 'beforeRestore' | 'beforeMigration' | 'beforeAccountSwitch'
 
 /** 快照清單只存摘要，完整資料另外存，打開設定頁時不用把七份資料全部讀進來 */
 export interface SnapshotMeta {

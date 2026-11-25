@@ -440,6 +440,17 @@
     "needsPermission": "Zugriff auf Google Drive nicht erlaubt",
     "needsPermissionHelp": "Beim Anmelden wurde das Kästchen für die Google-Drive-Berechtigung nicht angehakt, daher kann nicht synchronisiert werden. Tippe auf „Zugriff erlauben“, hake die Berechtigung im Google-Fenster an und fahre fort.",
     "grantPermission": "Zugriff erlauben",
+    "confirmAccount": "Warte auf Bestätigung des Google-Kontos…",
+    "accountSwitch": {
+      "title": "Anderes Google-Konto erkannt",
+      "intro": "Das Konto, mit dem du dich gerade angemeldet hast ({{name}}), ist nicht das Konto, mit dem dieses Gerät zuletzt synchronisiert wurde. Damit sich die Daten verschiedener Konten nicht vermischen, wähle, was mit den Daten auf diesem Gerät passieren soll:",
+      "switch": "Zu diesem Konto wechseln",
+      "switchDesc": "Die Daten des vorherigen Kontos auf diesem Gerät löschen und stattdessen die Cloud-Daten dieses Kontos laden (hat dieses Konto noch keine Cloud-Daten, beginnst du leer). Vorher wird auf diesem Gerät ein Backup-Snapshot angelegt, den du bei Bedarf in den Einstellungen wiederherstellen kannst.",
+      "merge": "Daten dieses Geräts mit diesem Konto zusammenführen",
+      "mergeDesc": "Die Daten dieses Geräts mit den Cloud-Daten dieses Kontos zusammenführen und hochladen. Nur empfohlen, wenn diese Daten bereits zu diesem Konto gehören.",
+      "cancel": "Anmeldung abbrechen",
+      "recommended": "Empfohlen"
+    },
     "help": "Nach der Anmeldung werden deine Daten im App-Bereich deines Google Drive gespeichert, sodass du auf jedem Gerät dieselben Daten siehst. Bei der ersten Anmeldung wird auch dein Backup aus dem alten ACACIA geladen.",
     "user": "Google-Nutzer",
     "nativeStatus": "Nur auf diesem iPhone gespeichert (im iCloud-Backup enthalten)",
@@ -948,7 +959,8 @@
       "auto": "Automatisch",
       "manual": "Manuell",
       "beforeRestore": "Vor Wiederherstellung",
-      "beforeMigration": "Vor Umwandlung geteilter Termine"
+      "beforeMigration": "Vor Umwandlung geteilter Termine",
+      "beforeAccountSwitch": "Vor Kontowechsel"
     },
     "counts": "Termine {{events}} · Aufgaben {{tasks}} · Ausgaben {{shopping}} · Vorräte {{inventory}} · Abos {{subscriptions}}",
     "restore": "Wiederherstellen",

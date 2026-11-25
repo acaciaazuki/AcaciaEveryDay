@@ -440,6 +440,17 @@
     "needsPermission": "Accès à Google Drive non autorisé",
     "needsPermissionHelp": "La case d’autorisation Google Drive n’a pas été cochée lors de la connexion : la synchronisation est impossible. Appuyez sur « Autoriser l’accès », cochez cette autorisation dans la fenêtre Google, puis continuez.",
     "grantPermission": "Autoriser l’accès",
+    "confirmAccount": "En attente de confirmation du compte Google…",
+    "accountSwitch": {
+      "title": "Autre compte Google détecté",
+      "intro": "Le compte avec lequel vous venez de vous connecter ({{name}}) n’est pas celui synchronisé la dernière fois sur cet appareil. Pour éviter de mélanger les données de comptes différents, choisissez quoi faire des données déjà présentes sur cet appareil :",
+      "switch": "Passer à ce compte",
+      "switchDesc": "Effacer de cet appareil les données de l’ancien compte et charger à la place les données cloud de ce compte (s’il n’en a pas encore, vous repartez de zéro). Un instantané de sauvegarde est d’abord conservé sur cet appareil : vous pourrez le restaurer depuis les réglages si besoin.",
+      "merge": "Fusionner les données de cet appareil dans ce compte",
+      "mergeDesc": "Fusionner les données de cet appareil avec les données cloud de ce compte, puis envoyer le résultat. À choisir uniquement si ces données appartiennent déjà à ce compte.",
+      "cancel": "Annuler la connexion",
+      "recommended": "Recommandé"
+    },
     "help": "Une fois connecté, vos données sont conservées dans l’espace réservé à l’application de votre Google Drive : vous retrouvez les mêmes données sur tous vos appareils. La première connexion charge aussi votre sauvegarde de l’ancien ACACIA.",
     "user": "Utilisateur Google",
     "nativeStatus": "Enregistré sur cet iPhone uniquement (inclus dans la sauvegarde iCloud)",
@@ -948,7 +959,8 @@
       "auto": "Auto",
       "manual": "Manuelle",
       "beforeRestore": "Avant restauration",
-      "beforeMigration": "Avant conversion des événements partagés"
+      "beforeMigration": "Avant conversion des événements partagés",
+      "beforeAccountSwitch": "Avant changement de compte"
     },
     "counts": "Événements {{events}} · Tâches {{tasks}} · Dépenses {{shopping}} · Fournitures {{inventory}} · Abonnements {{subscriptions}}",
     "restore": "Restaurer",

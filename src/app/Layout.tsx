@@ -10,6 +10,7 @@ import { ReminderBanner } from '../components/ReminderBanner'
 import { LicensesLink } from '../components/LicensesLink'
 import { PrivacyLink } from '../components/PrivacyLink'
 import { SyncPanel } from '../components/SyncPanel'
+import { AccountSwitchDialog } from '../components/AccountSwitchDialog'
 import { useReminderMonitor } from '../hooks/useReminderMonitor'
 import { useNow } from '../hooks/useNow'
 import { toLocalISO } from '../core/date'
@@ -166,6 +167,7 @@ function AppShell() {
       {adding && <EventDialog event={null} date={todayISO} onClose={() => setAdding(false)} />}
       <ReminderBanner />
       <GlobalToast />
+      <AccountSwitchDialog />
 
       <nav className="fixed inset-x-0 bottom-0 z-30 flex justify-around border-t border-line bg-paper px-3 pt-2 pb-[calc(8px+env(safe-area-inset-bottom))] shadow-[0_-4px_20px_#29483a08] min-[681px]:hidden">
         {[

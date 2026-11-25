@@ -440,6 +440,17 @@
     "needsPermission": "尚未授權 Google 雲端硬碟存取權限",
     "needsPermissionHelp": "Google 登入時沒有勾選「Google 雲端硬碟」的權限方塊，所以無法同步。請按「重新授權」，在 Google 視窗中勾選該權限後繼續。",
     "grantPermission": "重新授權",
+    "confirmAccount": "等待確認要使用的 Google 帳號…",
+    "accountSwitch": {
+      "title": "偵測到不同的 Google 帳號",
+      "intro": "這次登入的帳號（{{name}}）跟這台裝置上次同步的帳號不同。為了避免把不同帳號的資料混在一起，請選擇要怎麼處理這台裝置上現有的資料：",
+      "switch": "切換至此帳號",
+      "switchDesc": "清除本機的舊帳號資料，改為載入此帳號的雲端資料（此帳號還沒有雲端資料時會是全新的空白狀態）。清除前會先在本機留一份自動備份快照，需要時可以從設定頁還原。",
+      "merge": "將本機現有資料合併至此帳號",
+      "mergeDesc": "把這台裝置上的資料跟此帳號的雲端資料合併後上傳。只有在這些資料本來就屬於此帳號時才建議這樣做。",
+      "cancel": "取消登入",
+      "recommended": "建議"
+    },
     "help": "登入後資料會存在你 Google Drive 的應用程式專用空間，換裝置登入也能看到同一份資料。第一次登入會自動讀取舊版 ACACIA 的雲端備份。",
     "user": "Google 使用者",
     "nativeStatus": "只存在這台 iPhone（隨 iCloud 備份）",
@@ -948,7 +959,8 @@
       "auto": "自動",
       "manual": "手動",
       "beforeRestore": "還原前",
-      "beforeMigration": "轉換共享行程前"
+      "beforeMigration": "轉換共享行程前",
+      "beforeAccountSwitch": "切換帳號前"
     },
     "counts": "行程 {{events}}・待辦 {{tasks}}・記帳 {{shopping}}・庫存 {{inventory}}・訂閱 {{subscriptions}}",
     "restore": "還原",

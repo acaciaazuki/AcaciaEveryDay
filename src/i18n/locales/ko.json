@@ -440,6 +440,17 @@
     "needsPermission": "Google Drive 접근 권한이 허용되지 않았어요",
     "needsPermissionHelp": "Google 로그인 시 'Google Drive' 권한 체크박스를 선택하지 않아 동기화할 수 없어요. '다시 승인'을 누르고 Google 창에서 해당 권한을 선택한 뒤 계속하세요.",
     "grantPermission": "다시 승인",
+    "confirmAccount": "사용할 Google 계정을 확인하는 중…",
+    "accountSwitch": {
+      "title": "다른 Google 계정이 감지되었어요",
+      "intro": "이번에 로그인한 계정({{name}})이 이 기기에서 마지막으로 동기화한 계정과 달라요. 서로 다른 계정의 데이터가 섞이지 않도록 이 기기에 있는 데이터를 어떻게 할지 선택하세요:",
+      "switch": "이 계정으로 전환",
+      "switchDesc": "이 기기에 남아 있는 이전 계정의 데이터를 지우고 이 계정의 클라우드 데이터를 불러와요(이 계정에 클라우드 데이터가 없으면 새로운 빈 상태로 시작해요). 지우기 전에 이 기기에 자동 백업 스냅샷을 남겨 두니 필요하면 설정에서 복원할 수 있어요.",
+      "merge": "이 기기의 데이터를 이 계정에 병합",
+      "mergeDesc": "이 기기의 데이터와 이 계정의 클라우드 데이터를 병합해 업로드해요. 이 데이터가 원래 이 계정의 것일 때만 권장해요.",
+      "cancel": "로그인 취소",
+      "recommended": "권장"
+    },
     "help": "로그인하면 데이터가 Google Drive의 앱 전용 공간에 저장되어, 다른 기기에서 로그인해도 같은 데이터를 볼 수 있어요. 처음 로그인하면 이전 버전 ACACIA의 클라우드 백업을 자동으로 불러와요.",
     "user": "Google 사용자",
     "nativeStatus": "이 iPhone에만 저장(iCloud 백업 포함)",
@@ -948,7 +959,8 @@
       "auto": "자동",
       "manual": "수동",
       "beforeRestore": "복원 전",
-      "beforeMigration": "공유 일정 변환 전"
+      "beforeMigration": "공유 일정 변환 전",
+      "beforeAccountSwitch": "계정 전환 전"
     },
     "counts": "일정 {{events}} · 할 일 {{tasks}} · 가계부 {{shopping}} · 재고 {{inventory}} · 구독 {{subscriptions}}",
     "restore": "복원",

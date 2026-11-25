@@ -61,7 +61,7 @@ const zhTW: PolicyDoc = {
         '登入是選用功能，只用於雲端同步。登入時本服務透過 Google OAuth 向 Google 取得下列權限：',
         {
           list: [
-            '基本個人資料（userinfo.profile）：你的 Google 帳號姓名與大頭貼網址，只用來在畫面上顯示目前登入的帳號。這些資料只保留在瀏覽器記憶體中，關閉分頁即消失，不會寫入你的資料檔，也不會傳送給我們。',
+            '基本個人資料（userinfo.profile）：你的 Google 帳號姓名與大頭貼網址，只用來在畫面上顯示目前登入的帳號。這些資料只保留在瀏覽器記憶體中，關閉分頁即消失，不會寫入你的資料檔，也不會傳送給我們。另外，為了在你於同一個瀏覽器登入不同 Google 帳號時，先詢問你、避免把上一個帳號的資料合併到新帳號，本服務會把 Google 提供的帳號 ID 經 SHA-256 雜湊後的值存在這台裝置的 IndexedDB，只用來比對下次登入的是否為同一個帳號；它不含姓名或 Email，不會同步到 Drive，也不會傳送給我們。登出時會保留，使用「刪除所有資料」時刪除。',
             'Google Drive 應用程式專用資料夾（drive.appdata）：只能讀寫 ACACIA 自己建立的檔案，無法看到你 Drive 裡的其他任何檔案。',
           ],
         },
@@ -103,7 +103,7 @@ const zhTW: PolicyDoc = {
           list: [
             '主要資料存在你瀏覽器的 IndexedDB（資料庫名稱 acacia-next）。',
             '自動備份快照存在另一個 IndexedDB 資料庫（acacia-backups），最多保留最近 7 份，較舊的自動刪除。',
-            '小型偏好設定存在 localStorage；Google 存取權杖存在 sessionStorage（見 2.1）。',
+            '小型偏好設定存在 localStorage；Google 存取權杖存在 sessionStorage；上次同步帳號的雜湊值存在 IndexedDB（見 2.1）。',
           ],
         },
         { sub: '3.2 雲端同步：只存進你自己的 Google Drive' },
@@ -242,7 +242,7 @@ const ja: PolicyDoc = {
         'ログインは任意で、クラウド同期のためだけに使います。ログイン時、本サービスは Google OAuth を通じて次の権限を Google に求めます。',
         {
           list: [
-            '基本プロフィール（userinfo.profile）：Google アカウントの名前とプロフィール画像の URL。ログイン中のアカウントを画面に表示するためだけに使います。ブラウザのメモリ上にのみ保持し、タブを閉じると消えます。データファイルに書き込まれることも、私たちに送信されることもありません。',
+            '基本プロフィール（userinfo.profile）：Google アカウントの名前とプロフィール画像の URL。ログイン中のアカウントを画面に表示するためだけに使います。ブラウザのメモリ上にのみ保持し、タブを閉じると消えます。データファイルに書き込まれることも、私たちに送信されることもありません。また、同じブラウザで別の Google アカウントにログインしたときに、前のアカウントのデータを新しいアカウントへ統合してしまう前に確認できるよう、Google のアカウント ID を SHA-256 でハッシュ化した値をこの端末の IndexedDB に保存し、次回ログイン時に同じアカウントかどうかの照合だけに使います。名前やメールアドレスは含まず、ドライブに同期されることも、私たちに送信されることもありません。ログアウトしても保持され、「すべてのデータを削除」で削除されます。',
             'Google ドライブのアプリ専用フォルダ（drive.appdata）：ACACIA 自身が作成したファイルだけを読み書きでき、ドライブ内のほかのファイルは一切見られません。',
           ],
         },
@@ -284,7 +284,7 @@ const ja: PolicyDoc = {
           list: [
             '主なデータはブラウザの IndexedDB（データベース名 acacia-next）に保存します。',
             '自動バックアップのスナップショットは別の IndexedDB データベース（acacia-backups）に、最新 7 件まで保存し、古いものは自動的に削除します。',
-            '小さな設定は localStorage に、Google のアクセストークンは sessionStorage に保存します（2.1 参照）。',
+            '小さな設定は localStorage に、Google のアクセストークンは sessionStorage に、前回同期したアカウントのハッシュ値は IndexedDB に保存します（2.1 参照）。',
           ],
         },
         { sub: '3.2 クラウド同期：あなた自身の Google ドライブにのみ保存' },
@@ -423,7 +423,7 @@ const en: PolicyDoc = {
         'Signing in is optional and is used only for cloud sync. When you sign in, the Service asks Google, through Google OAuth, for the following permissions:',
         {
           list: [
-            'Basic profile (userinfo.profile): your Google account name and profile picture URL, used only to show which account is signed in. They are kept in browser memory only and disappear when you close the tab. They are never written to your data file or sent to us.',
+            'Basic profile (userinfo.profile): your Google account name and profile picture URL, used only to show which account is signed in. They are kept in browser memory only and disappear when you close the tab. They are never written to your data file or sent to us. In addition, so that the app can ask you first instead of merging the previous account’s data into a new one when you sign in with a different Google account in the same browser, a SHA-256 hash of your Google account ID is stored in this device’s IndexedDB and used only to check whether the next sign-in is the same account. It contains no name or email address, is not synced to Drive and is never sent to us. It is kept when you sign out and deleted by “Delete all data”.',
             'Google Drive app-specific folder (drive.appdata): ACACIA can read and write only the files it created itself and cannot see any other file in your Drive.',
           ],
         },
@@ -465,7 +465,7 @@ const en: PolicyDoc = {
           list: [
             'Your main data is stored in the browser’s IndexedDB (database name acacia-next).',
             'Automatic backup snapshots are stored in a separate IndexedDB database (acacia-backups). Up to the 7 most recent are kept; older ones are deleted automatically.',
-            'Small preferences are stored in localStorage, and the Google access token in sessionStorage (see 2.1).',
+            'Small preferences are stored in localStorage, the Google access token in sessionStorage, and the hash of the last synced account in IndexedDB (see 2.1).',
           ],
         },
         { sub: '3.2 Cloud sync: only in your own Google Drive' },

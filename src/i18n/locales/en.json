@@ -440,6 +440,17 @@
     "needsPermission": "Google Drive access not granted",
     "needsPermissionHelp": "The Google Drive permission box wasn't checked when you signed in, so sync can't run. Tap “Grant access”, check that permission in the Google window, and continue.",
     "grantPermission": "Grant access",
+    "confirmAccount": "Waiting for you to confirm the Google account…",
+    "accountSwitch": {
+      "title": "A different Google account",
+      "intro": "The account you just signed in with ({{name}}) is not the one this device last synced with. To keep different accounts’ data from mixing, choose what to do with the data already on this device:",
+      "switch": "Switch to this account",
+      "switchDesc": "Clear the previous account’s data from this device and load this account’s cloud data instead (if this account has no cloud data yet, you start fresh). A backup snapshot is kept on this device first, so you can restore it from Settings if needed.",
+      "merge": "Merge this device’s data into this account",
+      "mergeDesc": "Merge the data on this device with this account’s cloud data and upload the result. Only recommended if this data already belongs to this account.",
+      "cancel": "Cancel sign-in",
+      "recommended": "Recommended"
+    },
     "help": "After you sign in, your data is kept in your Google Drive's app-only space, so you see the same data on any device. The first sign-in also loads your backup from the old ACACIA.",
     "user": "Google user",
     "nativeStatus": "Saved on this iPhone only (included in iCloud backup)",
@@ -948,7 +959,8 @@
       "auto": "Auto",
       "manual": "Manual",
       "beforeRestore": "Before restore",
-      "beforeMigration": "Before converting shared events"
+      "beforeMigration": "Before converting shared events",
+      "beforeAccountSwitch": "Before account switch"
     },
     "counts": "Events {{events}} · Tasks {{tasks}} · Expenses {{shopping}} · Inventory {{inventory}} · Subscriptions {{subscriptions}}",
     "restore": "Restore",
