@@ -112,7 +112,7 @@ describe('設定頁區塊順序', () => {
     useAppStore.setState(emptyAppData())
   })
 
-  it('共享空間在雲端同步正下方，字體大小在刪除所有資料正上方', () => {
+  it('沒有共享空間區塊；資料備份與搬家在雲端同步正下方，字體大小在刪除所有資料正上方', () => {
     render(<MemoryRouter><SettingsPage /></MemoryRouter>)
     const titles = screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent?.trim() ?? '')
     const at = (name: string) => {
@@ -120,7 +120,8 @@ describe('設定頁區塊順序', () => {
       expect(i, name).toBeGreaterThanOrEqual(0)
       return i
     }
-    expect(at('共享空間')).toBe(at('雲端同步') + 1)
+    expect(titles.some((x) => x.endsWith('共享空間'))).toBe(false)
+    expect(at('資料備份與搬家')).toBe(at('雲端同步') + 1)
     expect(at('字體大小')).toBe(at('刪除所有資料') - 1)
   })
 })

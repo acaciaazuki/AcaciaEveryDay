@@ -1,38 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { TOMBSTONE_TTL } from './appMerge'
-import { toMaskedView } from './permissions'
 import { appDataSchema, emptyAppData, type CalendarEvent } from './schema'
-import type { SharedCalendarItem } from './sharing'
-import { hasTrashContent, isTrashExpired, liveEvents, purgeExpiredEvents, purgeSharedTrash, TRASH_RETENTION_MS, trashDaysLeft } from './trash'
+import { isTrashExpired, liveEvents, purgeExpiredEvents, TRASH_RETENTION_MS, trashDaysLeft, trashedEvents } from './trash'
 
 const NOW = 1_800_000_000_000
 const HOUR = 60 * 60 * 1000
 const DAY = 24 * HOUR
 const ev = (id: string, deletedAt?: number): CalendarEvent => ({ id, title: id, dateISO: '2026-11-25', start: '09:00', end: '10:00', note: '', ...(deletedAt !== undefined && { deletedAt }) })
-const item = (patch: Partial<SharedCalendarItem> = {}): SharedCalendarItem => ({
-  id: 'i1',
-  spaceId: 's1',
-  kind: 'event',
-  title: '家庭聚餐',
-  dateISO: '2026-11-25',
-  endDateISO: '',
-  start: '18:00',
-  end: '20:00',
-  location: '外婆家',
-  note: '帶水果',
-  details: {},
-  titleColor: '#c2583d',
-  bgColor: '#fff4f1',
-  icon: 'meal',
-  visibility: { mode: 'group_full', allowedUserIds: [], hiddenUserIds: [], busyLabel: '', maskedFields: [] },
-  createdBy: 'me',
-  createdAt: NOW - 40 * DAY,
-  version: 3,
-  updatedAt: NOW - 31 * DAY,
-  updatedBy: 'mom',
-  deletedAt: null,
-  ...patch,
-})
 
 describe('最近刪除：30 天保留', () => {
   it('30 天的毫秒數是 2,592,000,000', () => {
@@ -74,35 +47,8 @@ describe('最近刪除：30 天保留', () => {
     const clean = [ev('a')]
     expect(liveEvents(clean)).toBe(clean)
   })
-})
 
-describe('最近刪除：共享行程的清理', () => {
-  it('刪除滿 30 天：清成墓碑（版本、時間、刪除者都不變），不再出現在最近刪除', () => {
-    const deleted = item({ deletedAt: NOW - 30 * DAY })
-    const [out] = purgeSharedTrash([deleted], NOW)
-    expect(out).toMatchObject({ id: 'i1', version: 3, updatedAt: deleted.updatedAt, updatedBy: 'mom', deletedAt: deleted.deletedAt, title: '', note: '', location: '' })
-    expect(out!.titleColor).toBeUndefined()
-    expect(hasTrashContent(out!)).toBe(false)
-  })
-
-  it('未滿 30 天、沒有刪除的都不動；墓碑超過保留期限才整筆移除', () => {
-    const items = [item({ id: 'live' }), item({ id: 'recent', deletedAt: NOW - DAY })]
-    expect(purgeSharedTrash(items, NOW)).toBe(items)
-    const old = item({ id: 'old', deletedAt: NOW - TOMBSTONE_TTL, title: '', note: '', location: '' })
-    expect(purgeSharedTrash([old], NOW)).toEqual([])
-  })
-})
-
-describe('欄位遮罩：遮掉標題或類型時一併移除顏色與圖示', () => {
-  it('遮罩標題：顏色、圖示都不留', () => {
-    const v = toMaskedView(item(), ['title'])
-    expect(v.titleColor).toBeUndefined()
-    expect(v.bgColor).toBeUndefined()
-    expect(v.icon).toBeUndefined()
-  })
-
-  it('只遮罩地點：顏色與圖示照常顯示', () => {
-    const v = toMaskedView(item(), ['location'])
-    expect(v).toMatchObject({ titleColor: '#c2583d', bgColor: '#fff4f1', icon: 'meal', location: '' })
+  it('trashedEvents：只列出最近刪除，新刪除的在前面', () => {
+    expect(trashedEvents([ev('a'), ev('old', NOW - DAY), ev('new', NOW)]).map((e) => e.id)).toEqual(['new', 'old'])
   })
 })

@@ -71,7 +71,8 @@ export const useBackupStore = create<BackupState>()((set, get) => {
     await saveIndex(index)
     set(index)
     await Promise.all(r.removed.map(deleteSnapshotData))
-    if (reason !== 'beforeRestore') void pushCloud(meta, data)
+    // 還原前、轉換前的快照只留在本機，不蓋掉雲端備份槽
+    if (reason === 'auto' || reason === 'manual') void pushCloud(meta, data)
     return meta
   }
 

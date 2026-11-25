@@ -102,7 +102,6 @@ const zhTW: PolicyDoc = {
         {
           list: [
             '主要資料存在你瀏覽器的 IndexedDB（資料庫名稱 acacia-next）。',
-            '共享行事曆空間（家人、學校、工作等空間、成員名稱與角色、空間內的行程與隱私設定、忙閒投射規則）存在同一個 IndexedDB 的 acacia-spaces，跟主資料分開保存，不會放進主資料的同步檔與自動備份。目前成員是你在這台裝置上建立的模擬成員，資料不會傳給他們。',
             '自動備份快照存在另一個 IndexedDB 資料庫（acacia-backups），最多保留最近 7 份，較舊的自動刪除。',
             '小型偏好設定存在 localStorage；Google 存取權杖存在 sessionStorage（見 2.1）。',
           ],
@@ -113,7 +112,7 @@ const zhTW: PolicyDoc = {
           list: [
             'acacia_data_v2.json：同步用的完整資料。',
             'acacia_backup_v2.json：最新一份自動備份（每次自動備份時覆寫，不影響同步檔）。',
-            'acacia_spaces_v1.json：共享行事曆空間（家人、學校、工作等）的同步檔，在你開啟共享空間的雲端同步後才會建立。只包含你建立的行程，以及依各行程的可見性設定過濾後你有權看到的內容；不含本機的同意紀錄。',
+            'acacia_spaces_v1.json：舊版共享行事曆的同步檔。共享行事曆功能已移除，App 不再讀寫這個檔案；如果你的 Drive 裡還有，會在「刪除所有資料」時一併刪除。',
             'acacia_data.json：舊版 ACACIA 網站的同步檔。第一次登入時本服務會讀取它來搬移資料，但不會修改它。',
           ],
         },
@@ -165,7 +164,7 @@ const zhTW: PolicyDoc = {
             '自動備份快照：本機最多 7 份，超過時自動刪除最舊的一份；Drive 備份槽只保留最新一份。',
             '雲端同步檔：保留在你的 Google Drive，直到你刪除（見第 6 節）。',
             'Google 存取權杖：最長約一小時，關閉分頁或登出時刪除。',
-            '最近刪除：刪除的行程會先放在「最近刪除」30 天，期間可以還原；滿 30 天後自動永久刪除（在 App 啟動、同步或打開「最近刪除」時執行，不需要任何伺服器）。共享行程永久刪除後，只會留下不含任何內容的刪除標記，最多 180 天，讓你的其他裝置也跟著刪除。',
+            '最近刪除：刪除的行程會先放在「最近刪除」30 天，期間可以還原；滿 30 天後自動永久刪除（在 App 啟動、同步或打開「最近刪除」時執行，不需要任何伺服器）。',
           ],
         },
       ],
@@ -177,7 +176,7 @@ const zhTW: PolicyDoc = {
         '依個人資料保護法及 GDPR，你可以查詢、閱覽、取得副本、更正、刪除你的資料，或停止處理。由於資料由你自己保管，這些權利大多可以直接在 App 內行使：',
         { sub: '6.1 查閱與匯出（資料可攜）' },
         '到「設定 → 資料備份與搬家」按「匯出 JSON」，即可下載完整資料的 JSON 檔，可再匯入 ACACIA 或其他工具。',
-        '同一處也可以「匯出行事曆（.ics）」，產生標準 iCalendar 檔，匯入 Apple 行事曆、Google 日曆、Outlook 等 App；或「匯出共享空間（JSON）」保存共享行程。匯出的內容只包含你看得到的資料，其他成員設為只顯示忙碌的行程只有時間。檔案在你的裝置上產生，不會經過任何伺服器。',
+        '同一處也可以「匯出行事曆（.ics）」，把我的行事曆的行程產生成標準 iCalendar 檔，匯入 Apple 行事曆、Google 日曆、Outlook 等 App。檔案在你的裝置上產生，不會經過任何伺服器。',
         { sub: '6.2 更正與還原' },
         '所有內容都可以直接在 App 內修改。誤刪資料時，可以在「設定 → 資料備份與搬家 → 歷史備份」選擇快照一鍵還原（還原前會先為目前的資料留一份快照）。',
         { sub: '6.3 刪除所有本機與雲端資料' },
@@ -283,7 +282,6 @@ const ja: PolicyDoc = {
         {
           list: [
             '主なデータはブラウザの IndexedDB（データベース名 acacia-next）に保存します。',
-            '共有カレンダーのスペース（家族・学校・仕事などのスペース、メンバー名と役割、スペース内の予定と公開範囲の設定、予定ありの反映ルール）は同じ IndexedDB の acacia-spaces に、主なデータとは分けて保存し、主なデータの同期ファイルや自動バックアップには含めません。現在のメンバーはこの端末で作成したお試しのメンバーで、データがその人たちに送られることはありません。',
             '自動バックアップのスナップショットは別の IndexedDB データベース（acacia-backups）に、最新 7 件まで保存し、古いものは自動的に削除します。',
             '小さな設定は localStorage に、Google のアクセストークンは sessionStorage に保存します（2.1 参照）。',
           ],
@@ -294,7 +292,7 @@ const ja: PolicyDoc = {
           list: [
             'acacia_data_v2.json：同期用の全データ。',
             'acacia_backup_v2.json：最新の自動バックアップ 1 件（自動バックアップのたびに上書きされ、同期ファイルには影響しません）。',
-            'acacia_spaces_v1.json：共有カレンダーのスペース（家族・学校・仕事など）の同期ファイル。共有スペースのクラウド同期を有効にしたときにだけ作成されます。あなたが作成した予定と、各予定の公開範囲の設定に従ってあなたが閲覧できる内容だけを含み、端末の同意記録は含みません。',
+            'acacia_spaces_v1.json：旧バージョンの共有カレンダーの同期ファイル。共有カレンダー機能は削除されたため、アプリはこのファイルを読み書きしません。ドライブに残っている場合は「すべてのデータを削除」で一緒に削除されます。',
             'acacia_data.json：旧版 ACACIA サイトの同期ファイル。初回ログイン時にデータ移行のため読み込みますが、変更はしません。',
           ],
         },
@@ -346,7 +344,7 @@ const ja: PolicyDoc = {
             '自動バックアップ：端末上は最大 7 件で、超えると最も古いものを自動削除します。ドライブのバックアップ枠は最新の 1 件のみです。',
             'クラウド同期ファイル：削除するまであなたの Google ドライブに保存されます（第 6 節参照）。',
             'Google アクセストークン：最長約 1 時間。タブを閉じるかログアウトすると削除されます。',
-            '最近削除した項目：削除した予定はまず 30 日間「最近削除した項目」に保存され、その間は復元できます。30 日を過ぎると自動的に完全に削除されます（アプリの起動時、同期時、「最近削除した項目」を開いたときに実行され、サーバーは使いません）。共有予定を完全に削除した後は、内容を一切含まない削除マークだけが最長 180 日間残り、ほかの端末でも削除されるようにします。',
+            '最近削除した項目：削除した予定はまず 30 日間「最近削除した項目」に保存され、その間は復元できます。30 日を過ぎると自動的に完全に削除されます（アプリの起動時、同期時、「最近削除した項目」を開いたときに実行され、サーバーは使いません）。',
           ],
         },
       ],
@@ -358,7 +356,7 @@ const ja: PolicyDoc = {
         '個人資料保護法および GDPR に基づき、あなたはデータの照会、閲覧、写しの取得、訂正、削除、処理の停止を求めることができます。データはあなた自身が管理しているため、ほとんどの権利はアプリ内で直接行使できます。',
         { sub: '6.1 閲覧と書き出し（データポータビリティ）' },
         '「設定 → データのバックアップと移行」で「JSON を書き出す」を押すと、全データの JSON ファイルをダウンロードでき、ACACIA やほかのツールに読み込めます。',
-        '同じ場所から「カレンダーを書き出す（.ics）」で標準の iCalendar ファイルを作成し、Apple カレンダー、Google カレンダー、Outlook などに読み込めます。「共有スペースを書き出す（JSON）」で共有予定も保存できます。書き出す内容はあなたが見られるデータだけで、ほかのメンバーが予定ありのみ表示に設定した予定は時間だけです。ファイルは端末上で作成され、サーバーを経由しません。',
+        '同じ場所から「カレンダーを書き出す（.ics）」で、マイカレンダーの予定を標準の iCalendar ファイルにして、Apple カレンダー、Google カレンダー、Outlook などに読み込めます。ファイルは端末上で作成され、サーバーを経由しません。',
         { sub: '6.2 訂正と復元' },
         'すべての内容はアプリ内で直接編集できます。誤って削除した場合は、「設定 → データのバックアップと移行 → バックアップ履歴」からスナップショットを選んでワンタップで復元できます（復元前に現在のデータのスナップショットを自動で作成します）。',
         { sub: '6.3 端末とクラウドのデータをすべて削除' },
@@ -464,7 +462,6 @@ const en: PolicyDoc = {
         {
           list: [
             'Your main data is stored in the browser’s IndexedDB (database name acacia-next).',
-            'Shared calendar spaces (family, school, work and other spaces, member names and roles, the events in each space with their visibility settings, and busy-time rules) are stored separately under acacia-spaces in the same IndexedDB. They are not included in the main sync file or automatic backups. Members are currently sample members you create on this device, and nothing is sent to them.',
             'Automatic backup snapshots are stored in a separate IndexedDB database (acacia-backups). Up to the 7 most recent are kept; older ones are deleted automatically.',
             'Small preferences are stored in localStorage, and the Google access token in sessionStorage (see 2.1).',
           ],
@@ -475,7 +472,7 @@ const en: PolicyDoc = {
           list: [
             'acacia_data_v2.json: your full data for sync.',
             'acacia_backup_v2.json: the latest automatic backup (overwritten on each automatic backup; it does not affect the sync file).',
-            'acacia_spaces_v1.json: the sync file for shared calendar spaces (family, school, work and so on), created only once you turn on cloud sync for shared spaces. It contains only the entries you created and what each entry’s visibility settings allow you to see; it never includes the consent record stored on your device.',
+            'acacia_spaces_v1.json: the sync file of the former shared calendar feature. Shared calendars have been removed and the app no longer reads or writes this file; if it is still in your Drive, it is deleted along with everything else when you use “Delete all data”.',
             'acacia_data.json: the sync file of the previous ACACIA website. The Service reads it once on first sign-in to migrate your data but never modifies it.',
           ],
         },
@@ -527,7 +524,7 @@ const en: PolicyDoc = {
             'Automatic backups: up to 7 on your device, with the oldest removed automatically; the Drive backup slot keeps only the latest one.',
             'Cloud sync files: kept in your Google Drive until you delete them (see Section 6).',
             'Google access token: about one hour at most; deleted when you close the tab or sign out.',
-            'Recently deleted: deleted events stay in “Recently deleted” for 30 days and can be restored during that time; after 30 days they are permanently deleted automatically (when the app starts, syncs or opens “Recently deleted”, with no server involved). After a shared event is permanently deleted, only a deletion marker with no content remains, for up to 180 days, so your other devices delete it too.',
+            'Recently deleted: deleted events stay in “Recently deleted” for 30 days and can be restored during that time; after 30 days they are permanently deleted automatically (when the app starts, syncs or opens “Recently deleted”, with no server involved).',
           ],
         },
       ],
@@ -539,7 +536,7 @@ const en: PolicyDoc = {
         'Under the Personal Data Protection Act and the GDPR, you may request access to, a copy of, correction or deletion of your data, or ask us to stop processing it. Because you keep your own data, you can exercise most of these rights directly in the app:',
         { sub: '6.1 Access and export (data portability)' },
         'Go to “Settings → Backup and moving data” and tap “Export JSON” to download all your data as a JSON file, which can be imported into ACACIA or other tools.',
-        'In the same place, “Export calendar (.ics)” creates a standard iCalendar file you can import into Apple Calendar, Google Calendar, Outlook and other apps, and “Export shared spaces (JSON)” saves your shared events. Exports contain only what you can see; events other members set to show as busy contain only the time. Files are created on your device and never pass through a server.',
+        'In the same place, “Export calendar (.ics)” saves your calendar events as a standard iCalendar file you can import into Apple Calendar, Google Calendar, Outlook and other apps. Files are created on your device and never pass through a server.',
         { sub: '6.2 Correction and restore' },
         'You can edit everything directly in the app. If you delete something by mistake, choose a snapshot under “Settings → Backup and moving data → Backup history” and restore it in one tap (a snapshot of your current data is saved first).',
         { sub: '6.3 Delete all local and cloud data' },

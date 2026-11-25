@@ -107,7 +107,7 @@ export function BackupPanel() {
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-x-2 text-xs font-bold">
                     {formatStamp(s.createdAt, lng)}
-                    <span className={`rounded-full px-2 py-0.5 text-[length:calc(10px*var(--fs))] ${s.reason === 'beforeRestore' ? 'bg-[#fcf5d7] text-[#8a6d1d]' : 'bg-sage-light text-sage-dark'}`}>
+                    <span className={`rounded-full px-2 py-0.5 text-[length:calc(10px*var(--fs))] ${s.reason === 'beforeRestore' || s.reason === 'beforeMigration' ? 'bg-[#fcf5d7] text-[#8a6d1d]' : 'bg-sage-light text-sage-dark'}`}>
                       {t(`backup.reason.${s.reason}`)}
                     </span>
                   </div>

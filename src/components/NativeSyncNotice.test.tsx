@@ -5,7 +5,6 @@ import { setNativeForTests } from '../adapters/kv'
 import i18n from '../i18n'
 import { useSyncStore } from '../store/useSyncStore'
 import { BackupPanel } from './BackupPanel'
-import { SpacesSyncPanel } from './SpacesSyncPanel'
 import { SyncPanel } from './SyncPanel'
 
 const signIn = vi.fn()
@@ -46,16 +45,10 @@ describe('iOS App：Google 登入不可用時的提示', () => {
     expect(useSyncStore.getState()).toMatchObject({ status: 'signedOut', token: null })
   })
 
-  it('iOS：自動備份的雲端備份槽、共享空間同步也說明只存在這台 iPhone', () => {
+  it('iOS：自動備份的雲端備份槽也說明只存在這台 iPhone', () => {
     setNativeForTests(true)
-    render(
-      <>
-        <BackupPanel />
-        <SpacesSyncPanel readOnly={false} />
-      </>,
-    )
+    render(<BackupPanel />)
     expect(screen.getByText('iOS App 不支援；快照存在這台 iPhone，並隨 iCloud 備份')).toBeInTheDocument()
-    expect(screen.getByText(/共享空間只存在這台 iPhone/)).toBeInTheDocument()
     expect(screen.queryByText(/請先登入/)).toBeNull()
   })
 })

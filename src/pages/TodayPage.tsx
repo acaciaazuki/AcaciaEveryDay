@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BATCH_NOTES as ALL_BATCH_NOTES } from '../i18n/cross'
-import { Link, useNavigate } from 'react-router'
+import { Link } from 'react-router'
 import { Button } from '../components/Button'
 import { Icon } from '../components/AcaciaIcons'
 import { EventIconBadge } from '../components/EventIcon'
@@ -9,8 +9,6 @@ import { EventDialog } from '../components/EventDialog'
 import { HolidayCard } from '../components/HolidayAgenda'
 import { TodayHero } from '../components/TodayHero'
 import { WeatherArt } from '../components/WeatherArt'
-import { SharedCard, SharedDetailDialog } from '../components/SharedAgenda'
-import { sharedOn, type SharedEntry } from '../core/calendarView'
 import { RhythmDialog } from '../components/RhythmDialog'
 import { ShoppingBadge, ShoppingCard, ShoppingDetailDialog } from '../components/ShoppingAgenda'
 import { addDays, dateRange, toLocalISO } from '../core/date'
@@ -23,7 +21,6 @@ import { formatTime, formatTimeRange } from '../core/time'
 import { useNow } from '../hooks/useNow'
 import { useShoppingByDate } from '../hooks/useShoppingAgenda'
 import { useHolidaysByDate } from '../hooks/useHolidays'
-import { useVisibleCalendar } from '../hooks/useVisibleCalendar'
 import type { HolidayEntry } from '../core/holidays'
 import { useAppStore } from '../store/useAppStore'
 import { liveEvents } from '../core/trash'
@@ -45,8 +42,6 @@ const cardTitle = 'text-[length:calc(17px*var(--fs))] font-bold tracking-wide'
  */
 const BATCH_NOTES = new Set(ALL_BATCH_NOTES)
 const shownNote = (note: string) => (BATCH_NOTES.has(note.trim()) ? '' : note)
-const NO_SHOPPING = new Map()
-const NO_EVENTS: CalendarEvent[] = []
 /** 卡片右上角與底部的小連結（查看完整日程、加一個行程、調整、全部、新增待辦），跟著字體設定縮放 */
 const linkBtn = 'text-[length:calc(14px*var(--fs))] font-semibold text-sage hover:text-sage-dark'
 /** 字級 14px（跟著字體設定縮放） */
@@ -55,23 +50,16 @@ const TEXT_14 = 'text-[length:calc(14px*var(--fs))]'
 export function TodayPage() {
   const { t, i18n } = useTranslation()
   // 「最近刪除」裡的行程不顯示
-  const personalEvents = useAppStore((s) => liveEvents(s.events))
-  // 共享行程經過權限過濾；預覽其他成員時不顯示個人行程與購物
-  const vis = useVisibleCalendar()
-  const navigate = useNavigate()
-  const allEvents = vis.showPersonal ? personalEvents : NO_EVENTS
+  const allEvents = useAppStore((s) => liveEvents(s.events))
   const tasks = useAppStore((s) => s.tasks)
   const settings = useAppStore((s) => s.settings)
   const { wake, sleep } = rhythmTimes(settings)
   const [editingRhythm, setEditingRhythm] = useState(false)
-  const [editing, setEditing] = useState<CalendarEvent | SharedEntry | 'new' | null>(null)
-  const [viewingShared, setViewingShared] = useState<SharedEntry | null>(null)
-  const openShared = (x: SharedEntry) => (x.canEdit ? setEditing(x) : setViewingShared(x))
+  const [editing, setEditing] = useState<CalendarEvent | 'new' | null>(null)
   const [offset, setOffset] = useState(0) // 目前看的日期，相對今天的天數
   const [view, setView] = useState<View>('day')
   // 購物記帳連動進來的行程（唯讀）
-  const allShopping = useShoppingByDate()
-  const shopByDate = vis.showPersonal ? allShopping : NO_SHOPPING
+  const shopByDate = useShoppingByDate()
   const [viewingShop, setViewingShop] = useState<ShoppingEntry | null>(null)
   // 匯入的國定假日（唯讀），顯示在時間軸最上面
   const holidaysByDate = useHolidaysByDate()
@@ -82,9 +70,9 @@ export function TodayPage() {
   const viewDate = new Date(`${viewISO}T00:00`)
   const span = VIEW_DAYS[view]
   const days = dateRange(viewISO, span)
-  // 節奏與空檔：個人行程＋看得到的共享行程（忙閒區塊只用到時間，不含內容）
-  const busyOn = (d: string) => [...eventsOn(allEvents, d), ...sharedOn(vis.shared, d)]
-  const agenda = (d: string) => agendaOn(allEvents, shopByDate, d, vis.shared)
+  // 節奏與空檔：依當天的個人行程計算
+  const busyOn = (d: string) => eventsOn(allEvents, d)
+  const agenda = (d: string) => agendaOn(allEvents, shopByDate, d)
   const items = agenda(viewISO)
   // 行程數包含購物；節奏與自由時間只看一般行程（購物記帳只有時間點，沒有結束時間）
   const rangeCount = days.reduce((n, d) => n + agenda(d).length, 0)
@@ -118,11 +106,9 @@ export function TodayPage() {
         ]}
         // 只在手機顯示（681px 以上改用側邊欄）；行事曆從底部導覽列進入，不另放「查看月曆」
         actions={
-          vis.isSelf && (
-            <Button size="page" onClick={() => setEditing('new')}>
-              {t('today.addEvent')}
-            </Button>
-          )
+          <Button size="page" onClick={() => setEditing('new')}>
+            {t('today.addEvent')}
+          </Button>
         }
       />
 
@@ -165,9 +151,9 @@ export function TodayPage() {
             </ul>
           )}
           {view !== 'day' ? (
-            <RangeList days={days} agenda={agenda} holidays={(d) => holidaysByDate.get(d) ?? []} lng={lng} todayISO={todayISO} onEdit={setEditing} onShop={setViewingShop} onShared={openShared} />
+            <RangeList days={days} agenda={agenda} holidays={(d) => holidaysByDate.get(d) ?? []} lng={lng} todayISO={todayISO} onEdit={setEditing} onShop={setViewingShop} />
           ) : items.length === 0 ? (
-            <button type="button" disabled={!vis.isSelf} onClick={() => setEditing('new')} className="w-full rounded-xl border border-dashed border-line py-8 text-center text-muted hover:bg-oat">
+            <button type="button" onClick={() => setEditing('new')} className="w-full rounded-xl border border-dashed border-line py-8 text-center text-muted hover:bg-oat">
               {offset === 0 ? t('today.timelineEmpty') : t('today.timelineEmptyOther')}
             </button>
           ) : (
@@ -181,15 +167,6 @@ export function TodayPage() {
                       <ShoppingBadge className="relative z-10 ring-4 ring-paper" />
                       {next && <span aria-hidden className="absolute top-[calc(36px*var(--fs)+0.25rem)] -bottom-2 left-[calc(48px*var(--fs)+0.75rem+18px*var(--fs)-1px)] w-0.5 bg-[#e1eae5]" />}
                       <ShoppingCard entry={it.entry} onOpen={setViewingShop} />
-                    </li>
-                  )
-                if (it.kind === 'shared')
-                  return (
-                    <li key={it.id} className="relative grid grid-cols-[calc(48px*var(--fs))_calc(36px*var(--fs))_1fr] items-start gap-x-3">
-                      <TimelineTime hhmm={it.start} />
-                      <EventIconBadge icon={it.shared.access === 'busy' || it.shared.maskedFields.includes('title') ? 'default' : eventIconOf(it.shared.item)} className="relative z-10 ring-4 ring-paper" />
-                      {next && <span aria-hidden className="absolute top-[calc(36px*var(--fs)+0.25rem)] -bottom-2 left-[calc(48px*var(--fs)+0.75rem+18px*var(--fs)-1px)] w-0.5 bg-[#e1eae5]" />}
-                      <SharedCard entry={it.shared} onOpen={openShared} />
                     </li>
                   )
                 const e = it.event
@@ -224,7 +201,7 @@ export function TodayPage() {
               })}
             </ol>
           )}
-          {vis.isSelf && (view !== 'day' || items.length > 0) && (
+          {(view !== 'day' || items.length > 0) && (
             <button type="button" onClick={() => setEditing('new')} className={`${linkBtn} mt-6`}>
               {t('today.addOne')}
             </button>
@@ -277,13 +254,11 @@ export function TodayPage() {
       {editing && (
         <EventDialog
           key={editing === 'new' ? 'new' : editing.id}
-          event={editing === 'new' || 'access' in editing ? null : editing}
-          shared={editing !== 'new' && 'access' in editing ? editing : undefined}
+          event={editing === 'new' ? null : editing}
           date={viewISO}
           onClose={() => setEditing(null)}
         />
       )}
-      {viewingShared && <SharedDetailDialog entry={viewingShared} previewing={!vis.isSelf} onClose={() => setViewingShared(null)} onGoToSource={() => void navigate('/calendar')} />}
       {editingRhythm && <RhythmDialog onClose={() => setEditingRhythm(false)} />}
       {viewingShop && <ShoppingDetailDialog entry={viewingShop} onClose={() => setViewingShop(null)} />}
     </div>
@@ -311,7 +286,6 @@ function RangeList({
   todayISO,
   onEdit,
   onShop,
-  onShared,
 }: {
   days: string[]
   agenda: (iso: string) => AgendaItem[]
@@ -320,7 +294,6 @@ function RangeList({
   todayISO: string
   onEdit: (e: CalendarEvent) => void
   onShop: (x: ShoppingEntry) => void
-  onShared: (x: SharedEntry) => void
 }) {
   const { t } = useTranslation()
   const fmt = new Intl.DateTimeFormat(lng, { month: 'numeric', day: 'numeric', weekday: 'short' })
@@ -351,12 +324,6 @@ function RangeList({
                     return (
                       <li key={it.id}>
                         <ShoppingCard compact entry={it.entry} onOpen={onShop} />
-                      </li>
-                    )
-                  if (it.kind === 'shared')
-                    return (
-                      <li key={it.id}>
-                        <SharedCard compact entry={it.shared} onOpen={onShared} />
                       </li>
                     )
                   const e = it.event

@@ -73,7 +73,7 @@ npm run icons   # 需要 Playwright 的 Chromium（npx playwright install chromi
 
 ## 同步與衝突處理
 
-ACACIA 有兩種雲端同步，規則不同：
+雲端同步只有一個檔案：主資料 `acacia_data_v2.json`。
 
 ### 主資料（`acacia_data_v2.json`）
 
@@ -92,26 +92,15 @@ ACACIA 有兩種雲端同步，規則不同：
 - **舊資料相容：**`syncMeta` 是可省略的欄位，舊版 App 讀到會忽略。沒有修改紀錄的資料（舊版 App 寫的、或升級前的本機資料），每一筆都當作整份 `updatedAt` 的時間
 - **刪除標記保留 180 天**（`TOMBSTONE_TTL`），之後清掉，修改紀錄不會無限長大；離線超過 180 天的裝置，刪掉的資料可能會再出現
 
-### 共享空間（`acacia_spaces_v1.json`）
+### 已移除的共享行事曆
 
-共享行事曆以**每一筆行程**為單位合併（`src/core/syncEnvelope.ts`）：
+早期版本有「共享空間／忙碌時段同步」，已整個移除，回歸個人日常工具。舊資料的處理（`src/store/legacySpacesMigration.ts`）：
 
-- **合併規則（`pickWinner`）：**
-  1. 版本號（`version`，每次修改 +1）較大者勝
-  2. 版本相同但內容不同（兩台裝置各自從同一版修改）→ 記為衝突，`updatedAt` 較新者勝
-  3. 時間也相同 → 刪除優先（避免刪掉的行程復活），再依修改者 id 排序，確保每台裝置結果一致
-- **衝突提示：**發生衝突時同步狀態顯示「有行程在兩台裝置上同時被修改，已保留較新的版本」
-- **軟刪除：**刪除的行程、空間、忙碌同步規則都留下刪除標記（墓碑）並同步出去，其他裝置才不會把它帶回來
-- **離線編輯：**離線時照常修改，存在本機；恢復連線後先拉雲端合併、再把合併結果推回去，兩邊的修改都會保留（只有改到同一筆時依上面的規則取捨）
-- **權限：**送出的內容一律先經過權限過濾（`resolveCalendarItemForViewer`），別人只會收到自己看得到的部分；自己建立的完整資料不會被別人收到的遮罩副本蓋掉
-- **空間資訊：**空間名稱與成員依空間自己的版本號合併
-- **忙碌時段同步：**
-  - 規則以 `updatedAt` 合併
-  - 投射出去的忙碌區塊是即時算出來的；目標被移除或規則停用時，會送墓碑讓其他成員移除
-  - 「我的行事曆」當來源時，由個人行程的忙碌影子（只有時間）提供版本與刪除標記
-- **版本相容：**雲端檔案或本機資料來自較新版本的 App 時，停止同步並提示更新，不會覆寫（見 #67、#71）
+- **本機的 `acacia-spaces`：**第一次開啟新版時，把「自己建立、還沒刪除、所在空間還在」的共享行程轉成個人行程（地點、細節與跨日的結束日併進備註），轉換前先留一份本機快照（原因「轉換共享行程前」），並把舊資料原樣另存在快照資料庫；完成後清掉 `acacia-spaces` 與 `acacia-spaces-backups`。讀取或轉換失敗時整個跳過、不清除，也不擋畫面，下次開啟再試
+- **Drive 的 `acacia_spaces_v1.json`：**不再讀寫；「刪除所有資料」時一併刪除
+- **主資料同步檔：**本來就不含共享欄位；讀取時看不懂的欄位一律丟掉，不會出錯
 
-快照：主資料與共享空間各自有本機快照（`acacia-backups`、`acacia-spaces-backups`），可以在設定頁還原。
+快照：主資料的本機快照存在 `acacia-backups`，可以在設定頁還原。
 
 ## 資料夾
 
@@ -173,9 +162,8 @@ src/
 
 | 資料 | 網頁版 | iOS App |
 |---|---|---|
-| 主資料、共享空間 | IndexedDB | `Library/acacia/state/` 的 JSON 檔 |
+| 主資料 | IndexedDB | `Library/acacia/state/` 的 JSON 檔 |
 | 主資料快照 | IndexedDB（acacia-backups） | `Library/acacia/backups/` |
-| 共享空間快照 | IndexedDB（acacia-spaces-backups） | `Library/acacia/spacesBackups/` |
 | 使用條款同意紀錄 | IndexedDB（acacia-consent） | Preferences（UserDefaults） |
 
 - iOS 不用 WebView 的 IndexedDB：系統空間不足時可能清掉 WebView 的網站資料
@@ -204,12 +192,12 @@ npm run ios:sync
 npm run ios:open
 ```
 
-目前 iOS App 還不能用 Google 登入（Google 不允許在 App 內嵌的網頁做 OAuth，之後要改用原生登入外掛），所以 Drive 同步、共享空間雲端同步與雲端備份在 App 裡暫時無法使用；本機資料、快照與其他功能都正常。
+目前 iOS App 還不能用 Google 登入（Google 不允許在 App 內嵌的網頁做 OAuth，之後要改用原生登入外掛），所以 Drive 同步與雲端備份在 App 裡暫時無法使用；本機資料、快照與其他功能都正常。
 
 App 內的處理（`isNativeApp()` 判斷）：
 
 - 側邊欄與設定頁不顯示「Google 登入同步」按鈕，改成說明「只有本機資料與 iCloud 備份有效；需要 Google Drive 同步請改用網頁版」
-- 自動備份的「Google Drive 備份槽」、共享空間的雲端同步，也改成說明資料只存在這台 iPhone、隨 iCloud 備份
+- 自動備份的「Google Drive 備份槽」也改成說明資料只存在這台 iPhone、隨 iCloud 備份
 - 啟動時不會嘗試 Google 登入
 
 之後若要支援：評估 Capacitor 的原生 Google Sign-In 外掛（需要 Google Cloud 的 iOS 用戶端 ID 與 Xcode 設定），登入後沿用現有的 Drive 同步程式。
@@ -220,7 +208,7 @@ App 內的處理（`isNativeApp()` 判斷）：
 
 - [ ] **沒有追蹤、廣告、分析或當機回報 SDK：**`package.json` 的 dependencies 只有畫面、狀態、翻譯與 Capacitor 套件；新增任何會連外的套件前要先檢查
 - [ ] **地點搜尋 Proxy 不保存搜尋字詞：**`VITE_PLACES_PROXY_URL` 指向的 Cloudflare Worker 要關閉 Workers Logs／Logpush，程式只即時轉送查詢、不寫入任何儲存。若這個 Worker 不是自己經營的，搜尋字詞就屬於傳給第三方，要重新評估標示，或改成自己的 Worker
-- [ ] **沒有自己的伺服器接收使用者資料：**同步只寫使用者自己的 Google Drive 應用程式專用資料夾；`backendSyncProvider` 目前沒有啟用，啟用前要重新評估
+- [ ] **沒有自己的伺服器接收使用者資料：**同步只寫使用者自己的 Google Drive 應用程式專用資料夾
 - [ ] **資料保留期間與政策一致：**最近刪除 30 天（`src/core/trash.ts` 的 `TRASH_RETENTION_MS`）、刪除標記 180 天（`src/core/appMerge.ts` 的 `TOMBSTONE_TTL`）；改這兩個數字時要一起改政策並更新 `PRIVACY_VERSION`
 
 ## 從舊版搬資料
