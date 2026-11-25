@@ -45,7 +45,7 @@ const legacyRaw = (items: unknown[], spaces: unknown[] = [{ id: 'fam', name: '�
   JSON.stringify({ state: { selfId: ME, data: { schemaVersion: 2, ownerId: ME, spaces, items, busyProjectionRules: [], personalBusySlots: [] }, cloudSync: true }, version: 0 })
 
 describe('舊共享行程 → 個人行程（純函式）', () => {
-  it('只轉自己建立、未刪除、空間還在的原生行程；地點、細節與跨日結束日併進備註', () => {
+  it('只轉自己建立、未刪除、空間還在的原生行程；地點與細節併進備註，跨日保留結束日', () => {
     const events = legacySharedToEvents(
       legacyRaw([
         item({}),
@@ -60,7 +60,7 @@ describe('舊共享行程 → 個人行程（純函式）', () => {
     )
     expect(events).toEqual([
       { id: 'i1', title: '家庭聚餐', dateISO: '2026-12-20', start: '18:00', end: '20:00', note: '帶水果 · 外婆家', titleColor: '#8a3b2e', bgColor: '#fbe9e4', icon: 'meal' },
-      expect.objectContaining({ id: 'trip', title: '家庭旅遊', start: '', end: '', note: '王老師 · ～2026-12-22' }),
+      expect.objectContaining({ id: 'trip', title: '家庭旅遊', endDateISO: '2026-12-22', start: '', end: '', note: '王老師' }),
     ])
   })
 

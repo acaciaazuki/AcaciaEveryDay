@@ -4,6 +4,9 @@ import { Icon } from '../components/AcaciaIcons'
 import { BatchEventsDialog } from '../components/BatchEventsDialog'
 import { Toast } from '../components/Toast'
 import { TrashDialog } from '../components/TrashDialog'
+import { spanChipClass } from '../components/spanChip'
+import { spanTimeText, type DaySpan } from '../core/span'
+import { useRangeText } from '../hooks/useRangeText'
 import { Button } from '../components/Button'
 import { Dialog } from '../components/Dialog'
 import { EventDialog } from '../components/EventDialog'
@@ -32,6 +35,9 @@ const MAX_CHIPS = 6
 
 export function CalendarPage() {
   const { t, i18n } = useTranslation()
+  const range = useRangeText()
+  /** 月曆標籤的時間：同一天只顯示開始時間；跨日顯示這一天那一段（22:30 →、→ 02:00，中間的日子不顯示） */
+  const chipTime = (span: DaySpan) => (span.pos === 'single' ? (span.start ? formatTime(span.start) : '') : spanTimeText(span))
   // 「最近刪除」裡的行程不顯示
   const events = useAppStore((s) => liveEvents(s.events))
   const now = useNow()
@@ -247,11 +253,12 @@ export function CalendarPage() {
                           ev.stopPropagation()
                           setEditing(e)
                         }}
-                        className="truncate rounded px-1.5 py-px text-left text-[length:calc(10px*var(--fs))] leading-4 font-semibold"
+                        data-span={it.span.pos}
+                        className={`truncate ${spanChipClass(it.span)} px-1.5 py-px text-left text-[length:calc(10px*var(--fs))] leading-4 font-semibold`}
                         style={{ background: e.bgColor || '#eaf6ef', color: e.titleColor || '#263633' }}
                       >
-                        {/* 行事曆版面一律 24 小時制；整天的行程不加時間，讓名稱多露一點 */}
-                        {e.start && `${formatTime(e.start)} `}
+                        {/* 行事曆版面一律 24 小時制；整天的行程不加時間，讓名稱多露一點。跨日行程顯示這一天那一段（22:30 →、→ 02:00） */}
+                        {chipTime(it.span) && `${chipTime(it.span)} `}
                         {e.title}
                       </button>
                       )
@@ -320,7 +327,7 @@ export function CalendarPage() {
                       {e.title}
                     </strong>
                     <small className="text-[length:calc(11px*var(--fs))] text-muted">
-                      {formatTimeRange(e.start, e.end) || t('event.allDay')} {e.note && `· ${e.note}`}
+                      {range(e)} {e.note && `· ${e.note}`}
                     </small>
                   </button>
                 </li>

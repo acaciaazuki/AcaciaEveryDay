@@ -372,6 +372,7 @@
     "title": "What's the plan?",
     "titlePlaceholder": "e.g. Lunch with friends",
     "date": "Date",
+    "endDate": "End date",
     "start": "Start",
     "end": "End",
     "color": "Card color",
@@ -382,7 +383,8 @@
     "textColor": "Text color",
     "icon": "Icon",
     "iconAuto": "Auto",
-    "allDay": "All day"
+    "allDay": "All day",
+    "overnightHint": "Goes past midnight: ends on {{date}}"
   },
   "search": {
     "title": "Search",

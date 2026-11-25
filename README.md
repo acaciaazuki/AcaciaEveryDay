@@ -96,7 +96,7 @@ npm run icons   # 需要 Playwright 的 Chromium（npx playwright install chromi
 
 早期版本有「共享空間／忙碌時段同步」，已整個移除，回歸個人日常工具。舊資料的處理（`src/store/legacySpacesMigration.ts`）：
 
-- **本機的 `acacia-spaces`：**第一次開啟新版時，把「自己建立、還沒刪除、所在空間還在」的共享行程轉成個人行程（地點、細節與跨日的結束日併進備註），轉換前先留一份本機快照（原因「轉換共享行程前」），並把舊資料原樣另存在快照資料庫；完成後清掉 `acacia-spaces` 與 `acacia-spaces-backups`。讀取或轉換失敗時整個跳過、不清除，也不擋畫面，下次開啟再試
+- **本機的 `acacia-spaces`：**第一次開啟新版時，把「自己建立、還沒刪除、所在空間還在」的共享行程轉成個人行程（地點與細節併進備註，跨日行程保留結束日），轉換前先留一份本機快照（原因「轉換共享行程前」），並把舊資料原樣另存在快照資料庫；完成後清掉 `acacia-spaces` 與 `acacia-spaces-backups`。讀取或轉換失敗時整個跳過、不清除，也不擋畫面，下次開啟再試
 - **Drive 的 `acacia_spaces_v1.json`：**不再讀寫；「刪除所有資料」時一併刪除
 - **主資料同步檔：**本來就不含共享欄位；讀取時看不懂的欄位一律丟掉，不會出錯
 

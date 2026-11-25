@@ -1,4 +1,5 @@
 import type { Archive, CalendarEvent, Expense } from './schema'
+import { coversDay, spanOn, type DaySpan } from './span'
 
 /**
  * 購物記帳 → 行事曆的單向唯讀連動。
@@ -15,8 +16,11 @@ export interface ShoppingEntry {
   archived: boolean
 }
 
-/** 行事曆上的一列：一般行程或連動的購物記帳 */
-export type AgendaItem = { kind: 'event'; id: string; start: string; event: CalendarEvent } | { kind: 'shopping'; id: string; start: string; entry: ShoppingEntry }
+/**
+ * 行事曆上的一列：一般行程或連動的購物記帳。
+ * span：跨日（含跨午夜）的行程在這一天顯示的那一段（見 core/span.ts）；start 是這一段的開始時間，用來排序。
+ */
+export type AgendaItem = { kind: 'event'; id: string; start: string; span: DaySpan; event: CalendarEvent } | { kind: 'shopping'; id: string; start: string; entry: ShoppingEntry }
 
 /** 目前的購物清單加上所有歸檔裡的記帳；沒有日期的記帳無法放進行事曆，略過 */
 export function shoppingEntries(shopping: Expense[], archives: Archive[]): ShoppingEntry[] {
@@ -44,12 +48,18 @@ export function indexByDate(entries: ShoppingEntry[]): Map<string, ShoppingEntry
  */
 export function agendaOn(events: CalendarEvent[], byDate: Map<string, ShoppingEntry[]>, iso: string): AgendaItem[] {
   const items: AgendaItem[] = [
-    ...events.filter((e) => e.dateISO === iso).map((e): AgendaItem => ({ kind: 'event', id: e.id, start: e.start, event: e })),
+    ...events.filter((e) => coversDay(e, iso)).map((e): AgendaItem => {
+      const span = spanOn(e, iso)
+      return { kind: 'event', id: e.id, start: span.start, span, event: e }
+    }),
     ...(byDate.get(iso) ?? []).map((x): AgendaItem => ({ kind: 'shopping', id: `shop-${x.id}`, start: x.expense.time, entry: x })),
   ]
   const RANK = { event: 0, shopping: 1 } as const
   const rank = (i: AgendaItem) => RANK[i.kind]
-  return items.sort((a, b) => a.start.localeCompare(b.start) || rank(a) - rank(b))
+  // 跨日行程排在最前面、依開始日排：月曆上相鄰幾天的橫條才會盡量在同一列接起來
+  const multi = (i: AgendaItem) => (i.kind === 'event' && i.span.pos !== 'single' ? 0 : 1)
+  const firstDay = (i: AgendaItem) => (i.kind === 'event' ? i.event.dateISO : '')
+  return items.sort((a, b) => multi(a) - multi(b) || (multi(a) === 0 ? firstDay(a).localeCompare(firstDay(b)) || a.id.localeCompare(b.id) : 0) || a.start.localeCompare(b.start) || rank(a) - rank(b))
 }
 
 /** 前往購物清單並開啟（或在年度記帳本裡標出）這一筆 */
