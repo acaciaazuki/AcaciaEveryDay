@@ -1,7 +1,7 @@
-import { lazy, Suspense, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { useFontScale } from '../hooks/useFontScale'
 import { useTranslation } from 'react-i18next'
-import { Link, NavLink, Outlet, useLocation } from 'react-router'
+import { Link, NavLink, Outlet, useLocation, useNavigation } from 'react-router'
 import { Icon } from '../components/AcaciaIcons'
 import type { IconName } from '../core/icons'
 import { BootSplash, BrandLogo } from '../components/BrandMark'
@@ -21,6 +21,7 @@ import { useSpacesStore } from '../store/useSpacesStore'
 import { Button } from '../components/Button'
 import { EventDialog } from '../components/EventDialog'
 import { useConsentStore } from '../store/useConsentStore'
+import { prefetchPages } from './prefetch'
 
 // 同意面板含政策全文與授權清單，只有需要詢問時才下載
 const ConsentGate = lazy(() => import('../components/ConsentGate'))
@@ -70,6 +71,8 @@ function AppShell() {
   const isSelf = useSpacesStore((s) => s.viewerId === s.selfId)
   useFontScale()
   useReminderMonitor()
+  // 畫面顯示後，閒置時先下載其他頁面的程式，之後切換頁面不用等
+  useEffect(() => prefetchPages(), [])
   const { pathname } = useLocation()
   // 行事曆撐滿視窗高度、最寬 2000px，月曆才放得下較多行程
   const wide = pathname.startsWith('/calendar')
@@ -79,6 +82,7 @@ function AppShell() {
 
   return (
     <div className="min-h-dvh">
+      <PageLoadingBar />
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-60 flex-col border-r border-line bg-paper px-4 py-6 min-[681px]:flex">
         <BrandLogo name={t('app.name')} className="px-2.5 pb-6" />
         {isSelf && (
@@ -189,6 +193,21 @@ function AppShell() {
           </NavLink>
         ))}
       </nav>
+    </div>
+  )
+}
+
+/**
+ * 切換頁面時，新頁面的程式還在下載就在畫面最上方顯示進度條，
+ * 讓人知道有按到、正在載入（不然畫面停在原頁，看起來像沒反應）。很快載完時（0.15 秒內）不顯示，避免閃一下。
+ */
+function PageLoadingBar() {
+  const { t } = useTranslation()
+  const loading = useNavigation().state === 'loading'
+  if (!loading) return null
+  return (
+    <div role="progressbar" aria-label={t('app.loading')} data-page-loading className="pointer-events-none fixed inset-x-0 top-0 z-[70] h-[3px] overflow-hidden opacity-0 animate-[page-loading-in_0s_150ms_forwards]">
+      <div className="h-full w-1/3 rounded-full bg-sage animate-[page-loading_1.1s_ease-in-out_infinite]" />
     </div>
   )
 }

@@ -47,8 +47,33 @@ export function canonical(value: unknown): string {
     ) ?? ''
   )
 }
-/** 不受裝置語言影響的字串比較 */
-const cmp = (x: string, y: string) => (x < y ? -1 : x > y ? 1 : 0)
+
+/**
+ * 內容是否相同（結果跟比較 canonical 字串一樣，但不用把整筆資料轉成字串，快很多）：
+ * 物件不看 key 順序、值是 undefined 的 key 視為不存在（跟 JSON 一樣）。
+ */
+export function sameContent(x: unknown, y: unknown): boolean {
+  if (x === y) return true
+  if (typeof x !== 'object' || typeof y !== 'object' || x === null || y === null) {
+    // JSON 裡 undefined 不存在、NaN 變成 null；資料本身不會出現這些，這裡只求跟 canonical 一致
+    return x === undefined && y === undefined
+  }
+  if (Array.isArray(x) || Array.isArray(y)) {
+    if (!Array.isArray(x) || !Array.isArray(y) || x.length !== y.length) return false
+    for (let i = 0; i < x.length; i++) if (!sameContent(x[i], y[i])) return false
+    return true
+  }
+  const a = x as Record<string, unknown>
+  const b = y as Record<string, unknown>
+  let n = 0
+  for (const k in a) {
+    if (a[k] === undefined) continue
+    n++
+    if (!sameContent(a[k], b[k])) return false
+  }
+  for (const k in b) if (b[k] !== undefined) n--
+  return n === 0
+}
 
 const emptyMeta = (base: number): SyncMeta => ({ base, t: {}, del: {} })
 
@@ -58,13 +83,25 @@ const emptyMeta = (base: number): SyncMeta => ({ base, t: {}, del: {} })
  */
 export function trackChanges(prev: AppData, next: AppData, now: number): SyncMeta {
   const before = prev.syncMeta ?? emptyMeta(prev.updatedAt)
-  const t = { ...before.t }
-  const del = { ...before.del }
+  // 有變動時才複製修改紀錄；完全沒變時回傳原本的物件（store 就不用重寫、也不會多存一次）
+  let t = before.t
+  let del = before.del
+  let changed = false
+  const own = () => {
+    if (changed) return
+    changed = true
+    t = { ...before.t }
+    del = { ...before.del }
+  }
   const touch = (key: string) => {
+    if (t[key] === now && !(key in del)) return
+    own()
     t[key] = now
     delete del[key]
   }
   const remove = (key: string) => {
+    if (del[key] === now && !(key in t)) return
+    own()
     del[key] = now
     delete t[key]
   }
@@ -77,7 +114,7 @@ export function trackChanges(prev: AppData, next: AppData, now: number): SyncMet
     const nextById = new Map(b.map((x) => [keyOf(name, x), x]))
     for (const [id, item] of nextById) {
       const old = prevById.get(id)
-      if (old === undefined || (old !== item && canonical(old) !== canonical(item))) touch(`${name}:${id}`)
+      if (old === undefined || (old !== item && !sameContent(old, item))) touch(`${name}:${id}`)
     }
     for (const id of prevById.keys()) if (!nextById.has(id)) remove(`${name}:${id}`)
     // 順序：兩邊都有的紀錄，相對順序變了才算（新增、刪除不算改順序）
@@ -90,11 +127,12 @@ export function trackChanges(prev: AppData, next: AppData, now: number): SyncMet
     for (const k of keys) {
       const x = (prev.settings as Record<string, unknown>)[k]
       const y = (next.settings as Record<string, unknown>)[k]
-      if (x !== y && canonical(x) !== canonical(y)) touch(`settings:${k}`)
+      if (x !== y && !sameContent(x, y)) touch(`settings:${k}`)
     }
   }
-  for (const f of FIELDS) if (prev[f] !== next[f] && canonical(prev[f]) !== canonical(next[f])) touch(`field:${f}`)
+  for (const f of FIELDS) if (prev[f] !== next[f] && !sameContent(prev[f], next[f])) touch(`field:${f}`)
 
+  if (!changed) return before
   return { base: before.base, t, del }
 }
 
@@ -109,19 +147,28 @@ type Side = ReturnType<typeof sideOf>
  * 兩邊對同一個 key 的結果：誰的版本勝出、或已刪除。
  * 比較「本機修改」「本機刪除」「雲端修改」「雲端刪除」四個時間，最新的那個決定結果；
  * 時間相同時刪除優先（避免刪掉的又復活），再用內容排序，確保每台裝置結果一致。
+ * 內容排序要把資料轉成字串，很花時間，所以只在兩邊修改時間剛好相同、內容又不一樣時才做。
  */
 function decide(key: string, a: Side, aHas: boolean, aValue: unknown, b: Side, bHas: boolean, bValue: unknown): { keep: 'a' | 'b' | null; time: number } {
-  type Event = { kind: 'a' | 'b' | 'del'; time: number; order: string }
-  const events: Event[] = []
-  if (aHas) events.push({ kind: 'a', time: a.time(key), order: canonical(aValue) })
-  if (bHas) events.push({ kind: 'b', time: b.time(key), order: canonical(bValue) })
+  const at = aHas ? a.time(key) : -Infinity
+  const bt = bHas ? b.time(key) : -Infinity
   const ad = a.deleted(key)
   const bd = b.deleted(key)
-  if (ad !== undefined) events.push({ kind: 'del', time: ad, order: '' })
-  if (bd !== undefined) events.push({ kind: 'del', time: bd, order: '' })
-  events.sort((x, y) => y.time - x.time || (x.kind === 'del' ? -1 : y.kind === 'del' ? 1 : cmp(y.order, x.order)))
-  const top = events[0]!
-  return { keep: top.kind === 'del' ? null : top.kind, time: top.time }
+  const delTime = Math.max(ad ?? -Infinity, bd ?? -Infinity)
+  const liveTime = Math.max(at, bt)
+  if (delTime !== -Infinity && delTime >= liveTime) return { keep: null, time: delTime }
+  if (at > bt) return { keep: 'a', time: at }
+  if (bt > at) return { keep: 'b', time: bt }
+  // 時間相同：內容一樣就用本機的；不一樣時內容排序較大的勝出
+  if (sameContent(aValue, bValue)) return { keep: 'a', time: at }
+  return { keep: canonical(aValue) > canonical(bValue) ? 'a' : 'b', time: at }
+}
+
+/** 合併結果，加上「跟本機一樣嗎」「跟雲端一樣嗎」（不看 updatedAt），同步時用來決定要不要套用、要不要上傳 */
+export interface MergeResult {
+  data: AppData
+  sameAsLocal: boolean
+  sameAsRemote: boolean
 }
 
 /**
@@ -129,9 +176,19 @@ function decide(key: string, a: Side, aHas: boolean, aValue: unknown, b: Side, b
  * now 用來清掉太舊的刪除標記。
  */
 export function mergeAppData(local: AppData, remote: AppData, now: number): AppData {
+  return mergeAppDataWithDiff(local, remote, now).data
+}
+
+/**
+ * 同 mergeAppData，並在逐筆比較的同時判斷結果跟兩邊是否相同，
+ * 不必事後再把整份資料轉成字串比對（資料多時那一步非常慢，手機會卡住）。
+ */
+export function mergeAppDataWithDiff(local: AppData, remote: AppData, now: number): MergeResult {
   const a = sideOf(local)
   const b = sideOf(remote)
   const base = Math.min(a.meta.base, b.meta.base)
+  let sameAsLocal = true
+  let sameAsRemote = true
   /** 修改時間等於 base 的不用記（沒記的就當作 base），兩邊同步後的修改紀錄才會完全相同、不會一直重新上傳 */
   const t: Record<string, number> = {}
   const record = (key: string, time: number) => {
@@ -153,12 +210,23 @@ export function mergeAppData(local: AppData, remote: AppData, now: number): AppD
     const result = new Map<string, unknown>()
     for (const id of new Set([...aById.keys(), ...bById.keys()])) {
       const key = `${name}:${id}`
-      const r = decide(key, a, aById.has(id), aById.get(id), b, bById.has(id), bById.get(id))
-      if (r.keep === null) keepTombstone(key, r.time)
-      else {
-        result.set(id, r.keep === 'a' ? aById.get(id) : bById.get(id))
+      const aHas = aById.has(id)
+      const bHas = bById.has(id)
+      const r = decide(key, a, aHas, aById.get(id), b, bHas, bById.get(id))
+      if (r.keep === null) {
+        keepTombstone(key, r.time)
+        if (aHas) sameAsLocal = false
+        if (bHas) sameAsRemote = false
+      } else {
+        const value = r.keep === 'a' ? aById.get(id) : bById.get(id)
+        result.set(id, value)
         kept.add(key)
         record(key, r.time)
+        // 勝出的那一邊一定相同；另一邊要比對內容（兩邊都有、內容又一樣時也算相同）
+        const otherHas = r.keep === 'a' ? bHas : aHas
+        const same = otherHas && sameContent(aById.get(id), bById.get(id))
+        if (r.keep === 'a' && !same) sameAsRemote = false
+        if (r.keep === 'b' && !same) sameAsLocal = false
       }
     }
     // 順序：較新的那一邊為準，另一邊才有的接在後面
@@ -169,6 +237,8 @@ export function mergeAppData(local: AppData, remote: AppData, now: number): AppD
     const ids = [...new Set([...first, ...second].map((x) => keyOf(name, x)))].filter((id) => result.has(id))
     ;(out as Record<string, unknown>)[name] = ids.map((id) => result.get(id))
     record(orderKey, Math.max(aOrder, bOrder))
+    if (sameAsLocal && !sameIds(ids, aItems, name)) sameAsLocal = false
+    if (sameAsRemote && !sameIds(ids, bItems, name)) sameAsRemote = false
   }
 
   const settings: Record<string, unknown> = {}
@@ -181,6 +251,10 @@ export function mergeAppData(local: AppData, remote: AppData, now: number): AppD
     const value = r.keep === 'b' ? bSettings[k] : aSettings[k]
     if (value !== undefined) settings[k] = value
     record(key, r.time)
+    if (!sameContent(aSettings[k], bSettings[k])) {
+      if (r.keep === 'b') sameAsLocal = false
+      else sameAsRemote = false
+    }
   }
   out.settings = settings as AppData['settings']
 
@@ -189,6 +263,10 @@ export function mergeAppData(local: AppData, remote: AppData, now: number): AppD
     const r = decide(key, a, true, local[f], b, true, remote[f])
     ;(out as Record<string, unknown>)[f] = r.keep === 'b' ? remote[f] : local[f]
     record(key, r.time)
+    if (!sameContent(local[f], remote[f])) {
+      if (r.keep === 'b') sameAsLocal = false
+      else sameAsRemote = false
+    }
   }
 
   // 兩邊都已經沒有這筆紀錄的刪除標記也要保留：還沒同步的第三台裝置手上可能還有舊資料，不能讓它復活
@@ -198,8 +276,20 @@ export function mergeAppData(local: AppData, remote: AppData, now: number): AppD
 
   out.updatedAt = Math.max(local.updatedAt, remote.updatedAt)
   out.syncMeta = { base, t, del }
-  return out
+  // 修改紀錄也要一樣（另一台裝置合併時要用），只比對 key 與時間，很快
+  if (sameAsLocal && !sameContent(local.syncMeta, out.syncMeta)) sameAsLocal = false
+  if (sameAsRemote && !sameContent(remote.syncMeta, out.syncMeta)) sameAsRemote = false
+  // 其他欄位（例如 schemaVersion）沿用本機；跟雲端不同時要上傳
+  if (sameAsRemote && local.schemaVersion !== remote.schemaVersion) sameAsRemote = false
+  return { data: out, sameAsLocal, sameAsRemote }
+}
+
+/** 合併後的順序（ids）跟某一邊的清單是否完全一樣 */
+function sameIds(ids: readonly string[], items: readonly unknown[], name: CollectionName): boolean {
+  if (ids.length !== items.length) return false
+  for (let i = 0; i < ids.length; i++) if (ids[i] !== keyOf(name, items[i])) return false
+  return true
 }
 
 /** 兩份資料內容是否相同（不看 updatedAt；用來判斷要不要套用到本機、要不要上傳） */
-export const sameAppData = (x: AppData, y: AppData) => canonical({ ...x, updatedAt: 0 }) === canonical({ ...y, updatedAt: 0 })
+export const sameAppData = (x: AppData, y: AppData) => sameContent({ ...x, updatedAt: 0 }, { ...y, updatedAt: 0 })

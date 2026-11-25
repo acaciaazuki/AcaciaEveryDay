@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { canonical, mergeAppData, sameAppData, TOMBSTONE_TTL, trackChanges } from './appMerge'
+import { canonical, mergeAppData, mergeAppDataWithDiff, sameAppData, sameContent, TOMBSTONE_TTL, trackChanges } from './appMerge'
 import { emptyAppData, type AppData, type Task } from './schema'
 
 const task = (id: string, title = id, done = false): Task => ({ id, title, loc: '', date: '', time: '', done })
@@ -147,5 +147,56 @@ describe('修改紀錄 trackChanges', () => {
     const restored = prepareRestore(snapshot, T0 + 200, current)
     const merged = mergeAppData(restored, current, T0 + 300)
     expect(titles(merged)).toEqual(['a', 'b', 'c'])
+  })
+})
+
+describe('效能：不必整份轉成字串比對', () => {
+  it('sameContent 跟比較 canonical 字串的結果一致（不看 key 順序、undefined 的 key 視為不存在）', () => {
+    const cases: [unknown, unknown][] = [
+      [{ a: 1, b: [1, { c: 2 }] }, { b: [1, { c: 2 }], a: 1 }],
+      [{ a: 1, x: undefined }, { a: 1 }],
+      [{ a: 1 }, { a: 2 }],
+      [[1, 2], [2, 1]],
+      [{ a: [] }, { a: {} }],
+      [null, {}],
+      [undefined, undefined],
+      ['1', 1],
+      [{ a: { b: null } }, { a: { b: null } }],
+    ]
+    for (const [x, y] of cases) expect(sameContent(x, y)).toBe(canonical(x) === canonical(y))
+  })
+
+  it('資料沒變時 trackChanges 回傳原本的修改紀錄（同一個物件），不重建', () => {
+    const start = base()
+    expect(trackChanges(start, { ...start, tasks: start.tasks.map((x) => ({ ...x })) }, T0 + 5)).toBe(start.syncMeta)
+    expect(trackChanges(start, { ...start }, T0 + 5)).toBe(start.syncMeta)
+    expect(trackChanges(start, { ...start, tasks: [...start.tasks, task('d')] }, T0 + 5)).not.toBe(start.syncMeta)
+  })
+
+  it('合併時順便判斷「跟本機／雲端一樣嗎」，結果跟整份比對（sameAppData）一致', () => {
+    const scenarios: [AppData, AppData][] = []
+    const b0 = base()
+    scenarios.push([b0, base()])
+    scenarios.push([device(base()).edit(T0 + 10, { tasks: [task('a', '改')] }).data, base()])
+    scenarios.push([base(), device(base()).edit(T0 + 10, { tasks: [task('a', '改'), task('b'), task('c')] }).data])
+    scenarios.push([device(base()).edit(T0 + 10, { places: [place('p2'), place('p1')] }).data, device(base()).edit(T0 + 20, { tasks: [task('x')] }).data])
+    scenarios.push([device(base()).edit(T0 + 10, { settings: { ...b0.settings, currency: 'JPY' } }).data, base()])
+    scenarios.push([device(base()).edit(T0 + 10, { invCats: { ...b0.invCats, order: ['z'] } }).data, device(base()).edit(T0 + 10, { invCats: { ...b0.invCats, order: ['y'] } }).data])
+    // 同一時間各改一筆內容不同：用內容排序決定
+    scenarios.push([device(base()).edit(T0 + 10, { tasks: [task('a', '甲'), task('b'), task('c')] }).data, device(base()).edit(T0 + 10, { tasks: [task('a', '乙'), task('b'), task('c')] }).data])
+    // 舊資料沒有修改紀錄
+    scenarios.push([{ ...emptyAppData(), tasks: [task('a')], updatedAt: T0 }, base()])
+    // 已同步的結果再合併一次：兩邊都相同
+    const once = mergeAppData(device(base()).edit(T0 + 10, { tasks: [task('a', '改')] }).data, base(), T0 + 20)
+    scenarios.push([once, JSON.parse(JSON.stringify(once)) as AppData])
+    for (const [local, remote] of scenarios) {
+      for (const [x, y] of [[local, remote], [remote, local]] as const) {
+        const r = mergeAppDataWithDiff(x, y, T0 + 50)
+        expect(r.data).toEqual(mergeAppData(x, y, T0 + 50))
+        expect(r.sameAsLocal).toBe(sameAppData(r.data, x))
+        expect(r.sameAsRemote).toBe(sameAppData(r.data, y))
+      }
+    }
+    expect(mergeAppDataWithDiff(once, JSON.parse(JSON.stringify(once)) as AppData, T0 + 50)).toMatchObject({ sameAsLocal: true, sameAsRemote: true })
   })
 })

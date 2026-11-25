@@ -125,7 +125,9 @@ export const useAppStore = create<AppState>()(
         rawSet((s) => {
           const patch = typeof partial === 'function' ? partial(s) : partial
           const next = { ...s, ...patch }
-          return { ...patch, syncMeta: trackChanges(s, next, Date.now()) }
+          const syncMeta = trackChanges(s, next, Date.now())
+          // 資料沒變（例如只改了畫面狀態）時沿用原本的修改紀錄，不重建
+          return syncMeta === s.syncMeta ? patch : { ...patch, syncMeta }
         })
       return {
       ...emptyAppData(),
