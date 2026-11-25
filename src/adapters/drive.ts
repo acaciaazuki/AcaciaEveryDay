@@ -12,9 +12,34 @@ export const SPACES_DRIVE_FILE = 'acacia_spaces_v1.json'
 
 export class DriveError extends Error {
   readonly status?: number
-  constructor(message: string, status?: number) {
+  /** Google 錯誤回應裡的原因代碼（例如 insufficientPermissions、ACCESS_TOKEN_SCOPE_INSUFFICIENT） */
+  readonly reasons: readonly string[]
+  constructor(message: string, status?: number, reasons: readonly string[] = []) {
     super(message)
     this.status = status
+    this.reasons = reasons
+  }
+}
+
+/** 權限不足的原因代碼：舊格式 errors[].reason 與新格式 details[].reason 都可能出現 */
+const SCOPE_REASONS = new Set(['insufficientPermissions', 'ACCESS_TOKEN_SCOPE_INSUFFICIENT'])
+
+/**
+ * 是否為「token 沒有 drive.appdata 權限」造成的 403：
+ * 使用者登入時沒勾選 Google 雲端硬碟權限方塊就會這樣，重送同一個 token 不會好，必須重新授權。
+ * Drive API 未啟用（accessNotConfigured）等其他 403 不算在內。
+ */
+export function isInsufficientPermission(e: unknown): boolean {
+  return e instanceof DriveError && e.status === 403 && e.reasons.some((r) => SCOPE_REASONS.has(r))
+}
+
+/** 從 Google API 的錯誤內容取出所有原因代碼；內容不是 JSON 時回傳空陣列 */
+async function errorReasons(res: Response): Promise<string[]> {
+  try {
+    const body = (await res.json()) as { error?: { errors?: { reason?: string }[]; details?: { reason?: string }[] } }
+    return [...(body.error?.errors ?? []), ...(body.error?.details ?? [])].map((x) => x.reason).filter((r): r is string => typeof r === 'string')
+  } catch {
+    return []
   }
 }
 
@@ -22,7 +47,7 @@ const api = 'https://www.googleapis.com'
 
 async function call(token: string, url: string, init: RequestInit = {}) {
   const res = await fetch(url, { ...init, headers: { Authorization: `Bearer ${token}`, ...init.headers } })
-  if (!res.ok) throw new DriveError(`Drive ${res.status}`, res.status)
+  if (!res.ok) throw new DriveError(`Drive ${res.status}`, res.status, await errorReasons(res))
   return res
 }
 
@@ -52,5 +77,5 @@ export async function upload(token: string, id: string | null, name: string, dat
 /** 刪除檔案（「刪除所有資料」用）。檔案已不存在時視為成功 */
 export async function deleteFile(token: string, id: string): Promise<void> {
   const res = await fetch(`${api}/drive/v3/files/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } })
-  if (!res.ok && res.status !== 404) throw new DriveError(`Drive ${res.status}`, res.status)
+  if (!res.ok && res.status !== 404) throw new DriveError(`Drive ${res.status}`, res.status, await errorReasons(res))
 }

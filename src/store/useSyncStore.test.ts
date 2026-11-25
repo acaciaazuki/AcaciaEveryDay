@@ -2,20 +2,33 @@ import 'fake-indexeddb/auto'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { emptyAppData } from '../core/schema'
 
+const auth = vi.hoisted(() => ({
+  MissingDriveScopeError: class extends Error {},
+  signIn: vi.fn(async (_o?: { consent?: boolean }) => ({ token: 'tok', expiresAt: Date.now() + 3600_000 })),
+  clearStoredToken: vi.fn(),
+}))
 vi.mock('../adapters/googleAuth', () => ({
   restoreToken: () => null,
-  signIn: async () => ({ token: 'tok', expiresAt: Date.now() + 3600_000 }),
+  signIn: auth.signIn,
   signOut: async () => {},
+  clearStoredToken: auth.clearStoredToken,
+  MissingDriveScopeError: auth.MissingDriveScopeError,
   fetchProfile: async () => ({ name: 'QQ' }),
 }))
 
 const files: Record<string, unknown> = {}
 const uploads: { id: string | null; name: string; data: unknown }[] = []
-vi.mock('../adapters/drive', () => ({
-  DRIVE_FILE: 'acacia_data_v2.json',
-  LEGACY_DRIVE_FILE: 'acacia_data.json',
-  SPACES_DRIVE_FILE: 'acacia_spaces_v1.json',
-  findFile: async (_t: string, name: string) => (name in files ? name : null),
+/** 設成 true 時，Drive 回應 403 權限不足（模擬登入時漏勾 Google 雲端硬碟權限） */
+let forbidden = false
+vi.mock('../adapters/drive', async (importActual) => ({
+  ...(await importActual<typeof import('../adapters/drive')>()),
+  findFile: async (_t: string, name: string) => {
+    if (forbidden) {
+      const { DriveError } = await importActual<typeof import('../adapters/drive')>()
+      throw new DriveError('Drive 403', 403, ['insufficientPermissions'])
+    }
+    return name in files ? name : null
+  },
   download: async (_t: string, id: string) => files[id],
   upload: async (_t: string, id: string | null, name: string, data: unknown) => {
     uploads.push({ id, name, data })
@@ -31,6 +44,9 @@ describe('Drive 同步', () => {
   beforeEach(() => {
     for (const k of Object.keys(files)) delete files[k]
     uploads.length = 0
+    forbidden = false
+    auth.signIn.mockClear()
+    auth.clearStoredToken.mockClear()
     useAppStore.setState(emptyAppData())
     useSyncStore.setState({ status: 'signedOut', token: null, fileId: null, profile: null })
   })
@@ -61,5 +77,46 @@ describe('Drive 同步', () => {
     await vi.advanceTimersByTimeAsync(1300)
     expect(uploads).toHaveLength(1)
     vi.useRealTimers()
+  })
+
+  it('Drive 回應 403 權限不足時改為「尚未授權」，丟掉舊 token，不會一直重送', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    forbidden = true
+    await useSyncStore.getState().connect(true)
+    const s = useSyncStore.getState()
+    expect(s.status).toBe('needsPermission')
+    expect(s.token).toBeNull()
+    expect(s.profile).toEqual({ name: 'QQ' })
+    expect(auth.clearStoredToken).toHaveBeenCalled()
+  })
+
+  it('重新授權會強制跳出權限勾選畫面（prompt: consent），授權後同步成功', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    forbidden = true
+    await useSyncStore.getState().connect(true)
+    expect(auth.signIn).toHaveBeenLastCalledWith({ consent: false })
+    forbidden = false
+    await useSyncStore.getState().reauthorize()
+    expect(auth.signIn).toHaveBeenLastCalledWith({ consent: true })
+    expect(useSyncStore.getState().status).toBe('synced')
+    expect(useSyncStore.getState().token).toBe('tok')
+  })
+
+  it('重新授權時使用者關掉視窗，維持「尚未授權」提示', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    forbidden = true
+    await useSyncStore.getState().connect(true)
+    auth.signIn.mockRejectedValueOnce(new Error('popup_closed'))
+    await useSyncStore.getState().reauthorize()
+    expect(useSyncStore.getState().status).toBe('needsPermission')
+  })
+
+  it('登入時漏勾 Google 雲端硬碟權限：直接標示「尚未授權」，不進入同步流程', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    auth.signIn.mockRejectedValueOnce(new auth.MissingDriveScopeError())
+    await useSyncStore.getState().connect(true)
+    expect(useSyncStore.getState().status).toBe('needsPermission')
+    expect(useSyncStore.getState().token).toBeNull()
+    expect(uploads).toHaveLength(0)
   })
 })
