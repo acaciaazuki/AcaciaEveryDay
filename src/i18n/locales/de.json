@@ -136,10 +136,10 @@
       "select": "„{{title}}“ auswählen",
       "selectDay": "Alle am {{date}} auswählen",
       "selectAllDay": "Ganzen Tag auswählen",
-      "deleted": "{{count}} Termine gelöscht",
       "moved": "{{count}} Termine nach [{{name}}] verschoben",
       "alreadyThere": "Die ausgewählten Termine sind bereits in [{{name}}]",
-      "undone": "Rückgängig gemacht"
+      "undone": "Rückgängig gemacht",
+      "deleted": "{{count}} Termine nach „Zuletzt gelöscht“ verschoben"
     }
   },
   "places": {
@@ -1272,5 +1272,21 @@
     "contact": "Wenn es weiterhin nicht funktioniert, schreib an",
     "notFoundTitle": "Seite nicht gefunden",
     "notFoundText": "Die Adresse ist möglicherweise falsch oder die Seite existiert nicht mehr."
+  },
+  "trash": {
+    "open": "Zuletzt gelöscht",
+    "title": "Zuletzt gelöscht",
+    "intro": "Gelöschte Termine bleiben hier 30 Tage und werden danach automatisch endgültig gelöscht. Beim Wiederherstellen kehrt der Termin in seinen Kalender zurück, samt Belegt-Zeiten.",
+    "empty": "Keine zuletzt gelöschten Termine",
+    "restore": "Wiederherstellen",
+    "purge": "Endgültig löschen",
+    "purgeConfirm": "„{{title}}“ endgültig löschen? Das kann nicht rückgängig gemacht werden.",
+    "daysLeft": "Noch {{count}} Tage",
+    "deletedBy": "Gelöscht von {{name}}",
+    "byMe": "dir",
+    "byOther": "einem anderen Mitglied",
+    "close": "Schließen",
+    "moved": "In „Zuletzt gelöscht“ verschoben. Wird nach 30 Tagen endgültig gelöscht",
+    "undo": "Rückgängig"
   }
 }

@@ -62,6 +62,8 @@ export const useSpacesSyncStore = create<SpacesSyncState>()((set, get) => {
       const pulled = await provider.pull({ viewerId: selfId, since: null })
       applyingRemote = true
       const pullConflicts = useSpacesStore.getState().applyPulled(pulled)
+      // 合併完順便清掉「最近刪除」滿 30 天的行程，這次推送就會一起寫回雲端
+      useSpacesStore.getState().purgeTrash()
       applyingRemote = false
 
       // 3. 再推：合併後的結果寫回雲端

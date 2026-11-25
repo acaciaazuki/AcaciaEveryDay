@@ -12,6 +12,7 @@ import { SEARCH_SCOPES, excerpt, searchAll, splitHighlight, tokenize, type Searc
 import { useVisibleCalendar } from '../hooks/useVisibleCalendar'
 import { invCatLabel } from '../hooks/useInvCategories'
 import { useAppStore } from '../store/useAppStore'
+import { liveEvents } from '../core/trash'
 
 const RECENT_KEY = 'acacia_recent_search'
 const NO_EVENTS: never[] = []
@@ -85,9 +86,11 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
 function PaletteBody({ onOpenChange }: { onOpenChange: (o: boolean) => void }) {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
-  const { events: personalEvents, tasks, shopping, archives, places, subscriptions, inventory, invCats, recurring } = useAppStore()
+  const { events: allPersonalEvents, tasks, shopping, archives, places, subscriptions, inventory, invCats, recurring } = useAppStore()
   // 行程跟行事曆畫面用同一份權限過濾：預覽其他成員時不搜個人行程，共享行程只搜看得到的欄位
   const vis = useVisibleCalendar()
+  // 「最近刪除」裡的行程搜尋不到
+  const personalEvents = liveEvents(allPersonalEvents)
   const events = vis.showPersonal ? personalEvents : NO_EVENTS
   const shared = useMemo(() => searchableShared(vis.shared), [vis.shared])
   // 預覽其他成員的視角時只搜尋（過濾後的）共享行程：自己的待辦、記帳、地點、訂閱、庫存、固定支出都不出現

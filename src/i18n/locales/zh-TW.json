@@ -136,10 +136,10 @@
       "select": "選取「{{title}}」",
       "selectDay": "全選 {{date}}",
       "selectAllDay": "全選當天",
-      "deleted": "已刪除 {{count}} 項行程",
       "moved": "已成功將 {{count}} 項行程移至【{{name}}】",
       "alreadyThere": "選取的行程已經在【{{name}}】",
-      "undone": "已復原"
+      "undone": "已復原",
+      "deleted": "已將 {{count}} 項行程移到最近刪除"
     }
   },
   "places": {
@@ -1272,5 +1272,21 @@
     "contact": "仍然無法使用時，請寄信到",
     "notFoundTitle": "找不到這個頁面",
     "notFoundText": "網址可能打錯了，或這個頁面已經不存在。"
+  },
+  "trash": {
+    "open": "最近刪除",
+    "title": "最近刪除",
+    "intro": "刪除的行程會在這裡保留 30 天，之後自動永久刪除。還原後會回到原本的行事曆，忙碌時段也會跟著恢復。",
+    "empty": "沒有最近刪除的行程",
+    "restore": "還原",
+    "purge": "永久刪除",
+    "purgeConfirm": "要永久刪除「{{title}}」嗎？刪除後無法復原。",
+    "daysLeft": "剩餘 {{count}} 天",
+    "deletedBy": "由{{name}}刪除",
+    "byMe": "我",
+    "byOther": "其他成員",
+    "close": "關閉",
+    "moved": "已移到最近刪除，30 天後自動永久刪除",
+    "undo": "復原"
   }
 }

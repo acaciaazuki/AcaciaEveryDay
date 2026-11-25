@@ -23,7 +23,7 @@ export const canBatchShared = (e: SharedEntry) => e.canEdit && !e.projected && e
 /** 這筆目前在哪個行事曆（PERSONAL_CALENDAR_ID 或空間 id） */
 const sourceOf = (x: BatchSelectable) => (x.kind === 'personal' ? PERSONAL_CALENDAR_ID : x.entry.space.id)
 
-/** 批次刪除；回傳實際刪除的筆數與復原函式 */
+/** 批次刪除：移到「最近刪除」；回傳實際刪除的筆數與復原函式 */
 export function deleteSelection(selection: readonly BatchSelectable[]): { count: number; undo: () => void } {
   const app = useAppStore.getState()
   const spaces = useSpacesStore.getState()
@@ -50,7 +50,8 @@ export function deleteSelection(selection: readonly BatchSelectable[]): { count:
  */
 export function moveSelection(selection: readonly BatchSelectable[], target: string, targetSpace?: Space): { count: number; undo: () => void } {
   const created: { personal: string[]; shared: string[] } = { personal: [], shared: [] }
-  const removed: { personal: CalendarEvent[]; shared: string[] } = { personal: [], shared: [] }
+  // 移走的原本那筆不進「最近刪除」（不是使用者要刪的）；復原時用原本的內容放回
+  const removed: { personal: CalendarEvent[]; shared: SharedEntry['item'][] } = { personal: [], shared: [] }
 
   for (const x of selection) {
     if (sourceOf(x) === target) continue
@@ -59,8 +60,8 @@ export function moveSelection(selection: readonly BatchSelectable[], target: str
       const i = x.entry.item
       const note = [i.note, i.location].filter(Boolean).join(' · ')
       created.personal.push(...useAppStore.getState().addEvents([{ title: i.title, dateISO: i.dateISO, start: i.start, end: i.end, note, titleColor: i.titleColor, bgColor: i.bgColor, icon: i.icon }]))
-      useSpacesStore.getState().removeItem(i.id)
-      removed.shared.push(i.id)
+      useSpacesStore.getState().discardItem(i.id)
+      removed.shared.push(i)
       continue
     }
     if (!targetSpace) continue
@@ -79,7 +80,7 @@ export function moveSelection(selection: readonly BatchSelectable[], target: str
           kind: orderedKinds(targetSpace.kind)[0]!,
         }),
       )
-      useAppStore.getState().removeEvent(e.id)
+      useAppStore.getState().discardEvents([e.id])
       removed.personal.push(e)
     } else {
       const i = x.entry.item
@@ -99,18 +100,18 @@ export function moveSelection(selection: readonly BatchSelectable[], target: str
           icon: i.icon,
         }),
       )
-      useSpacesStore.getState().removeItem(i.id)
-      removed.shared.push(i.id)
+      useSpacesStore.getState().discardItem(i.id)
+      removed.shared.push(i)
     }
   }
 
   return {
     count: created.personal.length + created.shared.length,
     undo: () => {
-      if (created.personal.length) useAppStore.getState().removeEvents(created.personal)
-      for (const id of created.shared) useSpacesStore.getState().removeItem(id)
+      if (created.personal.length) useAppStore.getState().discardEvents(created.personal)
+      for (const id of created.shared) useSpacesStore.getState().discardItem(id)
       if (removed.personal.length) useAppStore.getState().restoreEvents(removed.personal)
-      for (const id of removed.shared) useSpacesStore.getState().restoreItem(id)
+      for (const item of removed.shared) useSpacesStore.getState().restoreItem(item.id, item)
     },
   }
 }

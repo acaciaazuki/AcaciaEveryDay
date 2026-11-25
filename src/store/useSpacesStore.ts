@@ -4,6 +4,7 @@ import { webStorage } from '../adapters/storage'
 import type { CalendarFilter } from '../core/calendarView'
 import { applyItemEdit, PermissionError, resolveCalendarItemForViewer, softDeleteItem, type ItemPatch } from '../core/permissions'
 import { prepareSpacesRestore } from '../core/spacesBackup'
+import { hasTrashContent, purgeSharedTrash, stripToTombstone } from '../core/trash'
 import { applyPulled as mergePulled, type PulledData, type SyncConflict } from '../core/syncEnvelope'
 import {
   busyProjectionRuleSchema,
@@ -24,6 +25,7 @@ import {
   type PersonalBusySlot,
   type MemberRole,
   type SharedCalendarData,
+  type SharedCalendarItem,
   type SharedCalendarItemInput,
   type Space,
   type SpaceKind,
@@ -93,9 +95,20 @@ interface SpacesState {
 
   addItem: (spaceId: string, input: NewItemInput) => string
   updateItem: (id: string, patch: ItemPatch) => void
+  /** 刪除：軟刪除（留下刪除時間與刪除者），放進「最近刪除」，30 天內可以還原 */
   removeItem: (id: string) => void
-  /** 取消刪除（批次刪除、批次移動的復原）：清掉刪除時間、版本 +1，刪除與恢復都會同步給其他成員 */
-  restoreItem: (id: string) => void
+  /**
+   * 取消刪除（復原、從「最近刪除」還原）：清掉刪除時間、版本 +1，刪除與恢復都會同步給其他成員。
+   * content：已經清成墓碑時用來放回原本內容（批次移動的復原）；沒有內容可以放回時不動作。
+   */
+  restoreItem: (id: string, content?: SharedCalendarItem) => void
+  /**
+   * 不進「最近刪除」的刪除：永久刪除，或取消剛建立的行程（批次建立的復原、移到其他行事曆）。
+   * 一樣留下墓碑（只有刪除時間，內容清空），其他裝置與成員才會跟著刪。
+   */
+  discardItem: (id: string) => void
+  /** 「最近刪除」滿 30 天的清成墓碑、墓碑太舊的整筆移除；寫入保護中不動作。回傳是否有變動 */
+  purgeTrash: (now?: number) => boolean
 
   addRule: (input: RuleInput) => string
   updateRule: (id: string, patch: Partial<RuleInput>) => void
@@ -227,15 +240,34 @@ export const useSpacesStore = create<SpacesState>()(
           const { item, space } = itemOf(id)
           replaceItem(softDeleteItem(item, self, space, Date.now()))
         },
-        restoreItem: (id) => {
+        restoreItem: (id, content) => {
           const self = guard()
           const { item, space } = itemOf(id)
           if (item.deletedAt === null) return
-          const back = { ...item, deletedAt: null }
+          const source = content ?? item
+          // 已經清成墓碑、又沒有原本內容可以放回：不能還原成一筆空白行程
+          if (!hasTrashContent(source)) return
+          const back = { ...source, deletedAt: null }
           // 跟刪除一樣：要有編輯權限才能恢復
           if (!resolveCalendarItemForViewer(back, self, { space })?.canEdit) throw new PermissionError('沒有恢復這筆行程的權限')
           const at = Math.max(Date.now(), item.updatedAt)
           replaceItem({ ...back, version: item.version + 1, updatedAt: at, updatedBy: self })
+        },
+        discardItem: (id) => {
+          const self = guard()
+          const { item, space } = itemOf(id)
+          // 還沒刪除的先依權限軟刪除；已在「最近刪除」的也要有編輯權限才能永久刪除
+          const deleted = item.deletedAt === null ? softDeleteItem(item, self, space, Date.now()) : item
+          if (item.deletedAt !== null && !resolveCalendarItemForViewer({ ...item, deletedAt: null }, self, { space })?.canEdit) throw new PermissionError('沒有刪除這筆行程的權限')
+          replaceItem(stripToTombstone(deleted))
+        },
+        purgeTrash: (now = Date.now()) => {
+          if (get().blockedReason) return false
+          const before = get().data.items
+          const after = purgeSharedTrash(before, now)
+          if (after === before) return false
+          commit({ items: [...after] })
+          return true
         },
 
         addRule: (input) => {

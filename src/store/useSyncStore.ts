@@ -3,7 +3,8 @@ import { isNativeApp } from '../adapters/kv'
 import { download, DRIVE_FILE, findFile, LEGACY_DRIVE_FILE, upload } from '../adapters/drive'
 import { fetchProfile, restoreToken, signIn, signOut, type GoogleProfile } from '../adapters/googleAuth'
 import { migrate } from '../core/migrate'
-import { mergeAppDataWithDiff } from '../core/appMerge'
+import { mergeAppDataWithDiff, trackChanges } from '../core/appMerge'
+import { purgeExpiredEvents } from '../core/trash'
 import type { AppData } from '../core/schema'
 import { useAppStore } from './useAppStore'
 
@@ -51,11 +52,20 @@ async function syncWithDrive(token: string, knownFileId: string | null): Promise
   const local = useAppStore.getState().exportData()
   // 本機從沒有改過資料（全新安裝、updatedAt 為 0）：直接用雲端，不把空資料合併進去
   // 合併時逐筆比較就順便知道結果跟本機、雲端是否相同，不必再把整份資料轉成字串比對（資料多時會卡住畫面）
-  const { data: merged, sameAsLocal, sameAsRemote } = !cloud
+  let { data: merged, sameAsLocal, sameAsRemote } = !cloud
     ? { data: local, sameAsLocal: true, sameAsRemote: false }
     : local.updatedAt === 0 && !local.syncMeta
       ? { data: cloud, sameAsLocal: false, sameAsRemote: true }
       : mergeAppDataWithDiff(local, cloud, Date.now())
+  // 合併完順便清掉「最近刪除」滿 30 天的行程（另一台裝置刪的也一樣），清理結果跟著寫回雲端
+  const now = Date.now()
+  const events = purgeExpiredEvents(merged.events, now)
+  if (events !== merged.events) {
+    const purged = { ...merged, events: [...events] }
+    merged = { ...purged, syncMeta: trackChanges(merged, purged, now) }
+    sameAsLocal = false
+    sameAsRemote = false
+  }
   if (!sameAsLocal) {
     applyingRemote = true
     useAppStore.setState(merged)

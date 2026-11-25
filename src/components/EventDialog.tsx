@@ -9,6 +9,7 @@ import { cleanDetails } from '../core/itemDetails'
 import { defaultVisibility, orderedKinds, PERSONAL_CALENDAR_ID, roleOf } from '../core/sharing'
 import { useAppStore } from '../store/useAppStore'
 import { useSpacesStore } from '../store/useSpacesStore'
+import { showToast } from '../store/useToastStore'
 import { formatTimeRange, isAllDay } from '../core/time'
 import { AllDayToggle } from './AllDayToggle'
 import { Button } from './Button'
@@ -187,8 +188,21 @@ export function EventDialog({ event, shared, date, onClose }: { event: CalendarE
             <Button
               variant="danger"
               onClick={() => {
+                // 移到「最近刪除」，提示裡可以直接復原（30 天內也能從「最近刪除」還原）
                 if (shared) removeItem(shared.id)
                 else if (event) removeEvent(event.id)
+                const sharedId = shared?.id
+                const original = event
+                showToast({
+                  message: t('trash.moved'),
+                  action: {
+                    label: t('trash.undo'),
+                    onClick: () => {
+                      if (sharedId) useSpacesStore.getState().restoreItem(sharedId)
+                      else if (original) useAppStore.getState().restoreEvents([original])
+                    },
+                  },
+                })
                 onClose()
               }}
             >

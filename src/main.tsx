@@ -11,6 +11,7 @@ import { useConsentStore, whenConsented } from './store/useConsentStore'
 import { startSpacesAutoBackup } from './store/useSpacesBackupStore'
 import { startSpacesSync } from './store/useSpacesSyncStore'
 import { startPersonalBusyMirror } from './store/personalBusyMirror'
+import { startTrashPurge } from './store/trashPurge'
 import { useSyncStore } from './store/useSyncStore'
 
 // 讀取使用條款同意紀錄；同意之前不碰 Google 登入、自動備份與同步
@@ -25,6 +26,8 @@ whenConsented(() => {
   startSpacesSync()
   // 個人行程變動時更新「我的行事曆」的忙碌影子（有以它為來源的投射規則時才會動作）
   startPersonalBusyMirror()
+  // 「最近刪除」滿 30 天的行程自動永久刪除
+  startTrashPurge()
 })
 
 // 網頁版：請瀏覽器把本站資料標記為「持續保存」，空間不足時不要自動清除（不會跳出詢問）。

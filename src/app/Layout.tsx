@@ -20,6 +20,7 @@ import { useAppStore } from '../store/useAppStore'
 import { useSpacesStore } from '../store/useSpacesStore'
 import { Button } from '../components/Button'
 import { EventDialog } from '../components/EventDialog'
+import { GlobalToast } from '../components/GlobalToast'
 import { useConsentStore } from '../store/useConsentStore'
 import { prefetchPages } from './prefetch'
 
@@ -172,6 +173,7 @@ function AppShell() {
       <CommandPalette open={searchOpen} onOpenChange={setSearchOpen} />
       {adding && <EventDialog event={null} date={todayISO} onClose={() => setAdding(false)} />}
       <ReminderBanner />
+      <GlobalToast />
 
       <nav className="fixed inset-x-0 bottom-0 z-30 flex justify-around border-t border-line bg-paper px-3 pt-2 pb-[calc(8px+env(safe-area-inset-bottom))] shadow-[0_-4px_20px_#29483a08] min-[681px]:hidden">
         {[

@@ -1,5 +1,8 @@
 import { useMemo } from 'react'
 import { busyConflicts, visibleCalendar, type SharedEntry, type VisibleCalendar } from '../core/calendarView'
+import { resolveCalendarItemForViewer } from '../core/permissions'
+import type { SharedCalendarItem, Space } from '../core/sharing'
+import { trashEntries, type TrashEntry } from '../core/trash'
 import { useAppStore } from '../store/useAppStore'
 import { useSpacesStore } from '../store/useSpacesStore'
 
@@ -31,4 +34,24 @@ export function useBusyConflicts(target: string, dateISO: string, start: string,
   const selfId = useSpacesStore((s) => s.selfId)
   const entries = useMemo(() => visibleCalendar(data, selfId, selfId, target).shared, [data, selfId, target])
   return useMemo(() => busyConflicts(entries, dateISO, start, end), [entries, dateISO, start, end])
+}
+
+/**
+ * 「最近刪除」的清單：只有本人（不是預覽其他成員）看得到。
+ * 共享行程只列出自己有編輯權、還有內容的（經過權限引擎判斷），刪除者顯示空間裡的成員名稱。
+ */
+export function useTrashEntries(): (TrashEntry & { deletedByName?: string })[] {
+  const events = useAppStore((s) => s.events)
+  const data = useSpacesStore((s) => s.data)
+  const selfId = useSpacesStore((s) => s.selfId)
+  const isSelf = useSpacesStore((s) => s.viewerId === s.selfId)
+  return useMemo(() => {
+    if (!isSelf) return []
+    const canEdit = (item: SharedCalendarItem, space: Space) => !!resolveCalendarItemForViewer(item, selfId, { space })?.canEdit
+    return trashEntries(events, data, selfId, canEdit).map((e) => {
+      if (e.kind !== 'shared') return e
+      const member = data.spaces.find((s) => s.id === e.spaceId)?.members.find((m) => m.userId === e.deletedBy)
+      return { ...e, deletedByName: member?.displayName ?? '' }
+    })
+  }, [isSelf, events, data, selfId])
 }

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Icon } from '../components/AcaciaIcons'
 import { BatchEventsDialog } from '../components/BatchEventsDialog'
 import { Toast } from '../components/Toast'
+import { TrashDialog } from '../components/TrashDialog'
 import { Button } from '../components/Button'
 import { Dialog } from '../components/Dialog'
 import { EventDialog } from '../components/EventDialog'
@@ -30,6 +31,7 @@ import { PERSONAL_CALENDAR_ID, roleOf } from '../core/sharing'
 import { CalendarBatchBar } from '../components/CalendarBatchBar'
 import { TriCheckbox } from '../components/TriCheckbox'
 import { canBatchShared, deleteSelection, moveSelection, personalKey, sharedKey, type BatchSelectable } from '../store/calendarBatch'
+import { liveEvents } from '../core/trash'
 
 // 每天最多顯示的行程標籤數，超過的折成「還有 X 個」；桌面滿版時改依格子實際高度計算
 const MAX_CHIPS = 6
@@ -40,7 +42,8 @@ const isShared = (x: CalendarEvent | SharedEntry): x is SharedEntry => 'access' 
 
 export function CalendarPage() {
   const { t, i18n } = useTranslation()
-  const allEvents = useAppStore((s) => s.events)
+  // 「最近刪除」裡的行程不顯示
+  const allEvents = useAppStore((s) => liveEvents(s.events))
   // 共享空間行程一律經過權限過濾；預覽其他成員或篩選某個空間時，不顯示個人行程與購物
   const vis = useVisibleCalendar()
   const events = vis.showPersonal ? allEvents : NO_EVENTS
@@ -65,11 +68,13 @@ export function CalendarPage() {
     }
   const openShared = (x: SharedEntry) => (x.canEdit ? setEditing(x) : setViewingShared(x))
   const [batchOpen, setBatchOpen] = useState(false)
+  // 「最近刪除」：刪掉的行程保留 30 天
+  const [trashOpen, setTrashOpen] = useState(false)
   // 批次建立後的提示：可以一鍵復原（刪除剛建立的行程）
   // 提示（批次建立、批次刪除、批次移動）：undo 有值時顯示「復原」
   const [batchToast, setBatchToast] = useState<{ message: string; undo?: () => void; undone?: string } | null>(null)
-  const removeEvents = useAppStore((s) => s.removeEvents)
-  const removeItem = useSpacesStore((s) => s.removeItem)
+  const discardEvents = useAppStore((s) => s.discardEvents)
+  const discardItem = useSpacesStore((s) => s.discardItem)
   // 批次管理模式：行程前出現勾選框、每天有「全選當天」、底部有操作列；一般瀏覽時都不顯示
   const [managing, setManaging] = useState(false)
   const [picked, setPicked] = useState<Map<string, BatchSelectable>>(() => new Map())
@@ -173,6 +178,9 @@ export function CalendarPage() {
               </Button>
               <Button variant="ghost" size="page" aria-pressed={managing} onClick={() => (managing ? stopManaging() : setManaging(true))} className={managing ? 'border-sage! bg-sage-light! text-sage-dark' : ''}>
                 {managing ? t('calendar.manage.done') : t('calendar.manage.start')}
+              </Button>
+              <Button variant="ghost" size="page" onClick={() => setTrashOpen(true)}>
+                {t('trash.open')}
               </Button>
               <Button size="page" onClick={() => setEditing('new')}>
                 {t('calendar.add')}
@@ -405,10 +413,10 @@ export function CalendarPage() {
           onCreated={({ ids, title, spaceId }) =>
             setBatchToast({
               message: t('calendar.batchForm.created', { count: ids.length, title }),
-              // 我的行事曆直接刪除；共享空間用軟刪除（刪除會同步給其他成員）
+              // 取消剛建立的行程：不進「最近刪除」；共享空間會留下墓碑（刪除會同步給其他成員）
               undo: () => {
-                if (spaceId) for (const id of ids) removeItem(id)
-                else removeEvents(ids)
+                if (spaceId) for (const id of ids) discardItem(id)
+                else discardEvents(ids)
               },
               undone: t('calendar.batchForm.undone', { count: ids.length }),
             })
@@ -422,6 +430,7 @@ export function CalendarPage() {
           <CalendarBatchBar count={picked.size} targets={writableSpaces} onDelete={runDelete} onMove={runMove} onClear={() => setPicked(new Map())} onDone={stopManaging} />
         </>
       )}
+      {trashOpen && <TrashDialog onClose={() => setTrashOpen(false)} />}
       {batchToast && (
         <Toast
           key={batchToast.message}

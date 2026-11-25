@@ -136,10 +136,10 @@
       "select": "Select \"{{title}}\"",
       "selectDay": "Select all on {{date}}",
       "selectAllDay": "Select the whole day",
-      "deleted": "Deleted {{count}} events",
       "moved": "Moved {{count}} events to [{{name}}]",
       "alreadyThere": "The selected events are already in [{{name}}]",
-      "undone": "Undone"
+      "undone": "Undone",
+      "deleted": "Moved {{count}} events to Recently deleted"
     }
   },
   "places": {
@@ -1272,5 +1272,21 @@
     "contact": "If it still doesn’t work, email",
     "notFoundTitle": "Page not found",
     "notFoundText": "The address may be mistyped, or the page no longer exists."
+  },
+  "trash": {
+    "open": "Recently deleted",
+    "title": "Recently deleted",
+    "intro": "Deleted events stay here for 30 days, then are permanently deleted automatically. Restoring puts an event back in its calendar and brings back its busy time.",
+    "empty": "No recently deleted events",
+    "restore": "Restore",
+    "purge": "Delete permanently",
+    "purgeConfirm": "Permanently delete “{{title}}”? This can’t be undone.",
+    "daysLeft": "{{count}} days left",
+    "deletedBy": "Deleted by {{name}}",
+    "byMe": "you",
+    "byOther": "another member",
+    "close": "Close",
+    "moved": "Moved to Recently deleted. It will be permanently deleted after 30 days",
+    "undo": "Undo"
   }
 }

@@ -136,10 +136,10 @@
       "select": "\"{{title}}\" 선택",
       "selectDay": "{{date}} 전체 선택",
       "selectAllDay": "이날 전체 선택",
-      "deleted": "일정 {{count}}개를 삭제했습니다",
       "moved": "일정 {{count}}개를 【{{name}}】(으)로 옮겼습니다",
       "alreadyThere": "선택한 일정은 이미 【{{name}}】에 있습니다",
-      "undone": "실행 취소됨"
+      "undone": "실행 취소됨",
+      "deleted": "일정 {{count}}개를 최근 삭제로 이동했습니다"
     }
   },
   "places": {
@@ -1272,5 +1272,21 @@
     "contact": "계속 사용할 수 없으면 다음 주소로 메일을 보내 주세요:",
     "notFoundTitle": "페이지를 찾을 수 없습니다",
     "notFoundText": "주소가 잘못되었거나 페이지가 더 이상 존재하지 않습니다."
+  },
+  "trash": {
+    "open": "최근 삭제",
+    "title": "최근 삭제",
+    "intro": "삭제한 일정은 이곳에 30일 동안 보관된 후 자동으로 영구 삭제됩니다. 복원하면 원래 캘린더로 돌아가고 바쁜 시간도 함께 복원됩니다.",
+    "empty": "최근 삭제한 일정이 없습니다",
+    "restore": "복원",
+    "purge": "영구 삭제",
+    "purgeConfirm": "“{{title}}”을(를) 영구 삭제할까요? 되돌릴 수 없습니다.",
+    "daysLeft": "{{count}}일 남음",
+    "deletedBy": "{{name}} 삭제",
+    "byMe": "나",
+    "byOther": "다른 멤버",
+    "close": "닫기",
+    "moved": "최근 삭제로 이동했습니다. 30일 후 영구 삭제됩니다",
+    "undo": "실행 취소"
   }
 }

@@ -23,6 +23,11 @@ export const eventSchema = z.object({
   bgColor: color,
   /** 手動選的生活小圖示；沒選就依標題關鍵字自動判斷 */
   icon: z.enum(EVENT_ICON_KEYS).optional(),
+  /**
+   * 移到「最近刪除」的時間（毫秒）；沒有這個欄位表示正常的行程（舊資料不用遷移）。
+   * 30 天後自動永久刪除（見 core/trash.ts）。格式壞掉時當作沒有刪除，不讓整份資料讀取失敗。
+   */
+  deletedAt: z.number().int().nonnegative().optional().catch(undefined),
 })
 
 export const taskSchema = z.object({

@@ -136,10 +136,10 @@
       "select": "Sélectionner « {{title}} »",
       "selectDay": "Tout sélectionner le {{date}}",
       "selectAllDay": "Toute la journée",
-      "deleted": "{{count}} événements supprimés",
       "moved": "{{count}} événements déplacés vers [{{name}}]",
       "alreadyThere": "Les événements choisis sont déjà dans [{{name}}]",
-      "undone": "Annulé"
+      "undone": "Annulé",
+      "deleted": "{{count}} événements déplacés dans Supprimés récemment"
     }
   },
   "places": {
@@ -1272,5 +1272,21 @@
     "contact": "Si le problème persiste, écrivez à",
     "notFoundTitle": "Page introuvable",
     "notFoundText": "L’adresse est peut-être erronée, ou la page n’existe plus."
+  },
+  "trash": {
+    "open": "Supprimés récemment",
+    "title": "Supprimés récemment",
+    "intro": "Les événements supprimés restent ici pendant 30 jours, puis sont supprimés définitivement. Les restaurer les remet dans leur calendrier, avec leurs créneaux occupés.",
+    "empty": "Aucun événement supprimé récemment",
+    "restore": "Restaurer",
+    "purge": "Supprimer définitivement",
+    "purgeConfirm": "Supprimer définitivement « {{title}} » ? Cette action est irréversible.",
+    "daysLeft": "{{count}} jours restants",
+    "deletedBy": "Supprimé par {{name}}",
+    "byMe": "vous",
+    "byOther": "un autre membre",
+    "close": "Fermer",
+    "moved": "Déplacé dans Supprimés récemment. Suppression définitive dans 30 jours",
+    "undo": "Annuler"
   }
 }
