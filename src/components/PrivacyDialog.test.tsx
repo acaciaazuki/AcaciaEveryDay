@@ -40,7 +40,10 @@ describe('隱私權政策', () => {
     const dialog = await screen.findByRole('dialog', { name: '隱私權政策' })
     // 生效日期與最後更新日期
     expect(within(dialog).getByText('2026-11-22')).toBeInTheDocument()
-    expect(within(dialog).getByText('2026-11-24')).toBeInTheDocument()
+    expect(within(dialog).getByText('2026-11-25')).toBeInTheDocument()
+    // App Store 隱私標示與最近刪除的保留期
+    expect(within(dialog).getByText('App 隱私標示：不收集資料')).toBeInTheDocument()
+    expect(within(dialog).getByText(/最近刪除：刪除的行程會先放在「最近刪除」30 天/)).toBeInTheDocument()
     for (const h of ['2. 我們處理哪些資料', '3. 資料儲存位置與傳輸安全', '4. 第三方服務', '6. 你的權利與資料控制', '9. 聯絡我們']) {
       expect(within(dialog).getByRole('heading', { level: 3, name: h })).toBeInTheDocument()
     }

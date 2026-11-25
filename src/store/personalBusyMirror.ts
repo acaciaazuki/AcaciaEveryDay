@@ -1,6 +1,7 @@
 import { needsPersonalBusySlots, syncPersonalBusySlots } from '../core/personalBusy'
 import { useAppStore } from './useAppStore'
 import { useSpacesStore } from './useSpacesStore'
+import { liveEvents } from '../core/trash'
 
 let started = false
 
@@ -10,7 +11,7 @@ export function mirrorPersonalBusyNow(now = Date.now()) {
   // 寫入保護中（本機資料來自較新版本）不更新影子
   if (sp.blockedReason) return
   if (!needsPersonalBusySlots(sp.data.busyProjectionRules, sp.selfId)) return
-  const next = syncPersonalBusySlots(sp.data.personalBusySlots, useAppStore.getState().events, now)
+  const next = syncPersonalBusySlots(sp.data.personalBusySlots, liveEvents(useAppStore.getState().events), now)
   if (next) sp.setPersonalBusySlots(next)
 }
 

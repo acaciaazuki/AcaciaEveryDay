@@ -136,10 +136,10 @@
       "select": "Sélectionner « {{title}} »",
       "selectDay": "Tout sélectionner le {{date}}",
       "selectAllDay": "Toute la journée",
-      "deleted": "{{count}} événements supprimés",
       "moved": "{{count}} événements déplacés vers [{{name}}]",
       "alreadyThere": "Les événements choisis sont déjà dans [{{name}}]",
-      "undone": "Annulé"
+      "undone": "Annulé",
+      "deleted": "{{count}} événements déplacés dans Supprimés récemment"
     }
   },
   "places": {
@@ -314,7 +314,10 @@
     "language": "Langue",
     "data": "Sauvegarde et transfert des données",
     "dataHelp": "Importez un fichier JSON exporté depuis l’ancien ACACIA, ou exportez vos données actuelles en sauvegarde. L’importation remplace vos données actuelles.",
+    "exportHelp": "« Exporter le calendrier » crée un fichier .ics standard à importer dans Apple Calendrier, Google Agenda, etc. « Exporter les espaces partagés » enregistre les événements partagés que vous voyez. Les deux ne contiennent que ce que vous voyez ; les créneaux occupés des autres ne contiennent que l’horaire.",
     "export": "Exporter en JSON",
+    "exportIcs": "Exporter le calendrier (.ics)",
+    "exportSpaces": "Exporter les espaces partagés (JSON)",
     "import": "Importer un JSON",
     "importOk": "Données importées",
     "importFail": "Échec de l’importation, rien n’a été modifié : {{msg}}",
@@ -1254,7 +1257,17 @@
       "fromSource": "Depuis {{name}}",
       "sourceRow": "Source",
       "timeOnlyNote": "Seul le créneau occupé est affiché",
-      "shortcut": "Synchroniser les créneaux…"
+      "shortcut": "Synchroniser les créneaux…",
+      "confirmIntro": "Une fois confirmé, les membres de ces calendriers verront ces créneaux :",
+      "confirmSpace": "{{name}} ({{count}} autres membres)",
+      "confirmBusy": "Affiché comme « {{text}} » ; titres, lieux, notes et autres détails ne sont pas affichés",
+      "confirmTimeOnly": "Seul l’horaire est affiché ; titres, lieux, notes et autres détails ne sont pas affichés",
+      "confirmAll": "Les espaces rejoints plus tard seront aussi synchronisés automatiquement",
+      "confirmAllDay": "Les événements sur toute la journée seront aussi synchronisés et occuperont la journée",
+      "confirmPrivate": "Les horaires des événements privés seront aussi partagés",
+      "confirmRevoke": "Vous pouvez désactiver ou supprimer cette règle à tout moment ; les créneaux synchronisés seront retirés",
+      "confirmOk": "Confirmer la synchronisation",
+      "confirmBack": "Revenir"
     },
     "overlap": {
       "title": "Ce créneau chevauche un créneau occupé",
@@ -1272,5 +1285,21 @@
     "contact": "Si le problème persiste, écrivez à",
     "notFoundTitle": "Page introuvable",
     "notFoundText": "L’adresse est peut-être erronée, ou la page n’existe plus."
+  },
+  "trash": {
+    "open": "Supprimés récemment",
+    "title": "Supprimés récemment",
+    "intro": "Les événements supprimés restent ici pendant 30 jours, puis sont supprimés définitivement. Les restaurer les remet dans leur calendrier, avec leurs créneaux occupés.",
+    "empty": "Aucun événement supprimé récemment",
+    "restore": "Restaurer",
+    "purge": "Supprimer définitivement",
+    "purgeConfirm": "Supprimer définitivement « {{title}} » ? Cette action est irréversible.",
+    "daysLeft": "{{count}} jours restants",
+    "deletedBy": "Supprimé par {{name}}",
+    "byMe": "vous",
+    "byOther": "un autre membre",
+    "close": "Fermer",
+    "moved": "Déplacé dans Supprimés récemment. Suppression définitive dans 30 jours",
+    "undo": "Annuler"
   }
 }

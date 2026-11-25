@@ -26,6 +26,7 @@ import { useHolidaysByDate } from '../hooks/useHolidays'
 import { useVisibleCalendar } from '../hooks/useVisibleCalendar'
 import type { HolidayEntry } from '../core/holidays'
 import { useAppStore } from '../store/useAppStore'
+import { liveEvents } from '../core/trash'
 
 type View = 'day' | 'week' | 'two'
 const VIEW_DAYS: Record<View, number> = { day: 1, week: 7, two: 14 }
@@ -53,7 +54,8 @@ const TEXT_14 = 'text-[length:calc(14px*var(--fs))]'
 
 export function TodayPage() {
   const { t, i18n } = useTranslation()
-  const personalEvents = useAppStore((s) => s.events)
+  // 「最近刪除」裡的行程不顯示
+  const personalEvents = useAppStore((s) => liveEvents(s.events))
   // 共享行程經過權限過濾；預覽其他成員時不顯示個人行程與購物
   const vis = useVisibleCalendar()
   const navigate = useNavigate()

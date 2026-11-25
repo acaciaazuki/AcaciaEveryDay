@@ -136,10 +136,10 @@
       "select": "Select \"{{title}}\"",
       "selectDay": "Select all on {{date}}",
       "selectAllDay": "Select the whole day",
-      "deleted": "Deleted {{count}} events",
       "moved": "Moved {{count}} events to [{{name}}]",
       "alreadyThere": "The selected events are already in [{{name}}]",
-      "undone": "Undone"
+      "undone": "Undone",
+      "deleted": "Moved {{count}} events to Recently deleted"
     }
   },
   "places": {
@@ -314,7 +314,10 @@
     "language": "Language",
     "data": "Backup and moving data",
     "dataHelp": "Import a JSON file exported from the old ACACIA, or export your current data as a backup. Importing replaces your current data.",
+    "exportHelp": "“Export calendar” creates a standard .ics file you can import into Apple Calendar, Google Calendar and other apps. “Export shared spaces” saves the shared events you can see. Both include only what you can see; other people’s busy times contain only the time.",
     "export": "Export JSON",
+    "exportIcs": "Export calendar (.ics)",
+    "exportSpaces": "Export shared spaces (JSON)",
     "import": "Import JSON",
     "importOk": "Data imported",
     "importFail": "Import failed, nothing was changed: {{msg}}",
@@ -1254,7 +1257,17 @@
       "fromSource": "From {{name}}",
       "sourceRow": "Source",
       "timeOnlyNote": "Only the occupied time is shown",
-      "shortcut": "Sync busy times…"
+      "shortcut": "Sync busy times…",
+      "confirmIntro": "Once confirmed, members of these calendars will see these times:",
+      "confirmSpace": "{{name}} ({{count}} other members)",
+      "confirmBusy": "Shown as “{{text}}”; titles, locations, notes and other details aren’t shown",
+      "confirmTimeOnly": "Only the time is shown; titles, locations, notes and other details aren’t shown",
+      "confirmAll": "Spaces you join later will be synced automatically too",
+      "confirmAllDay": "All-day events will also sync and fill the whole day",
+      "confirmPrivate": "Times of private events will also be shared",
+      "confirmRevoke": "You can turn off or delete this rule at any time; synced times will be removed",
+      "confirmOk": "Confirm sync",
+      "confirmBack": "Go back"
     },
     "overlap": {
       "title": "This time overlaps a busy time",
@@ -1272,5 +1285,21 @@
     "contact": "If it still doesn’t work, email",
     "notFoundTitle": "Page not found",
     "notFoundText": "The address may be mistyped, or the page no longer exists."
+  },
+  "trash": {
+    "open": "Recently deleted",
+    "title": "Recently deleted",
+    "intro": "Deleted events stay here for 30 days, then are permanently deleted automatically. Restoring puts an event back in its calendar and brings back its busy time.",
+    "empty": "No recently deleted events",
+    "restore": "Restore",
+    "purge": "Delete permanently",
+    "purgeConfirm": "Permanently delete “{{title}}”? This can’t be undone.",
+    "daysLeft": "{{count}} days left",
+    "deletedBy": "Deleted by {{name}}",
+    "byMe": "you",
+    "byOther": "another member",
+    "close": "Close",
+    "moved": "Moved to Recently deleted. It will be permanently deleted after 30 days",
+    "undo": "Undo"
   }
 }

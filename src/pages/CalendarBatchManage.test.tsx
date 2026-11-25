@@ -83,19 +83,22 @@ describe('行事曆批次管理', () => {
     expect(bar()).toHaveTextContent('已選 2 項')
   })
 
-  it('批次刪除：一次刪掉全選當天的行程；復原時原樣放回（id 不變）', () => {
+  it('批次刪除：一次把全選當天的行程移到最近刪除；復原時原樣放回（id 不變）', () => {
     open()
     startManaging()
     fireEvent.click(dayBox('2026-11-12')!)
     fireEvent.click(within(bar()).getByRole('button', { name: '批次刪除' }))
-    expect(app().events.map((e) => e.id)).toEqual(['e1', 'e2'])
+    // 個人行程還在清單裡，只是標記刪除時間（在「最近刪除」）
+    expect(app().events.filter((e) => e.deletedAt === undefined).map((e) => e.id)).toEqual(['e1', 'e2'])
+    expect(app().events.find((e) => e.id === 'e3')?.deletedAt).toEqual(expect.any(Number))
     expect(liveItems().map((i) => i.title)).toEqual(['夜班'])
-    expect(screen.getByText('已刪除 2 項行程')).toBeInTheDocument()
+    expect(screen.getByText('已將 2 項行程移到最近刪除')).toBeInTheDocument()
     expect(bar()).toHaveTextContent('已選 0 項')
 
     fireEvent.click(screen.getByRole('button', { name: '復原' }))
     act(() => void vi.runOnlyPendingTimers())
     expect(app().events.map((e) => e.id).sort()).toEqual(['e1', 'e2', 'e3'])
+    expect(app().events.every((e) => e.deletedAt === undefined)).toBe(true)
     expect(liveItems().map((i) => i.title).sort()).toEqual(['刀房排班', '夜班'])
     expect(screen.getByText('已復原')).toBeInTheDocument()
   })

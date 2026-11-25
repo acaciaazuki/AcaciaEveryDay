@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
+import { needsShareConfirm, shareAudience } from '../core/busyConsent'
 import { PERSONAL_CALENDAR_ID, roleOf, type BusyDisplay, type BusyProjectionRule, type Space } from '../core/sharing'
 import { useSpacesStore } from '../store/useSpacesStore'
 import { Button } from './Button'
@@ -111,6 +112,9 @@ export function BusyRuleDialog({ rule, presetTarget, onClose }: { rule?: BusyPro
   const [includeAllDay, setIncludeAllDay] = useState(rule?.includeAllDay ?? false)
   const [includePrivate, setIncludePrivate] = useState(rule?.includePrivate ?? false)
   const [error, setError] = useState('')
+  // 二次確認：要讓其他成員看到更多時段時，先列出對象與注意事項，再按「確認同步」才儲存
+  const [confirming, setConfirming] = useState(false)
+  const selfId = useSpacesStore((s) => s.selfId)
 
   const candidates = [...(sourceId === PERSONAL_CALENDAR_ID ? [] : [PERSONAL_CALENDAR_ID]), ...spaces.map((s) => s.id).filter((id) => id !== sourceId)]
   const chosen = targetMode === 'all' ? candidates : targetIds.filter((id) => candidates.includes(id))
@@ -131,18 +135,39 @@ export function BusyRuleDialog({ rule, presetTarget, onClose }: { rule?: BusyPro
       includeAllDay,
       includePrivate: sourceId === PERSONAL_CALENDAR_ID ? false : includePrivate,
     }
+    if (!confirming && needsShareConfirm(rule, input, chosen.filter((id) => id !== PERSONAL_CALENDAR_ID))) return setConfirming(true)
     try {
       if (rule) updateRule(rule.id, input)
       else addRule(input)
       onClose()
     } catch (err) {
+      setConfirming(false)
       setError(err instanceof Error ? err.message : String(err))
     }
   }
+  const audience = shareAudience(spaces, chosen, selfId)
 
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()} title={rule ? t('sharing.rules.editTitle') : t('sharing.rules.addTitle')}>
       <form onSubmit={submit} className="grid gap-5">
+        {confirming ? (
+          <div data-rule-confirm className="grid gap-3 text-[length:calc(13px*var(--fs))]">
+            <p className="font-semibold">{t('sharing.rules.confirmIntro')}</p>
+            <ul className="grid gap-1 rounded-(--radius-control) bg-sage-light px-3 py-2 text-sage-dark">
+              {audience.map((a) => (
+                <li key={a.id}>{t('sharing.rules.confirmSpace', { name: a.name, count: a.others })}</li>
+              ))}
+            </ul>
+            <ul className="grid list-disc gap-1 pl-5 text-muted">
+              <li>{display === 'time_only' ? t('sharing.rules.confirmTimeOnly') : t('sharing.rules.confirmBusy', { text: label.trim() || t('sharing.busy') })}</li>
+              {targetMode === 'all' && <li>{t('sharing.rules.confirmAll')}</li>}
+              {includeAllDay && <li>{t('sharing.rules.confirmAllDay')}</li>}
+              {includePrivate && sourceId !== PERSONAL_CALENDAR_ID && <li className="font-semibold text-[#c2583d]">{t('sharing.rules.confirmPrivate')}</li>}
+              <li>{t('sharing.rules.confirmRevoke')}</li>
+            </ul>
+          </div>
+        ) : (
+          <>
         <label className="grid gap-1.5 text-xs font-semibold text-muted">
           {t('sharing.rules.source')}
           <select
@@ -233,16 +258,24 @@ export function BusyRuleDialog({ rule, presetTarget, onClose }: { rule?: BusyPro
             {preview}
           </p>
         )}
+          </>
+        )}
         {error && (
           <p role="alert" className="text-xs text-[#c2583d]">
             {error}
           </p>
         )}
         <div className="flex justify-end gap-2">
-          <Button variant="ghost" onClick={onClose}>
-            {t('common.cancel')}
-          </Button>
-          <Button type="submit">{t('sharing.rules.save')}</Button>
+          {confirming ? (
+            <Button variant="ghost" onClick={() => setConfirming(false)}>
+              {t('sharing.rules.confirmBack')}
+            </Button>
+          ) : (
+            <Button variant="ghost" onClick={onClose}>
+              {t('common.cancel')}
+            </Button>
+          )}
+          <Button type="submit">{confirming ? t('sharing.rules.confirmOk') : t('sharing.rules.save')}</Button>
         </div>
       </form>
     </Dialog>

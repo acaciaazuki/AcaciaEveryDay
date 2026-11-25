@@ -99,10 +99,13 @@ export function toBusyView(item: SharedCalendarItem): SharedCalendarItem {
   }
 }
 
-/** 欄位遮罩檢視：只移除 maskedFields 指定的欄位 */
+/**
+ * 欄位遮罩檢視：移除 maskedFields 指定的欄位。
+ * 遮罩標題或類型時，圖示與顏色也一起移除：使用者常用顏色、圖示代表行程類別（例如看醫生），留著等於透露內容。
+ */
 export function toMaskedView(item: SharedCalendarItem, masked: readonly MaskableField[]): SharedCalendarItem {
   const has = (f: MaskableField) => masked.includes(f)
-  const hideIcon = has('title') || has('kind')
+  const hideLooks = has('title') || has('kind')
   return {
     ...baseOf(item),
     kind: has('kind') ? 'event' : item.kind,
@@ -110,9 +113,9 @@ export function toMaskedView(item: SharedCalendarItem, masked: readonly Maskable
     location: has('location') ? '' : item.location,
     note: has('note') ? '' : item.note,
     details: has('details') ? {} : item.details,
-    ...(item.titleColor !== undefined && { titleColor: item.titleColor }),
-    ...(item.bgColor !== undefined && { bgColor: item.bgColor }),
-    ...(!hideIcon && item.icon !== undefined && { icon: item.icon }),
+    ...(!hideLooks && item.titleColor !== undefined && { titleColor: item.titleColor }),
+    ...(!hideLooks && item.bgColor !== undefined && { bgColor: item.bgColor }),
+    ...(!hideLooks && item.icon !== undefined && { icon: item.icon }),
     visibility: viewerVisibility(item.visibility, {
       maskedFields: [...masked],
       allowedUserIds: item.visibility.mode === 'selected_members' ? item.visibility.allowedUserIds : [],

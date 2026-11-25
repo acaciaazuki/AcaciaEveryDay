@@ -136,10 +136,10 @@
       "select": "„{{title}}“ auswählen",
       "selectDay": "Alle am {{date}} auswählen",
       "selectAllDay": "Ganzen Tag auswählen",
-      "deleted": "{{count}} Termine gelöscht",
       "moved": "{{count}} Termine nach [{{name}}] verschoben",
       "alreadyThere": "Die ausgewählten Termine sind bereits in [{{name}}]",
-      "undone": "Rückgängig gemacht"
+      "undone": "Rückgängig gemacht",
+      "deleted": "{{count}} Termine nach „Zuletzt gelöscht“ verschoben"
     }
   },
   "places": {
@@ -314,7 +314,10 @@
     "language": "Sprache",
     "data": "Backup und Datenumzug",
     "dataHelp": "Importiere eine aus dem alten ACACIA exportierte JSON-Datei oder exportiere deine aktuellen Daten als Backup. Beim Import werden deine aktuellen Daten ersetzt.",
+    "exportHelp": "„Kalender exportieren“ erstellt eine Standard-.ics-Datei für Apple Kalender, Google Kalender und andere Apps. „Geteilte Bereiche exportieren“ speichert die geteilten Termine, die du sehen kannst. Beide enthalten nur, was du sehen kannst; Belegt-Zeiten anderer enthalten nur die Uhrzeit.",
     "export": "JSON exportieren",
+    "exportIcs": "Kalender exportieren (.ics)",
+    "exportSpaces": "Geteilte Bereiche exportieren (JSON)",
     "import": "JSON importieren",
     "importOk": "Daten importiert",
     "importFail": "Import fehlgeschlagen, nichts wurde geändert: {{msg}}",
@@ -1254,7 +1257,17 @@
       "fromSource": "Aus {{name}}",
       "sourceRow": "Quelle",
       "timeOnlyNote": "Nur die belegte Zeit wird angezeigt",
-      "shortcut": "Belegte Zeiten synchronisieren…"
+      "shortcut": "Belegte Zeiten synchronisieren…",
+      "confirmIntro": "Nach der Bestätigung sehen die Mitglieder dieser Kalender diese Zeiten:",
+      "confirmSpace": "{{name}} ({{count}} weitere Mitglieder)",
+      "confirmBusy": "Angezeigt als „{{text}}“; Titel, Orte, Notizen und andere Details werden nicht angezeigt",
+      "confirmTimeOnly": "Nur die Uhrzeit wird angezeigt; Titel, Orte, Notizen und andere Details werden nicht angezeigt",
+      "confirmAll": "Später beigetretene Bereiche werden ebenfalls automatisch synchronisiert",
+      "confirmAllDay": "Ganztägige Termine werden ebenfalls synchronisiert und belegen den ganzen Tag",
+      "confirmPrivate": "Auch die Zeiten privater Termine werden geteilt",
+      "confirmRevoke": "Du kannst diese Regel jederzeit deaktivieren oder löschen; synchronisierte Zeiten werden dann entfernt",
+      "confirmOk": "Synchronisierung bestätigen",
+      "confirmBack": "Zurück"
     },
     "overlap": {
       "title": "Diese Zeit überschneidet sich mit einer belegten Zeit",
@@ -1272,5 +1285,21 @@
     "contact": "Wenn es weiterhin nicht funktioniert, schreib an",
     "notFoundTitle": "Seite nicht gefunden",
     "notFoundText": "Die Adresse ist möglicherweise falsch oder die Seite existiert nicht mehr."
+  },
+  "trash": {
+    "open": "Zuletzt gelöscht",
+    "title": "Zuletzt gelöscht",
+    "intro": "Gelöschte Termine bleiben hier 30 Tage und werden danach automatisch endgültig gelöscht. Beim Wiederherstellen kehrt der Termin in seinen Kalender zurück, samt Belegt-Zeiten.",
+    "empty": "Keine zuletzt gelöschten Termine",
+    "restore": "Wiederherstellen",
+    "purge": "Endgültig löschen",
+    "purgeConfirm": "„{{title}}“ endgültig löschen? Das kann nicht rückgängig gemacht werden.",
+    "daysLeft": "Noch {{count}} Tage",
+    "deletedBy": "Gelöscht von {{name}}",
+    "byMe": "dir",
+    "byOther": "einem anderen Mitglied",
+    "close": "Schließen",
+    "moved": "In „Zuletzt gelöscht“ verschoben. Wird nach 30 Tagen endgültig gelöscht",
+    "undo": "Rückgängig"
   }
 }

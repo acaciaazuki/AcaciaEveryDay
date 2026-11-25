@@ -7,6 +7,7 @@ import { clearCountry, importSets, type HolidayFile, type ImportResult } from '.
 import { addCustomCat, removeCustomCat } from '../core/invCategories'
 import { invToExpense, restockQty, toggleShoppingStock, type StockChange } from '../core/inventory'
 import { migrate } from '../core/migrate'
+import { purgeExpiredEvents } from '../core/trash'
 import type { PlaceSort } from '../core/placeSort'
 import { buildImports, importedKeys, rollbackInstallment, type ImportPick } from '../core/recurring'
 import { DEFAULT_CURRENCY, emptyAppData, newId, type AppData, type FontSize, type CalendarEvent, type Expense, type InventoryItem, type Place, type Recurring, type Reminder, type Subscription, type Task } from '../core/schema'
@@ -25,11 +26,19 @@ interface Actions {
   /** 一次新增多筆（批次建立）；回傳新行程的 id，給「復原」使用 */
   addEvents: (inputs: EventInput[]) => string[]
   updateEvent: (id: string, patch: Partial<EventInput>) => void
+  /** 刪除：移到「最近刪除」（記下刪除時間），30 天內可以還原 */
   removeEvent: (id: string) => void
-  /** 一次刪除多筆（批次建立的復原） */
+  /** 一次刪除多筆（批次刪除）：一樣移到「最近刪除」 */
   removeEvents: (ids: readonly string[]) => void
-  /** 把刪掉的行程原樣放回（批次刪除、批次移動的復原）；已經存在的 id 略過 */
+  /**
+   * 把刪掉的行程放回（復原、從「最近刪除」還原）：還在清單裡的清掉刪除時間；已經不在的原樣加回。
+   * 正常（沒有刪除）的同一個 id 略過。
+   */
   restoreEvents: (events: readonly CalendarEvent[]) => void
+  /** 直接從清單移除、不進「最近刪除」：永久刪除，或取消剛建立的行程（批次建立的復原、移到其他行事曆） */
+  discardEvents: (ids: readonly string[]) => void
+  /** 清掉在「最近刪除」滿 30 天的行程；回傳清掉的筆數 */
+  purgeTrash: (now?: number) => number
   addPlace: (input: PlaceInput) => void
   updatePlace: (id: string, patch: Partial<PlaceInput>) => void
   removePlace: (id: string) => void
@@ -140,17 +149,36 @@ export const useAppStore = create<AppState>()(
       },
       updateEvent: (id, patch) =>
         setState((s) => ({ events: s.events.map((x) => (x.id === id ? { ...x, ...patch } : x)), ...touch() })),
-      removeEvent: (id) => setState((s) => ({ events: s.events.filter((x) => x.id !== id), ...touch() })),
+      removeEvent: (id) => getState().removeEvents([id]),
+      removeEvents: (ids) => {
+        const drop = new Set(ids)
+        const at = Date.now()
+        setState((s) => ({ events: s.events.map((x) => (drop.has(x.id) && x.deletedAt === undefined ? { ...x, deletedAt: at } : x)), ...touch() }))
+      },
       restoreEvents: (events) =>
         setState((s) => {
+          const back = new Map(events.map((e) => [e.id, e]))
           const have = new Set(s.events.map((x) => x.id))
-          return { events: [...s.events, ...events.filter((x) => !have.has(x.id))], ...touch() }
+          const revived = s.events.map((x) => {
+            if (!back.has(x.id) || x.deletedAt === undefined) return x
+            const { deletedAt: _deletedAt, ...rest } = x
+            void _deletedAt
+            return rest
+          })
+          const added = events.filter((x) => !have.has(x.id)).map(({ deletedAt: _d, ...rest }) => (void _d, rest))
+          return { events: [...revived, ...added], ...touch() }
         }),
-      removeEvents: (ids) => {
+      discardEvents: (ids) => {
         const drop = new Set(ids)
         setState((s) => ({ events: s.events.filter((x) => !drop.has(x.id)), ...touch() }))
       },
-
+      purgeTrash: (now = Date.now()) => {
+        const before = getState().events
+        const after = purgeExpiredEvents(before, now)
+        if (after === before) return 0
+        setState({ events: [...after], ...touch() })
+        return before.length - after.length
+      },
       addPlace: (input) => setState((s) => ({ places: [{ id: newId(), ...input }, ...s.places], ...touch() })),
       updatePlace: (id, patch) =>
         setState((s) => ({ places: s.places.map((x) => (x.id === id ? { ...x, ...patch } : x)), ...touch() })),
