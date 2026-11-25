@@ -1254,7 +1254,17 @@
       "fromSource": "Aus {{name}}",
       "sourceRow": "Quelle",
       "timeOnlyNote": "Nur die belegte Zeit wird angezeigt",
-      "shortcut": "Belegte Zeiten synchronisieren…"
+      "shortcut": "Belegte Zeiten synchronisieren…",
+      "confirmIntro": "Nach der Bestätigung sehen die Mitglieder dieser Kalender diese Zeiten:",
+      "confirmSpace": "{{name}} ({{count}} weitere Mitglieder)",
+      "confirmBusy": "Angezeigt als „{{text}}“; Titel, Orte, Notizen und andere Details werden nicht angezeigt",
+      "confirmTimeOnly": "Nur die Uhrzeit wird angezeigt; Titel, Orte, Notizen und andere Details werden nicht angezeigt",
+      "confirmAll": "Später beigetretene Bereiche werden ebenfalls automatisch synchronisiert",
+      "confirmAllDay": "Ganztägige Termine werden ebenfalls synchronisiert und belegen den ganzen Tag",
+      "confirmPrivate": "Auch die Zeiten privater Termine werden geteilt",
+      "confirmRevoke": "Du kannst diese Regel jederzeit deaktivieren oder löschen; synchronisierte Zeiten werden dann entfernt",
+      "confirmOk": "Synchronisierung bestätigen",
+      "confirmBack": "Zurück"
     },
     "overlap": {
       "title": "Diese Zeit überschneidet sich mit einer belegten Zeit",

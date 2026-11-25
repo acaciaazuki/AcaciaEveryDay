@@ -35,6 +35,13 @@ describe('忙碌時段同步：設定介面', () => {
     fireEvent.change(d.getByLabelText('忙碌時顯示的文字'), { target: { value: '有事' } })
     expect(dialog().querySelector('[data-rule-preview]')).toHaveTextContent('「陳家」的成員會看到 → 14:00–16:00 有事')
     fireEvent.click(d.getByRole('button', { name: '儲存' }))
+    // 二次確認：列出會看到的空間與成員數、注意事項；確認前還沒儲存
+    const confirm = dialog().querySelector('[data-rule-confirm]') as HTMLElement
+    expect(confirm).toHaveTextContent('陳家（另外')
+    expect(confirm).toHaveTextContent('顯示為「有事」')
+    expect(confirm).toHaveTextContent('之後新加入的空間也會自動同步')
+    expect(rules()).toEqual([])
+    fireEvent.click(d.getByRole('button', { name: '確認同步' }))
 
     expect(rules()[0]).toMatchObject({ sourceId: PERSONAL_CALENDAR_ID, targetMode: 'all', targetIds: [], display: 'busy', label: '有事', includeAllDay: false })
     expect(screen.queryByRole('dialog')).toBeNull()
@@ -58,6 +65,12 @@ describe('忙碌時段同步：設定介面', () => {
     fireEvent.click(d.getByLabelText('包含私人行程'))
     expect(dialog().querySelector('[data-rule-preview]')).toHaveTextContent('「陳家」的成員會看到 → 14:00–16:00')
     fireEvent.click(d.getByRole('button', { name: '儲存' }))
+    // 包含私人行程：確認畫面特別提醒；按「返回修改」回到表單，設定都還在
+    expect(dialog().querySelector('[data-rule-confirm]')).toHaveTextContent('私人行程的時間也會同步出去')
+    fireEvent.click(d.getByRole('button', { name: '返回修改' }))
+    expect(d.getByLabelText('包含私人行程')).toBeChecked()
+    fireEvent.click(d.getByRole('button', { name: '儲存' }))
+    fireEvent.click(d.getByRole('button', { name: '確認同步' }))
     expect(rules()[0]).toMatchObject({ sourceId: work, targetMode: 'selected', targetIds: [family], display: 'time_only', label: '', includePrivate: true, legacyTargetId: family })
     expect(screen.getByText('中榮開刀房 → 陳家')).toBeInTheDocument()
     expect(screen.getByText('顯示方式：只顯示時間區間')).toBeInTheDocument()

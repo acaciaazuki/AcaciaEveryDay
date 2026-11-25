@@ -1254,7 +1254,17 @@
       "fromSource": "{{name}}から",
       "sourceRow": "同期元",
       "timeOnlyNote": "ふさがっている時間だけ表示",
-      "shortcut": "予定ありを同期…"
+      "shortcut": "予定ありを同期…",
+      "confirmIntro": "確定すると、次のカレンダーのメンバーにこれらの時間帯が表示されます：",
+      "confirmSpace": "{{name}}（ほかに {{count}} 人のメンバー）",
+      "confirmBusy": "「{{text}}」と表示され、タイトル・場所・メモなどの内容は表示されません",
+      "confirmTimeOnly": "使用中の時間だけが表示され、タイトル・場所・メモなどの内容は表示されません",
+      "confirmAll": "今後追加されるスペースにも自動で同期されます",
+      "confirmAllDay": "終日の予定も同期され、一日中ふさがります",
+      "confirmPrivate": "非公開の予定の時間も同期されます",
+      "confirmRevoke": "このルールはいつでも無効化・削除でき、同期した時間帯も削除されます",
+      "confirmOk": "同期を確定",
+      "confirmBack": "戻って修正"
     },
     "overlap": {
       "title": "この時間は予定ありの時間と重なっています",

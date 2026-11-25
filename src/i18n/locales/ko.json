@@ -1254,7 +1254,17 @@
       "fromSource": "{{name}}에서",
       "sourceRow": "원본",
       "timeOnlyNote": "차지된 시간만 표시",
-      "shortcut": "바쁜 시간 동기화…"
+      "shortcut": "바쁜 시간 동기화…",
+      "confirmIntro": "확인하면 다음 캘린더의 멤버가 이 시간대를 보게 됩니다:",
+      "confirmSpace": "{{name}}(다른 멤버 {{count}}명)",
+      "confirmBusy": "“{{text}}”(으)로 표시되며 제목, 장소, 메모 등의 내용은 표시되지 않습니다",
+      "confirmTimeOnly": "사용 중인 시간만 표시되며 제목, 장소, 메모 등의 내용은 표시되지 않습니다",
+      "confirmAll": "나중에 추가되는 스페이스에도 자동으로 동기화됩니다",
+      "confirmAllDay": "종일 일정도 동기화되어 하루 종일 바쁨으로 표시됩니다",
+      "confirmPrivate": "비공개 일정의 시간도 공유됩니다",
+      "confirmRevoke": "이 규칙은 언제든지 끄거나 삭제할 수 있으며, 동기화된 시간대도 함께 삭제됩니다",
+      "confirmOk": "동기화 확인",
+      "confirmBack": "돌아가서 수정"
     },
     "overlap": {
       "title": "이 시간은 바쁜 시간과 겹칩니다",

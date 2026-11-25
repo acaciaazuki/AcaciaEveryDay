@@ -1254,7 +1254,17 @@
       "fromSource": "From {{name}}",
       "sourceRow": "Source",
       "timeOnlyNote": "Only the occupied time is shown",
-      "shortcut": "Sync busy times…"
+      "shortcut": "Sync busy times…",
+      "confirmIntro": "Once confirmed, members of these calendars will see these times:",
+      "confirmSpace": "{{name}} ({{count}} other members)",
+      "confirmBusy": "Shown as “{{text}}”; titles, locations, notes and other details aren’t shown",
+      "confirmTimeOnly": "Only the time is shown; titles, locations, notes and other details aren’t shown",
+      "confirmAll": "Spaces you join later will be synced automatically too",
+      "confirmAllDay": "All-day events will also sync and fill the whole day",
+      "confirmPrivate": "Times of private events will also be shared",
+      "confirmRevoke": "You can turn off or delete this rule at any time; synced times will be removed",
+      "confirmOk": "Confirm sync",
+      "confirmBack": "Go back"
     },
     "overlap": {
       "title": "This time overlaps a busy time",

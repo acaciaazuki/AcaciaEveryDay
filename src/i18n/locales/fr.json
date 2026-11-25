@@ -1254,7 +1254,17 @@
       "fromSource": "Depuis {{name}}",
       "sourceRow": "Source",
       "timeOnlyNote": "Seul le créneau occupé est affiché",
-      "shortcut": "Synchroniser les créneaux…"
+      "shortcut": "Synchroniser les créneaux…",
+      "confirmIntro": "Une fois confirmé, les membres de ces calendriers verront ces créneaux :",
+      "confirmSpace": "{{name}} ({{count}} autres membres)",
+      "confirmBusy": "Affiché comme « {{text}} » ; titres, lieux, notes et autres détails ne sont pas affichés",
+      "confirmTimeOnly": "Seul l’horaire est affiché ; titres, lieux, notes et autres détails ne sont pas affichés",
+      "confirmAll": "Les espaces rejoints plus tard seront aussi synchronisés automatiquement",
+      "confirmAllDay": "Les événements sur toute la journée seront aussi synchronisés et occuperont la journée",
+      "confirmPrivate": "Les horaires des événements privés seront aussi partagés",
+      "confirmRevoke": "Vous pouvez désactiver ou supprimer cette règle à tout moment ; les créneaux synchronisés seront retirés",
+      "confirmOk": "Confirmer la synchronisation",
+      "confirmBack": "Revenir"
     },
     "overlap": {
       "title": "Ce créneau chevauche un créneau occupé",

@@ -1254,7 +1254,17 @@
       "fromSource": "來自{{name}}",
       "sourceRow": "來源",
       "timeOnlyNote": "只顯示佔用的時間",
-      "shortcut": "同步忙碌時段…"
+      "shortcut": "同步忙碌時段…",
+      "confirmIntro": "確認後，以下行事曆的成員會看到你這些時段：",
+      "confirmSpace": "{{name}}（另外 {{count}} 位成員）",
+      "confirmBusy": "顯示為「{{text}}」，不會顯示標題、地點、備註等內容",
+      "confirmTimeOnly": "只顯示佔用的時間，不會顯示標題、地點、備註等內容",
+      "confirmAll": "之後新加入的空間也會自動同步",
+      "confirmAllDay": "整天行程也會同步，會佔滿整天",
+      "confirmPrivate": "私人行程的時間也會同步出去",
+      "confirmRevoke": "之後隨時可以停用或刪除這條規則，已同步的時段會跟著移除",
+      "confirmOk": "確認同步",
+      "confirmBack": "返回修改"
     },
     "overlap": {
       "title": "這個時段跟忙碌時段重疊",
