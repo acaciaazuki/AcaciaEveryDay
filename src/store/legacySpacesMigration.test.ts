@@ -84,7 +84,7 @@ describe('舊共享行程 → 個人行程（純函式）', () => {
 
 describe('第一次開啟新版：轉換並清掉本機共享資料', () => {
   beforeEach(async () => {
-    useAppStore.setState({ ...emptyAppData(), updatedAt: 1, events: [{ id: 'p1', title: '牙醫', dateISO: '2026-12-01', start: '14:00', end: '15:00', note: '' }] })
+    useAppStore.setState({ ...emptyAppData(), syncMeta: undefined, updatedAt: 1, events: [{ id: 'p1', title: '牙醫', dateISO: '2026-12-01', start: '14:00', end: '15:00', note: '' }] })
     await kv('state').del(LEGACY_SPACES_KEY)
     await kv('backups').clear()
     useBackupStore.getState().reset()
@@ -112,6 +112,13 @@ describe('第一次開啟新版：轉換並清掉本機共享資料', () => {
     expect(await migrateLegacySpaces()).toBe(0)
     expect(useAppStore.getState().events.filter((e) => e.id === 'i1')).toEqual([expect.objectContaining({ deletedAt: 123 })])
     expect(await kv('state').get(LEGACY_SPACES_KEY)).toBeUndefined()
+  })
+
+  it('已經永久刪除（只剩同步刪除標記）的行程：不會被救回來', async () => {
+    useAppStore.setState({ syncMeta: { base: 1, t: {}, del: { 'events:i1': 99 } } })
+    await kv('state').set(LEGACY_SPACES_KEY, legacyRaw([item({}), item({ id: 'i2', title: '新的' })]))
+    expect(await migrateLegacySpaces()).toBe(1)
+    expect(useAppStore.getState().events.map((e) => e.id)).toEqual(['p1', 'i2'])
   })
 
   it('上次轉換到一半中斷（行程已加入、舊資料沒清掉）：下次重跑不會重複', async () => {
