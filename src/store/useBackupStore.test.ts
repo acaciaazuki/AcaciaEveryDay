@@ -35,6 +35,7 @@ const { useBackupStore } = await import('./useBackupStore')
 const { deleteAllData } = await import('./deleteAllData')
 const storage = await import('../adapters/backupStorage')
 const { useConsentStore } = await import('./useConsentStore')
+const { kv } = await import('../adapters/kv')
 
 const task = (title: string) => ({ title, loc: '', date: '', time: '' })
 
@@ -143,6 +144,9 @@ describe('刪除所有資料', () => {
     useAppStore.getState().addTask(task('秘密'))
     await useBackupStore.getState().backupNow('manual')
     await useConsentStore.getState().accept()
+    // 舊版共享行事曆留在本機的資料與快照
+    await kv('state').set('acacia-spaces', '{"state":{}}')
+    await kv('spacesBackups').set('index', { snapshots: [] })
 
     const r = await deleteAllData()
     expect(r.cloud).toBe(true)
@@ -154,6 +158,8 @@ describe('刪除所有資料', () => {
     expect((await storage.loadIndex()).snapshots).toEqual([])
     expect(localStorage.getItem('acacia_lang')).toBeNull()
     expect(localStorage.getItem('unrelated')).toBe('1')
+    expect(await kv('state').get('acacia-spaces')).toBeUndefined()
+    expect(await kv('spacesBackups').keys()).toEqual([])
     // 同意紀錄也清掉，回到第一次使用的狀態
     expect(useConsentStore.getState().status).toBe('required')
     await useConsentStore.getState().load()

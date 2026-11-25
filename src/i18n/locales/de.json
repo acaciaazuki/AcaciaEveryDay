@@ -1,7 +1,6 @@
 {
   "app": {
     "name": "ACACIA",
-    "tagline": "Lass deinem Tag ein wenig Raum",
     "loading": "Wird geladen…"
   },
   "nav": {
@@ -26,11 +25,9 @@
     "cancel": "Abbrechen",
     "delete": "Löschen",
     "add": "Hinzufügen",
-    "edit": "Bearbeiten",
     "withCurrency": "{{label}} ({{sym}})"
   },
   "today": {
-    "title": "Heute",
     "greeting": {
       "morning": "Guten Morgen",
       "afternoon": "Guten Tag",
@@ -327,8 +324,7 @@
     },
     "currency": {
       "title": "Standardwährung",
-      "help": "Ausgabenbeträge und das Währungszeichen neben Betragsfeldern nutzen diese Währung, und neue Abos starten damit. Nur das Symbol ändert sich; Beträge werden nicht umgerechnet und gespeicherte Abos behalten ihre eigene Währung.",
-      "current": "Aktuell: {{name}}"
+      "help": "Ausgabenbeträge und das Währungszeichen neben Betragsfeldern nutzen diese Währung, und neue Abos starten damit. Nur das Symbol ändert sich; Beträge werden nicht umgerechnet und gespeicherte Abos behalten ihre eigene Währung."
     },
     "navOrder": {
       "title": "Reihenfolge der Seitenleiste",
@@ -582,8 +578,7 @@
       "upcoming": "Fällig in {{days}} Tagen",
       "upcomingUnit": "Fällig: {{count}}",
       "active": "Aktive Abos",
-      "activeUnit": "Aktiv: {{count}}",
-      "none": "—"
+      "activeUnit": "Aktiv: {{count}}"
     },
     "soon": {
       "title": "Anstehende Abbuchungen",

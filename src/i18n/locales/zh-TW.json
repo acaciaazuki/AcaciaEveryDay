@@ -1,7 +1,6 @@
 {
   "app": {
     "name": "ACACIA",
-    "tagline": "讓今天留一點空白",
     "loading": "載入中…"
   },
   "nav": {
@@ -26,11 +25,9 @@
     "cancel": "取消",
     "delete": "刪除",
     "add": "新增",
-    "edit": "編輯",
     "withCurrency": "{{label}}（{{sym}}）"
   },
   "today": {
-    "title": "今天",
     "greeting": {
       "morning": "早安",
       "afternoon": "午安",
@@ -327,8 +324,7 @@
     },
     "currency": {
       "title": "預設貨幣",
-      "help": "記帳金額與輸入框旁的幣別標籤會改用這個貨幣，新增訂閱時也會預先帶入。只換顯示符號，不會換算匯率；已存的訂閱保留原本的幣別。",
-      "current": "目前：{{name}}"
+      "help": "記帳金額與輸入框旁的幣別標籤會改用這個貨幣，新增訂閱時也會預先帶入。只換顯示符號，不會換算匯率；已存的訂閱保留原本的幣別。"
     },
     "navOrder": {
       "title": "側邊欄排序",
@@ -582,8 +578,7 @@
       "upcoming": "{{days}} 天內即將扣款",
       "upcomingUnit": "{{count}} 筆",
       "active": "使用中的訂閱",
-      "activeUnit": "{{count}} 個",
-      "none": "—"
+      "activeUnit": "{{count}} 個"
     },
     "soon": {
       "title": "即將扣款提醒",

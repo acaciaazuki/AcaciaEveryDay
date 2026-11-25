@@ -1,7 +1,6 @@
 {
   "app": {
     "name": "ACACIA",
-    "tagline": "Gardez un peu d’espace dans votre journée",
     "loading": "Chargement…"
   },
   "nav": {
@@ -26,11 +25,9 @@
     "cancel": "Annuler",
     "delete": "Supprimer",
     "add": "Ajouter",
-    "edit": "Modifier",
     "withCurrency": "{{label}} ({{sym}})"
   },
   "today": {
-    "title": "Aujourd’hui",
     "greeting": {
       "morning": "Bonjour",
       "afternoon": "Bon après-midi",
@@ -327,8 +324,7 @@
     },
     "currency": {
       "title": "Devise par défaut",
-      "help": "Les montants des dépenses et l’indication de devise à côté des champs de montant utilisent cette devise, et les nouveaux abonnements démarrent avec elle. Seul le symbole change : les montants ne sont pas convertis et les abonnements existants gardent leur devise.",
-      "current": "Actuelle : {{name}}"
+      "help": "Les montants des dépenses et l’indication de devise à côté des champs de montant utilisent cette devise, et les nouveaux abonnements démarrent avec elle. Seul le symbole change : les montants ne sont pas convertis et les abonnements existants gardent leur devise."
     },
     "navOrder": {
       "title": "Ordre de la barre latérale",
@@ -582,8 +578,7 @@
       "upcoming": "À payer sous {{days}} jours",
       "upcomingUnit": "{{count}} à venir",
       "active": "Abonnements actifs",
-      "activeUnit": "{{count}} actif(s)",
-      "none": "—"
+      "activeUnit": "{{count}} actif(s)"
     },
     "soon": {
       "title": "Prochains prélèvements",

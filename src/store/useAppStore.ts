@@ -7,6 +7,7 @@ import { clearCountry, importSets, type HolidayFile, type ImportResult } from '.
 import { addCustomCat, removeCustomCat } from '../core/invCategories'
 import { invToExpense, restockQty, toggleShoppingStock, type StockChange } from '../core/inventory'
 import { migrate } from '../core/migrate'
+import { sanitizeEvents } from '../core/sanitize'
 import { purgeExpiredEvents } from '../core/trash'
 import type { PlaceSort } from '../core/placeSort'
 import { buildImports, importedKeys, rollbackInstallment, type ImportPick } from '../core/recurring'
@@ -378,9 +379,10 @@ export const useAppStore = create<AppState>()(
       storage: createJSONStorage(() => webStorage),
       partialize: (s) => s.exportData(),
       // 舊版存的 settings 沒有新欄位（例如 currency），合併時補上預設值，不讓整個 settings 被蓋掉
+      // 行程的刪除時間、結束日期格式壞掉時當作沒有（見 core/sanitize.ts），其他欄位原樣保留
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<AppState>
-        return { ...current, ...p, settings: { ...current.settings, ...p.settings } }
+        return { ...current, ...p, ...(p.events && { events: sanitizeEvents(p.events) }), settings: { ...current.settings, ...p.settings } }
       },
       version: 2,
     },

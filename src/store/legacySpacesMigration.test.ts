@@ -64,9 +64,13 @@ describe('舊共享行程 → 個人行程（純函式）', () => {
     ])
   })
 
-  it('id 跟既有個人行程撞到時換新的 id，不會蓋掉既有行程；不認得的圖示改成自動判斷', () => {
-    const [e] = legacySharedToEvents(legacyRaw([item({ icon: 'unknown-icon' })]), new Set(['i1']))
-    expect(e!.id).not.toBe('i1')
+  it('id 已經存在：視為轉換過、直接略過（冪等）；同一份資料裡重複的 id 只轉一次', () => {
+    expect(legacySharedToEvents(legacyRaw([item({})]), new Set(['i1']))).toEqual([])
+    expect(legacySharedToEvents(legacyRaw([item({}), item({ title: '重複' })]), new Set()).map((e) => e.title)).toEqual(['家庭聚餐'])
+  })
+
+  it('不認得的圖示改成自動判斷，其他內容照常轉換', () => {
+    const [e] = legacySharedToEvents(legacyRaw([item({ icon: 'unknown-icon' })]), new Set())
     expect(e!.icon).toBeUndefined()
     expect(e!.title).toBe('家庭聚餐')
   })
@@ -100,6 +104,24 @@ describe('第一次開啟新版：轉換並清掉本機共享資料', () => {
 
     expect(await migrateLegacySpaces()).toBe(0)
     expect(useAppStore.getState().events).toHaveLength(2)
+  })
+
+  it('另一台裝置已經轉換並同步過來（含已移到最近刪除的）：不重複加入、不救回，舊資料照樣清掉', async () => {
+    useAppStore.setState({ events: [...useAppStore.getState().events, { id: 'i1', title: '家庭聚餐', dateISO: '2026-12-20', start: '18:00', end: '20:00', note: '帶水果 · 外婆家', deletedAt: 123 }] })
+    await kv('state').set(LEGACY_SPACES_KEY, legacyRaw([item({})]))
+    expect(await migrateLegacySpaces()).toBe(0)
+    expect(useAppStore.getState().events.filter((e) => e.id === 'i1')).toEqual([expect.objectContaining({ deletedAt: 123 })])
+    expect(await kv('state').get(LEGACY_SPACES_KEY)).toBeUndefined()
+  })
+
+  it('上次轉換到一半中斷（行程已加入、舊資料沒清掉）：下次重跑不會重複', async () => {
+    await kv('state').set(LEGACY_SPACES_KEY, legacyRaw([item({})]))
+    expect(await migrateLegacySpaces()).toBe(1)
+    // 模擬清除那一步沒成功：舊資料還在
+    await kv('state').set(LEGACY_SPACES_KEY, legacyRaw([item({})]))
+    expect(await migrateLegacySpaces()).toBe(0)
+    expect(useAppStore.getState().events.map((e) => e.title)).toEqual(['牙醫', '家庭聚餐'])
+    expect(await kv('state').get(LEGACY_SPACES_KEY)).toBeUndefined()
   })
 
   it('沒有舊的共享資料：什麼都不做', async () => {

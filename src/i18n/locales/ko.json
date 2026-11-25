@@ -1,7 +1,6 @@
 {
   "app": {
     "name": "ACACIA",
-    "tagline": "오늘에 작은 여백을 남겨 두세요",
     "loading": "불러오는 중…"
   },
   "nav": {
@@ -26,11 +25,9 @@
     "cancel": "취소",
     "delete": "삭제",
     "add": "추가",
-    "edit": "편집",
     "withCurrency": "{{label}} ({{sym}})"
   },
   "today": {
-    "title": "오늘",
     "greeting": {
       "morning": "좋은 아침이에요",
       "afternoon": "좋은 오후예요",
@@ -327,8 +324,7 @@
     },
     "currency": {
       "title": "기본 통화",
-      "help": "가계부 금액과 입력란 옆의 통화 표시가 이 통화로 바뀌고, 구독을 추가할 때도 미리 입력돼요. 표시 기호만 바뀌며 환율로 환산하지 않아요. 이미 저장된 구독은 원래 통화를 유지해요.",
-      "current": "현재: {{name}}"
+      "help": "가계부 금액과 입력란 옆의 통화 표시가 이 통화로 바뀌고, 구독을 추가할 때도 미리 입력돼요. 표시 기호만 바뀌며 환율로 환산하지 않아요. 이미 저장된 구독은 원래 통화를 유지해요."
     },
     "navOrder": {
       "title": "사이드바 순서",
@@ -582,8 +578,7 @@
       "upcoming": "{{days}}일 이내 결제 예정",
       "upcomingUnit": "{{count}}건",
       "active": "사용 중인 구독",
-      "activeUnit": "{{count}}개",
-      "none": "—"
+      "activeUnit": "{{count}}개"
     },
     "soon": {
       "title": "결제 예정 알림",
