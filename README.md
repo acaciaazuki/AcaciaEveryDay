@@ -2,7 +2,7 @@
 
 「你有幾件重要的事，還有足夠的空檔好好呼吸。」
 
-ACACIA Everyday 的 React 19 + Vite 改版。舊版（單一 HTML 檔）仍在 GitHub Pages 上運作，新版使用新網址。
+ACACIA Everyday 的 React 19 + Vite 改版：行事曆、今天、稍後辦、購物記帳、最愛地點等個人日常工具。舊版（單一 HTML 檔）仍在 GitHub Pages 上運作，新版使用新網址：**https://acaciaeveryday.pages.dev**
 
 ## 技術棧
 
@@ -10,9 +10,11 @@ ACACIA Everyday 的 React 19 + Vite 改版。舊版（單一 HTML 檔）仍在 G
 - React Router（SPA）
 - Tailwind CSS v4，色票沿用舊版鼠尾草綠
 - Radix UI（對話框）
-- Zustand + persist，資料存在 IndexedDB（透過 `src/adapters/storage.ts`，之後 iOS 換成 Capacitor 儲存）
+- Zustand + persist：狀態管理透過 `src/adapters/storage.ts` 轉接，實際讀寫一律走 `src/adapters/kv/`——網頁版存 IndexedDB，iOS App（Capacitor）存 `Library/acacia/` 的 JSON 檔（見下方「iOS App」）
 - Zod 驗證資料結構，`src/core/migrate.ts` 負責把舊版 `acacia_data` 轉成新版
-- react-i18next：繁體中文、日本語、English
+- Google Drive 同步：只同步一個檔案 `acacia_data_v2.json`，逐筆合併（見下方「同步與衝突處理」）
+- 匯出：完整資料 JSON（可再匯入）與標準行事曆 `.ics`（`src/core/ics.ts`）
+- react-i18next：介面支援 6 種語言（繁體中文、日本語、English、한국어、Français、Deutsch）；隱私權政策為繁中／日／英三語，韓、法、德顯示英文版
 - Vitest + Testing Library
 
 ## 開發
@@ -69,6 +71,8 @@ npm run icons   # 需要 Playwright 的 Chromium（npx playwright install chromi
   - 隱私權政策改版：只要把 `src/core/consent.ts` 的 `PRIVACY_VERSION` 改成當天日期；政策頁的「最後更新」（`UPDATED_DATE`）直接沿用它，使用者也會被要求重新同意。
   - 第三方授權清單：套件升級不會自動要求重新同意；需要時把 `src/core/consent.ts` 的 `LICENSES_VERSION` 改成當天日期。
 - 自動備份：開啟網站與資料變動後，距上次超過 12 小時就在背景建立快照，存在 IndexedDB 的 `acacia-backups`（最多 7 份）；已登入時另外上傳到 Drive 的 `acacia_backup_v2.json`，不動同步檔。邏輯在 `src/core/backup.ts` 與 `src/store/useBackupStore.ts`。
+- 匯出：設定頁「資料備份與搬家」可以「匯出 JSON」（完整資料，可再匯入）與「匯出行事曆（.ics）」（我的行事曆的行程，不含最近刪除，可匯入 Apple 行事曆、Google 日曆、Outlook）。
+- 最近刪除（30 天垃圾桶）：刪除的行程先放進行事曆頁的「最近刪除」，30 天內可以還原，之後自動永久刪除（App 啟動、同步合併後、打開「最近刪除」時清理；`src/core/trash.ts`）。
 - 設定頁「刪除所有資料」：刪除 Drive 上的 ACACIA 檔案（已登入時）、登出，並清空本機資料與快照（`src/store/deleteAllData.ts`）。
 
 ## 同步與衝突處理
@@ -105,14 +109,20 @@ npm run icons   # 需要 Playwright 的 Chromium（npx playwright install chromi
 ## 資料夾
 
 ```
+scripts/      產生授權清單、網站圖示、國定假日資料的指令稿（npm run licenses / icons / holidays）
 src/
   app/        路由與 Layout（桌面側欄 / 手機底部導覽）
   pages/      各頁面
   components/ 共用元件
+  hooks/      共用的 React hooks
   store/      Zustand store
   core/       資料結構、分類、遷移（純 TypeScript，不依賴 React）
-  adapters/   儲存等平台相關程式
+  adapters/   儲存等平台相關程式（kv/：IndexedDB 與 iOS 檔案儲存）
+  brand/      網站圖示的向量圖（台灣相思樹）
+  holidays/   打包進 App 的國定假日資料
+  licenses/   第三方授權資料（npm run licenses 產生）
   i18n/       多語系設定與翻譯檔
+  test/       測試用的假物件與設定
 ```
 
 ## 部署（Cloudflare Pages）
@@ -207,9 +217,9 @@ App 內的處理（`isNativeApp()` 判斷）：
 隱私權政策第 4 節已寫明 ACACIA 申報「不收集資料（Data Not Collected）」。在 App Store Connect 填寫「App 隱私」前，逐項確認仍然成立：
 
 - [ ] **沒有追蹤、廣告、分析或當機回報 SDK：**`package.json` 的 dependencies 只有畫面、狀態、翻譯與 Capacitor 套件；新增任何會連外的套件前要先檢查
-- [ ] **地點搜尋 Proxy 不保存搜尋字詞：**`VITE_PLACES_PROXY_URL` 指向的 Cloudflare Worker 要關閉 Workers Logs／Logpush，程式只即時轉送查詢、不寫入任何儲存。若這個 Worker 不是自己經營的，搜尋字詞就屬於傳給第三方，要重新評估標示，或改成自己的 Worker
+- [ ] **地點搜尋 Proxy 不記錄使用者資料：**`VITE_PLACES_PROXY_URL` 指向的 Cloudflare Worker 只即時轉送查詢，不記錄或保存搜尋字詞、IP 與任何可識別使用者的資料（關閉 Workers Logs／Logpush）。若這個 Worker 不是自己經營的，搜尋字詞就屬於傳給第三方，要重新評估標示，或改成自己的 Worker
 - [ ] **沒有自己的伺服器接收使用者資料：**同步只寫使用者自己的 Google Drive 應用程式專用資料夾
-- [ ] **資料保留期間與政策一致：**最近刪除 30 天（`src/core/trash.ts` 的 `TRASH_RETENTION_MS`）、刪除標記 180 天（`src/core/appMerge.ts` 的 `TOMBSTONE_TTL`）；改這兩個數字時要一起改政策並更新 `PRIVACY_VERSION`
+- [ ] **資料保留期間與政策一致：**最近刪除 30 天（`src/core/trash.ts` 的 `TRASH_RETENTION_MS`）、同步用的刪除標記 180 天（`src/core/appMerge.ts` 的 `TOMBSTONE_TTL`，政策第 5 節）；改這兩個數字時要一起改政策並更新 `PRIVACY_VERSION`
 
 ## 從舊版搬資料
 
@@ -226,4 +236,8 @@ App 內的處理（`isNativeApp()` 判斷）：
 - [x] 行事曆（含批次建立）
 - [x] 最愛地點（含地點搜尋）
 - [x] ⌘K 搜尋
-- [x] Google Drive 同步
+- [x] Google Drive 同步（逐筆合併）
+- [x] 匯出行事曆（.ics）
+- [x] 最近刪除（30 天垃圾桶）
+- [x] 跨日與跨午夜行程
+- [x] iOS App 儲存層（Capacitor）

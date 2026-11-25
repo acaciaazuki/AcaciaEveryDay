@@ -24,7 +24,9 @@ const str = (v: unknown) => (typeof v === 'string' ? v : '')
 /**
  * 舊的共享空間資料 → 要加進來的個人行程（純函式，不改動輸入）。
  * raw 是 zustand persist 存的內容（JSON 字串或已解析的物件）；格式看不懂時回傳空陣列。
- * existingIds：已經有的個人行程 id，撞到時改用新的 id，不會蓋掉既有行程。
+ * existingIds：已經有的個人行程 id，加上同步刪除標記裡的行程 id（已永久刪除的）。撞到時視為「已經轉換過」直接略過（冪等）：
+ * 例如另一台裝置已經轉換並同步過來、或上次轉換到一半中斷，重跑都不會多出重複的行程，
+ * 也不會把已經移到「最近刪除」或已經永久刪除的行程救回來。共享行程的 id 是隨機 UUID，不會跟一般個人行程撞到。
  */
 export function legacySharedToEvents(raw: unknown, existingIds: ReadonlySet<string>): CalendarEvent[] {
   let root: unknown = raw
@@ -55,8 +57,8 @@ export function legacySharedToEvents(raw: unknown, existingIds: ReadonlySet<stri
     const endDate = str(it.endDateISO)
     const note = [str(it.note), str(it.location), ...details].map((x) => x.trim()).filter(Boolean).join(' · ')
     const endDateISO = endDate && endDate > str(it.dateISO) ? endDate : ''
-    let id = str(it.id) || crypto.randomUUID()
-    if (used.has(id)) id = crypto.randomUUID()
+    const id = str(it.id)
+    if (!id || used.has(id)) continue
     const parsed = eventSchema.safeParse({
       id,
       title,
@@ -78,6 +80,14 @@ export function legacySharedToEvents(raw: unknown, existingIds: ReadonlySet<stri
   return out
 }
 
+/** 目前已知的行程 id：個人行程，以及同步刪除標記（syncMeta.del 的 events:<id>）裡已永久刪除的 */
+function knownEventIds(): Set<string> {
+  const { events, syncMeta } = useAppStore.getState()
+  const ids = new Set(events.map((e) => e.id))
+  for (const key of Object.keys(syncMeta?.del ?? {})) if (key.startsWith('events:')) ids.add(key.slice('events:'.length))
+  return ids
+}
+
 let running: Promise<number> | null = null
 
 /** 執行轉換；回傳加進來的行程數。只會同時跑一次 */
@@ -87,14 +97,17 @@ export function migrateLegacySpaces(): Promise<number> {
       const state = kv('state')
       const raw = await state.get(LEGACY_SPACES_KEY)
       if (raw === undefined || raw === null) return 0
-      const events = legacySharedToEvents(raw, new Set(useAppStore.getState().events.map((e) => e.id)))
+      const events = legacySharedToEvents(raw, knownEventIds())
       // 先備份：個人資料快照＋舊的共享資料原樣另存
       await useBackupStore.getState().backupNow('beforeMigration')
       await kv('backups').set(LEGACY_SPACES_COPY_KEY, raw)
-      if (events.length) useAppStore.getState().restoreEvents(events)
+      // 備份是非同步的，期間雲端同步可能已經帶進同一批行程：加入前再比對一次，只加真的還沒有的
+      const have = knownEventIds()
+      const fresh = events.filter((e) => !have.has(e.id))
+      if (fresh.length) useAppStore.getState().restoreEvents(fresh)
       await state.del(LEGACY_SPACES_KEY)
       await kv('spacesBackups').clear()
-      return events.length
+      return fresh.length
     } catch (e) {
       console.error('舊的共享行事曆資料轉換失敗，已略過（資料保留原樣，下次開啟會再試）', e)
       return 0
